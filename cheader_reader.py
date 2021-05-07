@@ -9,11 +9,16 @@ from pickle import TRUE, NONE
 
 class HelicsHeaderParser (object):
     """
+        Class that will parse the HELICS C API headers and create other language bindings
+        
+        @ivar parsedInfo: a dictionary containing all the parsed cursors found in the HELICS C API headers
+        
     """
     _types = {}
     parsedInfo: dict #Dictionary of parsed value 
     def __init__(self, helicsHeaders: List[str]):
         """
+            Constructor
         """
         self._types["functions"] = {} 
         self.parsedInfo = {}
@@ -21,106 +26,113 @@ class HelicsHeaderParser (object):
     
     
     def _cursorInfo(self, node: cidx.Cursor) -> dict():
-            cursorInfoDict = {
-                 "kind" : node.kind.name,
-                 "spelling" : node.spelling,
-                 "location" : node.location.file.name,
-                 "type" : node.type.kind.spelling,
-                 "result_type" : node.result_type.kind.spelling,
-                 "brief_comment" : node.brief_comment,
-            }
-            cursor_range = node.extent
-            cursorInfoDict["start_line"] = cursor_range.start.line
-            cursorInfoDict["end_line"] = cursor_range.end.line
-            if node.kind == cidx.CursorKind.FUNCTION_DECL:
-                cursorInfoDict["raw_comment"] = node.raw_comment
-                if node.result_type.kind == cidx.TypeKind.POINTER:
-                    pointerType = node.result_type.get_pointee()
-                    if pointerType.kind == cidx.TypeKind.POINTER:
-                        cursorInfoDict["result_type"] = "Double Pointer"
-                        cursorInfoDict["double_pointer_type"] = pointerType.get_pointee().kind.spelling + "_**"
-                    else:
-                        cursorInfoDict["pointer_type"] = pointerType.kind.spelling + "_*"
-                if node.result_type.kind == cidx.TypeKind.TYPEDEF:
-                    cursorInfoDict["result_type"] = node.result_type.get_typedef_name()
-                if cursorInfoDict.get("result_type","") != "":
-                    if cursorInfoDict.get("result_type","") not in self._types.keys():
-                        self._types[cursorInfoDict.get("result_type","")] = [cursorInfoDict.get("spelling","")]
-                    else:
-                        self._types.get(cursorInfoDict.get("result_type",""),[]).append(cursorInfoDict.get("spelling",""))
-                if cursorInfoDict.get("pointer_type","") != "":
-                    if cursorInfoDict.get("pointer_type","") not in self._types.keys():
-                        self._types[cursorInfoDict.get("pointer_type","")] = [cursorInfoDict.get("spelling","")]
-                    else:
-                        self._types.get(cursorInfoDict.get("pointer_type",""),[]).append(cursorInfoDict.get("spelling",""))
-                if cursorInfoDict.get("double_pointer_type","") != "":
-                    if cursorInfoDict.get("double_pointer_type","") not in self._types.keys():
-                        self._types[cursorInfoDict.get("double_pointer_type","")] = [cursorInfoDict.get("spelling","")]
-                    else:
-                        self._types.get(cursorInfoDict.get("double_pointer_type",""),[]).append(cursorInfoDict.get("spelling",""))
-                cursorInfoDict["arguments"] = {}
-                argNum = 0
-                for arg in node.get_arguments():
-                    cursorInfoDict["arguments"][argNum] = self._cursorInfo(arg)
-                    argNum += 1
-                self._types["functions"][cursorInfoDict.get("spelling","")] = cursorInfoDict["arguments"]
-            if node.kind == cidx.CursorKind.PARM_DECL:
-                if node.type.kind == cidx.TypeKind.TYPEDEF:
-                    cursorInfoDict["type"] = node.type.get_typedef_name()
-                if node.type.kind == cidx.TypeKind.POINTER:
-                    typePointee = node.type.get_pointee()
-                    if typePointee.kind == cidx.TypeKind.TYPEDEF:
-                        cursorInfoDict["pointer_type"] = typePointee.get_typedef_name() + "_*"
-                    elif typePointee.kind == cidx.TypeKind.POINTER:
-                        cursorInfoDict["type"] = "Double Pointer"
-                        cursorInfoDict["double_pointer_type"] = typePointee.get_pointee().kind.spelling + "_**"
-                    else:
-                        cursorInfoDict["pointer_type"] = typePointee.kind.spelling + "_*"
-                if cursorInfoDict.get("type","") != "":
-                    if cursorInfoDict.get("type","") not in self._types.keys():
-                        self._types[cursorInfoDict.get("type","")] = [cursorInfoDict.get("spelling","")]
-                    else:
-                        self._types.get(cursorInfoDict.get("type",""),[]).append(cursorInfoDict.get("spelling",""))
-                if cursorInfoDict.get("pointer_type","") != "":
-                    if cursorInfoDict.get("pointer_type","") not in self._types.keys():
-                        self._types[cursorInfoDict.get("pointer_type","")] = [cursorInfoDict.get("spelling","")]
-                    else:
-                        self._types.get(cursorInfoDict.get("pointer_type",""),[]).append(cursorInfoDict.get("spelling",""))
-                if cursorInfoDict.get("double_pointer_type","") != "":
-                    if cursorInfoDict.get("double_pointer_type","") not in self._types.keys():
-                        self._types[cursorInfoDict.get("double_pointer_type","")] = [cursorInfoDict.get("spelling","")]
-                    else:
-                        self._types.get(cursorInfoDict.get("double_pointer_type",""),[]).append(cursorInfoDict.get("spelling",""))                  
-            if node.kind == cidx.CursorKind.TYPEDEF_DECL or node.type.kind == cidx.TypeKind.TYPEDEF:
-                cursorInfoDict["type"] = node.underlying_typedef_type.spelling
-                if cursorInfoDict["type"] == "":
-                    cursorInfoDict["type"] = node.type.get_typedef_name()
-            if node.kind == cidx.CursorKind.ENUM_DECL:
-                cursorInfoDict["enumerations"] = {}
-                enumNum = 0
-                for i in node.get_children():
-                    cursorInfoDict["enumerations"][enumNum] = self._cursorInfo(i)
-                    enumNum += 1
-            if node.kind == cidx.CursorKind.ENUM_CONSTANT_DECL:
-                cursorInfoDict["value"] = node.enum_value
-            if node.kind == cidx.CursorKind.VAR_DECL:
-                value = ''
-                for t in node.get_tokens():
-                    value = t.spelling
-                cursorInfoDict["value"] = json.loads(value)
-            if node.kind == cidx.CursorKind.STRUCT_DECL:
-                cursorInfoDict["members"] = {}
-                memberNum = 0
-                for i in node.get_children():
-                    cursorInfoDict["members"][memberNum] = self._cursorInfo(i)
-                    memberNum += 1
-            return cursorInfoDict
+        """
+            Helper function for parseHelicsHeaderFiles()
+        """
+        cursorInfoDict = {
+             "kind" : node.kind.name,
+             "spelling" : node.spelling,
+             "location" : node.location.file.name,
+             "type" : node.type.kind.spelling,
+             "result_type" : node.result_type.kind.spelling,
+             "brief_comment" : node.brief_comment,
+        }
+        cursor_range = node.extent
+        cursorInfoDict["start_line"] = cursor_range.start.line
+        cursorInfoDict["end_line"] = cursor_range.end.line
+        if node.kind == cidx.CursorKind.FUNCTION_DECL:
+            cursorInfoDict["raw_comment"] = node.raw_comment
+            if node.result_type.kind == cidx.TypeKind.POINTER:
+                pointerType = node.result_type.get_pointee()
+                if pointerType.kind == cidx.TypeKind.POINTER:
+                    cursorInfoDict["result_type"] = "Double Pointer"
+                    cursorInfoDict["double_pointer_type"] = pointerType.get_pointee().kind.spelling + "_**"
+                else:
+                    cursorInfoDict["pointer_type"] = pointerType.kind.spelling + "_*"
+            if node.result_type.kind == cidx.TypeKind.TYPEDEF:
+                cursorInfoDict["result_type"] = node.result_type.get_typedef_name()
+            if cursorInfoDict.get("result_type","") != "":
+                if cursorInfoDict.get("result_type","") not in self._types.keys():
+                    self._types[cursorInfoDict.get("result_type","")] = [cursorInfoDict.get("spelling","")]
+                else:
+                    self._types.get(cursorInfoDict.get("result_type",""),[]).append(cursorInfoDict.get("spelling",""))
+            if cursorInfoDict.get("pointer_type","") != "":
+                if cursorInfoDict.get("pointer_type","") not in self._types.keys():
+                    self._types[cursorInfoDict.get("pointer_type","")] = [cursorInfoDict.get("spelling","")]
+                else:
+                    self._types.get(cursorInfoDict.get("pointer_type",""),[]).append(cursorInfoDict.get("spelling",""))
+            if cursorInfoDict.get("double_pointer_type","") != "":
+                if cursorInfoDict.get("double_pointer_type","") not in self._types.keys():
+                    self._types[cursorInfoDict.get("double_pointer_type","")] = [cursorInfoDict.get("spelling","")]
+                else:
+                    self._types.get(cursorInfoDict.get("double_pointer_type",""),[]).append(cursorInfoDict.get("spelling",""))
+            cursorInfoDict["arguments"] = {}
+            argNum = 0
+            for arg in node.get_arguments():
+                cursorInfoDict["arguments"][argNum] = self._cursorInfo(arg)
+                argNum += 1
+            self._types["functions"][cursorInfoDict.get("spelling","")] = cursorInfoDict["arguments"]
+        if node.kind == cidx.CursorKind.PARM_DECL:
+            if node.type.kind == cidx.TypeKind.TYPEDEF:
+                cursorInfoDict["type"] = node.type.get_typedef_name()
+            if node.type.kind == cidx.TypeKind.POINTER:
+                typePointee = node.type.get_pointee()
+                if typePointee.kind == cidx.TypeKind.TYPEDEF:
+                    cursorInfoDict["pointer_type"] = typePointee.get_typedef_name() + "_*"
+                elif typePointee.kind == cidx.TypeKind.POINTER:
+                    cursorInfoDict["type"] = "Double Pointer"
+                    cursorInfoDict["double_pointer_type"] = typePointee.get_pointee().kind.spelling + "_**"
+                else:
+                    cursorInfoDict["pointer_type"] = typePointee.kind.spelling + "_*"
+            if cursorInfoDict.get("type","") != "":
+                if cursorInfoDict.get("type","") not in self._types.keys():
+                    self._types[cursorInfoDict.get("type","")] = [cursorInfoDict.get("spelling","")]
+                else:
+                    self._types.get(cursorInfoDict.get("type",""),[]).append(cursorInfoDict.get("spelling",""))
+            if cursorInfoDict.get("pointer_type","") != "":
+                if cursorInfoDict.get("pointer_type","") not in self._types.keys():
+                    self._types[cursorInfoDict.get("pointer_type","")] = [cursorInfoDict.get("spelling","")]
+                else:
+                    self._types.get(cursorInfoDict.get("pointer_type",""),[]).append(cursorInfoDict.get("spelling",""))
+            if cursorInfoDict.get("double_pointer_type","") != "":
+                if cursorInfoDict.get("double_pointer_type","") not in self._types.keys():
+                    self._types[cursorInfoDict.get("double_pointer_type","")] = [cursorInfoDict.get("spelling","")]
+                else:
+                    self._types.get(cursorInfoDict.get("double_pointer_type",""),[]).append(cursorInfoDict.get("spelling",""))                  
+        if node.kind == cidx.CursorKind.TYPEDEF_DECL or node.type.kind == cidx.TypeKind.TYPEDEF:
+            cursorInfoDict["type"] = node.underlying_typedef_type.spelling
+            if cursorInfoDict["type"] == "":
+                cursorInfoDict["type"] = node.type.get_typedef_name()
+        if node.kind == cidx.CursorKind.ENUM_DECL:
+            cursorInfoDict["enumerations"] = {}
+            enumNum = 0
+            for i in node.get_children():
+                cursorInfoDict["enumerations"][enumNum] = self._cursorInfo(i)
+                enumNum += 1
+        if node.kind == cidx.CursorKind.ENUM_CONSTANT_DECL:
+            cursorInfoDict["value"] = node.enum_value
+        if node.kind == cidx.CursorKind.VAR_DECL:
+            value = ''
+            for t in node.get_tokens():
+                value = t.spelling
+            cursorInfoDict["value"] = json.loads(value)
+        if node.kind == cidx.CursorKind.STRUCT_DECL:
+            cursorInfoDict["members"] = {}
+            memberNum = 0
+            for i in node.get_children():
+                cursorInfoDict["members"][memberNum] = self._cursorInfo(i)
+                memberNum += 1
+        return cursorInfoDict
         
         
     def parseHelicsHeaderFiles(self, helicsHeaders: List[str]) -> None:
+        """
+            Function that parses the HELICS C header files
+            @param helicsHeaders: A list of the HELICS C header files to parse
+        """
         idx = cidx.Index.create()
         cursorNum = 0
-        for headerFile in  helicsHeaders:
+        for headerFile in helicsHeaders:
             tu = idx.parse(headerFile)
             for c in tu.cursor.get_children():
                 if c.location.file.name == headerFile:
@@ -141,7 +153,13 @@ class HelicsHeaderParser (object):
     
     
     def createPythonBindings(self) -> str:
+        """
+            Function that creates the HELICS Python Bindings
+        """
         def createBoilerPlate() -> str:
+            """
+                Create Python Binding boiler plate string 
+            """
             boilerPlateStr = "import enum\n"
             boilerPlateStr += "import signal\n"
             boilerPlateStr += "import sys\n"
@@ -151,7 +169,7 @@ class HelicsHeaderParser (object):
             boilerPlateStr += "ffi = _build.ffi\n\n\n" 
             boilerPlateStr += "def signal_handler(sig, frame):\n"
             boilerPlateStr += "\thelicsCloseLibrary()\n"
-            boilerPlateStr += "\tprint(\"User pressed 'CTRL-C'. Exiting...\"\n"
+            boilerPlateStr += "\tprint(\"User pressed 'CTRL-C'. Exiting...\")\n"
             boilerPlateStr += "\tsys.exit(0)\n\n\n"
             boilerPlateStr += "signal.signal(signal.SIGINT, signal_handler)\n\n\n"
             boilerPlateStr += "class _HelicsCHandle:\n"
@@ -163,6 +181,9 @@ class HelicsHeaderParser (object):
         
         
         def createEnum(enumDict: dict()) -> str:
+            """
+                Create Python Binding Enumerations for each C Enumeration
+            """
             enumSpelling = enumDict.get('spelling','')
             enumComment = enumDict.get('brief_comment','')
             enumStr = f"class {enumSpelling}(enum.IntEnum):\n"
@@ -183,6 +204,9 @@ class HelicsHeaderParser (object):
         
         
         def createTypeDef(typedefDict: dict()) -> str:
+            """
+                Create Python Classes for each HELICS C TypeDef Void *
+            """
             typedefSpelling = typedefDict.get('spelling','')
             typedefComment = typedefDict.get('brief_comment','')
             if typedefSpelling != "helics_complex" and typedefSpelling != "HelicsError":
@@ -201,6 +225,8 @@ class HelicsHeaderParser (object):
             
                 
         def createVarDeclaration(varDict: dict()) -> str:
+            """
+            """
             varSpelling = varDict.get('spelling','')
             varValue = varDict.get('value')
             varComment = varDict.get('brief_comment','')
@@ -652,7 +678,7 @@ class HelicsHeaderParser (object):
                 functionStr += "\tif isinstance(data, str):\n"
                 functionStr += "\t\tdata = data.encode()\n"
                 functionStr += "\tif not isinstance(data, bytes):\n"
-                functionStr += "\t\traise Exception(\"\"\"data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `\"hello world\".encode()`\"\"\".format(t=type(data))\n"
+                functionStr += "\t\traise Exception(\"\"\"data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `\"hello world\".encode()`\"\"\".format(t=type(data)))\n"
                 functionStr += "\tinputDataLength = len(data)\n"
                 functionStr += "\terr = helicsErrorInitialize()\n"
                 functionStr += "\tfn(endpoint.handle, data, inputDataLength, err)\n"
@@ -689,7 +715,7 @@ class HelicsHeaderParser (object):
                 functionStr += "\tif isinstance(data, str):\n"
                 functionStr += "\t\tdata = data.encode()\n"
                 functionStr += "\tif not isinstance(data, bytes):\n"
-                functionStr += "\t\traise Exception(\"\"\"data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `\"hello world\".encode()`\"\"\".format(t=type(data))\n"
+                functionStr += "\t\traise Exception(\"\"\"data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `\"hello world\".encode()`\"\"\".format(t=type(data)))\n"
                 functionStr += "\tinputDataLength = len(data)\n"
                 functionStr += "\terr = helicsErrorInitialize()\n"
                 functionStr += "\tfn(endpoint.handle, data, inputDataLength, time, err)\n"
@@ -726,7 +752,7 @@ class HelicsHeaderParser (object):
                 functionStr += "\tif isinstance(data, str):\n"
                 functionStr += "\t\tdata = data.encode()\n"
                 functionStr += "\tif not isinstance(data, bytes):\n"
-                functionStr += "\t\traise Exception(\"\"\"data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `\"hello world\".encode()`\"\"\".format(t=type(data))\n"
+                functionStr += "\t\traise Exception(\"\"\"data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `\"hello world\".encode()`\"\"\".format(t=type(data)))\n"
                 functionStr += "\tinputDataLength = len(data)\n"
                 functionStr += "\terr = helicsErrorInitialize()\n"
                 functionStr += "\tfn(endpoint.handle, data, inputDataLength, ffi.new(\"Char[]\",dst.encode()), err)\n"
@@ -767,7 +793,7 @@ class HelicsHeaderParser (object):
                 functionStr += "\tif isinstance(data, str):\n"
                 functionStr += "\t\tdata = data.encode()\n"
                 functionStr += "\tif not isinstance(data, bytes):\n"
-                functionStr += "\t\traise Exception(\"\"\"data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `\"hello world\".encode()`\"\"\".format(t=type(data))\n"
+                functionStr += "\t\traise Exception(\"\"\"data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `\"hello world\".encode()`\"\"\".format(t=type(data)))\n"
                 functionStr += "\tinputDataLength = len(data)\n"
                 functionStr += "\terr = helicsErrorInitialize()\n"
                 functionStr += "\tfn(endpoint.handle, data, inputDataLength, ffi.new(\"Char[]\",dst.encode()), time, err)\n"
@@ -1076,7 +1102,7 @@ class HelicsHeaderParser (object):
                 functionStr += "\tif isinstance(data, str):\n"
                 functionStr += "\t\tdata = data.encode()\n"
                 functionStr += "\tif not isinstance(data, bytes):\n"
-                functionStr += "\t\traise Exception(\"\"\"data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `\"hello world\".encode()`\"\"\".format(t=type(data))\n"
+                functionStr += "\t\traise Exception(\"\"\"data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `\"hello world\".encode()`\"\"\".format(t=type(data)))\n"
                 functionStr += "\tinputDataLength = len(data)\n"
                 functionStr += "\terr = helicsErrorInitialize()\n"
                 functionStr += "\tfn(ipt.handle, data, inputDataLength, err)\n"
@@ -1134,7 +1160,7 @@ class HelicsHeaderParser (object):
                 functionStr += "\t\t@param vectorInput The default list of floating point values.\n"
                 functionStr += "\t\"\"\"\n"
                 functionStr += "\tfn = getattr(lib, \"helicsInputSetDefaultVector\")\n"
-                functionStr += "\tvectorLength = len(vectorInput)"
+                functionStr += "\tvectorLength = len(vectorInput)\n"
                 functionStr += "\terr = helicsErrorInitialize()\n"
                 functionStr += "\tfn(ipt.handle, vectorInput, vectorLength, err)\n"
                 functionStr += "\tif err.error_code != 0:\n"
@@ -1166,7 +1192,7 @@ class HelicsHeaderParser (object):
                 functionStr += "\tif isinstance(data, str):\n"
                 functionStr += "\t\tdata = data.encode()\n"
                 functionStr += "\tif not isinstance(data, bytes):\n"
-                functionStr += "\t\traise Exception(\"\"\"data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `\"hello world\".encode()`\"\"\".format(t=type(data))\n"
+                functionStr += "\t\traise Exception(\"\"\"data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `\"hello world\".encode()`\"\"\".format(t=type(data)))\n"
                 functionStr += "\tinputDataLength = len(data)\n"
                 functionStr += "\terr = helicsErrorInitialize()\n"
                 functionStr += "\tfn(message.handle, data, inputDataLength, err)\n"
@@ -1234,7 +1260,7 @@ class HelicsHeaderParser (object):
                 functionStr += "\tif isinstance(data, str):\n"
                 functionStr += "\t\tdata = data.encode()\n"
                 functionStr += "\tif not isinstance(data, bytes):\n"
-                functionStr += "\t\traise Exception(\"\"\"data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `\"hello world\".encode()`\"\"\".format(t=type(data))\n"
+                functionStr += "\t\traise Exception(\"\"\"data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `\"hello world\".encode()`\"\"\".format(t=type(data)))\n"
                 functionStr += "\tinputDataLength = len(data)\n"
                 functionStr += "\terr = helicsErrorInitialize()\n"
                 functionStr += "\tfn(message.handle, data, inputDataLength, err)\n"
@@ -1267,7 +1293,7 @@ class HelicsHeaderParser (object):
                 functionStr += "\tif isinstance(data, str):\n"
                 functionStr += "\t\tdata = data.encode()\n"
                 functionStr += "\tif not isinstance(data, bytes):\n"
-                functionStr += "\t\traise Exception(\"\"\"data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `\"hello world\".encode()`\"\"\".format(t=type(data))\n"
+                functionStr += "\t\traise Exception(\"\"\"data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `\"hello world\".encode()`\"\"\".format(t=type(data)))\n"
                 functionStr += "\tinputDataLength = len(data)\n"
                 functionStr += "\terr = helicsErrorInitialize()\n"
                 functionStr += "\tfn(pub.handle, data, inputDataLength, err)\n"
@@ -1325,7 +1351,7 @@ class HelicsHeaderParser (object):
                 functionStr += "\t\t@param vectorInput The list of floating point values.\n"
                 functionStr += "\t\"\"\"\n"
                 functionStr += "\tfn = getattr(lib, \"helicsPublicationPublishVector\")\n"
-                functionStr += "\tvectorLength = len(vectorInput)"
+                functionStr += "\tvectorLength = len(vectorInput)\n"
                 functionStr += "\terr = helicsErrorInitialize()\n"
                 functionStr += "\tfn(pub.handle, vectorInput, vectorLength, err)\n"
                 functionStr += "\tif err.error_code != 0:\n"
@@ -1391,7 +1417,8 @@ def main(helicsHeaders: List[str], createPythonBindings: bool) -> None:
         helicsPythonBindingStr = helicsParser.createPythonBindings()
         with open("pythonBinding.py","w") as pythonBindingFile:
             pythonBindingFile.write(helicsPythonBindingStr)
-        print(helicsPythonBindingStr)
+        print("python bindings successfully created!")
+            
 
 if __name__ == '__main__':
     userInputParser = ArgumentParser()
@@ -1400,7 +1427,6 @@ if __name__ == '__main__':
     userInputParser.add_argument("headers", default=[], nargs="+",
         help="list of helics header files to parse")
     userArgs = userInputParser.parse_args()
-    print(userArgs.headers)
     main(userArgs.headers, userArgs.create_python_binding)
     
 
