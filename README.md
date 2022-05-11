@@ -8,7 +8,7 @@ The current supported language conversions are Python and MATLAB.
 ### Linux
 1. the libclang-11-dev package.
 	`sudo apt install libclang-11-dev`
-2. Please refer to the requirements.txt file for requred python packages.
+2. Please refer to the requirements.txt file for required python packages.
 
 ### Mac
 TODO
