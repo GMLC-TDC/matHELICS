@@ -438,7 +438,7 @@ static const std::unordered_map<std::string,int> wrapperFunctionMap{
 
 void _wrap_HELICS_DATA_TYPE_CHAR(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	mxArray *out = mxCreateNumericMatrix(1,1,mxINT64_CLASS,mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_t)HELICS_DATA_TYPE_CHAR;
+	*((int64_T*)mxGetData(_out)) = (int64_t)HELICS_DATA_TYPE_CHAR;
 	resv[0] = out;
 }
 
@@ -506,7 +506,7 @@ void _wrap_helicsDataBufferSize(int resc, mxArray *resv[], int argc, mxArray *ar
 	int32_t result = helicsDataBufferSize(data);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -523,7 +523,7 @@ void _wrap_helicsDataBufferCapacity(int resc, mxArray *resv[], int argc, mxArray
 	int32_t result = helicsDataBufferCapacity(data);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -537,7 +537,7 @@ void _wrap_helicsDataBufferCapacity(int resc, mxArray *resv[], int argc, mxArray
 void _wrap_helicsDataBufferData(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsDataBuffer data = (HelicsDataBuffer)(mxGetData(argv[0]));
 
-	void *reault = helicsDataBufferData(data);
+	void *result = helicsDataBufferData(data);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
 	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
@@ -559,7 +559,7 @@ void _wrap_helicsDataBufferReserve(int resc, mxArray *resv[], int argc, mxArray 
 	HelicsBool result = helicsDataBufferReserve(data, newCapacity);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -631,7 +631,7 @@ void _wrap_helicsStringToBytes(int resc, mxArray *resv[], int argc, const mxArra
 void _wrap_helicsBoolToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
 	HelicsBool value = (HelicsBool)(mxGetScalar(argv[0]));
 
-	 HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(HelicsBool);
+	 HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(HelicsBool));
 
 	int32_t result = helicsBoolToBytes(value, data);
 
@@ -655,7 +655,7 @@ void _wrap_helicsCharToBytes(int resc, mxArray *resv[], int argc, const mxArray 
 
 	 HelicsDataBuffer data = helicsCreateDataBuffer(valueLength);
 
-	int32_t result = helicsCharToBytes(value, data);
+	int32_t result = helicsCharToBytes(*value, data);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
 	*((uint64_T*)mxGetData(_out)) = (uint64_T)data;
@@ -687,7 +687,7 @@ void _wrap_helicsTimeToBytes(int resc, mxArray *resv[], int argc, const mxArray 
 void _wrap_helicsComplexToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
 	mxComplexDouble *value = xmGetComplexDoubles(argv[1]);
 
-	 HelicsDataBuffer data = helicsCreateDataBuffer(2*sizeof(double));
+	HelicsDataBuffer data = helicsCreateDataBuffer(2*sizeof(double));
 
 	int32_t result = helicsComplexToBytes(value->real, value->imag, data);
 
@@ -726,7 +726,7 @@ void _wrap_helicsDataBufferType(int resc, mxArray *resv[], int argc, mxArray *ar
 	int result = helicsDataBufferType(data);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -743,7 +743,7 @@ void _wrap_helicsDataBufferToInt(int resc, mxArray *resv[], int argc, mxArray *a
 	int64_t result = helicsDataBufferToInt(data);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -776,7 +776,7 @@ void _wrap_helicsDataBufferToBool(int resc, mxArray *resv[], int argc, mxArray *
 	HelicsBool result = helicsDataBufferToBool(data);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -907,7 +907,7 @@ void _wrap_helicsIsCoreTypeAvailable(int resc, mxArray *resv[], int argc, mxArra
 	HelicsBool result = helicsIsCoreTypeAvailable((char const *)type);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -1044,7 +1044,7 @@ void _wrap_helicsCoreIsValid(int resc, mxArray *resv[], int argc, mxArray *argv[
 	HelicsBool result = helicsCoreIsValid(core);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -1181,7 +1181,7 @@ void _wrap_helicsBrokerIsValid(int resc, mxArray *resv[], int argc, mxArray *arg
 	HelicsBool result = helicsBrokerIsValid(broker);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -1198,7 +1198,7 @@ void _wrap_helicsBrokerIsConnected(int resc, mxArray *resv[], int argc, mxArray 
 	HelicsBool result = helicsBrokerIsConnected(broker);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -1370,7 +1370,7 @@ void _wrap_helicsCoreWaitForDisconnect(int resc, mxArray *resv[], int argc, mxAr
 	HelicsBool result = helicsCoreWaitForDisconnect(core, msToWait, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -1397,7 +1397,7 @@ void _wrap_helicsBrokerWaitForDisconnect(int resc, mxArray *resv[], int argc, mx
 	HelicsBool result = helicsBrokerWaitForDisconnect(broker, msToWait, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -1420,7 +1420,7 @@ void _wrap_helicsCoreIsConnected(int resc, mxArray *resv[], int argc, mxArray *a
 	HelicsBool result = helicsCoreIsConnected(core);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -1676,7 +1676,7 @@ void _wrap_helicsCoreConnect(int resc, mxArray *resv[], int argc, mxArray *argv[
 	HelicsBool result = helicsCoreConnect(core, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -2168,7 +2168,7 @@ void _wrap_helicsFederateIsValid(int resc, mxArray *resv[], int argc, mxArray *a
 	HelicsBool result = helicsFederateIsValid(fed);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -2459,7 +2459,7 @@ void _wrap_helicsGetPropertyIndex(int resc, mxArray *resv[], int argc, mxArray *
 	int result = helicsGetPropertyIndex((char const *)val);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -2481,7 +2481,7 @@ void _wrap_helicsGetFlagIndex(int resc, mxArray *resv[], int argc, mxArray *argv
 	int result = helicsGetFlagIndex((char const *)val);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -2503,7 +2503,7 @@ void _wrap_helicsGetOptionIndex(int resc, mxArray *resv[], int argc, mxArray *ar
 	int result = helicsGetOptionIndex((char const *)val);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -2525,7 +2525,7 @@ void _wrap_helicsGetOptionValue(int resc, mxArray *resv[], int argc, mxArray *ar
 	int result = helicsGetOptionValue((char const *)val);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -2547,7 +2547,7 @@ void _wrap_helicsGetDataType(int resc, mxArray *resv[], int argc, mxArray *argv[
 	int result = helicsGetDataType((char const *)val);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -2992,7 +2992,7 @@ void _wrap_helicsFederateIsAsyncOperationCompleted(int resc, mxArray *resv[], in
 	HelicsBool result = helicsFederateIsAsyncOperationCompleted(fed, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -3105,7 +3105,7 @@ void _wrap_helicsFederateEnterExecutingModeIterative(int resc, mxArray *resv[], 
 	HelicsIterationResult result = helicsFederateEnterExecutingModeIterative(fed, iterate, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -3156,7 +3156,7 @@ void _wrap_helicsFederateEnterExecutingModeIterativeComplete(int resc, mxArray *
 	HelicsIterationResult result = helicsFederateEnterExecutingModeIterativeComplete(fed, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -3179,7 +3179,7 @@ void _wrap_helicsFederateGetState(int resc, mxArray *resv[], int argc, mxArray *
 	HelicsFederateState result = helicsFederateGetState(fed, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -3630,7 +3630,7 @@ void _wrap_helicsFederateGetFlagOption(int resc, mxArray *resv[], int argc, mxAr
 	HelicsBool result = helicsFederateGetFlagOption(fed, flag, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -3657,7 +3657,7 @@ void _wrap_helicsFederateGetIntegerProperty(int resc, mxArray *resv[], int argc,
 	int result = helicsFederateGetIntegerProperty(fed, intProperty, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -4631,7 +4631,7 @@ void _wrap_helicsQueryIsCompleted(int resc, mxArray *resv[], int argc, mxArray *
 	HelicsBool result = helicsQueryIsCompleted(query);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -5413,7 +5413,7 @@ void _wrap_helicsPublicationIsValid(int resc, mxArray *resv[], int argc, mxArray
 	HelicsBool result = helicsPublicationIsValid(pub);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -5765,7 +5765,7 @@ void _wrap_helicsInputIsValid(int resc, mxArray *resv[], int argc, mxArray *argv
 	HelicsBool result = helicsInputIsValid(ipt);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -5813,7 +5813,7 @@ void _wrap_helicsInputGetByteCount(int resc, mxArray *resv[], int argc, mxArray 
 	int result = helicsInputGetByteCount(ipt);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -5863,7 +5863,7 @@ void _wrap_helicsInputGetStringSize(int resc, mxArray *resv[], int argc, mxArray
 	int result = helicsInputGetStringSize(ipt);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -5915,7 +5915,7 @@ void _wrap_helicsInputGetInteger(int resc, mxArray *resv[], int argc, mxArray *a
 	int64_t result = helicsInputGetInteger(ipt, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -5938,7 +5938,7 @@ void _wrap_helicsInputGetBoolean(int resc, mxArray *resv[], int argc, mxArray *a
 	HelicsBool result = helicsInputGetBoolean(ipt, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -6075,7 +6075,7 @@ void _wrap_helicsInputGetVectorSize(int resc, mxArray *resv[], int argc, mxArray
 	int result = helicsInputGetVectorSize(ipt);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -6532,7 +6532,7 @@ void _wrap_helicsInputGetPublicationDataType(int resc, mxArray *resv[], int argc
 	int result = helicsInputGetPublicationDataType(ipt);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -6903,7 +6903,7 @@ void _wrap_helicsInputGetOption(int resc, mxArray *resv[], int argc, mxArray *ar
 	int result = helicsInputGetOption(inp, option);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -6954,7 +6954,7 @@ void _wrap_helicsPublicationGetOption(int resc, mxArray *resv[], int argc, mxArr
 	int result = helicsPublicationGetOption(pub, option);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -7055,7 +7055,7 @@ void _wrap_helicsInputIsUpdated(int resc, mxArray *resv[], int argc, mxArray *ar
 	HelicsBool result = helicsInputIsUpdated(ipt);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -7104,7 +7104,7 @@ void _wrap_helicsFederateGetPublicationCount(int resc, mxArray *resv[], int argc
 	int result = helicsFederateGetPublicationCount(fed);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -7121,7 +7121,7 @@ void _wrap_helicsFederateGetInputCount(int resc, mxArray *resv[], int argc, mxAr
 	int result = helicsFederateGetInputCount(fed);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -7361,7 +7361,7 @@ void _wrap_helicsEndpointIsValid(int resc, mxArray *resv[], int argc, mxArray *a
 	HelicsBool result = helicsEndpointIsValid(endpoint);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -7650,7 +7650,7 @@ void _wrap_helicsFederateHasMessage(int resc, mxArray *resv[], int argc, mxArray
 	HelicsBool result = helicsFederateHasMessage(fed);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -7667,7 +7667,7 @@ void _wrap_helicsEndpointHasMessage(int resc, mxArray *resv[], int argc, mxArray
 	HelicsBool result = helicsEndpointHasMessage(endpoint);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -7684,7 +7684,7 @@ void _wrap_helicsFederatePendingMessageCount(int resc, mxArray *resv[], int argc
 	int result = helicsFederatePendingMessageCount(fed);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -7701,7 +7701,7 @@ void _wrap_helicsEndpointPendingMessageCount(int resc, mxArray *resv[], int argc
 	int result = helicsEndpointPendingMessageCount(endpoint);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -7846,7 +7846,7 @@ void _wrap_helicsFederateGetEndpointCount(int resc, mxArray *resv[], int argc, m
 	int result = helicsFederateGetEndpointCount(fed);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -8007,7 +8007,7 @@ void _wrap_helicsEndpointGetOption(int resc, mxArray *resv[], int argc, mxArray 
 	int result = helicsEndpointGetOption(endpoint, option);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -8277,7 +8277,7 @@ void _wrap_helicsMessageGetMessageID(int resc, mxArray *resv[], int argc, mxArra
 	int result = helicsMessageGetMessageID(message);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -8296,7 +8296,7 @@ void _wrap_helicsMessageGetFlagOption(int resc, mxArray *resv[], int argc, mxArr
 	HelicsBool result = helicsMessageGetFlagOption(message, flag);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -8315,7 +8315,7 @@ void _wrap_helicsMessageGetByteCount(int resc, mxArray *resv[], int argc, mxArra
 	int result = helicsMessageGetByteCount(message);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -8362,7 +8362,7 @@ void _wrap_helicsMessageGetBytes(int resc, mxArray *resv[], int argc, const mxAr
 void _wrap_helicsMessageGetBytesPointer(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
 
-	void *reault = helicsMessageGetBytesPointer(message);
+	void *result = helicsMessageGetBytesPointer(message);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
 	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
@@ -8382,7 +8382,7 @@ void _wrap_helicsMessageIsValid(int resc, mxArray *resv[], int argc, mxArray *ar
 	HelicsBool result = helicsMessageIsValid(message);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -9052,7 +9052,7 @@ void _wrap_helicsFederateGetFilterCount(int resc, mxArray *resv[], int argc, mxA
 	int result = helicsFederateGetFilterCount(fed);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -9128,7 +9128,7 @@ void _wrap_helicsFilterIsValid(int resc, mxArray *resv[], int argc, mxArray *arg
 	HelicsBool result = helicsFilterIsValid(filt);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -9535,7 +9535,7 @@ void _wrap_helicsFilterGetOption(int resc, mxArray *resv[], int argc, mxArray *a
 	int result = helicsFilterGetOption(filt, option);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -9662,7 +9662,7 @@ void _wrap_helicsFederateGetTranslatorCount(int resc, mxArray *resv[], int argc,
 	int result = helicsFederateGetTranslatorCount(fed);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -9738,7 +9738,7 @@ void _wrap_helicsTranslatorIsValid(int resc, mxArray *resv[], int argc, mxArray 
 	HelicsBool result = helicsTranslatorIsValid(trans);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -10145,7 +10145,7 @@ void _wrap_helicsTranslatorGetOption(int resc, mxArray *resv[], int argc, mxArra
 	int result = helicsTranslatorGetOption(trans, option);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
+	*((int64_T*)mxGetData(_out)) = (int64_T)result;
 
 	if(_out){
 		--resc;
@@ -10163,7 +10163,7 @@ void matlabBrokerLoggingCallback(int loglevel, const char* identifier, const cha
 	mxArray *rhs[4];
 	rhs[0] = const_cast<mxArray *>(userData);
 	rhs[1] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)loglevel;
+	*((int64_T*)mxGetData(rhs[1])) = (int64_T)loglevel;
 	rhs[2] = mxCreateString(identifier);
 	rhs[3] = mxCreateString(message);
 	int status = mexCallMATLAB(0,&lhs,4,rhs,"feval");
@@ -10198,7 +10198,7 @@ void matlabCoreLoggingCallback(int loglevel, const char* identifier, const char*
 	mxArray *rhs[4];
 	rhs[0] = const_cast<mxArray *>(userData);
 	rhs[1] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)loglevel;
+	*((int64_T*)mxGetData(rhs[1]) = (int64_T)loglevel;
 	rhs[2] = mxCreateString(identifier);
 	rhs[3] = mxCreateString(message);
 	int status = mexCallMATLAB(0,&lhs,4,rhs,"feval");
@@ -10233,7 +10233,7 @@ void matlabFederateLoggingCallback(int loglevel, const char* identifier, const c
 	mxArray *rhs[4];
 	rhs[0] = const_cast<mxArray *>(userData);
 	rhs[1] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)loglevel;
+	*((int64_T*)mxGetData(rhs[1])) = (int64_T)loglevel;
 	rhs[2] = mxCreateString(identifier);
 	rhs[3] = mxCreateString(message);
 	int status = mexCallMATLAB(0,&lhs,4,rhs,"feval");
@@ -10503,7 +10503,7 @@ void _wrap_helicsQueryBufferFill(int resc, mxArray *resv[], int argc, const mxAr
 
 
 void mexFunction(int resc, mxArray *resv[], int argc, const mxArray *argv[]) {
-	if(--argc < 0 || !mxIsString(*argv)){
+	if(--argc < 0 || !mxIsChar(*argv)){
 		mexErrMsgTxt("This mex file should only be called from inside the .m files. First input should be the function ID.");
 	}
 	int functionId;

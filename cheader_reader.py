@@ -1712,7 +1712,7 @@ class HelicsHeaderParser (object):
                     macroFile.write("end\n")
                 macroWrapperStr += f"void _wrap_{macroSpelling}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
                 macroWrapperStr += "\tmxArray *out = mxCreateNumericMatrix(1,1,mxINT64_CLASS,mxREAL);\n"
-                macroWrapperStr += f"\t*((int64_T*)mxGetData(out)) = (int64_t){macroSpelling};\n"
+                macroWrapperStr += f"\t*((int64_T*)mxGetData(_out)) = (int64_t){macroSpelling};\n"
                 macroWrapperStr += "\tresv[0] = out;\n"
                 macroWrapperStr += "}\n\n"
                 macroMainFunctionElementStr += f"\tcase {cursorIdx}:\n"
@@ -1933,7 +1933,7 @@ class HelicsHeaderParser (object):
                 "Char_S_*": "\tchar *result",
                 "Double": "\tdouble result",
                 "Int": "\tint result",
-                "Void_*": "\tvoid *reault",
+                "Void_*": "\tvoid *result",
                 "HelicsBool": "\tHelicsBool result",
                 "HelicsBroker": "\tHelicsBroker result",
                 "HelicsCore": "\tHelicsCore result",
@@ -2201,7 +2201,7 @@ class HelicsHeaderParser (object):
         
         def returnIntTomxArray() -> str:
             retStr = "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);\n"
-            retStr += "\t*((int64_T*)mxGetData(out)) = (int64_T)result;\n\n"
+            retStr += "\t*((int64_T*)mxGetData(_out)) = (int64_T)result;\n\n"
             return retStr
         
         
@@ -3669,7 +3669,7 @@ class HelicsHeaderParser (object):
             functionWrapper += "\tmxArray *rhs[4];\n"
             functionWrapper += "\trhs[0] = const_cast<mxArray *>(userData);\n"
             functionWrapper += "\trhs[1] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((int64_T*)mxGetData(out)) = (int64_T)loglevel;\n"
+            functionWrapper += "\t*((int64_T*)mxGetData(rhs[1])) = (int64_T)loglevel;\n"
             functionWrapper += "\trhs[2] = mxCreateString(identifier);\n"
             functionWrapper += "\trhs[3] = mxCreateString(message);\n"
             functionWrapper += '\tint status = mexCallMATLAB(0,&lhs,4,rhs,"feval");\n'
@@ -3725,7 +3725,7 @@ class HelicsHeaderParser (object):
             functionWrapper += "\tmxArray *rhs[4];\n"
             functionWrapper += "\trhs[0] = const_cast<mxArray *>(userData);\n"
             functionWrapper += "\trhs[1] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((int64_T*)mxGetData(out)) = (int64_T)loglevel;\n"
+            functionWrapper += "\t*((int64_T*)mxGetData(rhs[1]) = (int64_T)loglevel;\n"
             functionWrapper += "\trhs[2] = mxCreateString(identifier);\n"
             functionWrapper += "\trhs[3] = mxCreateString(message);\n"
             functionWrapper += '\tint status = mexCallMATLAB(0,&lhs,4,rhs,"feval");\n'
@@ -3781,7 +3781,7 @@ class HelicsHeaderParser (object):
             functionWrapper += "\tmxArray *rhs[4];\n"
             functionWrapper += "\trhs[0] = const_cast<mxArray *>(userData);\n"
             functionWrapper += "\trhs[1] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((int64_T*)mxGetData(out)) = (int64_T)loglevel;\n"
+            functionWrapper += "\t*((int64_T*)mxGetData(rhs[1])) = (int64_T)loglevel;\n"
             functionWrapper += "\trhs[2] = mxCreateString(identifier);\n"
             functionWrapper += "\trhs[3] = mxCreateString(message);\n"
             functionWrapper += '\tint status = mexCallMATLAB(0,&lhs,4,rhs,"feval");\n'
@@ -4266,7 +4266,7 @@ class HelicsHeaderParser (object):
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsBool('value',0)
-            functionWrapper += "\t HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(HelicsBool);\n\n"
+            functionWrapper += "\t HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(HelicsBool));\n\n"
             functionWrapper += f"\tint32_t result = {functionName}(value, data);\n\n"
             functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
             functionWrapper += "\t*((uint64_T*)mxGetData(_out)) = (uint64_T)data;\n\n"
@@ -4301,7 +4301,7 @@ class HelicsHeaderParser (object):
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgChar('value',0)
             functionWrapper += "\t HelicsDataBuffer data = helicsCreateDataBuffer(valueLength);\n\n"
-            functionWrapper += f"\tint32_t result = {functionName}(value, data);\n\n"
+            functionWrapper += f"\tint32_t result = {functionName}(*value, data);\n\n"
             functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
             functionWrapper += "\t*((uint64_T*)mxGetData(_out)) = (uint64_T)data;\n\n"
             functionWrapper += "\tif(_out){\n"
@@ -4371,7 +4371,7 @@ class HelicsHeaderParser (object):
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += "\tmxComplexDouble *value = xmGetComplexDoubles(argv[1]);\n\n"
-            functionWrapper += "\t HelicsDataBuffer data = helicsCreateDataBuffer(2*sizeof(double));\n\n"
+            functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(2*sizeof(double));\n\n"
             functionWrapper += f"\tint32_t result = {functionName}(value->real, value->imag, data);\n\n"
             functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
             functionWrapper += "\t*((uint64_T*)mxGetData(_out)) = (uint64_T)data;\n\n"
@@ -4425,7 +4425,7 @@ class HelicsHeaderParser (object):
         
         def createMexMain() -> str:
             mexMainStr = "void mexFunction(int resc, mxArray *resv[], int argc, const mxArray *argv[]) {\n"
-            mexMainStr += "\tif(--argc < 0 || !mxIsString(*argv)){\n"
+            mexMainStr += "\tif(--argc < 0 || !mxIsChar(*argv)){\n"
             mexMainStr += "\t\tmexErrMsgTxt(\"This mex file should only be called from inside the .m files. First input should be the function ID.\");\n"
             mexMainStr += "\t}\n"
             mexMainStr += "\tint functionId;\n"
