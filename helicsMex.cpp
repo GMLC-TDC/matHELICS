@@ -436,6 +436,10063 @@ static const std::unordered_map<std::string,int> wrapperFunctionMap{
 	{"helicsQueryBufferFill",450}
 };
 
+void _wrap_HELICS_DATA_TYPE_CHAR(int resc, mxArray *resv[], int argc, mxArray *argv[]){
+	mxArray *out = mxCreateNumericMatrix(1,1,mxINT64_CLASS,mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_t)HELICS_DATA_TYPE_CHAR;
+	resv[0] = out;
+}
+
+void _wrap_helicsCreateDataBuffer(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	int32_t initialCapacity = *((int32_t *)mxGetData(argv[0]));
+
+	HelicsDataBuffer result = helicsCreateDataBuffer(initialCapacity);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsWrapDataInBuffer(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	void *data = mxGetData(argv[0]);
+
+	int dataSize = (int)(mxGetScalar(argv[1]));
+
+	int dataCapacity = (int)(mxGetScalar(argv[2]));
+
+	HelicsDataBuffer result = helicsWrapDataInBuffer(data, dataSize, dataCapacity);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+
+}
+
+
+void _wrap_helicsDataBufferFree(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsDataBuffer data = (HelicsDataBuffer)(mxGetData(argv[0]));
+
+	helicsDataBufferFree(data);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsDataBufferSize(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsDataBuffer data = (HelicsDataBuffer)(mxGetData(argv[0]));
+
+	int32_t result = helicsDataBufferSize(data);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsDataBufferCapacity(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsDataBuffer data = (HelicsDataBuffer)(mxGetData(argv[0]));
+
+	int32_t result = helicsDataBufferCapacity(data);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsDataBufferData(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsDataBuffer data = (HelicsDataBuffer)(mxGetData(argv[0]));
+
+	void *reault = helicsDataBufferData(data);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsDataBufferReserve(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsDataBuffer data = (HelicsDataBuffer)(mxGetData(argv[0]));
+
+	int32_t newCapacity = *((int32_t *)mxGetData(argv[1]));
+
+	HelicsBool result = helicsDataBufferReserve(data, newCapacity);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+}
+
+
+void _wrap_helicsIntToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	int64_t value = *((int64_t *)mxGetData(argv[0]));
+
+	 HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(int));
+
+	int32_t result = helicsIntToBytes(value, data);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)data;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+}
+
+
+void _wrap_helicsDoubleToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	double value = mxGetScalar(argv[0]);
+
+	 HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(double));
+
+	int32_t result = helicsDoubleToBytes(value, data);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)data;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+}
+
+
+void _wrap_helicsStringToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	char *str;
+	size_t strLength;
+	int strStatus;
+	strLength = mxGetN(argv[0]) + 1;
+	str = (char *)mxMalloc(strLength);
+	strStatus = mxGetString(argv[0], str, strLength);
+
+	 HelicsDataBuffer data = helicsCreateDataBuffer(strLength);
+
+	int32_t result = helicsStringToBytes(str, data);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)data;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+}
+
+
+void _wrap_helicsBoolToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsBool value = (HelicsBool)(mxGetScalar(argv[0]));
+
+	 HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(HelicsBool);
+
+	int32_t result = helicsBoolToBytes(value, data);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)data;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+}
+
+
+void _wrap_helicsCharToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	char *value;
+	size_t valueLength;
+	int valueStatus;
+	valueLength = mxGetN(argv[0]) + 1;
+	value = (char *)mxMalloc(valueLength);
+	valueStatus = mxGetString(argv[0], value, valueLength);
+
+	 HelicsDataBuffer data = helicsCreateDataBuffer(valueLength);
+
+	int32_t result = helicsCharToBytes(value, data);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)data;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+}
+
+
+void _wrap_helicsTimeToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsTime value = (HelicsTime)(mxGetScalar(argv[0]));
+
+	 HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(HelicsTime));
+
+	int32_t result = helicsTimeToBytes(value, data);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)data;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+}
+
+
+void _wrap_helicsComplexToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	mxComplexDouble *value = xmGetComplexDoubles(argv[1]);
+
+	 HelicsDataBuffer data = helicsCreateDataBuffer(2*sizeof(double));
+
+	int32_t result = helicsComplexToBytes(value->real, value->imag, data);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)data;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+}
+
+
+void _wrap_helicsVectorToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	int dataSize =  (int)mxGetNumberOfElements(argv[0]);
+
+	double *value =  (double *)mxGetDoubles(argv[0]);
+
+	 HelicsDataBuffer data = helicsCreateDataBuffer(dataSize*sizeof(double));
+
+	int32_t result = helicsVectorToBytes((const double *)value, dataSize, data);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)data;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+}
+
+
+void _wrap_helicsDataBufferType(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsDataBuffer data = (HelicsDataBuffer)(mxGetData(argv[0]));
+
+	int result = helicsDataBufferType(data);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsDataBufferToInt(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsDataBuffer data = (HelicsDataBuffer)(mxGetData(argv[0]));
+
+	int64_t result = helicsDataBufferToInt(data);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsDataBufferToDouble(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsDataBuffer data = (HelicsDataBuffer)(mxGetData(argv[0]));
+
+	double result = helicsDataBufferToDouble(data);
+
+	mxArray *_out = mxCreateDoubleScalar(result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsDataBufferToBool(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsDataBuffer data = (HelicsDataBuffer)(mxGetData(argv[0]));
+
+	HelicsBool result = helicsDataBufferToBool(data);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsGetVersion(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	char *result = helicsGetVersion();
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+}
+
+
+void _wrap_helicsGetBuildFlags(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	char *result = helicsGetBuildFlags();
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+}
+
+
+void _wrap_helicsGetCompilerVersion(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	char *result = helicsGetCompilerVersion();
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+}
+
+
+void _wrap_helicsGetSystemInfo(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	char *result = helicsGetSystemInfo();
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+}
+
+
+void _wrap_helicsLoadSignalHandler(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	helicsLoadSignalHandler();
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+}
+
+
+void _wrap_helicsLoadThreadedSignalHandler(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	helicsLoadThreadedSignalHandler();
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+}
+
+
+void _wrap_helicsClearSignalHandler(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	helicsClearSignalHandler();
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+}
+
+
+void _wrap_helicsAbort(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	int errorCode = (int)(mxGetScalar(argv[0]));
+
+	char *errorString;
+	size_t errorStringLength;
+	int errorStringStatus;
+	errorStringLength = mxGetN(argv[1]) + 1;
+	errorString = (char *)mxMalloc(errorStringLength);
+	errorStringStatus = mxGetString(argv[1], errorString, errorStringLength);
+
+	helicsAbort(errorCode, (char const *)errorString);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(errorString);
+}
+
+
+void _wrap_helicsIsCoreTypeAvailable(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	char *type;
+	size_t typeLength;
+	int typeStatus;
+	typeLength = mxGetN(argv[0]) + 1;
+	type = (char *)mxMalloc(typeLength);
+	typeStatus = mxGetString(argv[0], type, typeLength);
+
+	HelicsBool result = helicsIsCoreTypeAvailable((char const *)type);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	mxFree(type);
+}
+
+
+void _wrap_helicsCreateCore(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	char *type;
+	size_t typeLength;
+	int typeStatus;
+	typeLength = mxGetN(argv[0]) + 1;
+	type = (char *)mxMalloc(typeLength);
+	typeStatus = mxGetString(argv[0], type, typeLength);
+
+	char *name;
+	size_t nameLength;
+	int nameStatus;
+	nameLength = mxGetN(argv[1]) + 1;
+	name = (char *)mxMalloc(nameLength);
+	nameStatus = mxGetString(argv[1], name, nameLength);
+
+	char *initString;
+	size_t initStringLength;
+	int initStringStatus;
+	initStringLength = mxGetN(argv[2]) + 1;
+	initString = (char *)mxMalloc(initStringLength);
+	initStringStatus = mxGetString(argv[2], initString, initStringLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsCore result = helicsCreateCore((char const *)type, (char const *)name, (char const *)initString, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	mxFree(type);
+
+	mxFree(name);
+
+	mxFree(initString);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsCreateCoreFromArgs(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	char *type;
+	size_t typeLength;
+	int typeStatus;
+	typeLength = mxGetN(argv[0]) + 1;
+	type = (char *)mxMalloc(typeLength);
+	typeStatus = mxGetString(argv[0], type, typeLength);
+
+	char *name;
+	size_t nameLength;
+	int nameStatus;
+	nameLength = mxGetN(argv[1]) + 1;
+	name = (char *)mxMalloc(nameLength);
+	nameStatus = mxGetString(argv[1], name, nameLength);
+
+	int arg3 = 0;
+	char **arg4 = (char **)0;
+	int ii;
+	arg3 = static_cast<int>(mxGetNumberOfElements(argv[2]));
+	arg4 = (char **)mxMalloc((arg3)*sizeof(char *));
+	for (ii=0;ii<arg3;ii++){
+		mxArray *cellElement=mxGetCell(argv[2], ii);
+		int len = mxGetN(cellElement) + 1;
+		arg4[ii] = (char *)mxMalloc(len);
+		int flag = mxGetString(cellElement, arg4[ii], len);
+	}
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsCore result = helicsCreateCoreFromArgs(type, name, arg3, arg4, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	mxFree(type);
+
+	mxFree(name);
+
+	mxFree(arg4);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsCoreClone(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsCore result = helicsCoreClone(core, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsCoreIsValid(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
+
+	HelicsBool result = helicsCoreIsValid(core);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsCreateBroker(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	char *type;
+	size_t typeLength;
+	int typeStatus;
+	typeLength = mxGetN(argv[0]) + 1;
+	type = (char *)mxMalloc(typeLength);
+	typeStatus = mxGetString(argv[0], type, typeLength);
+
+	char *name;
+	size_t nameLength;
+	int nameStatus;
+	nameLength = mxGetN(argv[1]) + 1;
+	name = (char *)mxMalloc(nameLength);
+	nameStatus = mxGetString(argv[1], name, nameLength);
+
+	char *initString;
+	size_t initStringLength;
+	int initStringStatus;
+	initStringLength = mxGetN(argv[2]) + 1;
+	initString = (char *)mxMalloc(initStringLength);
+	initStringStatus = mxGetString(argv[2], initString, initStringLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsBroker result = helicsCreateBroker((char const *)type, (char const *)name, (char const *)initString, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	mxFree(type);
+
+	mxFree(name);
+
+	mxFree(initString);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsCreateBrokerFromArgs(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	char *type;
+	size_t typeLength;
+	int typeStatus;
+	typeLength = mxGetN(argv[0]) + 1;
+	type = (char *)mxMalloc(typeLength);
+	typeStatus = mxGetString(argv[0], type, typeLength);
+
+	char *name;
+	size_t nameLength;
+	int nameStatus;
+	nameLength = mxGetN(argv[1]) + 1;
+	name = (char *)mxMalloc(nameLength);
+	nameStatus = mxGetString(argv[1], name, nameLength);
+
+	int arg3 = 0;
+	char **arg4 = (char **)0;
+	int ii;
+	arg2 = static_cast<int>(mxGetNumberOfElements(argv[2]));
+	arg3 = (char **)mxMalloc((arg2)*sizeof(char *));
+	for (ii=0;ii<arg3;ii++){
+		mxArray *cellElement=mxGetCell(argv[2], ii);
+		int len = mxGetN(cellElement) + 1;
+		arg4[ii] = (char *)mxMalloc(len);
+		int flag = mxGetString(cellElement, arg4[ii], len);
+	}
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsBroker result = helicsCreateBrokerFromArgs(type, name, arg3, arg4, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	mxFree(type);
+
+	mxFree(name);
+
+	mxFree(arg4);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsBrokerClone(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsBroker result = helicsBrokerClone(broker, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsBrokerIsValid(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
+
+	HelicsBool result = helicsBrokerIsValid(broker);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsBrokerIsConnected(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
+
+	HelicsBool result = helicsBrokerIsConnected(broker);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsBrokerDataLink(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
+
+	char *source;
+	size_t sourceLength;
+	int sourceStatus;
+	sourceLength = mxGetN(argv[1]) + 1;
+	source = (char *)mxMalloc(sourceLength);
+	sourceStatus = mxGetString(argv[1], source, sourceLength);
+
+	char *target;
+	size_t targetLength;
+	int targetStatus;
+	targetLength = mxGetN(argv[2]) + 1;
+	target = (char *)mxMalloc(targetLength);
+	targetStatus = mxGetString(argv[2], target, targetLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsBrokerDataLink(broker, (char const *)source, (char const *)target, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(source);
+
+	mxFree(target);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsBrokerAddSourceFilterToEndpoint(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
+
+	char *filter;
+	size_t filterLength;
+	int filterStatus;
+	filterLength = mxGetN(argv[1]) + 1;
+	filter = (char *)mxMalloc(filterLength);
+	filterStatus = mxGetString(argv[1], filter, filterLength);
+
+	char *endpoint;
+	size_t endpointLength;
+	int endpointStatus;
+	endpointLength = mxGetN(argv[2]) + 1;
+	endpoint = (char *)mxMalloc(endpointLength);
+	endpointStatus = mxGetString(argv[2], endpoint, endpointLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsBrokerAddSourceFilterToEndpoint(broker, (char const *)filter, (char const *)endpoint, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(filter);
+
+	mxFree(endpoint);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsBrokerAddDestinationFilterToEndpoint(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
+
+	char *filter;
+	size_t filterLength;
+	int filterStatus;
+	filterLength = mxGetN(argv[1]) + 1;
+	filter = (char *)mxMalloc(filterLength);
+	filterStatus = mxGetString(argv[1], filter, filterLength);
+
+	char *endpoint;
+	size_t endpointLength;
+	int endpointStatus;
+	endpointLength = mxGetN(argv[2]) + 1;
+	endpoint = (char *)mxMalloc(endpointLength);
+	endpointStatus = mxGetString(argv[2], endpoint, endpointLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsBrokerAddDestinationFilterToEndpoint(broker, (char const *)filter, (char const *)endpoint, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(filter);
+
+	mxFree(endpoint);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsBrokerMakeConnections(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
+
+	char *file;
+	size_t fileLength;
+	int fileStatus;
+	fileLength = mxGetN(argv[1]) + 1;
+	file = (char *)mxMalloc(fileLength);
+	fileStatus = mxGetString(argv[1], file, fileLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsBrokerMakeConnections(broker, (char const *)file, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(file);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsCoreWaitForDisconnect(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
+
+	int msToWait = (int)(mxGetScalar(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsBool result = helicsCoreWaitForDisconnect(core, msToWait, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsBrokerWaitForDisconnect(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
+
+	int msToWait = (int)(mxGetScalar(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsBool result = helicsBrokerWaitForDisconnect(broker, msToWait, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsCoreIsConnected(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
+
+	HelicsBool result = helicsCoreIsConnected(core);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsCoreDataLink(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
+
+	char *source;
+	size_t sourceLength;
+	int sourceStatus;
+	sourceLength = mxGetN(argv[1]) + 1;
+	source = (char *)mxMalloc(sourceLength);
+	sourceStatus = mxGetString(argv[1], source, sourceLength);
+
+	char *target;
+	size_t targetLength;
+	int targetStatus;
+	targetLength = mxGetN(argv[2]) + 1;
+	target = (char *)mxMalloc(targetLength);
+	targetStatus = mxGetString(argv[2], target, targetLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsCoreDataLink(core, (char const *)source, (char const *)target, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(source);
+
+	mxFree(target);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsCoreAddSourceFilterToEndpoint(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
+
+	char *filter;
+	size_t filterLength;
+	int filterStatus;
+	filterLength = mxGetN(argv[1]) + 1;
+	filter = (char *)mxMalloc(filterLength);
+	filterStatus = mxGetString(argv[1], filter, filterLength);
+
+	char *endpoint;
+	size_t endpointLength;
+	int endpointStatus;
+	endpointLength = mxGetN(argv[2]) + 1;
+	endpoint = (char *)mxMalloc(endpointLength);
+	endpointStatus = mxGetString(argv[2], endpoint, endpointLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsCoreAddSourceFilterToEndpoint(core, (char const *)filter, (char const *)endpoint, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(filter);
+
+	mxFree(endpoint);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsCoreAddDestinationFilterToEndpoint(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
+
+	char *filter;
+	size_t filterLength;
+	int filterStatus;
+	filterLength = mxGetN(argv[1]) + 1;
+	filter = (char *)mxMalloc(filterLength);
+	filterStatus = mxGetString(argv[1], filter, filterLength);
+
+	char *endpoint;
+	size_t endpointLength;
+	int endpointStatus;
+	endpointLength = mxGetN(argv[2]) + 1;
+	endpoint = (char *)mxMalloc(endpointLength);
+	endpointStatus = mxGetString(argv[2], endpoint, endpointLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsCoreAddDestinationFilterToEndpoint(core, (char const *)filter, (char const *)endpoint, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(filter);
+
+	mxFree(endpoint);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsCoreMakeConnections(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
+
+	char *file;
+	size_t fileLength;
+	int fileStatus;
+	fileLength = mxGetN(argv[1]) + 1;
+	file = (char *)mxMalloc(fileLength);
+	fileStatus = mxGetString(argv[1], file, fileLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsCoreMakeConnections(core, (char const *)file, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(file);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsBrokerGetIdentifier(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
+
+	char *result = helicsBrokerGetIdentifier(broker);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsCoreGetIdentifier(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
+
+	char *result = helicsCoreGetIdentifier(core);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsBrokerGetAddress(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
+
+	char *result = helicsBrokerGetAddress(broker);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsCoreGetAddress(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
+
+	char *result = helicsCoreGetAddress(core);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsCoreSetReadyToInit(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsCoreSetReadyToInit(core, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsCoreConnect(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsBool result = helicsCoreConnect(core, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsCoreDisconnect(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsCoreDisconnect(core, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsGetFederateByName(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	char *fedName;
+	size_t fedNameLength;
+	int fedNameStatus;
+	fedNameLength = mxGetN(argv[0]) + 1;
+	fedName = (char *)mxMalloc(fedNameLength);
+	fedNameStatus = mxGetString(argv[0], fedName, fedNameLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsFederate result = helicsGetFederateByName((char const *)fedName, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	mxFree(fedName);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsBrokerDisconnect(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsBrokerDisconnect(broker, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateDestroy(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	helicsFederateDestroy(fed);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsBrokerDestroy(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
+
+	helicsBrokerDestroy(broker);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsCoreDestroy(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
+
+	helicsCoreDestroy(core);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsCoreFree(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
+
+	helicsCoreFree(core);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsBrokerFree(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
+
+	helicsBrokerFree(broker);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsCreateValueFederate(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	char *fedName;
+	size_t fedNameLength;
+	int fedNameStatus;
+	fedNameLength = mxGetN(argv[0]) + 1;
+	fedName = (char *)mxMalloc(fedNameLength);
+	fedNameStatus = mxGetString(argv[0], fedName, fedNameLength);
+
+	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsFederate result = helicsCreateValueFederate((char const *)fedName, fi, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	mxFree(fedName);
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsCreateValueFederateFromConfig(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	char *configFile;
+	size_t configFileLength;
+	int configFileStatus;
+	configFileLength = mxGetN(argv[0]) + 1;
+	configFile = (char *)mxMalloc(configFileLength);
+	configFileStatus = mxGetString(argv[0], configFile, configFileLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsFederate result = helicsCreateValueFederateFromConfig((char const *)configFile, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	mxFree(configFile);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsCreateMessageFederate(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	char *fedName;
+	size_t fedNameLength;
+	int fedNameStatus;
+	fedNameLength = mxGetN(argv[0]) + 1;
+	fedName = (char *)mxMalloc(fedNameLength);
+	fedNameStatus = mxGetString(argv[0], fedName, fedNameLength);
+
+	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsFederate result = helicsCreateMessageFederate((char const *)fedName, fi, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	mxFree(fedName);
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsCreateMessageFederateFromConfig(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	char *configFile;
+	size_t configFileLength;
+	int configFileStatus;
+	configFileLength = mxGetN(argv[0]) + 1;
+	configFile = (char *)mxMalloc(configFileLength);
+	configFileStatus = mxGetString(argv[0], configFile, configFileLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsFederate result = helicsCreateMessageFederateFromConfig((char const *)configFile, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	mxFree(configFile);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsCreateCombinationFederate(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	char *fedName;
+	size_t fedNameLength;
+	int fedNameStatus;
+	fedNameLength = mxGetN(argv[0]) + 1;
+	fedName = (char *)mxMalloc(fedNameLength);
+	fedNameStatus = mxGetString(argv[0], fedName, fedNameLength);
+
+	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsFederate result = helicsCreateCombinationFederate((char const *)fedName, fi, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	mxFree(fedName);
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsCreateCombinationFederateFromConfig(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	char *configFile;
+	size_t configFileLength;
+	int configFileStatus;
+	configFileLength = mxGetN(argv[0]) + 1;
+	configFile = (char *)mxMalloc(configFileLength);
+	configFileStatus = mxGetString(argv[0], configFile, configFileLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsFederate result = helicsCreateCombinationFederateFromConfig((char const *)configFile, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	mxFree(configFile);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateClone(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsFederate result = helicsFederateClone(fed, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsCreateFederateInfo(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederateInfo result = helicsCreateFederateInfo();
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+}
+
+
+void _wrap_helicsFederateInfoClone(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsFederateInfo result = helicsFederateInfoClone(fi, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateInfoLoadFromArgs(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
+
+	int arg2 = 0;
+	char **arg3 = (char **)0;
+	int ii;
+	arg2 = static_cast<int>(mxGetNumberOfElements(argv[1]));
+	arg3 = (char **)mxMalloc((arg2)*sizeof(char *));
+	for (ii=0;ii<arg2;ii++){
+		mxArray *cellElement=mxGetCell(argv[1], ii);
+		int len = mxGetN(cellElement) + 1;
+		arg3[ii] = (char *)mxMalloc(len);
+		int flag = mxGetString(cellElement, arg3[ii], len);
+	}
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateInfoLoadFromArgs(fi, arg2, arg3, &err);
+
+	mxArray *_out = (mxArray *)0;
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	mxFree(arg3);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateInfoLoadFromString(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
+
+	char *args;
+	size_t argsLength;
+	int argsStatus;
+	argsLength = mxGetN(argv[1]) + 1;
+	args = (char *)mxMalloc(argsLength);
+	argsStatus = mxGetString(argv[1], args, argsLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateInfoLoadFromString(fi, (char const *)args, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(args);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateInfoFree(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
+
+	helicsFederateInfoFree(fi);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsFederateIsValid(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsBool result = helicsFederateIsValid(fed);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsFederateInfoSetCoreName(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
+
+	char *corename;
+	size_t corenameLength;
+	int corenameStatus;
+	corenameLength = mxGetN(argv[1]) + 1;
+	corename = (char *)mxMalloc(corenameLength);
+	corenameStatus = mxGetString(argv[1], corename, corenameLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateInfoSetCoreName(fi, (char const *)corename, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(corename);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateInfoSetCoreInitString(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
+
+	char *coreInit;
+	size_t coreInitLength;
+	int coreInitStatus;
+	coreInitLength = mxGetN(argv[1]) + 1;
+	coreInit = (char *)mxMalloc(coreInitLength);
+	coreInitStatus = mxGetString(argv[1], coreInit, coreInitLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateInfoSetCoreInitString(fi, (char const *)coreInit, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(coreInit);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateInfoSetBrokerInitString(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
+
+	char *brokerInit;
+	size_t brokerInitLength;
+	int brokerInitStatus;
+	brokerInitLength = mxGetN(argv[1]) + 1;
+	brokerInit = (char *)mxMalloc(brokerInitLength);
+	brokerInitStatus = mxGetString(argv[1], brokerInit, brokerInitLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateInfoSetBrokerInitString(fi, (char const *)brokerInit, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(brokerInit);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateInfoSetCoreType(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
+
+	int coretype = (int)(mxGetScalar(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateInfoSetCoreType(fi, coretype, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateInfoSetCoreTypeFromString(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
+
+	char *coretype;
+	size_t coretypeLength;
+	int coretypeStatus;
+	coretypeLength = mxGetN(argv[1]) + 1;
+	coretype = (char *)mxMalloc(coretypeLength);
+	coretypeStatus = mxGetString(argv[1], coretype, coretypeLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateInfoSetCoreTypeFromString(fi, (char const *)coretype, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(coretype);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateInfoSetBroker(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
+
+	char *broker;
+	size_t brokerLength;
+	int brokerStatus;
+	brokerLength = mxGetN(argv[1]) + 1;
+	broker = (char *)mxMalloc(brokerLength);
+	brokerStatus = mxGetString(argv[1], broker, brokerLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateInfoSetBroker(fi, (char const *)broker, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(broker);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateInfoSetBrokerKey(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
+
+	char *brokerkey;
+	size_t brokerkeyLength;
+	int brokerkeyStatus;
+	brokerkeyLength = mxGetN(argv[1]) + 1;
+	brokerkey = (char *)mxMalloc(brokerkeyLength);
+	brokerkeyStatus = mxGetString(argv[1], brokerkey, brokerkeyLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateInfoSetBrokerKey(fi, (char const *)brokerkey, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(brokerkey);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateInfoSetBrokerPort(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
+
+	int brokerPort = (int)(mxGetScalar(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateInfoSetBrokerPort(fi, brokerPort, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateInfoSetLocalPort(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
+
+	char *localPort;
+	size_t localPortLength;
+	int localPortStatus;
+	localPortLength = mxGetN(argv[1]) + 1;
+	localPort = (char *)mxMalloc(localPortLength);
+	localPortStatus = mxGetString(argv[1], localPort, localPortLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateInfoSetLocalPort(fi, (char const *)localPort, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(localPort);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsGetPropertyIndex(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	char *val;
+	size_t valLength;
+	int valStatus;
+	valLength = mxGetN(argv[0]) + 1;
+	val = (char *)mxMalloc(valLength);
+	valStatus = mxGetString(argv[0], val, valLength);
+
+	int result = helicsGetPropertyIndex((char const *)val);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	mxFree(val);
+}
+
+
+void _wrap_helicsGetFlagIndex(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	char *val;
+	size_t valLength;
+	int valStatus;
+	valLength = mxGetN(argv[0]) + 1;
+	val = (char *)mxMalloc(valLength);
+	valStatus = mxGetString(argv[0], val, valLength);
+
+	int result = helicsGetFlagIndex((char const *)val);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	mxFree(val);
+}
+
+
+void _wrap_helicsGetOptionIndex(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	char *val;
+	size_t valLength;
+	int valStatus;
+	valLength = mxGetN(argv[0]) + 1;
+	val = (char *)mxMalloc(valLength);
+	valStatus = mxGetString(argv[0], val, valLength);
+
+	int result = helicsGetOptionIndex((char const *)val);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	mxFree(val);
+}
+
+
+void _wrap_helicsGetOptionValue(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	char *val;
+	size_t valLength;
+	int valStatus;
+	valLength = mxGetN(argv[0]) + 1;
+	val = (char *)mxMalloc(valLength);
+	valStatus = mxGetString(argv[0], val, valLength);
+
+	int result = helicsGetOptionValue((char const *)val);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	mxFree(val);
+}
+
+
+void _wrap_helicsGetDataType(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	char *val;
+	size_t valLength;
+	int valStatus;
+	valLength = mxGetN(argv[0]) + 1;
+	val = (char *)mxMalloc(valLength);
+	valStatus = mxGetString(argv[0], val, valLength);
+
+	int result = helicsGetDataType((char const *)val);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	mxFree(val);
+}
+
+
+void _wrap_helicsFederateInfoSetFlagOption(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
+
+	int flag = (int)(mxGetScalar(argv[1]));
+
+	HelicsBool value = (HelicsBool)(mxGetScalar(argv[2]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateInfoSetFlagOption(fi, flag, value, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateInfoSetSeparator(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
+
+	char *separator;
+	size_t separatorLength;
+	int separatorStatus;
+	separatorLength = mxGetN(argv[1]) + 1;
+	separator = (char *)mxMalloc(separatorLength);
+	separatorStatus = mxGetString(argv[1], separator, separatorLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateInfoSetSeparator(fi, separator[0], &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(separator);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateInfoSetTimeProperty(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
+
+	int timeProperty = (int)(mxGetScalar(argv[1]));
+
+	HelicsTime propertyValue = (HelicsTime)(mxGetScalar(argv[2]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateInfoSetTimeProperty(fi, timeProperty, propertyValue, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateInfoSetIntegerProperty(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
+
+	int intProperty = (int)(mxGetScalar(argv[1]));
+
+	int propertyValue = (int)(mxGetScalar(argv[2]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateInfoSetIntegerProperty(fi, intProperty, propertyValue, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateRegisterInterfaces(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *file;
+	size_t fileLength;
+	int fileStatus;
+	fileLength = mxGetN(argv[1]) + 1;
+	file = (char *)mxMalloc(fileLength);
+	fileStatus = mxGetString(argv[1], file, fileLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateRegisterInterfaces(fed, (char const *)file, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(file);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateGlobalError(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	int errorCode = (int)(mxGetScalar(argv[1]));
+
+	char *errorString;
+	size_t errorStringLength;
+	int errorStringStatus;
+	errorStringLength = mxGetN(argv[2]) + 1;
+	errorString = (char *)mxMalloc(errorStringLength);
+	errorStringStatus = mxGetString(argv[2], errorString, errorStringLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateGlobalError(fed, errorCode, (char const *)errorString, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	mxFree(errorString);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateLocalError(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	int errorCode = (int)(mxGetScalar(argv[1]));
+
+	char *errorString;
+	size_t errorStringLength;
+	int errorStringStatus;
+	errorStringLength = mxGetN(argv[2]) + 1;
+	errorString = (char *)mxMalloc(errorStringLength);
+	errorStringStatus = mxGetString(argv[2], errorString, errorStringLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateLocalError(fed, errorCode, (char const *)errorString, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	mxFree(errorString);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateFinalize(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateFinalize(fed, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateFinalizeAsync(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateFinalizeAsync(fed, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateFinalizeComplete(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateFinalizeComplete(fed, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateDisconnect(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateDisconnect(fed, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateDisconnectAsync(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateDisconnectAsync(fed, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateDisconnectComplete(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateDisconnectComplete(fed, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateFree(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	helicsFederateFree(fed);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsCloseLibrary(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	helicsCloseLibrary();
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+}
+
+
+void _wrap_helicsFederateEnterInitializingMode(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateEnterInitializingMode(fed, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateEnterInitializingModeAsync(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateEnterInitializingModeAsync(fed, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateIsAsyncOperationCompleted(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsBool result = helicsFederateIsAsyncOperationCompleted(fed, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateEnterInitializingModeComplete(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateEnterInitializingModeComplete(fed, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateEnterExecutingMode(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateEnterExecutingMode(fed, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateEnterExecutingModeAsync(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateEnterExecutingModeAsync(fed, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateEnterExecutingModeComplete(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateEnterExecutingModeComplete(fed, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateEnterExecutingModeIterative(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsIterationRequest iterate = (HelicsIterationRequest)(mxGetScalar(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsIterationResult result = helicsFederateEnterExecutingModeIterative(fed, iterate, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateEnterExecutingModeIterativeAsync(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsIterationRequest iterate = (HelicsIterationRequest)(mxGetScalar(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateEnterExecutingModeIterativeAsync(fed, iterate, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateEnterExecutingModeIterativeComplete(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsIterationResult result = helicsFederateEnterExecutingModeIterativeComplete(fed, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateGetState(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsFederateState result = helicsFederateGetState(fed, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateGetCore(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsCore result = helicsFederateGetCore(fed, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateRequestTime(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsTime requestTime = (HelicsTime)(mxGetScalar(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsTime result = helicsFederateRequestTime(fed, requestTime, &err);
+
+	mxArray *_out = mxCreateDoubleScalar(result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateRequestTimeAdvance(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsTime timeDelta = (HelicsTime)(mxGetScalar(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsTime result = helicsFederateRequestTimeAdvance(fed, timeDelta, &err);
+
+	mxArray *_out = mxCreateDoubleScalar(result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateRequestNextStep(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsTime result = helicsFederateRequestNextStep(fed, &err);
+
+	mxArray *_out = mxCreateDoubleScalar(result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateRequestTimeIterative(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsTime requestTime = (HelicsTime)(mxGetScalar(argv[1]));
+
+	HelicsIterationRequest iterate = (HelicsIterationRequest)(mxGetScalar(argv[2]));
+
+	HelicsIterationResult *outIteration = (HelicsIterationResult *)0;
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsTime result = helicsFederateRequestTimeIterative(fed, requestTime, iterate, outIteration, &err);
+
+	mxArray *_out = mxCreateDoubleScalar(result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	if(--resc>=0){
+		mxArray *_out1 = mxCreateNumericMatrix(1,1,mxINT64_CLASS,mxREAL);
+		*((int64_T*)mxGetData(_out1)) = (int64_T)outIteration;
+		*resv++ = _out1;
+	}
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateRequestTimeAsync(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsTime requestTime = (HelicsTime)(mxGetScalar(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateRequestTimeAsync(fed, requestTime, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateRequestTimeComplete(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsTime result = helicsFederateRequestTimeComplete(fed, &err);
+
+	mxArray *_out = mxCreateDoubleScalar(result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateRequestTimeIterativeAsync(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsTime requestTime = (HelicsTime)(mxGetScalar(argv[1]));
+
+	HelicsIterationRequest iterate = (HelicsIterationRequest)(mxGetScalar(argv[2]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateRequestTimeIterativeAsync(fed, requestTime, iterate, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateRequestTimeIterativeComplete(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsTime requestTime = (HelicsTime)(mxGetScalar(argv[1]));
+
+	HelicsIterationResult *outIteration = (HelicsIterationResult *)0;
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsTime result = helicsFederateRequestTimeIterativeComplete(fed, requestTime, outIteration, &err);
+
+	mxArray *_out = mxCreateDoubleScalar(result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	if(--resc>=0){
+		mxArray *_out1 = mxCreateNumericMatrix(1,1,mxINT64_CLASS,mxREAL);
+		*((int64_T*)mxGetData(_out1)) = (int64_T)outIteration;
+		*resv++ = _out1;
+	}
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateProcessCommunications(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsTime period = (HelicsTime)(mxGetScalar(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateProcessCommunications(fed, period, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateGetName(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *result = helicsFederateGetName(fed);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsFederateSetTimeProperty(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	int timeProperty = (int)(mxGetScalar(argv[1]));
+
+	HelicsTime time = (HelicsTime)(mxGetScalar(argv[2]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateSetTimeProperty(fed, timeProperty, time, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateSetFlagOption(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	int flag = (int)(mxGetScalar(argv[1]));
+
+	HelicsBool flagValue = (HelicsBool)(mxGetScalar(argv[2]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateSetFlagOption(fed, flag, flagValue, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateSetSeparator(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *separator;
+	size_t separatorLength;
+	int separatorStatus;
+	separatorLength = mxGetN(argv[1]) + 1;
+	separator = (char *)mxMalloc(separatorLength);
+	separatorStatus = mxGetString(argv[1], separator, separatorLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateSetSeparator(fed, separator[0], &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(separator);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateSetIntegerProperty(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	int intProperty = (int)(mxGetScalar(argv[1]));
+
+	int propertyVal = (int)(mxGetScalar(argv[2]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateSetIntegerProperty(fed, intProperty, propertyVal, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateGetTimeProperty(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	int timeProperty = (int)(mxGetScalar(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsTime result = helicsFederateGetTimeProperty(fed, timeProperty, &err);
+
+	mxArray *_out = mxCreateDoubleScalar(result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateGetFlagOption(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	int flag = (int)(mxGetScalar(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsBool result = helicsFederateGetFlagOption(fed, flag, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateGetIntegerProperty(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	int intProperty = (int)(mxGetScalar(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	int result = helicsFederateGetIntegerProperty(fed, intProperty, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateGetCurrentTime(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsTime result = helicsFederateGetCurrentTime(fed, &err);
+
+	mxArray *_out = mxCreateDoubleScalar(result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateSetGlobal(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *valueName;
+	size_t valueNameLength;
+	int valueNameStatus;
+	valueNameLength = mxGetN(argv[1]) + 1;
+	valueName = (char *)mxMalloc(valueNameLength);
+	valueNameStatus = mxGetString(argv[1], valueName, valueNameLength);
+
+	char *value;
+	size_t valueLength;
+	int valueStatus;
+	valueLength = mxGetN(argv[2]) + 1;
+	value = (char *)mxMalloc(valueLength);
+	valueStatus = mxGetString(argv[2], value, valueLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateSetGlobal(fed, (char const *)valueName, (char const *)value, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(valueName);
+
+	mxFree(value);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateSetTag(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *tagName;
+	size_t tagNameLength;
+	int tagNameStatus;
+	tagNameLength = mxGetN(argv[1]) + 1;
+	tagName = (char *)mxMalloc(tagNameLength);
+	tagNameStatus = mxGetString(argv[1], tagName, tagNameLength);
+
+	char *value;
+	size_t valueLength;
+	int valueStatus;
+	valueLength = mxGetN(argv[2]) + 1;
+	value = (char *)mxMalloc(valueLength);
+	valueStatus = mxGetString(argv[2], value, valueLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateSetTag(fed, (char const *)tagName, (char const *)value, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(tagName);
+
+	mxFree(value);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateGetTag(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *tagName;
+	size_t tagNameLength;
+	int tagNameStatus;
+	tagNameLength = mxGetN(argv[1]) + 1;
+	tagName = (char *)mxMalloc(tagNameLength);
+	tagNameStatus = mxGetString(argv[1], tagName, tagNameLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	char *result = helicsFederateGetTag(fed, (char const *)tagName, &err);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(tagName);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateAddDependency(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *fedName;
+	size_t fedNameLength;
+	int fedNameStatus;
+	fedNameLength = mxGetN(argv[1]) + 1;
+	fedName = (char *)mxMalloc(fedNameLength);
+	fedNameStatus = mxGetString(argv[1], fedName, fedNameLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateAddDependency(fed, (char const *)fedName, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(fedName);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateSetLogFile(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *logFile;
+	size_t logFileLength;
+	int logFileStatus;
+	logFileLength = mxGetN(argv[1]) + 1;
+	logFile = (char *)mxMalloc(logFileLength);
+	logFileStatus = mxGetString(argv[1], logFile, logFileLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateSetLogFile(fed, (char const *)logFile, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(logFile);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateLogErrorMessage(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *logmessage;
+	size_t logmessageLength;
+	int logmessageStatus;
+	logmessageLength = mxGetN(argv[1]) + 1;
+	logmessage = (char *)mxMalloc(logmessageLength);
+	logmessageStatus = mxGetString(argv[1], logmessage, logmessageLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateLogErrorMessage(fed, (char const *)logmessage, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(logmessage);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateLogWarningMessage(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *logmessage;
+	size_t logmessageLength;
+	int logmessageStatus;
+	logmessageLength = mxGetN(argv[1]) + 1;
+	logmessage = (char *)mxMalloc(logmessageLength);
+	logmessageStatus = mxGetString(argv[1], logmessage, logmessageLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateLogWarningMessage(fed, (char const *)logmessage, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(logmessage);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateLogInfoMessage(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *logmessage;
+	size_t logmessageLength;
+	int logmessageStatus;
+	logmessageLength = mxGetN(argv[1]) + 1;
+	logmessage = (char *)mxMalloc(logmessageLength);
+	logmessageStatus = mxGetString(argv[1], logmessage, logmessageLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateLogInfoMessage(fed, (char const *)logmessage, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(logmessage);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateLogDebugMessage(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *logmessage;
+	size_t logmessageLength;
+	int logmessageStatus;
+	logmessageLength = mxGetN(argv[1]) + 1;
+	logmessage = (char *)mxMalloc(logmessageLength);
+	logmessageStatus = mxGetString(argv[1], logmessage, logmessageLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateLogDebugMessage(fed, (char const *)logmessage, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(logmessage);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateLogLevelMessage(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	int loglevel = (int)(mxGetScalar(argv[1]));
+
+	char *logmessage;
+	size_t logmessageLength;
+	int logmessageStatus;
+	logmessageLength = mxGetN(argv[2]) + 1;
+	logmessage = (char *)mxMalloc(logmessageLength);
+	logmessageStatus = mxGetString(argv[2], logmessage, logmessageLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateLogLevelMessage(fed, loglevel, (char const *)logmessage, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	mxFree(logmessage);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateSendCommand(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *target;
+	size_t targetLength;
+	int targetStatus;
+	targetLength = mxGetN(argv[1]) + 1;
+	target = (char *)mxMalloc(targetLength);
+	targetStatus = mxGetString(argv[1], target, targetLength);
+
+	char *command;
+	size_t commandLength;
+	int commandStatus;
+	commandLength = mxGetN(argv[2]) + 1;
+	command = (char *)mxMalloc(commandLength);
+	commandStatus = mxGetString(argv[2], command, commandLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateSendCommand(fed, (char const *)target, (char const *)command, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(target);
+
+	mxFree(command);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateGetCommand(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	char *result = helicsFederateGetCommand(fed, &err);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateGetCommandSource(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	char *result = helicsFederateGetCommandSource(fed, &err);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateWaitCommand(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	char *result = helicsFederateWaitCommand(fed, &err);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsCoreSetGlobal(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
+
+	char *valueName;
+	size_t valueNameLength;
+	int valueNameStatus;
+	valueNameLength = mxGetN(argv[1]) + 1;
+	valueName = (char *)mxMalloc(valueNameLength);
+	valueNameStatus = mxGetString(argv[1], valueName, valueNameLength);
+
+	char *value;
+	size_t valueLength;
+	int valueStatus;
+	valueLength = mxGetN(argv[2]) + 1;
+	value = (char *)mxMalloc(valueLength);
+	valueStatus = mxGetString(argv[2], value, valueLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsCoreSetGlobal(core, (char const *)valueName, (char const *)value, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(valueName);
+
+	mxFree(value);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsBrokerSetGlobal(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
+
+	char *valueName;
+	size_t valueNameLength;
+	int valueNameStatus;
+	valueNameLength = mxGetN(argv[1]) + 1;
+	valueName = (char *)mxMalloc(valueNameLength);
+	valueNameStatus = mxGetString(argv[1], valueName, valueNameLength);
+
+	char *value;
+	size_t valueLength;
+	int valueStatus;
+	valueLength = mxGetN(argv[2]) + 1;
+	value = (char *)mxMalloc(valueLength);
+	valueStatus = mxGetString(argv[2], value, valueLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsBrokerSetGlobal(broker, (char const *)valueName, (char const *)value, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(valueName);
+
+	mxFree(value);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsCoreSendCommand(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
+
+	char *target;
+	size_t targetLength;
+	int targetStatus;
+	targetLength = mxGetN(argv[1]) + 1;
+	target = (char *)mxMalloc(targetLength);
+	targetStatus = mxGetString(argv[1], target, targetLength);
+
+	char *command;
+	size_t commandLength;
+	int commandStatus;
+	commandLength = mxGetN(argv[2]) + 1;
+	command = (char *)mxMalloc(commandLength);
+	commandStatus = mxGetString(argv[2], command, commandLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsCoreSendCommand(core, (char const *)target, (char const *)command, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(target);
+
+	mxFree(command);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsBrokerSendCommand(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
+
+	char *target;
+	size_t targetLength;
+	int targetStatus;
+	targetLength = mxGetN(argv[1]) + 1;
+	target = (char *)mxMalloc(targetLength);
+	targetStatus = mxGetString(argv[1], target, targetLength);
+
+	char *command;
+	size_t commandLength;
+	int commandStatus;
+	commandLength = mxGetN(argv[2]) + 1;
+	command = (char *)mxMalloc(commandLength);
+	commandStatus = mxGetString(argv[2], command, commandLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsBrokerSendCommand(broker, (char const *)target, (char const *)command, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(target);
+
+	mxFree(command);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsCoreSetLogFile(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
+
+	char *logFileName;
+	size_t logFileNameLength;
+	int logFileNameStatus;
+	logFileNameLength = mxGetN(argv[1]) + 1;
+	logFileName = (char *)mxMalloc(logFileNameLength);
+	logFileNameStatus = mxGetString(argv[1], logFileName, logFileNameLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsCoreSetLogFile(core, (char const *)logFileName, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(logFileName);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsBrokerSetLogFile(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
+
+	char *logFileName;
+	size_t logFileNameLength;
+	int logFileNameStatus;
+	logFileNameLength = mxGetN(argv[1]) + 1;
+	logFileName = (char *)mxMalloc(logFileNameLength);
+	logFileNameStatus = mxGetString(argv[1], logFileName, logFileNameLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsBrokerSetLogFile(broker, (char const *)logFileName, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(logFileName);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsBrokerSetTimeBarrier(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
+
+	HelicsTime barrierTime = (HelicsTime)(mxGetScalar(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsBrokerSetTimeBarrier(broker, barrierTime, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsBrokerClearTimeBarrier(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
+
+	helicsBrokerClearTimeBarrier(broker);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsBrokerGlobalError(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
+
+	int errorCode = (int)(mxGetScalar(argv[1]));
+
+	char *errorString;
+	size_t errorStringLength;
+	int errorStringStatus;
+	errorStringLength = mxGetN(argv[2]) + 1;
+	errorString = (char *)mxMalloc(errorStringLength);
+	errorStringStatus = mxGetString(argv[2], errorString, errorStringLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsBrokerGlobalError(broker, errorCode, (char const *)errorString, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	mxFree(errorString);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsCoreGlobalError(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
+
+	int errorCode = (int)(mxGetScalar(argv[1]));
+
+	char *errorString;
+	size_t errorStringLength;
+	int errorStringStatus;
+	errorStringLength = mxGetN(argv[2]) + 1;
+	errorString = (char *)mxMalloc(errorStringLength);
+	errorStringStatus = mxGetString(argv[2], errorString, errorStringLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsCoreGlobalError(core, errorCode, (char const *)errorString, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	mxFree(errorString);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsCreateQuery(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	char *target;
+	size_t targetLength;
+	int targetStatus;
+	targetLength = mxGetN(argv[0]) + 1;
+	target = (char *)mxMalloc(targetLength);
+	targetStatus = mxGetString(argv[0], target, targetLength);
+
+	char *query;
+	size_t queryLength;
+	int queryStatus;
+	queryLength = mxGetN(argv[1]) + 1;
+	query = (char *)mxMalloc(queryLength);
+	queryStatus = mxGetString(argv[1], query, queryLength);
+
+	HelicsQuery result = helicsCreateQuery((char const *)target, (char const *)query);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	mxFree(target);
+
+	mxFree(query);
+}
+
+
+void _wrap_helicsQueryExecute(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsQuery query = (HelicsQuery)(mxGetData(argv[0]));
+
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	char *result = helicsQueryExecute(query, fed, &err);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsQueryCoreExecute(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsQuery query = (HelicsQuery)(mxGetData(argv[0]));
+
+	HelicsCore core = (HelicsCore)(mxGetData(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	char *result = helicsQueryCoreExecute(query, core, &err);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsQueryBrokerExecute(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsQuery query = (HelicsQuery)(mxGetData(argv[0]));
+
+	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	char *result = helicsQueryBrokerExecute(query, broker, &err);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsQueryExecuteAsync(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsQuery query = (HelicsQuery)(mxGetData(argv[0]));
+
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsQueryExecuteAsync(query, fed, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsQueryExecuteComplete(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsQuery query = (HelicsQuery)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	char *result = helicsQueryExecuteComplete(query, &err);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsQueryIsCompleted(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsQuery query = (HelicsQuery)(mxGetData(argv[0]));
+
+	HelicsBool result = helicsQueryIsCompleted(query);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsQuerySetTarget(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsQuery query = (HelicsQuery)(mxGetData(argv[0]));
+
+	char *target;
+	size_t targetLength;
+	int targetStatus;
+	targetLength = mxGetN(argv[1]) + 1;
+	target = (char *)mxMalloc(targetLength);
+	targetStatus = mxGetString(argv[1], target, targetLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsQuerySetTarget(query, (char const *)target, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(target);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsQuerySetQueryString(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsQuery query = (HelicsQuery)(mxGetData(argv[0]));
+
+	char *queryString;
+	size_t queryStringLength;
+	int queryStringStatus;
+	queryStringLength = mxGetN(argv[1]) + 1;
+	queryString = (char *)mxMalloc(queryStringLength);
+	queryStringStatus = mxGetString(argv[1], queryString, queryStringLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsQuerySetQueryString(query, (char const *)queryString, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(queryString);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsQuerySetOrdering(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsQuery query = (HelicsQuery)(mxGetData(argv[0]));
+
+	int32_t mode = *((int32_t *)mxGetData(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsQuerySetOrdering(query, mode, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsQueryFree(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsQuery query = (HelicsQuery)(mxGetData(argv[0]));
+
+	helicsQueryFree(query);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsCleanupLibrary(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	helicsCleanupLibrary();
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+}
+
+
+void _wrap_helicsFederateRegisterSubscription(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *key;
+	size_t keyLength;
+	int keyStatus;
+	keyLength = mxGetN(argv[1]) + 1;
+	key = (char *)mxMalloc(keyLength);
+	keyStatus = mxGetString(argv[1], key, keyLength);
+
+	char *units;
+	size_t unitsLength;
+	int unitsStatus;
+	unitsLength = mxGetN(argv[2]) + 1;
+	units = (char *)mxMalloc(unitsLength);
+	unitsStatus = mxGetString(argv[2], units, unitsLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsInput result = helicsFederateRegisterSubscription(fed, (char const *)key, (char const *)units, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(key);
+
+	mxFree(units);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateRegisterPublication(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *key;
+	size_t keyLength;
+	int keyStatus;
+	keyLength = mxGetN(argv[1]) + 1;
+	key = (char *)mxMalloc(keyLength);
+	keyStatus = mxGetString(argv[1], key, keyLength);
+
+	HelicsDataTypes type = (HelicsDataTypes)(mxGetScalar(argv[2]));
+
+	char *units;
+	size_t unitsLength;
+	int unitsStatus;
+	unitsLength = mxGetN(argv[3]) + 1;
+	units = (char *)mxMalloc(unitsLength);
+	unitsStatus = mxGetString(argv[3], units, unitsLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsPublication result = helicsFederateRegisterPublication(fed, (char const *)key, type, (char const *)units, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(key);
+
+
+
+	mxFree(units);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateRegisterTypePublication(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *key;
+	size_t keyLength;
+	int keyStatus;
+	keyLength = mxGetN(argv[1]) + 1;
+	key = (char *)mxMalloc(keyLength);
+	keyStatus = mxGetString(argv[1], key, keyLength);
+
+	char *type;
+	size_t typeLength;
+	int typeStatus;
+	typeLength = mxGetN(argv[2]) + 1;
+	type = (char *)mxMalloc(typeLength);
+	typeStatus = mxGetString(argv[2], type, typeLength);
+
+	char *units;
+	size_t unitsLength;
+	int unitsStatus;
+	unitsLength = mxGetN(argv[3]) + 1;
+	units = (char *)mxMalloc(unitsLength);
+	unitsStatus = mxGetString(argv[3], units, unitsLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsPublication result = helicsFederateRegisterTypePublication(fed, (char const *)key, (char const *)type, (char const *)units, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(key);
+
+	mxFree(type);
+
+	mxFree(units);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateRegisterGlobalPublication(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *key;
+	size_t keyLength;
+	int keyStatus;
+	keyLength = mxGetN(argv[1]) + 1;
+	key = (char *)mxMalloc(keyLength);
+	keyStatus = mxGetString(argv[1], key, keyLength);
+
+	HelicsDataTypes type = (HelicsDataTypes)(mxGetScalar(argv[2]));
+
+	char *units;
+	size_t unitsLength;
+	int unitsStatus;
+	unitsLength = mxGetN(argv[3]) + 1;
+	units = (char *)mxMalloc(unitsLength);
+	unitsStatus = mxGetString(argv[3], units, unitsLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsPublication result = helicsFederateRegisterGlobalPublication(fed, (char const *)key, type, (char const *)units, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(key);
+
+
+
+	mxFree(units);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateRegisterGlobalTypePublication(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *key;
+	size_t keyLength;
+	int keyStatus;
+	keyLength = mxGetN(argv[1]) + 1;
+	key = (char *)mxMalloc(keyLength);
+	keyStatus = mxGetString(argv[1], key, keyLength);
+
+	char *type;
+	size_t typeLength;
+	int typeStatus;
+	typeLength = mxGetN(argv[2]) + 1;
+	type = (char *)mxMalloc(typeLength);
+	typeStatus = mxGetString(argv[2], type, typeLength);
+
+	char *units;
+	size_t unitsLength;
+	int unitsStatus;
+	unitsLength = mxGetN(argv[3]) + 1;
+	units = (char *)mxMalloc(unitsLength);
+	unitsStatus = mxGetString(argv[3], units, unitsLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsPublication result = helicsFederateRegisterGlobalTypePublication(fed, (char const *)key, (char const *)type, (char const *)units, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(key);
+
+	mxFree(type);
+
+	mxFree(units);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateRegisterInput(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *key;
+	size_t keyLength;
+	int keyStatus;
+	keyLength = mxGetN(argv[1]) + 1;
+	key = (char *)mxMalloc(keyLength);
+	keyStatus = mxGetString(argv[1], key, keyLength);
+
+	HelicsDataTypes type = (HelicsDataTypes)(mxGetScalar(argv[2]));
+
+	char *units;
+	size_t unitsLength;
+	int unitsStatus;
+	unitsLength = mxGetN(argv[3]) + 1;
+	units = (char *)mxMalloc(unitsLength);
+	unitsStatus = mxGetString(argv[3], units, unitsLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsInput result = helicsFederateRegisterInput(fed, (char const *)key, type, (char const *)units, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(key);
+
+
+
+	mxFree(units);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateRegisterTypeInput(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *key;
+	size_t keyLength;
+	int keyStatus;
+	keyLength = mxGetN(argv[1]) + 1;
+	key = (char *)mxMalloc(keyLength);
+	keyStatus = mxGetString(argv[1], key, keyLength);
+
+	char *type;
+	size_t typeLength;
+	int typeStatus;
+	typeLength = mxGetN(argv[2]) + 1;
+	type = (char *)mxMalloc(typeLength);
+	typeStatus = mxGetString(argv[2], type, typeLength);
+
+	char *units;
+	size_t unitsLength;
+	int unitsStatus;
+	unitsLength = mxGetN(argv[3]) + 1;
+	units = (char *)mxMalloc(unitsLength);
+	unitsStatus = mxGetString(argv[3], units, unitsLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsInput result = helicsFederateRegisterTypeInput(fed, (char const *)key, (char const *)type, (char const *)units, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(key);
+
+	mxFree(type);
+
+	mxFree(units);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateRegisterGlobalInput(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *key;
+	size_t keyLength;
+	int keyStatus;
+	keyLength = mxGetN(argv[1]) + 1;
+	key = (char *)mxMalloc(keyLength);
+	keyStatus = mxGetString(argv[1], key, keyLength);
+
+	HelicsDataTypes type = (HelicsDataTypes)(mxGetScalar(argv[2]));
+
+	char *units;
+	size_t unitsLength;
+	int unitsStatus;
+	unitsLength = mxGetN(argv[3]) + 1;
+	units = (char *)mxMalloc(unitsLength);
+	unitsStatus = mxGetString(argv[3], units, unitsLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsPublication result = helicsFederateRegisterGlobalInput(fed, (char const *)key, type, (char const *)units, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(key);
+
+
+
+	mxFree(units);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateRegisterGlobalTypeInput(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *key;
+	size_t keyLength;
+	int keyStatus;
+	keyLength = mxGetN(argv[1]) + 1;
+	key = (char *)mxMalloc(keyLength);
+	keyStatus = mxGetString(argv[1], key, keyLength);
+
+	char *type;
+	size_t typeLength;
+	int typeStatus;
+	typeLength = mxGetN(argv[2]) + 1;
+	type = (char *)mxMalloc(typeLength);
+	typeStatus = mxGetString(argv[2], type, typeLength);
+
+	char *units;
+	size_t unitsLength;
+	int unitsStatus;
+	unitsLength = mxGetN(argv[3]) + 1;
+	units = (char *)mxMalloc(unitsLength);
+	unitsStatus = mxGetString(argv[3], units, unitsLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsPublication result = helicsFederateRegisterGlobalTypeInput(fed, (char const *)key, (char const *)type, (char const *)units, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(key);
+
+	mxFree(type);
+
+	mxFree(units);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateGetPublication(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *key;
+	size_t keyLength;
+	int keyStatus;
+	keyLength = mxGetN(argv[1]) + 1;
+	key = (char *)mxMalloc(keyLength);
+	keyStatus = mxGetString(argv[1], key, keyLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsPublication result = helicsFederateGetPublication(fed, (char const *)key, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(key);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateGetPublicationByIndex(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	int index = (int)(mxGetScalar(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsPublication result = helicsFederateGetPublicationByIndex(fed, index, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateGetInput(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *key;
+	size_t keyLength;
+	int keyStatus;
+	keyLength = mxGetN(argv[1]) + 1;
+	key = (char *)mxMalloc(keyLength);
+	keyStatus = mxGetString(argv[1], key, keyLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsInput result = helicsFederateGetInput(fed, (char const *)key, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(key);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateGetInputByIndex(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	int index = (int)(mxGetScalar(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsInput result = helicsFederateGetInputByIndex(fed, index, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateGetSubscription(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *key;
+	size_t keyLength;
+	int keyStatus;
+	keyLength = mxGetN(argv[1]) + 1;
+	key = (char *)mxMalloc(keyLength);
+	keyStatus = mxGetString(argv[1], key, keyLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsInput result = helicsFederateGetSubscription(fed, (char const *)key, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(key);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateClearUpdates(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	helicsFederateClearUpdates(fed);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsFederateRegisterFromPublicationJSON(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *json;
+	size_t jsonLength;
+	int jsonStatus;
+	jsonLength = mxGetN(argv[1]) + 1;
+	json = (char *)mxMalloc(jsonLength);
+	jsonStatus = mxGetString(argv[1], json, jsonLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateRegisterFromPublicationJSON(fed, (char const *)json, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(json);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederatePublishJSON(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *json;
+	size_t jsonLength;
+	int jsonStatus;
+	jsonLength = mxGetN(argv[1]) + 1;
+	json = (char *)mxMalloc(jsonLength);
+	jsonStatus = mxGetString(argv[1], json, jsonLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederatePublishJSON(fed, (char const *)json, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(json);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsPublicationIsValid(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
+
+	HelicsBool result = helicsPublicationIsValid(pub);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsPublicationPublishBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
+
+	char *data;
+	size_t dataLength;
+	int dataStatus;
+	dataLength = mxGetN(argv[1]) + 1;
+	data = (char *)mxMalloc(dataLength);
+	dataStatus = mxGetString(argv[1], data, dataLength);
+
+	int inputDataLength = dataLength - 1;
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsPublicationPublishBytes(pub, (void *)data, inputDataLength, &err);
+
+	mxArray *_out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsPublicationPublishString(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
+
+	char *str;
+	size_t strLength;
+	int strStatus;
+	strLength = mxGetN(argv[1]) + 1;
+	str = (char *)mxMalloc(strLength);
+	strStatus = mxGetString(argv[1], str, strLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsPublicationPublishString(pub, (char const *)str, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(str);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsPublicationPublishInteger(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
+
+	int64_t val = *((int64_t *)mxGetData(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsPublicationPublishInteger(pub, val, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsPublicationPublishBoolean(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
+
+	HelicsBool val = (HelicsBool)(mxGetScalar(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsPublicationPublishBoolean(pub, val, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsPublicationPublishDouble(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
+
+	double val = mxGetScalar(argv[1]);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsPublicationPublishDouble(pub, val, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsPublicationPublishTime(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
+
+	HelicsTime val = (HelicsTime)(mxGetScalar(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsPublicationPublishTime(pub, val, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsPublicationPublishChar(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
+
+	char *val;
+	size_t valLength;
+	int valStatus;
+	valLength = mxGetN(argv[1]) + 1;
+	val = (char *)mxMalloc(valLength);
+	valStatus = mxGetString(argv[1], val, valLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsPublicationPublishChar(pub, val[0], &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(val);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsPublicationPublishComplex(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
+
+	mxComplexDouble *complexValue = mxGetComplexDouble(argv[1]);
+	double value[2] = {complexValue[0].real, complexValue[0].imag};
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsPublicationPublishComplex(pub, value[0], value[1], &err);
+
+	mxArray *_out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsPublicationPublishVector(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
+
+	int vectorLength =  (int)mxGetNumberOfElements(argv[1]);
+
+	double *vectorInput =  (double *)mxGetDoubles(argv[1]);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsPublicationPublishVector(pub, (const double *)vectorInput, vectorLength, &err);
+
+	mxArray *_out = (mxArray *)0;
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsPublicationPublishComplexVector(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
+
+	int vectorLength =  (int)mxGetN(argv[1])*2;
+
+	double vectorInput[vectorLength];
+	mxComplexDouble *vals = mxGetComplexDoubles(argv[1]);
+	for(int i=0; i<vectorLength/2; ++i){
+		vectorInput[2*i] = vals[i].real;
+		vectorInput[2*i + 1] = vals[i].imag;
+	}
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsPublicationPublishComplexVector(pub, (const double *)vectorInput, vectorLength, &err);
+
+	mxArray *_out = (mxArray *)0;
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsPublicationPublishNamedPoint(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
+
+	char *str;
+	size_t strLength;
+	int strStatus;
+	strLength = mxGetN(argv[1]) + 1;
+	str = (char *)mxMalloc(strLength);
+	strStatus = mxGetString(argv[1], str, strLength);
+
+	double val = mxGetScalar(argv[2]);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsPublicationPublishNamedPoint(pub, (char const *)str, val, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(str);
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsPublicationAddTarget(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
+
+	char *target;
+	size_t targetLength;
+	int targetStatus;
+	targetLength = mxGetN(argv[1]) + 1;
+	target = (char *)mxMalloc(targetLength);
+	targetStatus = mxGetString(argv[1], target, targetLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsPublicationAddTarget(pub, (char const *)target, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(target);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsInputIsValid(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	HelicsBool result = helicsInputIsValid(ipt);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsInputAddTarget(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	char *target;
+	size_t targetLength;
+	int targetStatus;
+	targetLength = mxGetN(argv[1]) + 1;
+	target = (char *)mxMalloc(targetLength);
+	targetStatus = mxGetString(argv[1], target, targetLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsInputAddTarget(ipt, (char const *)target, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(target);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsInputGetByteCount(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	int result = helicsInputGetByteCount(ipt);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsInputGetBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	int maxDataLen = helicsInputGetByteCount(ipt) + 2;
+
+	void *data = mxMalloc(maxDataLen);
+
+	int *actualSize = (int *)0;
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsInputGetBytes(ipt, data, maxDatalen, actualSize, &err);
+
+	mwSize dims[2] = {1, *actualSize};
+	mxArray *_out = mxCreateCharArray(2, dims);
+	mxChar *out_data = (mxChar *)mxGetData(_out);
+	for(int i=0; i<actualSize; ++i){
+		out_data[i] = data[i];
+	}
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	mxFree(data);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsInputGetStringSize(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	int result = helicsInputGetStringSize(ipt);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsInputGetString(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	int maxStringLen = helicsInputGetStringSize(ipt) + 2;
+
+	char *outputString = (char *)mxMalloc(maxStringLen);
+
+	int *actualLength = (int *)0;
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsInputGetString(ipt, outputString, maxStringLen, actualLength, val, &err);
+
+	mwSize dims[2] = {1, *actualLength};
+	mxArray *_out = mxCreateCharArray(2, dims);
+	mxChar *out_data = (mxChar *)mxGetData(_out);
+	for(int i=0; i<actualLength; ++i){
+		out_data[i] = outputString[i];
+	}
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	mxFree(outputString);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsInputGetInteger(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	int64_t result = helicsInputGetInteger(ipt, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsInputGetBoolean(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsBool result = helicsInputGetBoolean(ipt, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsInputGetDouble(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	double result = helicsInputGetDouble(ipt, &err);
+
+	mxArray *_out = mxCreateDoubleScalar(result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsInputGetTime(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsTime result = helicsInputGetTime(ipt, &err);
+
+	mxArray *_out = mxCreateDoubleScalar(result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsInputGetChar(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	char result = helicsInputGetChar(ipt, &err);
+
+	mxArray *_out = mxCreateString((const char *)(&result));
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsInputGetComplexObject(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsComplex result = helicsInputGetComplexObject(ipt, &err);
+
+	mxComplexDouble complex_result;
+	complex_result.real = result.real;
+	complex_result.imag = result.imag;
+	mxArray *_out = mxCreateDoubleMatrix(1,1,mxCOMPLEX);
+	int status = mxSetComplexDoubles(_out, &complex_result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsInputGetComplex(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	double values[2];
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsInputGetComplex(ipt, &(vaules[0]), &(values[1]), &err);
+
+	mxComplexDouble complex_result;
+	complex_result.real = values[0];
+	complex_result.imag = values[1];
+	mxArray *_out = mxCreateDoubleMatrix(1,1,mxCOMPLEX);
+	int status = mxSetComplexDoubles(_out, &complex_result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsInputGetVectorSize(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	int result = helicsInputGetVectorSize(ipt);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsInputGetVector(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	int maxLength = helicsInputGetVectorSize(ipt);
+
+	double data[maxLength];
+
+	int *actualSize = (int *)0;
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsInputGetVector(ipt, data, maxLength, actualSize, &err);
+
+	mxDouble result_data[*actualSize];
+	for(int i=0; i<(*actualSize); ++i){
+		result_data[i] = (mxDouble)data[i];
+	}
+	mxArray *_out = mxCreateDoubleMatrix(*actualSize, 1, mxREAL);
+	int status = mxSetDoubles(_out, &(resutl_data[0]));
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsInputGetComplexVector(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	int maxLength = helicsInputGetVectorSize(ipt);
+
+	double data[maxLength];
+
+	int *actualSize = (int *)0;
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsInputGetComplexVector(ipt, data, maxLength, actualSize, &err);
+
+	mxComplexDouble result_data[*actualSize/2];
+	for(int i=0; i<(*actualSize/2); ++i){
+		result_data[i].real = data[2*(i)];
+		result_data[i].imag = data[2*(i) + 1];
+	}
+	mxArray *_out = mxCreateDoubleMatrix(*actualSize/2, 1, mxCOMPLEX);
+	int status = mxSetComplexDoubles(_out, &(resutl_data[0]));
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsInputGetNamedPoint(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	int maxStringLen = helicsInputGetStringSize(ipt) + 2;
+
+	char *outputString = (char *)mxMalloc(maxStringLen);
+
+	int *actualLength = (int *)0;
+
+	double *val = (double *)0;
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsInputGetNamedPoint(ipt, outputString, maxStringLen, actualLength, val, &err);
+
+	mwSize dims[2] = {1, *actualLength};
+	mxArray *_out = mxCreateCharArray(2, dims);
+	mxChar *out_data = (mxChar *)mxGetData(_out);
+	for(int i=0; i<actualLength; ++i){
+		out_data[i] = outputString[i];
+	}
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	if(--resc>=0){
+		mxArray *_out1 = mxCreateScalar(*val);
+		*resv++ = _out1;
+	}
+
+	mxFree(outputString);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsInputSetDefaultBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	char *data;
+	size_t dataLength;
+	int dataStatus;
+	dataLength = mxGetN(argv[1]) + 1;
+	data = (char *)mxMalloc(dataLength);
+	dataStatus = mxGetString(argv[1], data, dataLength);
+
+	int inputDataLength = dataLength - 1;
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsInputSetDefaultBytes(ipt, (void *)data, inputDataLength, &err);
+
+	mxArray *_out = (mxArray *)0;
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	mxFree(data);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsInputSetDefaultString(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	char *str;
+	size_t strLength;
+	int strStatus;
+	strLength = mxGetN(argv[1]) + 1;
+	str = (char *)mxMalloc(strLength);
+	strStatus = mxGetString(argv[1], str, strLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsInputSetDefaultString(ipt, (char const *)str, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(str);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsInputSetDefaultInteger(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	int64_t val = *((int64_t *)mxGetData(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsInputSetDefaultInteger(ipt, val, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsInputSetDefaultBoolean(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	HelicsBool val = (HelicsBool)(mxGetScalar(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsInputSetDefaultBoolean(ipt, val, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsInputSetDefaultTime(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	HelicsTime val = (HelicsTime)(mxGetScalar(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsInputSetDefaultTime(ipt, val, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsInputSetDefaultChar(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	char *val;
+	size_t valLength;
+	int valStatus;
+	valLength = mxGetN(argv[1]) + 1;
+	val = (char *)mxMalloc(valLength);
+	valStatus = mxGetString(argv[1], val, valLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsInputSetDefaultChar(ipt, val[0], &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(val);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsInputSetDefaultDouble(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	double val = mxGetScalar(argv[1]);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsInputSetDefaultDouble(ipt, val, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsInputSetDefaultComplex(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	mxComplexDouble *value = xmGetComplexDoubles(argv[1]);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsInputSetDefaultComplex(ipt, (double)value->real, (double)value->imag, &err);
+
+	mxArray *_out = (mxArray *)0;
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	mxFree(data);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsInputSetDefaultVector(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	int vectorLength =  (int)mxGetNumberOfElements(argv[1]);
+
+	double *vectorInput =  (double *)mxGetDoubles(argv[1]);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsInputSetDefaultVector(ipt, (const double *)vectorInput, vectorLength, &err);
+
+	mxArray *_out = (mxArray *)0;
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsInputSetDefaultComplexVector(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	int vectorLength =  (int)mxGetN(argv[1])*2;
+
+	double vectorInput[vectorLength];
+	mxComplexDouble *vals = mxGetComplexDoubles(argv[1]);
+	for(int i=0; i<vectorLength/2; ++i){
+		vectorInput[2*i] = vals[i].real;
+		vectorInput[2*i + 1] = vals[i].imag;
+	}
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsInputSetDefaultComplexVector(ipt, (const double *)vectorInput, vectorLength, &err);
+
+	mxArray *_out = (mxArray *)0;
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsInputSetDefaultNamedPoint(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	char *str;
+	size_t strLength;
+	int strStatus;
+	strLength = mxGetN(argv[1]) + 1;
+	str = (char *)mxMalloc(strLength);
+	strStatus = mxGetString(argv[1], str, strLength);
+
+	double val = mxGetScalar(argv[2]);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsInputSetDefaultNamedPoint(ipt, (char const *)str, val, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(str);
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsInputGetType(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	char *result = helicsInputGetType(ipt);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsInputGetPublicationType(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	char *result = helicsInputGetPublicationType(ipt);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsInputGetPublicationDataType(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	int result = helicsInputGetPublicationDataType(ipt);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsPublicationGetType(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
+
+	char *result = helicsPublicationGetType(pub);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsInputGetName(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	char *result = helicsInputGetName(ipt);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsSubscriptionGetTarget(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	char *result = helicsSubscriptionGetTarget(ipt);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsPublicationGetName(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
+
+	char *result = helicsPublicationGetName(pub);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsInputGetUnits(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	char *result = helicsInputGetUnits(ipt);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsInputGetInjectionUnits(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	char *result = helicsInputGetInjectionUnits(ipt);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsInputGetExtractionUnits(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	char *result = helicsInputGetExtractionUnits(ipt);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsPublicationGetUnits(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
+
+	char *result = helicsPublicationGetUnits(pub);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsInputGetInfo(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput inp = (HelicsInput)(mxGetData(argv[0]));
+
+	char *result = helicsInputGetInfo(inp);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsInputSetInfo(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput inp = (HelicsInput)(mxGetData(argv[0]));
+
+	char *info;
+	size_t infoLength;
+	int infoStatus;
+	infoLength = mxGetN(argv[1]) + 1;
+	info = (char *)mxMalloc(infoLength);
+	infoStatus = mxGetString(argv[1], info, infoLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsInputSetInfo(inp, (char const *)info, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(info);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsInputGetTag(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput inp = (HelicsInput)(mxGetData(argv[0]));
+
+	char *tagname;
+	size_t tagnameLength;
+	int tagnameStatus;
+	tagnameLength = mxGetN(argv[1]) + 1;
+	tagname = (char *)mxMalloc(tagnameLength);
+	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
+
+	char *result = helicsInputGetTag(inp, (char const *)tagname);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(tagname);
+}
+
+
+void _wrap_helicsInputSetTag(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput inp = (HelicsInput)(mxGetData(argv[0]));
+
+	char *tagname;
+	size_t tagnameLength;
+	int tagnameStatus;
+	tagnameLength = mxGetN(argv[1]) + 1;
+	tagname = (char *)mxMalloc(tagnameLength);
+	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
+
+	char *tagvalue;
+	size_t tagvalueLength;
+	int tagvalueStatus;
+	tagvalueLength = mxGetN(argv[2]) + 1;
+	tagvalue = (char *)mxMalloc(tagvalueLength);
+	tagvalueStatus = mxGetString(argv[2], tagvalue, tagvalueLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsInputSetTag(inp, (char const *)tagname, (char const *)tagvalue, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(tagname);
+
+	mxFree(tagvalue);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsPublicationGetInfo(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
+
+	char *result = helicsPublicationGetInfo(pub);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsPublicationSetInfo(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
+
+	char *info;
+	size_t infoLength;
+	int infoStatus;
+	infoLength = mxGetN(argv[1]) + 1;
+	info = (char *)mxMalloc(infoLength);
+	infoStatus = mxGetString(argv[1], info, infoLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsPublicationSetInfo(pub, (char const *)info, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(info);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsPublicationGetTag(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
+
+	char *tagname;
+	size_t tagnameLength;
+	int tagnameStatus;
+	tagnameLength = mxGetN(argv[1]) + 1;
+	tagname = (char *)mxMalloc(tagnameLength);
+	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
+
+	char *result = helicsPublicationGetTag(pub, (char const *)tagname);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(tagname);
+}
+
+
+void _wrap_helicsPublicationSetTag(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
+
+	char *tagname;
+	size_t tagnameLength;
+	int tagnameStatus;
+	tagnameLength = mxGetN(argv[1]) + 1;
+	tagname = (char *)mxMalloc(tagnameLength);
+	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
+
+	char *tagvalue;
+	size_t tagvalueLength;
+	int tagvalueStatus;
+	tagvalueLength = mxGetN(argv[2]) + 1;
+	tagvalue = (char *)mxMalloc(tagvalueLength);
+	tagvalueStatus = mxGetString(argv[2], tagvalue, tagvalueLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsPublicationSetTag(pub, (char const *)tagname, (char const *)tagvalue, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(tagname);
+
+	mxFree(tagvalue);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsInputGetOption(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput inp = (HelicsInput)(mxGetData(argv[0]));
+
+	int option = (int)(mxGetScalar(argv[1]));
+
+	int result = helicsInputGetOption(inp, option);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+}
+
+
+void _wrap_helicsInputSetOption(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput inp = (HelicsInput)(mxGetData(argv[0]));
+
+	int option = (int)(mxGetScalar(argv[1]));
+
+	int value = (int)(mxGetScalar(argv[2]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsInputSetOption(inp, option, value, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsPublicationGetOption(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
+
+	int option = (int)(mxGetScalar(argv[1]));
+
+	int result = helicsPublicationGetOption(pub, option);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+}
+
+
+void _wrap_helicsPublicationSetOption(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
+
+	int option = (int)(mxGetScalar(argv[1]));
+
+	int val = (int)(mxGetScalar(argv[2]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsPublicationSetOption(pub, option, val, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsPublicationSetMinimumChange(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
+
+	double tolerance = mxGetScalar(argv[1]);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsPublicationSetMinimumChange(pub, tolerance, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsInputSetMinimumChange(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput inp = (HelicsInput)(mxGetData(argv[0]));
+
+	double tolerance = mxGetScalar(argv[1]);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsInputSetMinimumChange(inp, tolerance, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsInputIsUpdated(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	HelicsBool result = helicsInputIsUpdated(ipt);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsInputLastUpdateTime(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	HelicsTime result = helicsInputLastUpdateTime(ipt);
+
+	mxArray *_out = mxCreateDoubleScalar(result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsInputClearUpdate(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
+
+	helicsInputClearUpdate(ipt);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsFederateGetPublicationCount(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	int result = helicsFederateGetPublicationCount(fed);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsFederateGetInputCount(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	int result = helicsFederateGetInputCount(fed);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsFederateRegisterEndpoint(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *name;
+	size_t nameLength;
+	int nameStatus;
+	nameLength = mxGetN(argv[1]) + 1;
+	name = (char *)mxMalloc(nameLength);
+	nameStatus = mxGetString(argv[1], name, nameLength);
+
+	char *type;
+	size_t typeLength;
+	int typeStatus;
+	typeLength = mxGetN(argv[2]) + 1;
+	type = (char *)mxMalloc(typeLength);
+	typeStatus = mxGetString(argv[2], type, typeLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsEndpoint result = helicsFederateRegisterEndpoint(fed, (char const *)name, (char const *)type, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(name);
+
+	mxFree(type);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateRegisterGlobalEndpoint(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *name;
+	size_t nameLength;
+	int nameStatus;
+	nameLength = mxGetN(argv[1]) + 1;
+	name = (char *)mxMalloc(nameLength);
+	nameStatus = mxGetString(argv[1], name, nameLength);
+
+	char *type;
+	size_t typeLength;
+	int typeStatus;
+	typeLength = mxGetN(argv[2]) + 1;
+	type = (char *)mxMalloc(typeLength);
+	typeStatus = mxGetString(argv[2], type, typeLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsEndpoint result = helicsFederateRegisterGlobalEndpoint(fed, (char const *)name, (char const *)type, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(name);
+
+	mxFree(type);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateRegisterTargetedEndpoint(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *name;
+	size_t nameLength;
+	int nameStatus;
+	nameLength = mxGetN(argv[1]) + 1;
+	name = (char *)mxMalloc(nameLength);
+	nameStatus = mxGetString(argv[1], name, nameLength);
+
+	char *type;
+	size_t typeLength;
+	int typeStatus;
+	typeLength = mxGetN(argv[2]) + 1;
+	type = (char *)mxMalloc(typeLength);
+	typeStatus = mxGetString(argv[2], type, typeLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsEndpoint result = helicsFederateRegisterTargetedEndpoint(fed, (char const *)name, (char const *)type, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(name);
+
+	mxFree(type);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateRegisterGlobalTargetedEndpoint(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *name;
+	size_t nameLength;
+	int nameStatus;
+	nameLength = mxGetN(argv[1]) + 1;
+	name = (char *)mxMalloc(nameLength);
+	nameStatus = mxGetString(argv[1], name, nameLength);
+
+	char *type;
+	size_t typeLength;
+	int typeStatus;
+	typeLength = mxGetN(argv[2]) + 1;
+	type = (char *)mxMalloc(typeLength);
+	typeStatus = mxGetString(argv[2], type, typeLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsEndpoint result = helicsFederateRegisterGlobalTargetedEndpoint(fed, (char const *)name, (char const *)type, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(name);
+
+	mxFree(type);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateGetEndpoint(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *name;
+	size_t nameLength;
+	int nameStatus;
+	nameLength = mxGetN(argv[1]) + 1;
+	name = (char *)mxMalloc(nameLength);
+	nameStatus = mxGetString(argv[1], name, nameLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsEndpoint result = helicsFederateGetEndpoint(fed, (char const *)name, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(name);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateGetEndpointByIndex(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	int index = (int)(mxGetScalar(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsEndpoint result = helicsFederateGetEndpointByIndex(fed, index, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsEndpointIsValid(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
+
+	HelicsBool result = helicsEndpointIsValid(endpoint);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsEndpointSetDefaultDestination(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
+
+	char *dst;
+	size_t dstLength;
+	int dstStatus;
+	dstLength = mxGetN(argv[1]) + 1;
+	dst = (char *)mxMalloc(dstLength);
+	dstStatus = mxGetString(argv[1], dst, dstLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsEndpointSetDefaultDestination(endpoint, (char const *)dst, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(dst);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsEndpointGetDefaultDestination(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
+
+	char *result = helicsEndpointGetDefaultDestination(endpoint);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsEndpointSendBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
+
+	char *data;
+	size_t dataLength;
+	int dataStatus;
+	dataLength = mxGetN(argv[1]) + 1;
+	data = (char *)mxMalloc(dataLength);
+	dataStatus = mxGetString(argv[1], data, dataLength);
+
+	int inputDataLength = (int)(dataLength - 1);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsEndpointSendBytes(endpoint, (void *)data, inputDataLength, &err);
+
+	mxArray *_out = (mxArray *)0;
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	mxFree(data);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsEndpointSendBytesTo(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
+
+	char *data;
+	size_t dataLength;
+	int dataStatus;
+	dataLength = mxGetN(argv[1]) + 1;
+	data = (char *)mxMalloc(dataLength);
+	dataStatus = mxGetString(argv[1], data, dataLength);
+
+	int inputDataLength = (int)(dataLength - 1);
+
+	char *dst;
+	size_t dstLength;
+	int dstStatus;
+	dstLength = mxGetN(argv[2]) + 1;
+	dst = (char *)mxMalloc(dstLength);
+	dstStatus = mxGetString(argv[2], dst, dstLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsEndpointSendBytesTo(endpoint, (void *)data, inputDataLength, dst, &err);
+
+	mxArray *_out = (mxArray *)0;
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	mxFree(data);
+
+	mxFree(dst);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsEndpointSendBytesToAt(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
+
+	char *data;
+	size_t dataLength;
+	int dataStatus;
+	dataLength = mxGetN(argv[1]) + 1;
+	data = (char *)mxMalloc(dataLength);
+	dataStatus = mxGetString(argv[1], data, dataLength);
+
+	int inputDataLength = (int)(dataLength - 1);
+
+	char *dst;
+	size_t dstLength;
+	int dstStatus;
+	dstLength = mxGetN(argv[2]) + 1;
+	dst = (char *)mxMalloc(dstLength);
+	dstStatus = mxGetString(argv[2], dst, dstLength);
+
+	HelicsTime time = (HelicsTime)(mxGetScalar(argv[3]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsEndpointSendBytesToAt(endpoint, (void *)data, inputDataLength, dst, time, &err);
+
+	mxArray *_out = (mxArray *)0;
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	mxFree(data);
+
+	mxFree(dst);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsEndpointSendBytesAt(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
+
+	char *data;
+	size_t dataLength;
+	int dataStatus;
+	dataLength = mxGetN(argv[1]) + 1;
+	data = (char *)mxMalloc(dataLength);
+	dataStatus = mxGetString(argv[1], data, dataLength);
+
+	int inputDataLength = (int)(dataLength - 1);
+
+	HelicsTime time = (HelicsTime)(mxGetScalar(argv[2]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsEndpointSendBytesAt(endpoint, (void *)data, inputDataLength, time, &err);
+
+	mxArray *_out = (mxArray *)0;
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	mxFree(data);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsEndpointSendMessage(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
+
+	HelicsMessage message = (HelicsMessage)(mxGetData(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsEndpointSendMessage(endpoint, message, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsEndpointSendMessageZeroCopy(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
+
+	HelicsMessage message = (HelicsMessage)(mxGetData(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsEndpointSendMessageZeroCopy(endpoint, message, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsEndpointSubscribe(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
+
+	char *key;
+	size_t keyLength;
+	int keyStatus;
+	keyLength = mxGetN(argv[1]) + 1;
+	key = (char *)mxMalloc(keyLength);
+	keyStatus = mxGetString(argv[1], key, keyLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsEndpointSubscribe(endpoint, (char const *)key, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(key);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateHasMessage(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsBool result = helicsFederateHasMessage(fed);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsEndpointHasMessage(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
+
+	HelicsBool result = helicsEndpointHasMessage(endpoint);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsFederatePendingMessageCount(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	int result = helicsFederatePendingMessageCount(fed);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsEndpointPendingMessageCount(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
+
+	int result = helicsEndpointPendingMessageCount(endpoint);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsEndpointGetMessage(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
+
+	HelicsMessage result = helicsEndpointGetMessage(endpoint);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsEndpointCreateMessage(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsMessage result = helicsEndpointCreateMessage(endpoint, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateGetMessage(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsMessage result = helicsFederateGetMessage(fed);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsFederateCreateMessage(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsMessage result = helicsFederateCreateMessage(fed, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateClearMessages(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	helicsFederateClearMessages(fed);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsEndpointGetType(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
+
+	char *result = helicsEndpointGetType(endpoint);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsEndpointGetName(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
+
+	char *result = helicsEndpointGetName(endpoint);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsFederateGetEndpointCount(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	int result = helicsFederateGetEndpointCount(fed);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsEndpointGetInfo(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsEndpoint end = (HelicsEndpoint)(mxGetData(argv[0]));
+
+	char *result = helicsEndpointGetInfo(end);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsEndpointSetInfo(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
+
+	char *info;
+	size_t infoLength;
+	int infoStatus;
+	infoLength = mxGetN(argv[1]) + 1;
+	info = (char *)mxMalloc(infoLength);
+	infoStatus = mxGetString(argv[1], info, infoLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsEndpointSetInfo(endpoint, (char const *)info, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(info);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsEndpointGetTag(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
+
+	char *tagname;
+	size_t tagnameLength;
+	int tagnameStatus;
+	tagnameLength = mxGetN(argv[1]) + 1;
+	tagname = (char *)mxMalloc(tagnameLength);
+	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
+
+	char *result = helicsEndpointGetTag(endpoint, (char const *)tagname);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(tagname);
+}
+
+
+void _wrap_helicsEndpointSetTag(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
+
+	char *tagname;
+	size_t tagnameLength;
+	int tagnameStatus;
+	tagnameLength = mxGetN(argv[1]) + 1;
+	tagname = (char *)mxMalloc(tagnameLength);
+	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
+
+	char *tagvalue;
+	size_t tagvalueLength;
+	int tagvalueStatus;
+	tagvalueLength = mxGetN(argv[2]) + 1;
+	tagvalue = (char *)mxMalloc(tagvalueLength);
+	tagvalueStatus = mxGetString(argv[2], tagvalue, tagvalueLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsEndpointSetTag(endpoint, (char const *)tagname, (char const *)tagvalue, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(tagname);
+
+	mxFree(tagvalue);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsEndpointSetOption(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
+
+	int option = (int)(mxGetScalar(argv[1]));
+
+	int value = (int)(mxGetScalar(argv[2]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsEndpointSetOption(endpoint, option, value, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsEndpointGetOption(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
+
+	int option = (int)(mxGetScalar(argv[1]));
+
+	int result = helicsEndpointGetOption(endpoint, option);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+}
+
+
+void _wrap_helicsEndpointAddSourceTarget(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
+
+	char *targetEndpoint;
+	size_t targetEndpointLength;
+	int targetEndpointStatus;
+	targetEndpointLength = mxGetN(argv[1]) + 1;
+	targetEndpoint = (char *)mxMalloc(targetEndpointLength);
+	targetEndpointStatus = mxGetString(argv[1], targetEndpoint, targetEndpointLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsEndpointAddSourceTarget(endpoint, (char const *)targetEndpoint, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(targetEndpoint);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsEndpointAddDestinationTarget(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
+
+	char *targetEndpoint;
+	size_t targetEndpointLength;
+	int targetEndpointStatus;
+	targetEndpointLength = mxGetN(argv[1]) + 1;
+	targetEndpoint = (char *)mxMalloc(targetEndpointLength);
+	targetEndpointStatus = mxGetString(argv[1], targetEndpoint, targetEndpointLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsEndpointAddDestinationTarget(endpoint, (char const *)targetEndpoint, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(targetEndpoint);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsEndpointRemoveTarget(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
+
+	char *targetEndpoint;
+	size_t targetEndpointLength;
+	int targetEndpointStatus;
+	targetEndpointLength = mxGetN(argv[1]) + 1;
+	targetEndpoint = (char *)mxMalloc(targetEndpointLength);
+	targetEndpointStatus = mxGetString(argv[1], targetEndpoint, targetEndpointLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsEndpointRemoveTarget(endpoint, (char const *)targetEndpoint, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(targetEndpoint);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsEndpointAddSourceFilter(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
+
+	char *filterName;
+	size_t filterNameLength;
+	int filterNameStatus;
+	filterNameLength = mxGetN(argv[1]) + 1;
+	filterName = (char *)mxMalloc(filterNameLength);
+	filterNameStatus = mxGetString(argv[1], filterName, filterNameLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsEndpointAddSourceFilter(endpoint, (char const *)filterName, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(filterName);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsEndpointAddDestinationFilter(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
+
+	char *filterName;
+	size_t filterNameLength;
+	int filterNameStatus;
+	filterNameLength = mxGetN(argv[1]) + 1;
+	filterName = (char *)mxMalloc(filterNameLength);
+	filterNameStatus = mxGetString(argv[1], filterName, filterNameLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsEndpointAddDestinationFilter(endpoint, (char const *)filterName, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(filterName);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsMessageGetSource(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
+
+	char *result = helicsMessageGetSource(message);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsMessageGetDestination(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
+
+	char *result = helicsMessageGetDestination(message);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsMessageGetOriginalSource(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
+
+	char *result = helicsMessageGetOriginalSource(message);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsMessageGetOriginalDestination(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
+
+	char *result = helicsMessageGetOriginalDestination(message);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsMessageGetTime(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
+
+	HelicsTime result = helicsMessageGetTime(message);
+
+	mxArray *_out = mxCreateDoubleScalar(result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsMessageGetString(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
+
+	char *result = helicsMessageGetString(message);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsMessageGetMessageID(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
+
+	int result = helicsMessageGetMessageID(message);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsMessageGetFlagOption(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
+
+	int flag = (int)(mxGetScalar(argv[1]));
+
+	HelicsBool result = helicsMessageGetFlagOption(message, flag);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+}
+
+
+void _wrap_helicsMessageGetByteCount(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
+
+	int result = helicsMessageGetByteCount(message);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsMessageGetBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
+
+	int maxMessageLength = helicsMessageGetByteCount(message) + 2;
+
+	char *data = (char *)mxMalloc(maxMessageLength);
+
+	int *actualSize = (int *)0;
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsMessageGetBytes(message, (void *)data, maxMessageLength, actualSize, &err);
+
+	mwSize dims[2] = {1,(mwSize)*actualSize};
+	mxArray *_out = mxCreateCharArray(2,dims);
+	mxChar *out_data = (mxChar *)mxGetData(_out);
+	for(int i=0; i<*actualSize; ++i){
+		out_data[i] = data[i];
+	}
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	mxFree(data);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsMessageGetBytesPointer(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
+
+	void *reault = helicsMessageGetBytesPointer(message);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsMessageIsValid(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
+
+	HelicsBool result = helicsMessageIsValid(message);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsMessageSetSource(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
+
+	char *src;
+	size_t srcLength;
+	int srcStatus;
+	srcLength = mxGetN(argv[1]) + 1;
+	src = (char *)mxMalloc(srcLength);
+	srcStatus = mxGetString(argv[1], src, srcLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsMessageSetSource(message, (char const *)src, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(src);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsMessageSetDestination(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
+
+	char *dst;
+	size_t dstLength;
+	int dstStatus;
+	dstLength = mxGetN(argv[1]) + 1;
+	dst = (char *)mxMalloc(dstLength);
+	dstStatus = mxGetString(argv[1], dst, dstLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsMessageSetDestination(message, (char const *)dst, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(dst);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsMessageSetOriginalSource(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
+
+	char *src;
+	size_t srcLength;
+	int srcStatus;
+	srcLength = mxGetN(argv[1]) + 1;
+	src = (char *)mxMalloc(srcLength);
+	srcStatus = mxGetString(argv[1], src, srcLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsMessageSetOriginalSource(message, (char const *)src, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(src);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsMessageSetOriginalDestination(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
+
+	char *dst;
+	size_t dstLength;
+	int dstStatus;
+	dstLength = mxGetN(argv[1]) + 1;
+	dst = (char *)mxMalloc(dstLength);
+	dstStatus = mxGetString(argv[1], dst, dstLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsMessageSetOriginalDestination(message, (char const *)dst, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(dst);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsMessageSetTime(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
+
+	HelicsTime time = (HelicsTime)(mxGetScalar(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsMessageSetTime(message, time, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsMessageResize(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
+
+	int newSize = (int)(mxGetScalar(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsMessageResize(message, newSize, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsMessageReserve(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
+
+	int reserveSize = (int)(mxGetScalar(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsMessageReserve(message, reserveSize, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsMessageSetMessageID(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
+
+	int32_t messageID = *((int32_t *)mxGetData(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsMessageSetMessageID(message, messageID, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsMessageClearFlags(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
+
+	helicsMessageClearFlags(message);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsMessageSetFlagOption(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
+
+	int flag = (int)(mxGetScalar(argv[1]));
+
+	HelicsBool flagValue = (HelicsBool)(mxGetScalar(argv[2]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsMessageSetFlagOption(message, flag, flagValue, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsMessageSetString(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
+
+	char *str;
+	size_t strLength;
+	int strStatus;
+	strLength = mxGetN(argv[1]) + 1;
+	str = (char *)mxMalloc(strLength);
+	strStatus = mxGetString(argv[1], str, strLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsMessageSetString(message, (char const *)str, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(str);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsMessageSetData(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
+
+	char *data;
+	size_t dataLength;
+	int dataStatus;
+	dataLength = mxGetN(argv[1]) + 1;
+	data = (char *)mxMalloc(dataLength);
+	dataStatus = mxGetString(argv[1], data, dataLength);
+
+	int inputDataLength = dataLength - 1;
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsMessageSetData(message, (void *)data, inputDataLength, &err);
+
+	mxArray *_out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsMessageAppendData(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
+
+	char *data;
+	size_t dataLength;
+	int dataStatus;
+	dataLength = mxGetN(argv[1]) + 1;
+	data = (char *)mxMalloc(dataLength);
+	dataStatus = mxGetString(argv[1], data, dataLength);
+
+	int inputDataLength = dataLength - 1;
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsMessageAppendData(message, (void *)data, inputDataLength, &err);
+
+	mxArray *_out = (mxArray *)0;
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsMessageCopy(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsMessage src_message = (HelicsMessage)(mxGetData(argv[0]));
+
+	HelicsMessage dst_message = (HelicsMessage)(mxGetData(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsMessageCopy(src_message, dst_message, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsMessageClone(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsMessage result = helicsMessageClone(message, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsMessageFree(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
+
+	helicsMessageFree(message);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsMessageClear(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsMessageClear(message, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateRegisterFilter(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsFilterTypes type = (HelicsFilterTypes)(mxGetScalar(argv[1]));
+
+	char *name;
+	size_t nameLength;
+	int nameStatus;
+	nameLength = mxGetN(argv[2]) + 1;
+	name = (char *)mxMalloc(nameLength);
+	nameStatus = mxGetString(argv[2], name, nameLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsFilter result = helicsFederateRegisterFilter(fed, type, (char const *)name, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	mxFree(name);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateRegisterGlobalFilter(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsFilterTypes type = (HelicsFilterTypes)(mxGetScalar(argv[1]));
+
+	char *name;
+	size_t nameLength;
+	int nameStatus;
+	nameLength = mxGetN(argv[2]) + 1;
+	name = (char *)mxMalloc(nameLength);
+	nameStatus = mxGetString(argv[2], name, nameLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsFilter result = helicsFederateRegisterGlobalFilter(fed, type, (char const *)name, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	mxFree(name);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateRegisterCloningFilter(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *name;
+	size_t nameLength;
+	int nameStatus;
+	nameLength = mxGetN(argv[1]) + 1;
+	name = (char *)mxMalloc(nameLength);
+	nameStatus = mxGetString(argv[1], name, nameLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsFilter result = helicsFederateRegisterCloningFilter(fed, (char const *)name, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(name);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateRegisterGlobalCloningFilter(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *name;
+	size_t nameLength;
+	int nameStatus;
+	nameLength = mxGetN(argv[1]) + 1;
+	name = (char *)mxMalloc(nameLength);
+	nameStatus = mxGetString(argv[1], name, nameLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsFilter result = helicsFederateRegisterGlobalCloningFilter(fed, (char const *)name, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(name);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsCoreRegisterFilter(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
+
+	HelicsFilterTypes type = (HelicsFilterTypes)(mxGetScalar(argv[1]));
+
+	char *name;
+	size_t nameLength;
+	int nameStatus;
+	nameLength = mxGetN(argv[2]) + 1;
+	name = (char *)mxMalloc(nameLength);
+	nameStatus = mxGetString(argv[2], name, nameLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsFilter result = helicsCoreRegisterFilter(core, type, (char const *)name, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	mxFree(name);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsCoreRegisterCloningFilter(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
+
+	char *name;
+	size_t nameLength;
+	int nameStatus;
+	nameLength = mxGetN(argv[1]) + 1;
+	name = (char *)mxMalloc(nameLength);
+	nameStatus = mxGetString(argv[1], name, nameLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsFilter result = helicsCoreRegisterCloningFilter(core, (char const *)name, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(name);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateGetFilterCount(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	int result = helicsFederateGetFilterCount(fed);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsFederateGetFilter(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *name;
+	size_t nameLength;
+	int nameStatus;
+	nameLength = mxGetN(argv[1]) + 1;
+	name = (char *)mxMalloc(nameLength);
+	nameStatus = mxGetString(argv[1], name, nameLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsFilter result = helicsFederateGetFilter(fed, (char const *)name, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(name);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateGetFilterByIndex(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	int index = (int)(mxGetScalar(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsFilter result = helicsFederateGetFilterByIndex(fed, index, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFilterIsValid(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFilter filt = (HelicsFilter)(mxGetData(argv[0]));
+
+	HelicsBool result = helicsFilterIsValid(filt);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsFilterGetName(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFilter filt = (HelicsFilter)(mxGetData(argv[0]));
+
+	char *result = helicsFilterGetName(filt);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsFilterSet(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFilter filt = (HelicsFilter)(mxGetData(argv[0]));
+
+	char *prop;
+	size_t propLength;
+	int propStatus;
+	propLength = mxGetN(argv[1]) + 1;
+	prop = (char *)mxMalloc(propLength);
+	propStatus = mxGetString(argv[1], prop, propLength);
+
+	double val = mxGetScalar(argv[2]);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFilterSet(filt, (char const *)prop, val, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(prop);
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFilterSetString(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFilter filt = (HelicsFilter)(mxGetData(argv[0]));
+
+	char *prop;
+	size_t propLength;
+	int propStatus;
+	propLength = mxGetN(argv[1]) + 1;
+	prop = (char *)mxMalloc(propLength);
+	propStatus = mxGetString(argv[1], prop, propLength);
+
+	char *val;
+	size_t valLength;
+	int valStatus;
+	valLength = mxGetN(argv[2]) + 1;
+	val = (char *)mxMalloc(valLength);
+	valStatus = mxGetString(argv[2], val, valLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFilterSetString(filt, (char const *)prop, (char const *)val, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(prop);
+
+	mxFree(val);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFilterAddDestinationTarget(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFilter filt = (HelicsFilter)(mxGetData(argv[0]));
+
+	char *dst;
+	size_t dstLength;
+	int dstStatus;
+	dstLength = mxGetN(argv[1]) + 1;
+	dst = (char *)mxMalloc(dstLength);
+	dstStatus = mxGetString(argv[1], dst, dstLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFilterAddDestinationTarget(filt, (char const *)dst, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(dst);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFilterAddSourceTarget(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFilter filt = (HelicsFilter)(mxGetData(argv[0]));
+
+	char *source;
+	size_t sourceLength;
+	int sourceStatus;
+	sourceLength = mxGetN(argv[1]) + 1;
+	source = (char *)mxMalloc(sourceLength);
+	sourceStatus = mxGetString(argv[1], source, sourceLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFilterAddSourceTarget(filt, (char const *)source, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(source);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFilterAddDeliveryEndpoint(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFilter filt = (HelicsFilter)(mxGetData(argv[0]));
+
+	char *deliveryEndpoint;
+	size_t deliveryEndpointLength;
+	int deliveryEndpointStatus;
+	deliveryEndpointLength = mxGetN(argv[1]) + 1;
+	deliveryEndpoint = (char *)mxMalloc(deliveryEndpointLength);
+	deliveryEndpointStatus = mxGetString(argv[1], deliveryEndpoint, deliveryEndpointLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFilterAddDeliveryEndpoint(filt, (char const *)deliveryEndpoint, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(deliveryEndpoint);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFilterRemoveTarget(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFilter filt = (HelicsFilter)(mxGetData(argv[0]));
+
+	char *target;
+	size_t targetLength;
+	int targetStatus;
+	targetLength = mxGetN(argv[1]) + 1;
+	target = (char *)mxMalloc(targetLength);
+	targetStatus = mxGetString(argv[1], target, targetLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFilterRemoveTarget(filt, (char const *)target, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(target);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFilterRemoveDeliveryEndpoint(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFilter filt = (HelicsFilter)(mxGetData(argv[0]));
+
+	char *deliveryEndpoint;
+	size_t deliveryEndpointLength;
+	int deliveryEndpointStatus;
+	deliveryEndpointLength = mxGetN(argv[1]) + 1;
+	deliveryEndpoint = (char *)mxMalloc(deliveryEndpointLength);
+	deliveryEndpointStatus = mxGetString(argv[1], deliveryEndpoint, deliveryEndpointLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFilterRemoveDeliveryEndpoint(filt, (char const *)deliveryEndpoint, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(deliveryEndpoint);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFilterGetInfo(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFilter filt = (HelicsFilter)(mxGetData(argv[0]));
+
+	char *result = helicsFilterGetInfo(filt);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsFilterSetInfo(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFilter filt = (HelicsFilter)(mxGetData(argv[0]));
+
+	char *info;
+	size_t infoLength;
+	int infoStatus;
+	infoLength = mxGetN(argv[1]) + 1;
+	info = (char *)mxMalloc(infoLength);
+	infoStatus = mxGetString(argv[1], info, infoLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFilterSetInfo(filt, (char const *)info, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(info);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFilterGetTag(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFilter filt = (HelicsFilter)(mxGetData(argv[0]));
+
+	char *tagname;
+	size_t tagnameLength;
+	int tagnameStatus;
+	tagnameLength = mxGetN(argv[1]) + 1;
+	tagname = (char *)mxMalloc(tagnameLength);
+	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
+
+	char *result = helicsFilterGetTag(filt, (char const *)tagname);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(tagname);
+}
+
+
+void _wrap_helicsFilterSetTag(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFilter filt = (HelicsFilter)(mxGetData(argv[0]));
+
+	char *tagname;
+	size_t tagnameLength;
+	int tagnameStatus;
+	tagnameLength = mxGetN(argv[1]) + 1;
+	tagname = (char *)mxMalloc(tagnameLength);
+	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
+
+	char *tagvalue;
+	size_t tagvalueLength;
+	int tagvalueStatus;
+	tagvalueLength = mxGetN(argv[2]) + 1;
+	tagvalue = (char *)mxMalloc(tagvalueLength);
+	tagvalueStatus = mxGetString(argv[2], tagvalue, tagvalueLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFilterSetTag(filt, (char const *)tagname, (char const *)tagvalue, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(tagname);
+
+	mxFree(tagvalue);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFilterSetOption(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFilter filt = (HelicsFilter)(mxGetData(argv[0]));
+
+	int option = (int)(mxGetScalar(argv[1]));
+
+	int value = (int)(mxGetScalar(argv[2]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFilterSetOption(filt, option, value, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFilterGetOption(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFilter filt = (HelicsFilter)(mxGetData(argv[0]));
+
+	int option = (int)(mxGetScalar(argv[1]));
+
+	int result = helicsFilterGetOption(filt, option);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+}
+
+
+void _wrap_helicsFederateRegisterTranslator(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsTranslatorTypes type = (HelicsTranslatorTypes)(mxGetScalar(argv[1]));
+
+	char *name;
+	size_t nameLength;
+	int nameStatus;
+	nameLength = mxGetN(argv[2]) + 1;
+	name = (char *)mxMalloc(nameLength);
+	nameStatus = mxGetString(argv[2], name, nameLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsTranslator result = helicsFederateRegisterTranslator(fed, type, (char const *)name, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	mxFree(name);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateRegisterGlobalTranslator(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	HelicsTranslatorTypes type = (HelicsTranslatorTypes)(mxGetScalar(argv[1]));
+
+	char *name;
+	size_t nameLength;
+	int nameStatus;
+	nameLength = mxGetN(argv[2]) + 1;
+	name = (char *)mxMalloc(nameLength);
+	nameStatus = mxGetString(argv[2], name, nameLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsTranslator result = helicsFederateRegisterGlobalTranslator(fed, type, (char const *)name, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	mxFree(name);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsCoreRegisterTranslator(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
+
+	HelicsTranslatorTypes type = (HelicsTranslatorTypes)(mxGetScalar(argv[1]));
+
+	char *name;
+	size_t nameLength;
+	int nameStatus;
+	nameLength = mxGetN(argv[2]) + 1;
+	name = (char *)mxMalloc(nameLength);
+	nameStatus = mxGetString(argv[2], name, nameLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsTranslator result = helicsCoreRegisterTranslator(core, type, (char const *)name, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	mxFree(name);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateGetTranslatorCount(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	int result = helicsFederateGetTranslatorCount(fed);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsFederateGetTranslator(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	char *name;
+	size_t nameLength;
+	int nameStatus;
+	nameLength = mxGetN(argv[1]) + 1;
+	name = (char *)mxMalloc(nameLength);
+	nameStatus = mxGetString(argv[1], name, nameLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsTranslator result = helicsFederateGetTranslator(fed, (char const *)name, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(name);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsFederateGetTranslatorByIndex(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	int index = (int)(mxGetScalar(argv[1]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsTranslator result = helicsFederateGetTranslatorByIndex(fed, index, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsTranslatorIsValid(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsTranslator trans = (HelicsTranslator)(mxGetData(argv[0]));
+
+	HelicsBool result = helicsTranslatorIsValid(trans);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsTranslatorGetName(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsTranslator trans = (HelicsTranslator)(mxGetData(argv[0]));
+
+	char *result = helicsTranslatorGetName(trans);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsTranslatorSet(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsTranslator trans = (HelicsTranslator)(mxGetData(argv[0]));
+
+	char *prop;
+	size_t propLength;
+	int propStatus;
+	propLength = mxGetN(argv[1]) + 1;
+	prop = (char *)mxMalloc(propLength);
+	propStatus = mxGetString(argv[1], prop, propLength);
+
+	double val = mxGetScalar(argv[2]);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsTranslatorSet(trans, (char const *)prop, val, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(prop);
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsTranslatorSetString(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsTranslator trans = (HelicsTranslator)(mxGetData(argv[0]));
+
+	char *prop;
+	size_t propLength;
+	int propStatus;
+	propLength = mxGetN(argv[1]) + 1;
+	prop = (char *)mxMalloc(propLength);
+	propStatus = mxGetString(argv[1], prop, propLength);
+
+	char *val;
+	size_t valLength;
+	int valStatus;
+	valLength = mxGetN(argv[2]) + 1;
+	val = (char *)mxMalloc(valLength);
+	valStatus = mxGetString(argv[2], val, valLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsTranslatorSetString(trans, (char const *)prop, (char const *)val, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(prop);
+
+	mxFree(val);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsTranslatorAddInputTarget(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsTranslator trans = (HelicsTranslator)(mxGetData(argv[0]));
+
+	char *input;
+	size_t inputLength;
+	int inputStatus;
+	inputLength = mxGetN(argv[1]) + 1;
+	input = (char *)mxMalloc(inputLength);
+	inputStatus = mxGetString(argv[1], input, inputLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsTranslatorAddInputTarget(trans, (char const *)input, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(input);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsTranslatorAddPublicationTarget(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsTranslator trans = (HelicsTranslator)(mxGetData(argv[0]));
+
+	char *pub;
+	size_t pubLength;
+	int pubStatus;
+	pubLength = mxGetN(argv[1]) + 1;
+	pub = (char *)mxMalloc(pubLength);
+	pubStatus = mxGetString(argv[1], pub, pubLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsTranslatorAddPublicationTarget(trans, (char const *)pub, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(pub);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsTranslatorAddSourceEndpoint(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsTranslator trans = (HelicsTranslator)(mxGetData(argv[0]));
+
+	char *ept;
+	size_t eptLength;
+	int eptStatus;
+	eptLength = mxGetN(argv[1]) + 1;
+	ept = (char *)mxMalloc(eptLength);
+	eptStatus = mxGetString(argv[1], ept, eptLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsTranslatorAddSourceEndpoint(trans, (char const *)ept, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(ept);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsTranslatorAddDestinationEndpoint(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsTranslator trans = (HelicsTranslator)(mxGetData(argv[0]));
+
+	char *ept;
+	size_t eptLength;
+	int eptStatus;
+	eptLength = mxGetN(argv[1]) + 1;
+	ept = (char *)mxMalloc(eptLength);
+	eptStatus = mxGetString(argv[1], ept, eptLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsTranslatorAddDestinationEndpoint(trans, (char const *)ept, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(ept);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsTranslatorRemoveTarget(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsTranslator trans = (HelicsTranslator)(mxGetData(argv[0]));
+
+	char *target;
+	size_t targetLength;
+	int targetStatus;
+	targetLength = mxGetN(argv[1]) + 1;
+	target = (char *)mxMalloc(targetLength);
+	targetStatus = mxGetString(argv[1], target, targetLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsTranslatorRemoveTarget(trans, (char const *)target, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(target);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsTranslatorGetInfo(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsTranslator trans = (HelicsTranslator)(mxGetData(argv[0]));
+
+	char *result = helicsTranslatorGetInfo(trans);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+}
+
+
+void _wrap_helicsTranslatorSetInfo(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsTranslator trans = (HelicsTranslator)(mxGetData(argv[0]));
+
+	char *info;
+	size_t infoLength;
+	int infoStatus;
+	infoLength = mxGetN(argv[1]) + 1;
+	info = (char *)mxMalloc(infoLength);
+	infoStatus = mxGetString(argv[1], info, infoLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsTranslatorSetInfo(trans, (char const *)info, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(info);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsTranslatorGetTag(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsTranslator trans = (HelicsTranslator)(mxGetData(argv[0]));
+
+	char *tagname;
+	size_t tagnameLength;
+	int tagnameStatus;
+	tagnameLength = mxGetN(argv[1]) + 1;
+	tagname = (char *)mxMalloc(tagnameLength);
+	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
+
+	char *result = helicsTranslatorGetTag(trans, (char const *)tagname);
+
+	mxArray *_out = mxCreateString((const char *)result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(tagname);
+}
+
+
+void _wrap_helicsTranslatorSetTag(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsTranslator trans = (HelicsTranslator)(mxGetData(argv[0]));
+
+	char *tagname;
+	size_t tagnameLength;
+	int tagnameStatus;
+	tagnameLength = mxGetN(argv[1]) + 1;
+	tagname = (char *)mxMalloc(tagnameLength);
+	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
+
+	char *tagvalue;
+	size_t tagvalueLength;
+	int tagvalueStatus;
+	tagvalueLength = mxGetN(argv[2]) + 1;
+	tagvalue = (char *)mxMalloc(tagvalueLength);
+	tagvalueStatus = mxGetString(argv[2], tagvalue, tagvalueLength);
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsTranslatorSetTag(trans, (char const *)tagname, (char const *)tagvalue, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+	mxFree(tagname);
+
+	mxFree(tagvalue);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsTranslatorSetOption(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsTranslator trans = (HelicsTranslator)(mxGetData(argv[0]));
+
+	int option = (int)(mxGetScalar(argv[1]));
+
+	int value = (int)(mxGetScalar(argv[2]));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsTranslatorSetOption(trans, option, value, &err);
+
+	mxArray _out = (mxArray *)0;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+
+
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsTranslatorGetOption(int resc, (mxArray**resv, argc, (mxArray**)(argv)){
+	HelicsTranslator trans = (HelicsTranslator)(mxGetData(argv[0]));
+
+	int option = (int)(mxGetScalar(argv[1]));
+
+	int result = helicsTranslatorGetOption(trans, option);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)result;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+
+
+
+}
+
+
+void matlabBrokerLoggingCallback(int loglevel, const char* identifier, const char* message, void* userData){
+	mxArray *lhs;
+	mxArray *rhs[4];	rhs[0] = const_cast<mxArray *>(userData);
+	rhs[1] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)loglevel;
+	rhs[2] = mxCreateString(identifier);
+	rhs[3] = mxCreateString(message);
+	int status = mexCallMATLAB(0,&lhs,4,rhs,"feval");
+	mxDestroyArray(lhs);
+	mxDestroyArray(rhs[1]);
+	mxDestroyArray(rhs[2]);
+	mxDestroyArray(rhs[3]);
+}
+
+void _wrap_helicsBrokerSetLoggingCallback(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
+
+	void *userData = mxGetData(argv[1]);
+	HelicsError err = helicsErrorInitialize();
+
+	helicsBrokerSetLoggingCallback(broker, &matlabBrokerLoggingCallback, userData, &err);
+
+	mxArray *_out = (mxArray *)0;
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void matlabCoreLoggingCallback(int loglevel, const char* identifier, const char* message, void* userData){
+	mxArray *lhs;
+	mxArray *rhs[4];	rhs[0] = const_cast<mxArray *>(userData);
+	rhs[1] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)loglevel;
+	rhs[2] = mxCreateString(identifier);
+	rhs[3] = mxCreateString(message);
+	int status = mexCallMATLAB(0,&lhs,4,rhs,"feval");
+	mxDestroyArray(lhs);
+	mxDestroyArray(rhs[1]);
+	mxDestroyArray(rhs[2]);
+	mxDestroyArray(rhs[3]);
+}
+
+void _wrap_helicsCoreSetLoggingCallback(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
+
+	void *userData = mxGetData(argv[1]);
+	HelicsError err = helicsErrorInitialize();
+
+	helicsCoreSetLoggingCallback(core, &matlabCoreLoggingCallback, userData, &err);
+
+	mxArray *_out = (mxArray *)0;
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void matlabFederateLoggingCallback(int loglevel, const char* identifier, const char* message, void* userData){
+	mxArray *lhs;
+	mxArray *rhs[4];	rhs[0] = const_cast<mxArray *>(userData);
+	rhs[1] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(out)) = (int64_T)loglevel;
+	rhs[2] = mxCreateString(identifier);
+	rhs[3] = mxCreateString(message);
+	int status = mexCallMATLAB(0,&lhs,4,rhs,"feval");
+	mxDestroyArray(lhs);
+	mxDestroyArray(rhs[1]);
+	mxDestroyArray(rhs[2]);
+	mxDestroyArray(rhs[3]);
+}
+
+void _wrap_helicsFederateSetLoggingCallback(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	void *userData = mxGetData(argv[1]);
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateSetLoggingCallback(fed, &matlabFederateLoggingCallback, userData, &err);
+
+	mxArray *_out = (mxArray *)0;
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+HelicsMessage matlabFilterCustomCallback(HelicsMessage message, void* userData){
+	mxArray *lhs;
+	mxArray *rhs[2];	rhs[0] = const_cast<mxArray *>(userData);
+	rhs[1] = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((unit64_T*)mxGetData(rhs[1])) = (uint64_T)message;
+	int status = mexCallMATLAB(1,&lhs,2,rhs,"feval");
+	HelicsMessage rv = (HelicsMessage)(mxGetData(lhs[0]));
+	mxDestroyArray(rhs[1]);
+	return rv;
+}
+
+void _wrap_helicsFilterSetCustomCallback(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsFilter filter = (HelicsFilter)(mxGetData(argv[0]));
+
+	void *userData = mxGetData(argv[1]);
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFilterSetCustomCallback(filter, &matlabFilterCustomCallback, userData, &err);
+
+	mxArray *_out = (mxArray *)0;
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+HelicsMessage matlabFederateQueryCallback(const char* query, int querySize, HelicsQueryBuffer buffer, void* userData){
+	mxArray *lhs;
+	mxArray *rhs[2];\mxSize dims[2] = {1, querySize};
+	rhs[0] = const_cast<mxArray *>(userData);
+	rhs[1] = mxCreateCharArray(2, dims);
+	mxChar *pQuery = (mxChar *)mxGetData(rhs[1]);
+	for(int i=0; i<querySize; ++i){
+		pQuery[i] = query[i];
+	}
+	int status = mexCallMATLAB(1,&lhs,2,rhs,"feval");
+	char *rStr;]n	size_t rStrSize = mxGetN(lhs[0]) + 1;
+	rStr = (char *)mxMalloc(rStrSize);
+int status = mxGetString(lhs[0], (const char *)rStr, rStrSize);
+	HelicsError err = helicsErrorInitialize();
+
+helicsQueryBufferFill(buffer, (const char *)rStr, (int)rStrSize, err);
+	mxDestroyArray(rhs[1]);
+	mxFree(rStr);
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+void _wrap_helicsFederateSetQueryCallback(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsFilter filter = (HelicsFilter)(mxGetData(argv[0]));
+
+	void *userData = mxGetData(argv[1]);
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateSetQueryCallback(filter, &matlabFilterCustomCallback, userData, &err);
+
+	mxArray *_out = (mxArray *)0;
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void matlabFederateSetTimeRequestEntryCallback(HelicsTime currentTime, HelicsTime requestTime, HelicsBool iterating, void* userData){
+	mxArray *lhs;
+	mxArray *rhs[4];	rhs[0] = const_cast<mxArray *>(userData);
+	rhs[1] = mxCreateDoubleScalar(currentTime);
+	rhs[2] = mxCreateDoubleScalar(requestTime);
+	rhs[3] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(rhs[2]) =  (int46_T)iterating;
+	int status = mexCallMATLAB(0,&lhs,4,rhs,"feval");
+	mxDestroyArray(lhs);
+	mxDestroyArray(rhs[1]);
+	mxDestroyArray(rhs[2]);
+	mxDestroyArray(rhs[3]);
+}
+
+void _wrap_helicsFederateSetTimeRequestEntryCallback(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	void *userData = mxGetData(argv[1]);
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateSetTimeRequestEntryCallback(fed, &matlabFederateSetTimeRequestEntryCallback, userData, &err);
+
+	mxArray *_out = (mxArray *)0;
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void matlabFederateTimeUpdateCallback(HelicsTime newTime, HelicsBool iterating, void* userData){
+	mxArray *lhs;
+	mxArray *rhs[3];	rhs[0] = const_cast<mxArray *>(userData);
+	rhs[1] = mxCreateDoubleScalar((double)newTime);
+	rhs[2] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(rhs[2]) =  (int46_T)iterating;
+	int status = mexCallMATLAB(0,&lhs,3,rhs,"feval");
+	mxDestroyArray(lhs);
+	mxDestroyArray(rhs[1]);
+	mxDestroyArray(rhs[2]);
+}
+
+void _wrap_helicsFederateSetTimeUpdateCallback(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	void *userData = mxGetData(argv[1]);
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateSetTimeUpdateCallback(fed, &matlabFederateTimeUpdateCallback, userData, &err);
+
+	mxArray *_out = (mxArray *)0;
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void matlabFederateSetStateChangeCallback(HelicsFederateState newState, HelicsFederateState oldState, void* userData){
+	mxArray *lhs;
+	mxArray *rhs[3];	rhs[0] = const_cast<mxArray *>(userData);
+	rhs[1] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(rhs[2]) =  (int46_T)newState;
+	rhs[2] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(rhs[2]) =  (int46_T)oldState;
+	int status = mexCallMATLAB(0,&lhs,3,rhs,"feval");
+	mxDestroyArray(lhs);
+	mxDestroyArray(rhs[1]);
+	mxDestroyArray(rhs[2]);
+}
+
+void _wrap_helicsFederateSetStateChangeCallback(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	void *userData = mxGetData(argv[1]);
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateSetStateChangeCallback(fed, &matlabFederateSetStateChangeCallback, userData, &err);
+
+	mxArray *_out = (mxArray *)0;
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void matlabFederateSetTimeRequestReturnCallback(HelicsTime newTime, HelicsBool iterating, void* userData){
+	mxArray *lhs;
+	mxArray *rhs[3];	rhs[0] = const_cast<mxArray *>(userData);
+	rhs[1] = mxCreateDoubleScalar(newTime);
+	rhs[2] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(rhs[2]) =  (int46_T)iterating;
+	int status = mexCallMATLAB(0,&lhs,3,rhs,"feval");
+	mxDestroyArray(lhs);
+	mxDestroyArray(rhs[1]);
+	mxDestroyArray(rhs[2]);
+}
+
+void _wrap_helicsFederateSetTimeRequestReturnCallback(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
+
+	void *userData = mxGetData(argv[1]);
+	HelicsError err = helicsErrorInitialize();
+
+	helicsFederateSetTimeRequestReturnCallback(fed, &matlabFederateSetTimeRequestReturnCallback, userData, &err);
+
+	mxArray *_out = (mxArray *)0;
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsQueryBufferFill(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	HelicsQueryBuffer buffer = (HelicsQueryBuffer)(mxGetData(argv[0]));
+
+	char *str;
+	size_t strLength;
+	int strStatus;
+	strLength = mxGetN(argv[1]) + 1;
+	str = (char *)mxMalloc(strLength);
+	strStatus = mxGetString(argv[1], str, strLength);
+
+	int strSize = strLength - 1;
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsQueryBufferFill(buffer, str, strSize, &err);
+
+	mxArray *_out = (mxArray *)0;
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
 void mexFunction(int resc, mxArray *resv[], int argc, const mxArray *argv[]) {
 	if(--argc < 0 || !mxIsString(*argv)){
 		mexErrMsgTxt("This mex file should only be called from inside the .m files. First input should be the function ID.");
@@ -1603,10061 +11660,4 @@ void mexFunction(int resc, mxArray *resv[], int argc, const mxArray *argv[]) {
 		mexErrMsgIdAndTxt("helics:mexFunction","An unknown function id was encountered. Call the mex function with a valid function id.");
 	}
 }
-
-void _wrap_HELICS_DATA_TYPE_CHAR(int resc, mxArray *resv[], int argc, mxArray *argv[]){
-	mxArray *out = mxCreateNumericMatrix(1,1,mxINT64_CLASS,mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_t)HELICS_DATA_TYPE_CHAR;
-	resv[0] = out;
-}
-
-void _wrap_helicsCreateDataBuffer(resc, resv, argc, (mxArray**)(argv)){
-	int32_t initialCapacity = *((int32_t *)mxGetData(argv[0]));
-
-\HelicsDataBuffer result = helicsCreateDataBuffer(initialCapacity);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsWrapDataInBuffer(resc, resv, argc, (mxArray**)(argv)){
-	void *data = mxGetData(argv[0]);
-
-	int dataSize = (int)(mxGetScalar(argv[1]));
-
-	int dataCapacity = (int)(mxGetScalar(argv[2]));
-
-\HelicsDataBuffer result = helicsWrapDataInBuffer(data, dataSize, dataCapacity);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-
-}
-
-
-void _wrap_helicsDataBufferFree(resc, resv, argc, (mxArray**)(argv)){
-	HelicsDataBuffer data = (HelicsDataBuffer)(mxGetData(argv[0]));
-
-	helicsDataBufferFree(data);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsDataBufferSize(resc, resv, argc, (mxArray**)(argv)){
-	HelicsDataBuffer data = (HelicsDataBuffer)(mxGetData(argv[0]));
-
-	int32_t result = helicsDataBufferSize(data);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsDataBufferCapacity(resc, resv, argc, (mxArray**)(argv)){
-	HelicsDataBuffer data = (HelicsDataBuffer)(mxGetData(argv[0]));
-
-	int32_t result = helicsDataBufferCapacity(data);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsDataBufferData(resc, resv, argc, (mxArray**)(argv)){
-	HelicsDataBuffer data = (HelicsDataBuffer)(mxGetData(argv[0]));
-
-	void *reault = helicsDataBufferData(data);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsDataBufferReserve(resc, resv, argc, (mxArray**)(argv)){
-	HelicsDataBuffer data = (HelicsDataBuffer)(mxGetData(argv[0]));
-
-	int32_t newCapacity = *((int32_t *)mxGetData(argv[1]));
-
-	HelicsBool result = helicsDataBufferReserve(data, newCapacity);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-}
-
-
-void _wrap_helicsIntToBytes(resc, resv, argc, (mxArray**)(argv)){
-	int64_t value = *((int64_t *)mxGetData(argv[0]));
-
-	 HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(int));
-
-	int32_t result = helicsIntToBytes(value, data);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)data;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-}
-
-
-void _wrap_helicsDoubleToBytes(resc, resv, argc, (mxArray**)(argv)){
-	double value = mxGetScalar(argv[0]);
-
-	 HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(double));
-
-	int32_t result = helicsDoubleToBytes(value, data);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)data;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-}
-
-
-void _wrap_helicsStringToBytes(resc, resv, argc, (mxArray**)(argv)){
-	char *str;
-	size_t strLength;
-	int strStatus;
-	strLength = mxGetN(argv[0]) + 1;
-	str = (char *)mxMalloc(strLength);
-	strStatus = mxGetString(argv[0], str, strLength);
-
-	 HelicsDataBuffer data = helicsCreateDataBuffer(strLength);
-
-	int32_t result = helicsStringToBytes(str, data);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)data;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-}
-
-
-void _wrap_helicsBoolToBytes(resc, resv, argc, (mxArray**)(argv)){
-	HelicsBool value = (HelicsBool)(mxGetScalar(argv[0]));
-
-	 HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(HelicsBool);
-
-	int32_t result = helicsBoolToBytes(value, data);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)data;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-}
-
-
-void _wrap_helicsCharToBytes(resc, resv, argc, (mxArray**)(argv)){
-	char *value;
-	size_t valueLength;
-	int valueStatus;
-	valueLength = mxGetN(argv[0]) + 1;
-	value = (char *)mxMalloc(valueLength);
-	valueStatus = mxGetString(argv[0], value, valueLength);
-
-	 HelicsDataBuffer data = helicsCreateDataBuffer(valueLength);
-
-	int32_t result = helicsCharToBytes(value, data);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)data;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-}
-
-
-void _wrap_helicsTimeToBytes(resc, resv, argc, (mxArray**)(argv)){
-	HelicsTime value = (HelicsTime)(mxGetScalar(argv[0]));
-
-	 HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(HelicsTime));
-
-	int32_t result = helicsTimeToBytes(value, data);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)data;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-}
-
-
-void _wrap_helicsComplexToBytes(resc, resv, argc, (mxArray**)(argv)){
-	mxComplexDouble *value = xmGetComplexDoubles(argv[1]);
-
-	 HelicsDataBuffer data = helicsCreateDataBuffer(2*sizeof(double));
-
-	int32_t result = helicsComplexToBytes(value->real, value->imag, data);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)data;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-}
-
-
-void _wrap_helicsVectorToBytes(resc, resv, argc, (mxArray**)(argv)){
-	int dataSize =  (int)mxGetNumberOfElements(argv[0]);
-
-	double *value =  (double *)mxGetDoubles(argv[0]);
-
-	 HelicsDataBuffer data = helicsCreateDataBuffer(dataSize*sizeof(double));
-
-	int32_t result = helicsVectorToBytes((const double *)value, dataSize, data);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)data;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-}
-
-
-void _wrap_helicsDataBufferType(resc, resv, argc, (mxArray**)(argv)){
-	HelicsDataBuffer data = (HelicsDataBuffer)(mxGetData(argv[0]));
-
-	int result = helicsDataBufferType(data);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsDataBufferToInt(resc, resv, argc, (mxArray**)(argv)){
-	HelicsDataBuffer data = (HelicsDataBuffer)(mxGetData(argv[0]));
-
-	int64_t result = helicsDataBufferToInt(data);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsDataBufferToDouble(resc, resv, argc, (mxArray**)(argv)){
-	HelicsDataBuffer data = (HelicsDataBuffer)(mxGetData(argv[0]));
-
-	double result = helicsDataBufferToDouble(data);
-
-	mxArray *_out = mxCreateDoubleScalar(result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsDataBufferToBool(resc, resv, argc, (mxArray**)(argv)){
-	HelicsDataBuffer data = (HelicsDataBuffer)(mxGetData(argv[0]));
-
-	HelicsBool result = helicsDataBufferToBool(data);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsGetVersion(resc, resv, argc, (mxArray**)(argv)){
-	char *result = helicsGetVersion();
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-}
-
-
-void _wrap_helicsGetBuildFlags(resc, resv, argc, (mxArray**)(argv)){
-	char *result = helicsGetBuildFlags();
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-}
-
-
-void _wrap_helicsGetCompilerVersion(resc, resv, argc, (mxArray**)(argv)){
-	char *result = helicsGetCompilerVersion();
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-}
-
-
-void _wrap_helicsGetSystemInfo(resc, resv, argc, (mxArray**)(argv)){
-	char *result = helicsGetSystemInfo();
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-}
-
-
-void _wrap_helicsLoadSignalHandler(resc, resv, argc, (mxArray**)(argv)){
-	helicsLoadSignalHandler();
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-}
-
-
-void _wrap_helicsLoadThreadedSignalHandler(resc, resv, argc, (mxArray**)(argv)){
-	helicsLoadThreadedSignalHandler();
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-}
-
-
-void _wrap_helicsClearSignalHandler(resc, resv, argc, (mxArray**)(argv)){
-	helicsClearSignalHandler();
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-}
-
-
-void _wrap_helicsAbort(resc, resv, argc, (mxArray**)(argv)){
-	int errorCode = (int)(mxGetScalar(argv[0]));
-
-	char *errorString;
-	size_t errorStringLength;
-	int errorStringStatus;
-	errorStringLength = mxGetN(argv[1]) + 1;
-	errorString = (char *)mxMalloc(errorStringLength);
-	errorStringStatus = mxGetString(argv[1], errorString, errorStringLength);
-
-	helicsAbort(errorCode, (char const *)errorString);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(errorString);
-}
-
-
-void _wrap_helicsIsCoreTypeAvailable(resc, resv, argc, (mxArray**)(argv)){
-	char *type;
-	size_t typeLength;
-	int typeStatus;
-	typeLength = mxGetN(argv[0]) + 1;
-	type = (char *)mxMalloc(typeLength);
-	typeStatus = mxGetString(argv[0], type, typeLength);
-
-	HelicsBool result = helicsIsCoreTypeAvailable((char const *)type);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	mxFree(type);
-}
-
-
-void _wrap_helicsCreateCore(resc, resv, argc, (mxArray**)(argv)){
-	char *type;
-	size_t typeLength;
-	int typeStatus;
-	typeLength = mxGetN(argv[0]) + 1;
-	type = (char *)mxMalloc(typeLength);
-	typeStatus = mxGetString(argv[0], type, typeLength);
-
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[1]) + 1;
-	name = (char *)mxMalloc(nameLength);
-	nameStatus = mxGetString(argv[1], name, nameLength);
-
-	char *initString;
-	size_t initStringLength;
-	int initStringStatus;
-	initStringLength = mxGetN(argv[2]) + 1;
-	initString = (char *)mxMalloc(initStringLength);
-	initStringStatus = mxGetString(argv[2], initString, initStringLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsCore result = helicsCreateCore((char const *)type, (char const *)name, (char const *)initString, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	mxFree(type);
-
-	mxFree(name);
-
-	mxFree(initString);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsCreateCoreFromArgs(resc, resv, argc, (mxArray**)(argv)){
-	char *type;
-	size_t typeLength;
-	int typeStatus;
-	typeLength = mxGetN(argv[0]) + 1;
-	type = (char *)mxMalloc(typeLength);
-	typeStatus = mxGetString(argv[0], type, typeLength);
-
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[1]) + 1;
-	name = (char *)mxMalloc(nameLength);
-	nameStatus = mxGetString(argv[1], name, nameLength);
-
-	int arg3 = 0;
-	char **arg4 = (char **)0;
-	int ii;
-	arg3 = static_cast<int>(mxGetNumberOfElements(argv[2]));
-	arg4 = (char **)mxMalloc((arg3)*sizeof(char *));
-	for (ii=0;ii<arg3;ii++){
-		mxArray *cellElement=mxGetCell(argv[2], ii);
-		int len = mxGetN(cellElement) + 1;
-		arg4[ii] = (char *)mxMalloc(len);
-		int flag = mxGetString(cellElement, arg4[ii], len);
-	}
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsCore result = helicsCreateCoreFromArgs(type, name, arg3, arg4, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	mxFree(type);
-
-	mxFree(name);
-
-	mxFree(arg4);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsCoreClone(resc, resv, argc, (mxArray**)(argv)){
-	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsCore result = helicsCoreClone(core, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsCoreIsValid(resc, resv, argc, (mxArray**)(argv)){
-	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
-
-	HelicsBool result = helicsCoreIsValid(core);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsCreateBroker(resc, resv, argc, (mxArray**)(argv)){
-	char *type;
-	size_t typeLength;
-	int typeStatus;
-	typeLength = mxGetN(argv[0]) + 1;
-	type = (char *)mxMalloc(typeLength);
-	typeStatus = mxGetString(argv[0], type, typeLength);
-
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[1]) + 1;
-	name = (char *)mxMalloc(nameLength);
-	nameStatus = mxGetString(argv[1], name, nameLength);
-
-	char *initString;
-	size_t initStringLength;
-	int initStringStatus;
-	initStringLength = mxGetN(argv[2]) + 1;
-	initString = (char *)mxMalloc(initStringLength);
-	initStringStatus = mxGetString(argv[2], initString, initStringLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsBroker result = helicsCreateBroker((char const *)type, (char const *)name, (char const *)initString, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	mxFree(type);
-
-	mxFree(name);
-
-	mxFree(initString);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsCreateBrokerFromArgs(resc, resv, argc, (mxArray**)(argv)){
-	char *type;
-	size_t typeLength;
-	int typeStatus;
-	typeLength = mxGetN(argv[0]) + 1;
-	type = (char *)mxMalloc(typeLength);
-	typeStatus = mxGetString(argv[0], type, typeLength);
-
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[1]) + 1;
-	name = (char *)mxMalloc(nameLength);
-	nameStatus = mxGetString(argv[1], name, nameLength);
-
-	int arg3 = 0;
-	char **arg4 = (char **)0;
-	int ii;
-	arg2 = static_cast<int>(mxGetNumberOfElements(argv[2]));
-	arg3 = (char **)mxMalloc((arg2)*sizeof(char *));
-	for (ii=0;ii<arg3;ii++){
-		mxArray *cellElement=mxGetCell(argv[2], ii);
-		int len = mxGetN(cellElement) + 1;
-		arg4[ii] = (char *)mxMalloc(len);
-		int flag = mxGetString(cellElement, arg4[ii], len);
-	}
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsBroker result = helicsCreateBrokerFromArgs(type, name, arg3, arg4, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	mxFree(type);
-
-	mxFree(name);
-
-	mxFree(arg4);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsBrokerClone(resc, resv, argc, (mxArray**)(argv)){
-	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsBroker result = helicsBrokerClone(broker, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsBrokerIsValid(resc, resv, argc, (mxArray**)(argv)){
-	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
-
-	HelicsBool result = helicsBrokerIsValid(broker);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsBrokerIsConnected(resc, resv, argc, (mxArray**)(argv)){
-	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
-
-	HelicsBool result = helicsBrokerIsConnected(broker);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsBrokerDataLink(resc, resv, argc, (mxArray**)(argv)){
-	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
-
-	char *source;
-	size_t sourceLength;
-	int sourceStatus;
-	sourceLength = mxGetN(argv[1]) + 1;
-	source = (char *)mxMalloc(sourceLength);
-	sourceStatus = mxGetString(argv[1], source, sourceLength);
-
-	char *target;
-	size_t targetLength;
-	int targetStatus;
-	targetLength = mxGetN(argv[2]) + 1;
-	target = (char *)mxMalloc(targetLength);
-	targetStatus = mxGetString(argv[2], target, targetLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsBrokerDataLink(broker, (char const *)source, (char const *)target, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(source);
-
-	mxFree(target);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsBrokerAddSourceFilterToEndpoint(resc, resv, argc, (mxArray**)(argv)){
-	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
-
-	char *filter;
-	size_t filterLength;
-	int filterStatus;
-	filterLength = mxGetN(argv[1]) + 1;
-	filter = (char *)mxMalloc(filterLength);
-	filterStatus = mxGetString(argv[1], filter, filterLength);
-
-	char *endpoint;
-	size_t endpointLength;
-	int endpointStatus;
-	endpointLength = mxGetN(argv[2]) + 1;
-	endpoint = (char *)mxMalloc(endpointLength);
-	endpointStatus = mxGetString(argv[2], endpoint, endpointLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsBrokerAddSourceFilterToEndpoint(broker, (char const *)filter, (char const *)endpoint, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(filter);
-
-	mxFree(endpoint);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsBrokerAddDestinationFilterToEndpoint(resc, resv, argc, (mxArray**)(argv)){
-	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
-
-	char *filter;
-	size_t filterLength;
-	int filterStatus;
-	filterLength = mxGetN(argv[1]) + 1;
-	filter = (char *)mxMalloc(filterLength);
-	filterStatus = mxGetString(argv[1], filter, filterLength);
-
-	char *endpoint;
-	size_t endpointLength;
-	int endpointStatus;
-	endpointLength = mxGetN(argv[2]) + 1;
-	endpoint = (char *)mxMalloc(endpointLength);
-	endpointStatus = mxGetString(argv[2], endpoint, endpointLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsBrokerAddDestinationFilterToEndpoint(broker, (char const *)filter, (char const *)endpoint, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(filter);
-
-	mxFree(endpoint);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsBrokerMakeConnections(resc, resv, argc, (mxArray**)(argv)){
-	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
-
-	char *file;
-	size_t fileLength;
-	int fileStatus;
-	fileLength = mxGetN(argv[1]) + 1;
-	file = (char *)mxMalloc(fileLength);
-	fileStatus = mxGetString(argv[1], file, fileLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsBrokerMakeConnections(broker, (char const *)file, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(file);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsCoreWaitForDisconnect(resc, resv, argc, (mxArray**)(argv)){
-	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
-
-	int msToWait = (int)(mxGetScalar(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsBool result = helicsCoreWaitForDisconnect(core, msToWait, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsBrokerWaitForDisconnect(resc, resv, argc, (mxArray**)(argv)){
-	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
-
-	int msToWait = (int)(mxGetScalar(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsBool result = helicsBrokerWaitForDisconnect(broker, msToWait, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsCoreIsConnected(resc, resv, argc, (mxArray**)(argv)){
-	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
-
-	HelicsBool result = helicsCoreIsConnected(core);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsCoreDataLink(resc, resv, argc, (mxArray**)(argv)){
-	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
-
-	char *source;
-	size_t sourceLength;
-	int sourceStatus;
-	sourceLength = mxGetN(argv[1]) + 1;
-	source = (char *)mxMalloc(sourceLength);
-	sourceStatus = mxGetString(argv[1], source, sourceLength);
-
-	char *target;
-	size_t targetLength;
-	int targetStatus;
-	targetLength = mxGetN(argv[2]) + 1;
-	target = (char *)mxMalloc(targetLength);
-	targetStatus = mxGetString(argv[2], target, targetLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsCoreDataLink(core, (char const *)source, (char const *)target, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(source);
-
-	mxFree(target);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsCoreAddSourceFilterToEndpoint(resc, resv, argc, (mxArray**)(argv)){
-	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
-
-	char *filter;
-	size_t filterLength;
-	int filterStatus;
-	filterLength = mxGetN(argv[1]) + 1;
-	filter = (char *)mxMalloc(filterLength);
-	filterStatus = mxGetString(argv[1], filter, filterLength);
-
-	char *endpoint;
-	size_t endpointLength;
-	int endpointStatus;
-	endpointLength = mxGetN(argv[2]) + 1;
-	endpoint = (char *)mxMalloc(endpointLength);
-	endpointStatus = mxGetString(argv[2], endpoint, endpointLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsCoreAddSourceFilterToEndpoint(core, (char const *)filter, (char const *)endpoint, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(filter);
-
-	mxFree(endpoint);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsCoreAddDestinationFilterToEndpoint(resc, resv, argc, (mxArray**)(argv)){
-	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
-
-	char *filter;
-	size_t filterLength;
-	int filterStatus;
-	filterLength = mxGetN(argv[1]) + 1;
-	filter = (char *)mxMalloc(filterLength);
-	filterStatus = mxGetString(argv[1], filter, filterLength);
-
-	char *endpoint;
-	size_t endpointLength;
-	int endpointStatus;
-	endpointLength = mxGetN(argv[2]) + 1;
-	endpoint = (char *)mxMalloc(endpointLength);
-	endpointStatus = mxGetString(argv[2], endpoint, endpointLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsCoreAddDestinationFilterToEndpoint(core, (char const *)filter, (char const *)endpoint, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(filter);
-
-	mxFree(endpoint);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsCoreMakeConnections(resc, resv, argc, (mxArray**)(argv)){
-	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
-
-	char *file;
-	size_t fileLength;
-	int fileStatus;
-	fileLength = mxGetN(argv[1]) + 1;
-	file = (char *)mxMalloc(fileLength);
-	fileStatus = mxGetString(argv[1], file, fileLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsCoreMakeConnections(core, (char const *)file, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(file);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsBrokerGetIdentifier(resc, resv, argc, (mxArray**)(argv)){
-	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
-
-	char *result = helicsBrokerGetIdentifier(broker);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsCoreGetIdentifier(resc, resv, argc, (mxArray**)(argv)){
-	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
-
-	char *result = helicsCoreGetIdentifier(core);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsBrokerGetAddress(resc, resv, argc, (mxArray**)(argv)){
-	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
-
-	char *result = helicsBrokerGetAddress(broker);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsCoreGetAddress(resc, resv, argc, (mxArray**)(argv)){
-	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
-
-	char *result = helicsCoreGetAddress(core);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsCoreSetReadyToInit(resc, resv, argc, (mxArray**)(argv)){
-	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsCoreSetReadyToInit(core, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsCoreConnect(resc, resv, argc, (mxArray**)(argv)){
-	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsBool result = helicsCoreConnect(core, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsCoreDisconnect(resc, resv, argc, (mxArray**)(argv)){
-	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsCoreDisconnect(core, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsGetFederateByName(resc, resv, argc, (mxArray**)(argv)){
-	char *fedName;
-	size_t fedNameLength;
-	int fedNameStatus;
-	fedNameLength = mxGetN(argv[0]) + 1;
-	fedName = (char *)mxMalloc(fedNameLength);
-	fedNameStatus = mxGetString(argv[0], fedName, fedNameLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsFederate result = helicsGetFederateByName((char const *)fedName, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	mxFree(fedName);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsBrokerDisconnect(resc, resv, argc, (mxArray**)(argv)){
-	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsBrokerDisconnect(broker, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateDestroy(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	helicsFederateDestroy(fed);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsBrokerDestroy(resc, resv, argc, (mxArray**)(argv)){
-	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
-
-	helicsBrokerDestroy(broker);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsCoreDestroy(resc, resv, argc, (mxArray**)(argv)){
-	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
-
-	helicsCoreDestroy(core);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsCoreFree(resc, resv, argc, (mxArray**)(argv)){
-	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
-
-	helicsCoreFree(core);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsBrokerFree(resc, resv, argc, (mxArray**)(argv)){
-	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
-
-	helicsBrokerFree(broker);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsCreateValueFederate(resc, resv, argc, (mxArray**)(argv)){
-	char *fedName;
-	size_t fedNameLength;
-	int fedNameStatus;
-	fedNameLength = mxGetN(argv[0]) + 1;
-	fedName = (char *)mxMalloc(fedNameLength);
-	fedNameStatus = mxGetString(argv[0], fedName, fedNameLength);
-
-	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsFederate result = helicsCreateValueFederate((char const *)fedName, fi, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	mxFree(fedName);
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsCreateValueFederateFromConfig(resc, resv, argc, (mxArray**)(argv)){
-	char *configFile;
-	size_t configFileLength;
-	int configFileStatus;
-	configFileLength = mxGetN(argv[0]) + 1;
-	configFile = (char *)mxMalloc(configFileLength);
-	configFileStatus = mxGetString(argv[0], configFile, configFileLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsFederate result = helicsCreateValueFederateFromConfig((char const *)configFile, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	mxFree(configFile);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsCreateMessageFederate(resc, resv, argc, (mxArray**)(argv)){
-	char *fedName;
-	size_t fedNameLength;
-	int fedNameStatus;
-	fedNameLength = mxGetN(argv[0]) + 1;
-	fedName = (char *)mxMalloc(fedNameLength);
-	fedNameStatus = mxGetString(argv[0], fedName, fedNameLength);
-
-	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsFederate result = helicsCreateMessageFederate((char const *)fedName, fi, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	mxFree(fedName);
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsCreateMessageFederateFromConfig(resc, resv, argc, (mxArray**)(argv)){
-	char *configFile;
-	size_t configFileLength;
-	int configFileStatus;
-	configFileLength = mxGetN(argv[0]) + 1;
-	configFile = (char *)mxMalloc(configFileLength);
-	configFileStatus = mxGetString(argv[0], configFile, configFileLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsFederate result = helicsCreateMessageFederateFromConfig((char const *)configFile, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	mxFree(configFile);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsCreateCombinationFederate(resc, resv, argc, (mxArray**)(argv)){
-	char *fedName;
-	size_t fedNameLength;
-	int fedNameStatus;
-	fedNameLength = mxGetN(argv[0]) + 1;
-	fedName = (char *)mxMalloc(fedNameLength);
-	fedNameStatus = mxGetString(argv[0], fedName, fedNameLength);
-
-	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsFederate result = helicsCreateCombinationFederate((char const *)fedName, fi, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	mxFree(fedName);
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsCreateCombinationFederateFromConfig(resc, resv, argc, (mxArray**)(argv)){
-	char *configFile;
-	size_t configFileLength;
-	int configFileStatus;
-	configFileLength = mxGetN(argv[0]) + 1;
-	configFile = (char *)mxMalloc(configFileLength);
-	configFileStatus = mxGetString(argv[0], configFile, configFileLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsFederate result = helicsCreateCombinationFederateFromConfig((char const *)configFile, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	mxFree(configFile);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateClone(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsFederate result = helicsFederateClone(fed, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsCreateFederateInfo(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederateInfo result = helicsCreateFederateInfo();
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-}
-
-
-void _wrap_helicsFederateInfoClone(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsFederateInfo result = helicsFederateInfoClone(fi, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateInfoLoadFromArgs(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
-
-	int arg2 = 0;
-	char **arg3 = (char **)0;
-	int ii;
-	arg2 = static_cast<int>(mxGetNumberOfElements(argv[1]));
-	arg3 = (char **)mxMalloc((arg2)*sizeof(char *));
-	for (ii=0;ii<arg2;ii++){
-		mxArray *cellElement=mxGetCell(argv[1], ii);
-		int len = mxGetN(cellElement) + 1;
-		arg3[ii] = (char *)mxMalloc(len);
-		int flag = mxGetString(cellElement, arg3[ii], len);
-	}
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateInfoLoadFromArgs(fi, arg2, arg3, &err);
-
-	mxArray *_out = (mxArray *)0;
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	mxFree(arg3);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateInfoLoadFromString(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
-
-	char *args;
-	size_t argsLength;
-	int argsStatus;
-	argsLength = mxGetN(argv[1]) + 1;
-	args = (char *)mxMalloc(argsLength);
-	argsStatus = mxGetString(argv[1], args, argsLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateInfoLoadFromString(fi, (char const *)args, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(args);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateInfoFree(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
-
-	helicsFederateInfoFree(fi);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsFederateIsValid(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsBool result = helicsFederateIsValid(fed);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsFederateInfoSetCoreName(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
-
-	char *corename;
-	size_t corenameLength;
-	int corenameStatus;
-	corenameLength = mxGetN(argv[1]) + 1;
-	corename = (char *)mxMalloc(corenameLength);
-	corenameStatus = mxGetString(argv[1], corename, corenameLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateInfoSetCoreName(fi, (char const *)corename, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(corename);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateInfoSetCoreInitString(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
-
-	char *coreInit;
-	size_t coreInitLength;
-	int coreInitStatus;
-	coreInitLength = mxGetN(argv[1]) + 1;
-	coreInit = (char *)mxMalloc(coreInitLength);
-	coreInitStatus = mxGetString(argv[1], coreInit, coreInitLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateInfoSetCoreInitString(fi, (char const *)coreInit, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(coreInit);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateInfoSetBrokerInitString(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
-
-	char *brokerInit;
-	size_t brokerInitLength;
-	int brokerInitStatus;
-	brokerInitLength = mxGetN(argv[1]) + 1;
-	brokerInit = (char *)mxMalloc(brokerInitLength);
-	brokerInitStatus = mxGetString(argv[1], brokerInit, brokerInitLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateInfoSetBrokerInitString(fi, (char const *)brokerInit, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(brokerInit);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateInfoSetCoreType(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
-
-	int coretype = (int)(mxGetScalar(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateInfoSetCoreType(fi, coretype, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateInfoSetCoreTypeFromString(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
-
-	char *coretype;
-	size_t coretypeLength;
-	int coretypeStatus;
-	coretypeLength = mxGetN(argv[1]) + 1;
-	coretype = (char *)mxMalloc(coretypeLength);
-	coretypeStatus = mxGetString(argv[1], coretype, coretypeLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateInfoSetCoreTypeFromString(fi, (char const *)coretype, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(coretype);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateInfoSetBroker(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
-
-	char *broker;
-	size_t brokerLength;
-	int brokerStatus;
-	brokerLength = mxGetN(argv[1]) + 1;
-	broker = (char *)mxMalloc(brokerLength);
-	brokerStatus = mxGetString(argv[1], broker, brokerLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateInfoSetBroker(fi, (char const *)broker, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(broker);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateInfoSetBrokerKey(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
-
-	char *brokerkey;
-	size_t brokerkeyLength;
-	int brokerkeyStatus;
-	brokerkeyLength = mxGetN(argv[1]) + 1;
-	brokerkey = (char *)mxMalloc(brokerkeyLength);
-	brokerkeyStatus = mxGetString(argv[1], brokerkey, brokerkeyLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateInfoSetBrokerKey(fi, (char const *)brokerkey, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(brokerkey);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateInfoSetBrokerPort(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
-
-	int brokerPort = (int)(mxGetScalar(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateInfoSetBrokerPort(fi, brokerPort, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateInfoSetLocalPort(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
-
-	char *localPort;
-	size_t localPortLength;
-	int localPortStatus;
-	localPortLength = mxGetN(argv[1]) + 1;
-	localPort = (char *)mxMalloc(localPortLength);
-	localPortStatus = mxGetString(argv[1], localPort, localPortLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateInfoSetLocalPort(fi, (char const *)localPort, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(localPort);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsGetPropertyIndex(resc, resv, argc, (mxArray**)(argv)){
-	char *val;
-	size_t valLength;
-	int valStatus;
-	valLength = mxGetN(argv[0]) + 1;
-	val = (char *)mxMalloc(valLength);
-	valStatus = mxGetString(argv[0], val, valLength);
-
-	int result = helicsGetPropertyIndex((char const *)val);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	mxFree(val);
-}
-
-
-void _wrap_helicsGetFlagIndex(resc, resv, argc, (mxArray**)(argv)){
-	char *val;
-	size_t valLength;
-	int valStatus;
-	valLength = mxGetN(argv[0]) + 1;
-	val = (char *)mxMalloc(valLength);
-	valStatus = mxGetString(argv[0], val, valLength);
-
-	int result = helicsGetFlagIndex((char const *)val);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	mxFree(val);
-}
-
-
-void _wrap_helicsGetOptionIndex(resc, resv, argc, (mxArray**)(argv)){
-	char *val;
-	size_t valLength;
-	int valStatus;
-	valLength = mxGetN(argv[0]) + 1;
-	val = (char *)mxMalloc(valLength);
-	valStatus = mxGetString(argv[0], val, valLength);
-
-	int result = helicsGetOptionIndex((char const *)val);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	mxFree(val);
-}
-
-
-void _wrap_helicsGetOptionValue(resc, resv, argc, (mxArray**)(argv)){
-	char *val;
-	size_t valLength;
-	int valStatus;
-	valLength = mxGetN(argv[0]) + 1;
-	val = (char *)mxMalloc(valLength);
-	valStatus = mxGetString(argv[0], val, valLength);
-
-	int result = helicsGetOptionValue((char const *)val);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	mxFree(val);
-}
-
-
-void _wrap_helicsGetDataType(resc, resv, argc, (mxArray**)(argv)){
-	char *val;
-	size_t valLength;
-	int valStatus;
-	valLength = mxGetN(argv[0]) + 1;
-	val = (char *)mxMalloc(valLength);
-	valStatus = mxGetString(argv[0], val, valLength);
-
-	int result = helicsGetDataType((char const *)val);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	mxFree(val);
-}
-
-
-void _wrap_helicsFederateInfoSetFlagOption(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
-
-	int flag = (int)(mxGetScalar(argv[1]));
-
-	HelicsBool value = (HelicsBool)(mxGetScalar(argv[2]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateInfoSetFlagOption(fi, flag, value, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateInfoSetSeparator(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
-
-	char *separator;
-	size_t separatorLength;
-	int separatorStatus;
-	separatorLength = mxGetN(argv[1]) + 1;
-	separator = (char *)mxMalloc(separatorLength);
-	separatorStatus = mxGetString(argv[1], separator, separatorLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateInfoSetSeparator(fi, separator[0], &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(separator);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateInfoSetTimeProperty(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
-
-	int timeProperty = (int)(mxGetScalar(argv[1]));
-
-	HelicsTime propertyValue = (HelicsTime)(mxGetScalar(argv[2]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateInfoSetTimeProperty(fi, timeProperty, propertyValue, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateInfoSetIntegerProperty(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
-
-	int intProperty = (int)(mxGetScalar(argv[1]));
-
-	int propertyValue = (int)(mxGetScalar(argv[2]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateInfoSetIntegerProperty(fi, intProperty, propertyValue, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateRegisterInterfaces(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *file;
-	size_t fileLength;
-	int fileStatus;
-	fileLength = mxGetN(argv[1]) + 1;
-	file = (char *)mxMalloc(fileLength);
-	fileStatus = mxGetString(argv[1], file, fileLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateRegisterInterfaces(fed, (char const *)file, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(file);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateGlobalError(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	int errorCode = (int)(mxGetScalar(argv[1]));
-
-	char *errorString;
-	size_t errorStringLength;
-	int errorStringStatus;
-	errorStringLength = mxGetN(argv[2]) + 1;
-	errorString = (char *)mxMalloc(errorStringLength);
-	errorStringStatus = mxGetString(argv[2], errorString, errorStringLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateGlobalError(fed, errorCode, (char const *)errorString, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	mxFree(errorString);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateLocalError(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	int errorCode = (int)(mxGetScalar(argv[1]));
-
-	char *errorString;
-	size_t errorStringLength;
-	int errorStringStatus;
-	errorStringLength = mxGetN(argv[2]) + 1;
-	errorString = (char *)mxMalloc(errorStringLength);
-	errorStringStatus = mxGetString(argv[2], errorString, errorStringLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateLocalError(fed, errorCode, (char const *)errorString, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	mxFree(errorString);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateFinalize(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateFinalize(fed, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateFinalizeAsync(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateFinalizeAsync(fed, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateFinalizeComplete(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateFinalizeComplete(fed, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateDisconnect(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateDisconnect(fed, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateDisconnectAsync(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateDisconnectAsync(fed, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateDisconnectComplete(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateDisconnectComplete(fed, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateFree(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	helicsFederateFree(fed);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsCloseLibrary(resc, resv, argc, (mxArray**)(argv)){
-	helicsCloseLibrary();
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-}
-
-
-void _wrap_helicsFederateEnterInitializingMode(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateEnterInitializingMode(fed, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateEnterInitializingModeAsync(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateEnterInitializingModeAsync(fed, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateIsAsyncOperationCompleted(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsBool result = helicsFederateIsAsyncOperationCompleted(fed, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateEnterInitializingModeComplete(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateEnterInitializingModeComplete(fed, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateEnterExecutingMode(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateEnterExecutingMode(fed, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateEnterExecutingModeAsync(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateEnterExecutingModeAsync(fed, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateEnterExecutingModeComplete(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateEnterExecutingModeComplete(fed, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateEnterExecutingModeIterative(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsIterationRequest iterate = (HelicsIterationRequest)(mxGetScalar(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsIterationResult result = helicsFederateEnterExecutingModeIterative(fed, iterate, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateEnterExecutingModeIterativeAsync(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsIterationRequest iterate = (HelicsIterationRequest)(mxGetScalar(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateEnterExecutingModeIterativeAsync(fed, iterate, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateEnterExecutingModeIterativeComplete(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsIterationResult result = helicsFederateEnterExecutingModeIterativeComplete(fed, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateGetState(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsFederateState result = helicsFederateGetState(fed, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateGetCore(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsCore result = helicsFederateGetCore(fed, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateRequestTime(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsTime requestTime = (HelicsTime)(mxGetScalar(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsTime result = helicsFederateRequestTime(fed, requestTime, &err);
-
-	mxArray *_out = mxCreateDoubleScalar(result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateRequestTimeAdvance(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsTime timeDelta = (HelicsTime)(mxGetScalar(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsTime result = helicsFederateRequestTimeAdvance(fed, timeDelta, &err);
-
-	mxArray *_out = mxCreateDoubleScalar(result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateRequestNextStep(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsTime result = helicsFederateRequestNextStep(fed, &err);
-
-	mxArray *_out = mxCreateDoubleScalar(result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateRequestTimeIterative(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsTime requestTime = (HelicsTime)(mxGetScalar(argv[1]));
-
-	HelicsIterationRequest iterate = (HelicsIterationRequest)(mxGetScalar(argv[2]));
-
-	HelicsIterationResult *outIteration = (HelicsIterationResult *)0;
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsTime result = helicsFederateRequestTimeIterative(fed, requestTime, iterate, outIteration, &err);
-
-	mxArray *_out = mxCreateDoubleScalar(result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	if(--resc>=0){
-		mxArray *_out1 = mxCreateNumericMatrix(1,1,mxINT64_CLASS,mxREAL);
-		*((int64_T*)mxGetData(_out1)) = (int64_T)outIteration;
-		*resv++ = _out1;
-	}
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateRequestTimeAsync(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsTime requestTime = (HelicsTime)(mxGetScalar(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateRequestTimeAsync(fed, requestTime, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateRequestTimeComplete(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsTime result = helicsFederateRequestTimeComplete(fed, &err);
-
-	mxArray *_out = mxCreateDoubleScalar(result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateRequestTimeIterativeAsync(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsTime requestTime = (HelicsTime)(mxGetScalar(argv[1]));
-
-	HelicsIterationRequest iterate = (HelicsIterationRequest)(mxGetScalar(argv[2]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateRequestTimeIterativeAsync(fed, requestTime, iterate, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateRequestTimeIterativeComplete(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsTime requestTime = (HelicsTime)(mxGetScalar(argv[1]));
-
-	HelicsIterationResult *outIteration = (HelicsIterationResult *)0;
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsTime result = helicsFederateRequestTimeIterativeComplete(fed, requestTime, outIteration, &err);
-
-	mxArray *_out = mxCreateDoubleScalar(result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	if(--resc>=0){
-		mxArray *_out1 = mxCreateNumericMatrix(1,1,mxINT64_CLASS,mxREAL);
-		*((int64_T*)mxGetData(_out1)) = (int64_T)outIteration;
-		*resv++ = _out1;
-	}
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateProcessCommunications(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsTime period = (HelicsTime)(mxGetScalar(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateProcessCommunications(fed, period, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateGetName(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *result = helicsFederateGetName(fed);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsFederateSetTimeProperty(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	int timeProperty = (int)(mxGetScalar(argv[1]));
-
-	HelicsTime time = (HelicsTime)(mxGetScalar(argv[2]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateSetTimeProperty(fed, timeProperty, time, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateSetFlagOption(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	int flag = (int)(mxGetScalar(argv[1]));
-
-	HelicsBool flagValue = (HelicsBool)(mxGetScalar(argv[2]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateSetFlagOption(fed, flag, flagValue, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateSetSeparator(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *separator;
-	size_t separatorLength;
-	int separatorStatus;
-	separatorLength = mxGetN(argv[1]) + 1;
-	separator = (char *)mxMalloc(separatorLength);
-	separatorStatus = mxGetString(argv[1], separator, separatorLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateSetSeparator(fed, separator[0], &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(separator);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateSetIntegerProperty(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	int intProperty = (int)(mxGetScalar(argv[1]));
-
-	int propertyVal = (int)(mxGetScalar(argv[2]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateSetIntegerProperty(fed, intProperty, propertyVal, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateGetTimeProperty(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	int timeProperty = (int)(mxGetScalar(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsTime result = helicsFederateGetTimeProperty(fed, timeProperty, &err);
-
-	mxArray *_out = mxCreateDoubleScalar(result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateGetFlagOption(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	int flag = (int)(mxGetScalar(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsBool result = helicsFederateGetFlagOption(fed, flag, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateGetIntegerProperty(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	int intProperty = (int)(mxGetScalar(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	int result = helicsFederateGetIntegerProperty(fed, intProperty, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateGetCurrentTime(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsTime result = helicsFederateGetCurrentTime(fed, &err);
-
-	mxArray *_out = mxCreateDoubleScalar(result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateSetGlobal(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *valueName;
-	size_t valueNameLength;
-	int valueNameStatus;
-	valueNameLength = mxGetN(argv[1]) + 1;
-	valueName = (char *)mxMalloc(valueNameLength);
-	valueNameStatus = mxGetString(argv[1], valueName, valueNameLength);
-
-	char *value;
-	size_t valueLength;
-	int valueStatus;
-	valueLength = mxGetN(argv[2]) + 1;
-	value = (char *)mxMalloc(valueLength);
-	valueStatus = mxGetString(argv[2], value, valueLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateSetGlobal(fed, (char const *)valueName, (char const *)value, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(valueName);
-
-	mxFree(value);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateSetTag(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *tagName;
-	size_t tagNameLength;
-	int tagNameStatus;
-	tagNameLength = mxGetN(argv[1]) + 1;
-	tagName = (char *)mxMalloc(tagNameLength);
-	tagNameStatus = mxGetString(argv[1], tagName, tagNameLength);
-
-	char *value;
-	size_t valueLength;
-	int valueStatus;
-	valueLength = mxGetN(argv[2]) + 1;
-	value = (char *)mxMalloc(valueLength);
-	valueStatus = mxGetString(argv[2], value, valueLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateSetTag(fed, (char const *)tagName, (char const *)value, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(tagName);
-
-	mxFree(value);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateGetTag(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *tagName;
-	size_t tagNameLength;
-	int tagNameStatus;
-	tagNameLength = mxGetN(argv[1]) + 1;
-	tagName = (char *)mxMalloc(tagNameLength);
-	tagNameStatus = mxGetString(argv[1], tagName, tagNameLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	char *result = helicsFederateGetTag(fed, (char const *)tagName, &err);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(tagName);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateAddDependency(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *fedName;
-	size_t fedNameLength;
-	int fedNameStatus;
-	fedNameLength = mxGetN(argv[1]) + 1;
-	fedName = (char *)mxMalloc(fedNameLength);
-	fedNameStatus = mxGetString(argv[1], fedName, fedNameLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateAddDependency(fed, (char const *)fedName, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(fedName);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateSetLogFile(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *logFile;
-	size_t logFileLength;
-	int logFileStatus;
-	logFileLength = mxGetN(argv[1]) + 1;
-	logFile = (char *)mxMalloc(logFileLength);
-	logFileStatus = mxGetString(argv[1], logFile, logFileLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateSetLogFile(fed, (char const *)logFile, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(logFile);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateLogErrorMessage(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *logmessage;
-	size_t logmessageLength;
-	int logmessageStatus;
-	logmessageLength = mxGetN(argv[1]) + 1;
-	logmessage = (char *)mxMalloc(logmessageLength);
-	logmessageStatus = mxGetString(argv[1], logmessage, logmessageLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateLogErrorMessage(fed, (char const *)logmessage, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(logmessage);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateLogWarningMessage(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *logmessage;
-	size_t logmessageLength;
-	int logmessageStatus;
-	logmessageLength = mxGetN(argv[1]) + 1;
-	logmessage = (char *)mxMalloc(logmessageLength);
-	logmessageStatus = mxGetString(argv[1], logmessage, logmessageLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateLogWarningMessage(fed, (char const *)logmessage, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(logmessage);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateLogInfoMessage(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *logmessage;
-	size_t logmessageLength;
-	int logmessageStatus;
-	logmessageLength = mxGetN(argv[1]) + 1;
-	logmessage = (char *)mxMalloc(logmessageLength);
-	logmessageStatus = mxGetString(argv[1], logmessage, logmessageLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateLogInfoMessage(fed, (char const *)logmessage, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(logmessage);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateLogDebugMessage(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *logmessage;
-	size_t logmessageLength;
-	int logmessageStatus;
-	logmessageLength = mxGetN(argv[1]) + 1;
-	logmessage = (char *)mxMalloc(logmessageLength);
-	logmessageStatus = mxGetString(argv[1], logmessage, logmessageLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateLogDebugMessage(fed, (char const *)logmessage, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(logmessage);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateLogLevelMessage(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	int loglevel = (int)(mxGetScalar(argv[1]));
-
-	char *logmessage;
-	size_t logmessageLength;
-	int logmessageStatus;
-	logmessageLength = mxGetN(argv[2]) + 1;
-	logmessage = (char *)mxMalloc(logmessageLength);
-	logmessageStatus = mxGetString(argv[2], logmessage, logmessageLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateLogLevelMessage(fed, loglevel, (char const *)logmessage, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	mxFree(logmessage);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateSendCommand(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *target;
-	size_t targetLength;
-	int targetStatus;
-	targetLength = mxGetN(argv[1]) + 1;
-	target = (char *)mxMalloc(targetLength);
-	targetStatus = mxGetString(argv[1], target, targetLength);
-
-	char *command;
-	size_t commandLength;
-	int commandStatus;
-	commandLength = mxGetN(argv[2]) + 1;
-	command = (char *)mxMalloc(commandLength);
-	commandStatus = mxGetString(argv[2], command, commandLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateSendCommand(fed, (char const *)target, (char const *)command, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(target);
-
-	mxFree(command);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateGetCommand(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	char *result = helicsFederateGetCommand(fed, &err);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateGetCommandSource(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	char *result = helicsFederateGetCommandSource(fed, &err);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateWaitCommand(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	char *result = helicsFederateWaitCommand(fed, &err);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsCoreSetGlobal(resc, resv, argc, (mxArray**)(argv)){
-	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
-
-	char *valueName;
-	size_t valueNameLength;
-	int valueNameStatus;
-	valueNameLength = mxGetN(argv[1]) + 1;
-	valueName = (char *)mxMalloc(valueNameLength);
-	valueNameStatus = mxGetString(argv[1], valueName, valueNameLength);
-
-	char *value;
-	size_t valueLength;
-	int valueStatus;
-	valueLength = mxGetN(argv[2]) + 1;
-	value = (char *)mxMalloc(valueLength);
-	valueStatus = mxGetString(argv[2], value, valueLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsCoreSetGlobal(core, (char const *)valueName, (char const *)value, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(valueName);
-
-	mxFree(value);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsBrokerSetGlobal(resc, resv, argc, (mxArray**)(argv)){
-	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
-
-	char *valueName;
-	size_t valueNameLength;
-	int valueNameStatus;
-	valueNameLength = mxGetN(argv[1]) + 1;
-	valueName = (char *)mxMalloc(valueNameLength);
-	valueNameStatus = mxGetString(argv[1], valueName, valueNameLength);
-
-	char *value;
-	size_t valueLength;
-	int valueStatus;
-	valueLength = mxGetN(argv[2]) + 1;
-	value = (char *)mxMalloc(valueLength);
-	valueStatus = mxGetString(argv[2], value, valueLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsBrokerSetGlobal(broker, (char const *)valueName, (char const *)value, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(valueName);
-
-	mxFree(value);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsCoreSendCommand(resc, resv, argc, (mxArray**)(argv)){
-	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
-
-	char *target;
-	size_t targetLength;
-	int targetStatus;
-	targetLength = mxGetN(argv[1]) + 1;
-	target = (char *)mxMalloc(targetLength);
-	targetStatus = mxGetString(argv[1], target, targetLength);
-
-	char *command;
-	size_t commandLength;
-	int commandStatus;
-	commandLength = mxGetN(argv[2]) + 1;
-	command = (char *)mxMalloc(commandLength);
-	commandStatus = mxGetString(argv[2], command, commandLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsCoreSendCommand(core, (char const *)target, (char const *)command, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(target);
-
-	mxFree(command);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsBrokerSendCommand(resc, resv, argc, (mxArray**)(argv)){
-	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
-
-	char *target;
-	size_t targetLength;
-	int targetStatus;
-	targetLength = mxGetN(argv[1]) + 1;
-	target = (char *)mxMalloc(targetLength);
-	targetStatus = mxGetString(argv[1], target, targetLength);
-
-	char *command;
-	size_t commandLength;
-	int commandStatus;
-	commandLength = mxGetN(argv[2]) + 1;
-	command = (char *)mxMalloc(commandLength);
-	commandStatus = mxGetString(argv[2], command, commandLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsBrokerSendCommand(broker, (char const *)target, (char const *)command, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(target);
-
-	mxFree(command);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsCoreSetLogFile(resc, resv, argc, (mxArray**)(argv)){
-	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
-
-	char *logFileName;
-	size_t logFileNameLength;
-	int logFileNameStatus;
-	logFileNameLength = mxGetN(argv[1]) + 1;
-	logFileName = (char *)mxMalloc(logFileNameLength);
-	logFileNameStatus = mxGetString(argv[1], logFileName, logFileNameLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsCoreSetLogFile(core, (char const *)logFileName, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(logFileName);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsBrokerSetLogFile(resc, resv, argc, (mxArray**)(argv)){
-	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
-
-	char *logFileName;
-	size_t logFileNameLength;
-	int logFileNameStatus;
-	logFileNameLength = mxGetN(argv[1]) + 1;
-	logFileName = (char *)mxMalloc(logFileNameLength);
-	logFileNameStatus = mxGetString(argv[1], logFileName, logFileNameLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsBrokerSetLogFile(broker, (char const *)logFileName, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(logFileName);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsBrokerSetTimeBarrier(resc, resv, argc, (mxArray**)(argv)){
-	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
-
-	HelicsTime barrierTime = (HelicsTime)(mxGetScalar(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsBrokerSetTimeBarrier(broker, barrierTime, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsBrokerClearTimeBarrier(resc, resv, argc, (mxArray**)(argv)){
-	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
-
-	helicsBrokerClearTimeBarrier(broker);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsBrokerGlobalError(resc, resv, argc, (mxArray**)(argv)){
-	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
-
-	int errorCode = (int)(mxGetScalar(argv[1]));
-
-	char *errorString;
-	size_t errorStringLength;
-	int errorStringStatus;
-	errorStringLength = mxGetN(argv[2]) + 1;
-	errorString = (char *)mxMalloc(errorStringLength);
-	errorStringStatus = mxGetString(argv[2], errorString, errorStringLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsBrokerGlobalError(broker, errorCode, (char const *)errorString, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	mxFree(errorString);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsCoreGlobalError(resc, resv, argc, (mxArray**)(argv)){
-	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
-
-	int errorCode = (int)(mxGetScalar(argv[1]));
-
-	char *errorString;
-	size_t errorStringLength;
-	int errorStringStatus;
-	errorStringLength = mxGetN(argv[2]) + 1;
-	errorString = (char *)mxMalloc(errorStringLength);
-	errorStringStatus = mxGetString(argv[2], errorString, errorStringLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsCoreGlobalError(core, errorCode, (char const *)errorString, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	mxFree(errorString);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsCreateQuery(resc, resv, argc, (mxArray**)(argv)){
-	char *target;
-	size_t targetLength;
-	int targetStatus;
-	targetLength = mxGetN(argv[0]) + 1;
-	target = (char *)mxMalloc(targetLength);
-	targetStatus = mxGetString(argv[0], target, targetLength);
-
-	char *query;
-	size_t queryLength;
-	int queryStatus;
-	queryLength = mxGetN(argv[1]) + 1;
-	query = (char *)mxMalloc(queryLength);
-	queryStatus = mxGetString(argv[1], query, queryLength);
-
-	HelicsQuery result = helicsCreateQuery((char const *)target, (char const *)query);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	mxFree(target);
-
-	mxFree(query);
-}
-
-
-void _wrap_helicsQueryExecute(resc, resv, argc, (mxArray**)(argv)){
-	HelicsQuery query = (HelicsQuery)(mxGetData(argv[0]));
-
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	char *result = helicsQueryExecute(query, fed, &err);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsQueryCoreExecute(resc, resv, argc, (mxArray**)(argv)){
-	HelicsQuery query = (HelicsQuery)(mxGetData(argv[0]));
-
-	HelicsCore core = (HelicsCore)(mxGetData(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	char *result = helicsQueryCoreExecute(query, core, &err);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsQueryBrokerExecute(resc, resv, argc, (mxArray**)(argv)){
-	HelicsQuery query = (HelicsQuery)(mxGetData(argv[0]));
-
-	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	char *result = helicsQueryBrokerExecute(query, broker, &err);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsQueryExecuteAsync(resc, resv, argc, (mxArray**)(argv)){
-	HelicsQuery query = (HelicsQuery)(mxGetData(argv[0]));
-
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsQueryExecuteAsync(query, fed, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsQueryExecuteComplete(resc, resv, argc, (mxArray**)(argv)){
-	HelicsQuery query = (HelicsQuery)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	char *result = helicsQueryExecuteComplete(query, &err);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsQueryIsCompleted(resc, resv, argc, (mxArray**)(argv)){
-	HelicsQuery query = (HelicsQuery)(mxGetData(argv[0]));
-
-	HelicsBool result = helicsQueryIsCompleted(query);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsQuerySetTarget(resc, resv, argc, (mxArray**)(argv)){
-	HelicsQuery query = (HelicsQuery)(mxGetData(argv[0]));
-
-	char *target;
-	size_t targetLength;
-	int targetStatus;
-	targetLength = mxGetN(argv[1]) + 1;
-	target = (char *)mxMalloc(targetLength);
-	targetStatus = mxGetString(argv[1], target, targetLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsQuerySetTarget(query, (char const *)target, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(target);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsQuerySetQueryString(resc, resv, argc, (mxArray**)(argv)){
-	HelicsQuery query = (HelicsQuery)(mxGetData(argv[0]));
-
-	char *queryString;
-	size_t queryStringLength;
-	int queryStringStatus;
-	queryStringLength = mxGetN(argv[1]) + 1;
-	queryString = (char *)mxMalloc(queryStringLength);
-	queryStringStatus = mxGetString(argv[1], queryString, queryStringLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsQuerySetQueryString(query, (char const *)queryString, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(queryString);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsQuerySetOrdering(resc, resv, argc, (mxArray**)(argv)){
-	HelicsQuery query = (HelicsQuery)(mxGetData(argv[0]));
-
-	int32_t mode = *((int32_t *)mxGetData(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsQuerySetOrdering(query, mode, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsQueryFree(resc, resv, argc, (mxArray**)(argv)){
-	HelicsQuery query = (HelicsQuery)(mxGetData(argv[0]));
-
-	helicsQueryFree(query);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsCleanupLibrary(resc, resv, argc, (mxArray**)(argv)){
-	helicsCleanupLibrary();
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-}
-
-
-void _wrap_helicsFederateRegisterSubscription(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *key;
-	size_t keyLength;
-	int keyStatus;
-	keyLength = mxGetN(argv[1]) + 1;
-	key = (char *)mxMalloc(keyLength);
-	keyStatus = mxGetString(argv[1], key, keyLength);
-
-	char *units;
-	size_t unitsLength;
-	int unitsStatus;
-	unitsLength = mxGetN(argv[2]) + 1;
-	units = (char *)mxMalloc(unitsLength);
-	unitsStatus = mxGetString(argv[2], units, unitsLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsInput result = helicsFederateRegisterSubscription(fed, (char const *)key, (char const *)units, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(key);
-
-	mxFree(units);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateRegisterPublication(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *key;
-	size_t keyLength;
-	int keyStatus;
-	keyLength = mxGetN(argv[1]) + 1;
-	key = (char *)mxMalloc(keyLength);
-	keyStatus = mxGetString(argv[1], key, keyLength);
-
-	HelicsDataTypes type = (HelicsDataTypes)(mxGetScalar(argv[2]));
-
-	char *units;
-	size_t unitsLength;
-	int unitsStatus;
-	unitsLength = mxGetN(argv[3]) + 1;
-	units = (char *)mxMalloc(unitsLength);
-	unitsStatus = mxGetString(argv[3], units, unitsLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsPublication result = helicsFederateRegisterPublication(fed, (char const *)key, type, (char const *)units, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(key);
-
-
-
-	mxFree(units);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateRegisterTypePublication(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *key;
-	size_t keyLength;
-	int keyStatus;
-	keyLength = mxGetN(argv[1]) + 1;
-	key = (char *)mxMalloc(keyLength);
-	keyStatus = mxGetString(argv[1], key, keyLength);
-
-	char *type;
-	size_t typeLength;
-	int typeStatus;
-	typeLength = mxGetN(argv[2]) + 1;
-	type = (char *)mxMalloc(typeLength);
-	typeStatus = mxGetString(argv[2], type, typeLength);
-
-	char *units;
-	size_t unitsLength;
-	int unitsStatus;
-	unitsLength = mxGetN(argv[3]) + 1;
-	units = (char *)mxMalloc(unitsLength);
-	unitsStatus = mxGetString(argv[3], units, unitsLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsPublication result = helicsFederateRegisterTypePublication(fed, (char const *)key, (char const *)type, (char const *)units, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(key);
-
-	mxFree(type);
-
-	mxFree(units);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateRegisterGlobalPublication(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *key;
-	size_t keyLength;
-	int keyStatus;
-	keyLength = mxGetN(argv[1]) + 1;
-	key = (char *)mxMalloc(keyLength);
-	keyStatus = mxGetString(argv[1], key, keyLength);
-
-	HelicsDataTypes type = (HelicsDataTypes)(mxGetScalar(argv[2]));
-
-	char *units;
-	size_t unitsLength;
-	int unitsStatus;
-	unitsLength = mxGetN(argv[3]) + 1;
-	units = (char *)mxMalloc(unitsLength);
-	unitsStatus = mxGetString(argv[3], units, unitsLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsPublication result = helicsFederateRegisterGlobalPublication(fed, (char const *)key, type, (char const *)units, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(key);
-
-
-
-	mxFree(units);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateRegisterGlobalTypePublication(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *key;
-	size_t keyLength;
-	int keyStatus;
-	keyLength = mxGetN(argv[1]) + 1;
-	key = (char *)mxMalloc(keyLength);
-	keyStatus = mxGetString(argv[1], key, keyLength);
-
-	char *type;
-	size_t typeLength;
-	int typeStatus;
-	typeLength = mxGetN(argv[2]) + 1;
-	type = (char *)mxMalloc(typeLength);
-	typeStatus = mxGetString(argv[2], type, typeLength);
-
-	char *units;
-	size_t unitsLength;
-	int unitsStatus;
-	unitsLength = mxGetN(argv[3]) + 1;
-	units = (char *)mxMalloc(unitsLength);
-	unitsStatus = mxGetString(argv[3], units, unitsLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsPublication result = helicsFederateRegisterGlobalTypePublication(fed, (char const *)key, (char const *)type, (char const *)units, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(key);
-
-	mxFree(type);
-
-	mxFree(units);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateRegisterInput(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *key;
-	size_t keyLength;
-	int keyStatus;
-	keyLength = mxGetN(argv[1]) + 1;
-	key = (char *)mxMalloc(keyLength);
-	keyStatus = mxGetString(argv[1], key, keyLength);
-
-	HelicsDataTypes type = (HelicsDataTypes)(mxGetScalar(argv[2]));
-
-	char *units;
-	size_t unitsLength;
-	int unitsStatus;
-	unitsLength = mxGetN(argv[3]) + 1;
-	units = (char *)mxMalloc(unitsLength);
-	unitsStatus = mxGetString(argv[3], units, unitsLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsInput result = helicsFederateRegisterInput(fed, (char const *)key, type, (char const *)units, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(key);
-
-
-
-	mxFree(units);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateRegisterTypeInput(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *key;
-	size_t keyLength;
-	int keyStatus;
-	keyLength = mxGetN(argv[1]) + 1;
-	key = (char *)mxMalloc(keyLength);
-	keyStatus = mxGetString(argv[1], key, keyLength);
-
-	char *type;
-	size_t typeLength;
-	int typeStatus;
-	typeLength = mxGetN(argv[2]) + 1;
-	type = (char *)mxMalloc(typeLength);
-	typeStatus = mxGetString(argv[2], type, typeLength);
-
-	char *units;
-	size_t unitsLength;
-	int unitsStatus;
-	unitsLength = mxGetN(argv[3]) + 1;
-	units = (char *)mxMalloc(unitsLength);
-	unitsStatus = mxGetString(argv[3], units, unitsLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsInput result = helicsFederateRegisterTypeInput(fed, (char const *)key, (char const *)type, (char const *)units, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(key);
-
-	mxFree(type);
-
-	mxFree(units);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateRegisterGlobalInput(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *key;
-	size_t keyLength;
-	int keyStatus;
-	keyLength = mxGetN(argv[1]) + 1;
-	key = (char *)mxMalloc(keyLength);
-	keyStatus = mxGetString(argv[1], key, keyLength);
-
-	HelicsDataTypes type = (HelicsDataTypes)(mxGetScalar(argv[2]));
-
-	char *units;
-	size_t unitsLength;
-	int unitsStatus;
-	unitsLength = mxGetN(argv[3]) + 1;
-	units = (char *)mxMalloc(unitsLength);
-	unitsStatus = mxGetString(argv[3], units, unitsLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsPublication result = helicsFederateRegisterGlobalInput(fed, (char const *)key, type, (char const *)units, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(key);
-
-
-
-	mxFree(units);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateRegisterGlobalTypeInput(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *key;
-	size_t keyLength;
-	int keyStatus;
-	keyLength = mxGetN(argv[1]) + 1;
-	key = (char *)mxMalloc(keyLength);
-	keyStatus = mxGetString(argv[1], key, keyLength);
-
-	char *type;
-	size_t typeLength;
-	int typeStatus;
-	typeLength = mxGetN(argv[2]) + 1;
-	type = (char *)mxMalloc(typeLength);
-	typeStatus = mxGetString(argv[2], type, typeLength);
-
-	char *units;
-	size_t unitsLength;
-	int unitsStatus;
-	unitsLength = mxGetN(argv[3]) + 1;
-	units = (char *)mxMalloc(unitsLength);
-	unitsStatus = mxGetString(argv[3], units, unitsLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsPublication result = helicsFederateRegisterGlobalTypeInput(fed, (char const *)key, (char const *)type, (char const *)units, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(key);
-
-	mxFree(type);
-
-	mxFree(units);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateGetPublication(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *key;
-	size_t keyLength;
-	int keyStatus;
-	keyLength = mxGetN(argv[1]) + 1;
-	key = (char *)mxMalloc(keyLength);
-	keyStatus = mxGetString(argv[1], key, keyLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsPublication result = helicsFederateGetPublication(fed, (char const *)key, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(key);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateGetPublicationByIndex(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	int index = (int)(mxGetScalar(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsPublication result = helicsFederateGetPublicationByIndex(fed, index, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateGetInput(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *key;
-	size_t keyLength;
-	int keyStatus;
-	keyLength = mxGetN(argv[1]) + 1;
-	key = (char *)mxMalloc(keyLength);
-	keyStatus = mxGetString(argv[1], key, keyLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsInput result = helicsFederateGetInput(fed, (char const *)key, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(key);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateGetInputByIndex(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	int index = (int)(mxGetScalar(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsInput result = helicsFederateGetInputByIndex(fed, index, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateGetSubscription(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *key;
-	size_t keyLength;
-	int keyStatus;
-	keyLength = mxGetN(argv[1]) + 1;
-	key = (char *)mxMalloc(keyLength);
-	keyStatus = mxGetString(argv[1], key, keyLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsInput result = helicsFederateGetSubscription(fed, (char const *)key, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(key);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateClearUpdates(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	helicsFederateClearUpdates(fed);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsFederateRegisterFromPublicationJSON(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *json;
-	size_t jsonLength;
-	int jsonStatus;
-	jsonLength = mxGetN(argv[1]) + 1;
-	json = (char *)mxMalloc(jsonLength);
-	jsonStatus = mxGetString(argv[1], json, jsonLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateRegisterFromPublicationJSON(fed, (char const *)json, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(json);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederatePublishJSON(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *json;
-	size_t jsonLength;
-	int jsonStatus;
-	jsonLength = mxGetN(argv[1]) + 1;
-	json = (char *)mxMalloc(jsonLength);
-	jsonStatus = mxGetString(argv[1], json, jsonLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederatePublishJSON(fed, (char const *)json, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(json);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsPublicationIsValid(resc, resv, argc, (mxArray**)(argv)){
-	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
-
-	HelicsBool result = helicsPublicationIsValid(pub);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsPublicationPublishBytes(resc, resv, argc, (mxArray**)(argv)){
-	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
-
-	char *data;
-	size_t dataLength;
-	int dataStatus;
-	dataLength = mxGetN(argv[1]) + 1;
-	data = (char *)mxMalloc(dataLength);
-	dataStatus = mxGetString(argv[1], data, dataLength);
-
-	int inputDataLength = dataLength - 1;
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsPublicationPublishBytes(pub, (void *)data, inputDataLength, &err);
-
-	mxArray *_out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsPublicationPublishString(resc, resv, argc, (mxArray**)(argv)){
-	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
-
-	char *str;
-	size_t strLength;
-	int strStatus;
-	strLength = mxGetN(argv[1]) + 1;
-	str = (char *)mxMalloc(strLength);
-	strStatus = mxGetString(argv[1], str, strLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsPublicationPublishString(pub, (char const *)str, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(str);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsPublicationPublishInteger(resc, resv, argc, (mxArray**)(argv)){
-	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
-
-	int64_t val = *((int64_t *)mxGetData(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsPublicationPublishInteger(pub, val, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsPublicationPublishBoolean(resc, resv, argc, (mxArray**)(argv)){
-	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
-
-	HelicsBool val = (HelicsBool)(mxGetScalar(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsPublicationPublishBoolean(pub, val, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsPublicationPublishDouble(resc, resv, argc, (mxArray**)(argv)){
-	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
-
-	double val = mxGetScalar(argv[1]);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsPublicationPublishDouble(pub, val, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsPublicationPublishTime(resc, resv, argc, (mxArray**)(argv)){
-	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
-
-	HelicsTime val = (HelicsTime)(mxGetScalar(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsPublicationPublishTime(pub, val, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsPublicationPublishChar(resc, resv, argc, (mxArray**)(argv)){
-	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
-
-	char *val;
-	size_t valLength;
-	int valStatus;
-	valLength = mxGetN(argv[1]) + 1;
-	val = (char *)mxMalloc(valLength);
-	valStatus = mxGetString(argv[1], val, valLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsPublicationPublishChar(pub, val[0], &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(val);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsPublicationPublishComplex(resc, resv, argc, (mxArray**)(argv)){
-	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
-
-	mxComplexDouble *complexValue = mxGetComplexDouble(argv[1]);
-	double value[2] = {complexValue[0].real, complexValue[0].imag};
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsPublicationPublishComplex(pub, value[0], value[1], &err);
-
-	mxArray *_out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsPublicationPublishVector(resc, resv, argc, (mxArray**)(argv)){
-	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
-
-	int vectorLength =  (int)mxGetNumberOfElements(argv[1]);
-
-	double *vectorInput =  (double *)mxGetDoubles(argv[1]);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsPublicationPublishVector(pub, (const double *)vectorInput, vectorLength, &err);
-
-	mxArray *_out = (mxArray *)0;
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsPublicationPublishComplexVector(resc, resv, argc, (mxArray**)(argv)){
-	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
-
-	int vectorLength =  (int)mxGetN(argv[1])*2;
-
-	double vectorInput[vectorLength];
-	mxComplexDouble *vals = mxGetComplexDoubles(argv[1]);
-	for(int i=0; i<vectorLength/2; ++i){
-		vectorInput[2*i] = vals[i].real;
-		vectorInput[2*i + 1] = vals[i].imag;
-	}
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsPublicationPublishComplexVector(pub, (const double *)vectorInput, vectorLength, &err);
-
-	mxArray *_out = (mxArray *)0;
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsPublicationPublishNamedPoint(resc, resv, argc, (mxArray**)(argv)){
-	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
-
-	char *str;
-	size_t strLength;
-	int strStatus;
-	strLength = mxGetN(argv[1]) + 1;
-	str = (char *)mxMalloc(strLength);
-	strStatus = mxGetString(argv[1], str, strLength);
-
-	double val = mxGetScalar(argv[2]);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsPublicationPublishNamedPoint(pub, (char const *)str, val, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(str);
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsPublicationAddTarget(resc, resv, argc, (mxArray**)(argv)){
-	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
-
-	char *target;
-	size_t targetLength;
-	int targetStatus;
-	targetLength = mxGetN(argv[1]) + 1;
-	target = (char *)mxMalloc(targetLength);
-	targetStatus = mxGetString(argv[1], target, targetLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsPublicationAddTarget(pub, (char const *)target, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(target);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsInputIsValid(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	HelicsBool result = helicsInputIsValid(ipt);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsInputAddTarget(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	char *target;
-	size_t targetLength;
-	int targetStatus;
-	targetLength = mxGetN(argv[1]) + 1;
-	target = (char *)mxMalloc(targetLength);
-	targetStatus = mxGetString(argv[1], target, targetLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsInputAddTarget(ipt, (char const *)target, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(target);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsInputGetByteCount(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	int result = helicsInputGetByteCount(ipt);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsInputGetBytes(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	int maxDataLen = helicsInputGetByteCount(ipt) + 2;
-
-	void *data = mxMalloc(maxDataLen);
-
-	int *actualSize = (int *)0;
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsInputGetBytes(ipt, data, maxDatalen, actualSize, &err);
-
-	mwSize dims[2] = {1, *actualSize};
-	mxArray *_out = mxCreateCharArray(2, dims);
-	mxChar *out_data = (mxChar *)mxGetData(_out);
-	for(int i=0; i<actualSize; ++i){
-		out_data[i] = data[i];
-	}
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	mxFree(data);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsInputGetStringSize(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	int result = helicsInputGetStringSize(ipt);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsInputGetString(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	int maxStringLen = helicsInputGetStringSize(ipt) + 2;
-
-	char *outputString = (char *)mxMalloc(maxStringLen);
-
-	int *actualLength = (int *)0;
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsInputGetString(ipt, outputString, maxStringLen, actualLength, val, &err);
-
-	mwSize dims[2] = {1, *actualLength};
-	mxArray *_out = mxCreateCharArray(2, dims);
-	mxChar *out_data = (mxChar *)mxGetData(_out);
-	for(int i=0; i<actualLength; ++i){
-		out_data[i] = outputString[i];
-	}
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	mxFree(outputString);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsInputGetInteger(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	int64_t result = helicsInputGetInteger(ipt, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsInputGetBoolean(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsBool result = helicsInputGetBoolean(ipt, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsInputGetDouble(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	double result = helicsInputGetDouble(ipt, &err);
-
-	mxArray *_out = mxCreateDoubleScalar(result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsInputGetTime(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsTime result = helicsInputGetTime(ipt, &err);
-
-	mxArray *_out = mxCreateDoubleScalar(result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsInputGetChar(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	char result = helicsInputGetChar(ipt, &err);
-
-	mxArray *_out = mxCreateString((const char *)(&result));
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsInputGetComplexObject(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsComplex result = helicsInputGetComplexObject(ipt, &err);
-
-	mxComplexDouble complex_result;
-	complex_result.real = result.real;
-	complex_result.imag = result.imag;
-	mxArray *_out = mxCreateDoubleMatrix(1,1,mxCOMPLEX);
-	int status = mxSetComplexDoubles(_out, &complex_result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsInputGetComplex(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	double values[2];
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsInputGetComplex(ipt, &(vaules[0]), &(values[1]), &err);
-
-	mxComplexDouble complex_result;
-	complex_result.real = values[0];
-	complex_result.imag = values[1];
-	mxArray *_out = mxCreateDoubleMatrix(1,1,mxCOMPLEX);
-	int status = mxSetComplexDoubles(_out, &complex_result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsInputGetVectorSize(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	int result = helicsInputGetVectorSize(ipt);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsInputGetVector(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	int maxLength = helicsInputGetVectorSize(ipt);
-
-	double data[maxLength];
-
-	int *actualSize = (int *)0;
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsInputGetVector(ipt, data, maxLength, actualSize, &err);
-
-	mxDouble result_data[*actualSize];
-	for(int i=0; i<(*actualSize); ++i){
-		result_data[i] = (mxDouble)data[i];
-	}
-	mxArray *_out = mxCreateDoubleMatrix(*actualSize, 1, mxREAL);
-	int status = mxSetDoubles(_out, &(resutl_data[0]));
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsInputGetComplexVector(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	int maxLength = helicsInputGetVectorSize(ipt);
-
-	double data[maxLength];
-
-	int *actualSize = (int *)0;
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsInputGetComplexVector(ipt, data, maxLength, actualSize, &err);
-
-	mxComplexDouble result_data[*actualSize/2];
-	for(int i=0; i<(*actualSize/2); ++i){
-		result_data[i].real = data[2*(i)];
-		result_data[i].imag = data[2*(i) + 1];
-	}
-	mxArray *_out = mxCreateDoubleMatrix(*actualSize/2, 1, mxCOMPLEX);
-	int status = mxSetComplexDoubles(_out, &(resutl_data[0]));
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsInputGetNamedPoint(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	int maxStringLen = helicsInputGetStringSize(ipt) + 2;
-
-	char *outputString = (char *)mxMalloc(maxStringLen);
-
-	int *actualLength = (int *)0;
-
-	double *val = (double *)0;
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsInputGetNamedPoint(ipt, outputString, maxStringLen, actualLength, val, &err);
-
-	mwSize dims[2] = {1, *actualLength};
-	mxArray *_out = mxCreateCharArray(2, dims);
-	mxChar *out_data = (mxChar *)mxGetData(_out);
-	for(int i=0; i<actualLength; ++i){
-		out_data[i] = outputString[i];
-	}
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	if(--resc>=0){
-		mxArray *_out1 = mxCreateScalar(*val);
-		*resv++ = _out1;
-	}
-
-	mxFree(outputString);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsInputSetDefaultBytes(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	char *data;
-	size_t dataLength;
-	int dataStatus;
-	dataLength = mxGetN(argv[1]) + 1;
-	data = (char *)mxMalloc(dataLength);
-	dataStatus = mxGetString(argv[1], data, dataLength);
-
-	int inputDataLength = dataLength - 1;
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsInputSetDefaultBytes(ipt, (void *)data, inputDataLength, &err);
-
-	mxArray *_out = (mxArray *)0;
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	mxFree(data);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsInputSetDefaultString(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	char *str;
-	size_t strLength;
-	int strStatus;
-	strLength = mxGetN(argv[1]) + 1;
-	str = (char *)mxMalloc(strLength);
-	strStatus = mxGetString(argv[1], str, strLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsInputSetDefaultString(ipt, (char const *)str, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(str);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsInputSetDefaultInteger(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	int64_t val = *((int64_t *)mxGetData(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsInputSetDefaultInteger(ipt, val, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsInputSetDefaultBoolean(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	HelicsBool val = (HelicsBool)(mxGetScalar(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsInputSetDefaultBoolean(ipt, val, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsInputSetDefaultTime(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	HelicsTime val = (HelicsTime)(mxGetScalar(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsInputSetDefaultTime(ipt, val, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsInputSetDefaultChar(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	char *val;
-	size_t valLength;
-	int valStatus;
-	valLength = mxGetN(argv[1]) + 1;
-	val = (char *)mxMalloc(valLength);
-	valStatus = mxGetString(argv[1], val, valLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsInputSetDefaultChar(ipt, val[0], &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(val);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsInputSetDefaultDouble(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	double val = mxGetScalar(argv[1]);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsInputSetDefaultDouble(ipt, val, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsInputSetDefaultComplex(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	mxComplexDouble *value = xmGetComplexDoubles(argv[1]);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsInputSetDefaultComplex(ipt, (double)value->real, (double)value->imag, &err);
-
-	mxArray *_out = (mxArray *)0;
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	mxFree(data);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsInputSetDefaultVector(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	int vectorLength =  (int)mxGetNumberOfElements(argv[1]);
-
-	double *vectorInput =  (double *)mxGetDoubles(argv[1]);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsInputSetDefaultVector(ipt, (const double *)vectorInput, vectorLength, &err);
-
-	mxArray *_out = (mxArray *)0;
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsInputSetDefaultComplexVector(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	int vectorLength =  (int)mxGetN(argv[1])*2;
-
-	double vectorInput[vectorLength];
-	mxComplexDouble *vals = mxGetComplexDoubles(argv[1]);
-	for(int i=0; i<vectorLength/2; ++i){
-		vectorInput[2*i] = vals[i].real;
-		vectorInput[2*i + 1] = vals[i].imag;
-	}
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsInputSetDefaultComplexVector(ipt, (const double *)vectorInput, vectorLength, &err);
-
-	mxArray *_out = (mxArray *)0;
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsInputSetDefaultNamedPoint(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	char *str;
-	size_t strLength;
-	int strStatus;
-	strLength = mxGetN(argv[1]) + 1;
-	str = (char *)mxMalloc(strLength);
-	strStatus = mxGetString(argv[1], str, strLength);
-
-	double val = mxGetScalar(argv[2]);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsInputSetDefaultNamedPoint(ipt, (char const *)str, val, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(str);
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsInputGetType(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	char *result = helicsInputGetType(ipt);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsInputGetPublicationType(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	char *result = helicsInputGetPublicationType(ipt);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsInputGetPublicationDataType(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	int result = helicsInputGetPublicationDataType(ipt);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsPublicationGetType(resc, resv, argc, (mxArray**)(argv)){
-	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
-
-	char *result = helicsPublicationGetType(pub);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsInputGetName(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	char *result = helicsInputGetName(ipt);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsSubscriptionGetTarget(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	char *result = helicsSubscriptionGetTarget(ipt);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsPublicationGetName(resc, resv, argc, (mxArray**)(argv)){
-	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
-
-	char *result = helicsPublicationGetName(pub);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsInputGetUnits(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	char *result = helicsInputGetUnits(ipt);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsInputGetInjectionUnits(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	char *result = helicsInputGetInjectionUnits(ipt);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsInputGetExtractionUnits(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	char *result = helicsInputGetExtractionUnits(ipt);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsPublicationGetUnits(resc, resv, argc, (mxArray**)(argv)){
-	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
-
-	char *result = helicsPublicationGetUnits(pub);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsInputGetInfo(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput inp = (HelicsInput)(mxGetData(argv[0]));
-
-	char *result = helicsInputGetInfo(inp);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsInputSetInfo(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput inp = (HelicsInput)(mxGetData(argv[0]));
-
-	char *info;
-	size_t infoLength;
-	int infoStatus;
-	infoLength = mxGetN(argv[1]) + 1;
-	info = (char *)mxMalloc(infoLength);
-	infoStatus = mxGetString(argv[1], info, infoLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsInputSetInfo(inp, (char const *)info, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(info);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsInputGetTag(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput inp = (HelicsInput)(mxGetData(argv[0]));
-
-	char *tagname;
-	size_t tagnameLength;
-	int tagnameStatus;
-	tagnameLength = mxGetN(argv[1]) + 1;
-	tagname = (char *)mxMalloc(tagnameLength);
-	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
-
-	char *result = helicsInputGetTag(inp, (char const *)tagname);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(tagname);
-}
-
-
-void _wrap_helicsInputSetTag(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput inp = (HelicsInput)(mxGetData(argv[0]));
-
-	char *tagname;
-	size_t tagnameLength;
-	int tagnameStatus;
-	tagnameLength = mxGetN(argv[1]) + 1;
-	tagname = (char *)mxMalloc(tagnameLength);
-	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
-
-	char *tagvalue;
-	size_t tagvalueLength;
-	int tagvalueStatus;
-	tagvalueLength = mxGetN(argv[2]) + 1;
-	tagvalue = (char *)mxMalloc(tagvalueLength);
-	tagvalueStatus = mxGetString(argv[2], tagvalue, tagvalueLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsInputSetTag(inp, (char const *)tagname, (char const *)tagvalue, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(tagname);
-
-	mxFree(tagvalue);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsPublicationGetInfo(resc, resv, argc, (mxArray**)(argv)){
-	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
-
-	char *result = helicsPublicationGetInfo(pub);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsPublicationSetInfo(resc, resv, argc, (mxArray**)(argv)){
-	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
-
-	char *info;
-	size_t infoLength;
-	int infoStatus;
-	infoLength = mxGetN(argv[1]) + 1;
-	info = (char *)mxMalloc(infoLength);
-	infoStatus = mxGetString(argv[1], info, infoLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsPublicationSetInfo(pub, (char const *)info, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(info);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsPublicationGetTag(resc, resv, argc, (mxArray**)(argv)){
-	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
-
-	char *tagname;
-	size_t tagnameLength;
-	int tagnameStatus;
-	tagnameLength = mxGetN(argv[1]) + 1;
-	tagname = (char *)mxMalloc(tagnameLength);
-	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
-
-	char *result = helicsPublicationGetTag(pub, (char const *)tagname);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(tagname);
-}
-
-
-void _wrap_helicsPublicationSetTag(resc, resv, argc, (mxArray**)(argv)){
-	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
-
-	char *tagname;
-	size_t tagnameLength;
-	int tagnameStatus;
-	tagnameLength = mxGetN(argv[1]) + 1;
-	tagname = (char *)mxMalloc(tagnameLength);
-	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
-
-	char *tagvalue;
-	size_t tagvalueLength;
-	int tagvalueStatus;
-	tagvalueLength = mxGetN(argv[2]) + 1;
-	tagvalue = (char *)mxMalloc(tagvalueLength);
-	tagvalueStatus = mxGetString(argv[2], tagvalue, tagvalueLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsPublicationSetTag(pub, (char const *)tagname, (char const *)tagvalue, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(tagname);
-
-	mxFree(tagvalue);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsInputGetOption(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput inp = (HelicsInput)(mxGetData(argv[0]));
-
-	int option = (int)(mxGetScalar(argv[1]));
-
-	int result = helicsInputGetOption(inp, option);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-}
-
-
-void _wrap_helicsInputSetOption(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput inp = (HelicsInput)(mxGetData(argv[0]));
-
-	int option = (int)(mxGetScalar(argv[1]));
-
-	int value = (int)(mxGetScalar(argv[2]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsInputSetOption(inp, option, value, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsPublicationGetOption(resc, resv, argc, (mxArray**)(argv)){
-	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
-
-	int option = (int)(mxGetScalar(argv[1]));
-
-	int result = helicsPublicationGetOption(pub, option);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-}
-
-
-void _wrap_helicsPublicationSetOption(resc, resv, argc, (mxArray**)(argv)){
-	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
-
-	int option = (int)(mxGetScalar(argv[1]));
-
-	int val = (int)(mxGetScalar(argv[2]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsPublicationSetOption(pub, option, val, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsPublicationSetMinimumChange(resc, resv, argc, (mxArray**)(argv)){
-	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
-
-	double tolerance = mxGetScalar(argv[1]);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsPublicationSetMinimumChange(pub, tolerance, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsInputSetMinimumChange(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput inp = (HelicsInput)(mxGetData(argv[0]));
-
-	double tolerance = mxGetScalar(argv[1]);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsInputSetMinimumChange(inp, tolerance, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsInputIsUpdated(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	HelicsBool result = helicsInputIsUpdated(ipt);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsInputLastUpdateTime(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	HelicsTime result = helicsInputLastUpdateTime(ipt);
-
-	mxArray *_out = mxCreateDoubleScalar(result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsInputClearUpdate(resc, resv, argc, (mxArray**)(argv)){
-	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
-
-	helicsInputClearUpdate(ipt);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsFederateGetPublicationCount(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	int result = helicsFederateGetPublicationCount(fed);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsFederateGetInputCount(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	int result = helicsFederateGetInputCount(fed);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsFederateRegisterEndpoint(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[1]) + 1;
-	name = (char *)mxMalloc(nameLength);
-	nameStatus = mxGetString(argv[1], name, nameLength);
-
-	char *type;
-	size_t typeLength;
-	int typeStatus;
-	typeLength = mxGetN(argv[2]) + 1;
-	type = (char *)mxMalloc(typeLength);
-	typeStatus = mxGetString(argv[2], type, typeLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsEndpoint result = helicsFederateRegisterEndpoint(fed, (char const *)name, (char const *)type, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(name);
-
-	mxFree(type);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateRegisterGlobalEndpoint(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[1]) + 1;
-	name = (char *)mxMalloc(nameLength);
-	nameStatus = mxGetString(argv[1], name, nameLength);
-
-	char *type;
-	size_t typeLength;
-	int typeStatus;
-	typeLength = mxGetN(argv[2]) + 1;
-	type = (char *)mxMalloc(typeLength);
-	typeStatus = mxGetString(argv[2], type, typeLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsEndpoint result = helicsFederateRegisterGlobalEndpoint(fed, (char const *)name, (char const *)type, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(name);
-
-	mxFree(type);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateRegisterTargetedEndpoint(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[1]) + 1;
-	name = (char *)mxMalloc(nameLength);
-	nameStatus = mxGetString(argv[1], name, nameLength);
-
-	char *type;
-	size_t typeLength;
-	int typeStatus;
-	typeLength = mxGetN(argv[2]) + 1;
-	type = (char *)mxMalloc(typeLength);
-	typeStatus = mxGetString(argv[2], type, typeLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsEndpoint result = helicsFederateRegisterTargetedEndpoint(fed, (char const *)name, (char const *)type, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(name);
-
-	mxFree(type);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateRegisterGlobalTargetedEndpoint(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[1]) + 1;
-	name = (char *)mxMalloc(nameLength);
-	nameStatus = mxGetString(argv[1], name, nameLength);
-
-	char *type;
-	size_t typeLength;
-	int typeStatus;
-	typeLength = mxGetN(argv[2]) + 1;
-	type = (char *)mxMalloc(typeLength);
-	typeStatus = mxGetString(argv[2], type, typeLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsEndpoint result = helicsFederateRegisterGlobalTargetedEndpoint(fed, (char const *)name, (char const *)type, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(name);
-
-	mxFree(type);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateGetEndpoint(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[1]) + 1;
-	name = (char *)mxMalloc(nameLength);
-	nameStatus = mxGetString(argv[1], name, nameLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsEndpoint result = helicsFederateGetEndpoint(fed, (char const *)name, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(name);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateGetEndpointByIndex(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	int index = (int)(mxGetScalar(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsEndpoint result = helicsFederateGetEndpointByIndex(fed, index, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsEndpointIsValid(resc, resv, argc, (mxArray**)(argv)){
-	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
-
-	HelicsBool result = helicsEndpointIsValid(endpoint);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsEndpointSetDefaultDestination(resc, resv, argc, (mxArray**)(argv)){
-	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
-
-	char *dst;
-	size_t dstLength;
-	int dstStatus;
-	dstLength = mxGetN(argv[1]) + 1;
-	dst = (char *)mxMalloc(dstLength);
-	dstStatus = mxGetString(argv[1], dst, dstLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsEndpointSetDefaultDestination(endpoint, (char const *)dst, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(dst);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsEndpointGetDefaultDestination(resc, resv, argc, (mxArray**)(argv)){
-	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
-
-	char *result = helicsEndpointGetDefaultDestination(endpoint);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsEndpointSendBytes(resc, resv, argc, (mxArray**)(argv)){
-	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
-
-	char *data;
-	size_t dataLength;
-	int dataStatus;
-	dataLength = mxGetN(argv[1]) + 1;
-	data = (char *)mxMalloc(dataLength);
-	dataStatus = mxGetString(argv[1], data, dataLength);
-
-	int inputDataLength = (int)(dataLength - 1);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsEndpointSendBytes(endpoint, (void *)data, inputDataLength, &err);
-
-	mxArray *_out = (mxArray *)0;
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	mxFree(data);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsEndpointSendBytesTo(resc, resv, argc, (mxArray**)(argv)){
-	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
-
-	char *data;
-	size_t dataLength;
-	int dataStatus;
-	dataLength = mxGetN(argv[1]) + 1;
-	data = (char *)mxMalloc(dataLength);
-	dataStatus = mxGetString(argv[1], data, dataLength);
-
-	int inputDataLength = (int)(dataLength - 1);
-
-	char *dst;
-	size_t dstLength;
-	int dstStatus;
-	dstLength = mxGetN(argv[2]) + 1;
-	dst = (char *)mxMalloc(dstLength);
-	dstStatus = mxGetString(argv[2], dst, dstLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsEndpointSendBytesTo(endpoint, (void *)data, inputDataLength, dst, &err);
-
-	mxArray *_out = (mxArray *)0;
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	mxFree(data);
-
-	mxFree(dst);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsEndpointSendBytesToAt(resc, resv, argc, (mxArray**)(argv)){
-	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
-
-	char *data;
-	size_t dataLength;
-	int dataStatus;
-	dataLength = mxGetN(argv[1]) + 1;
-	data = (char *)mxMalloc(dataLength);
-	dataStatus = mxGetString(argv[1], data, dataLength);
-
-	int inputDataLength = (int)(dataLength - 1);
-
-	char *dst;
-	size_t dstLength;
-	int dstStatus;
-	dstLength = mxGetN(argv[2]) + 1;
-	dst = (char *)mxMalloc(dstLength);
-	dstStatus = mxGetString(argv[2], dst, dstLength);
-
-	HelicsTime time = (HelicsTime)(mxGetScalar(argv[3]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsEndpointSendBytesToAt(endpoint, (void *)data, inputDataLength, dst, time, &err);
-
-	mxArray *_out = (mxArray *)0;
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	mxFree(data);
-
-	mxFree(dst);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsEndpointSendBytesAt(resc, resv, argc, (mxArray**)(argv)){
-	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
-
-	char *data;
-	size_t dataLength;
-	int dataStatus;
-	dataLength = mxGetN(argv[1]) + 1;
-	data = (char *)mxMalloc(dataLength);
-	dataStatus = mxGetString(argv[1], data, dataLength);
-
-	int inputDataLength = (int)(dataLength - 1);
-
-	HelicsTime time = (HelicsTime)(mxGetScalar(argv[2]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsEndpointSendBytesAt(endpoint, (void *)data, inputDataLength, time, &err);
-
-	mxArray *_out = (mxArray *)0;
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	mxFree(data);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsEndpointSendMessage(resc, resv, argc, (mxArray**)(argv)){
-	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
-
-	HelicsMessage message = (HelicsMessage)(mxGetData(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsEndpointSendMessage(endpoint, message, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsEndpointSendMessageZeroCopy(resc, resv, argc, (mxArray**)(argv)){
-	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
-
-	HelicsMessage message = (HelicsMessage)(mxGetData(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsEndpointSendMessageZeroCopy(endpoint, message, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsEndpointSubscribe(resc, resv, argc, (mxArray**)(argv)){
-	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
-
-	char *key;
-	size_t keyLength;
-	int keyStatus;
-	keyLength = mxGetN(argv[1]) + 1;
-	key = (char *)mxMalloc(keyLength);
-	keyStatus = mxGetString(argv[1], key, keyLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsEndpointSubscribe(endpoint, (char const *)key, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(key);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateHasMessage(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsBool result = helicsFederateHasMessage(fed);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsEndpointHasMessage(resc, resv, argc, (mxArray**)(argv)){
-	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
-
-	HelicsBool result = helicsEndpointHasMessage(endpoint);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsFederatePendingMessageCount(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	int result = helicsFederatePendingMessageCount(fed);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsEndpointPendingMessageCount(resc, resv, argc, (mxArray**)(argv)){
-	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
-
-	int result = helicsEndpointPendingMessageCount(endpoint);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsEndpointGetMessage(resc, resv, argc, (mxArray**)(argv)){
-	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
-
-	HelicsMessage result = helicsEndpointGetMessage(endpoint);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsEndpointCreateMessage(resc, resv, argc, (mxArray**)(argv)){
-	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsMessage result = helicsEndpointCreateMessage(endpoint, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateGetMessage(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsMessage result = helicsFederateGetMessage(fed);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsFederateCreateMessage(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsMessage result = helicsFederateCreateMessage(fed, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateClearMessages(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	helicsFederateClearMessages(fed);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsEndpointGetType(resc, resv, argc, (mxArray**)(argv)){
-	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
-
-	char *result = helicsEndpointGetType(endpoint);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsEndpointGetName(resc, resv, argc, (mxArray**)(argv)){
-	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
-
-	char *result = helicsEndpointGetName(endpoint);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsFederateGetEndpointCount(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	int result = helicsFederateGetEndpointCount(fed);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsEndpointGetInfo(resc, resv, argc, (mxArray**)(argv)){
-	HelicsEndpoint end = (HelicsEndpoint)(mxGetData(argv[0]));
-
-	char *result = helicsEndpointGetInfo(end);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsEndpointSetInfo(resc, resv, argc, (mxArray**)(argv)){
-	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
-
-	char *info;
-	size_t infoLength;
-	int infoStatus;
-	infoLength = mxGetN(argv[1]) + 1;
-	info = (char *)mxMalloc(infoLength);
-	infoStatus = mxGetString(argv[1], info, infoLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsEndpointSetInfo(endpoint, (char const *)info, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(info);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsEndpointGetTag(resc, resv, argc, (mxArray**)(argv)){
-	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
-
-	char *tagname;
-	size_t tagnameLength;
-	int tagnameStatus;
-	tagnameLength = mxGetN(argv[1]) + 1;
-	tagname = (char *)mxMalloc(tagnameLength);
-	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
-
-	char *result = helicsEndpointGetTag(endpoint, (char const *)tagname);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(tagname);
-}
-
-
-void _wrap_helicsEndpointSetTag(resc, resv, argc, (mxArray**)(argv)){
-	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
-
-	char *tagname;
-	size_t tagnameLength;
-	int tagnameStatus;
-	tagnameLength = mxGetN(argv[1]) + 1;
-	tagname = (char *)mxMalloc(tagnameLength);
-	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
-
-	char *tagvalue;
-	size_t tagvalueLength;
-	int tagvalueStatus;
-	tagvalueLength = mxGetN(argv[2]) + 1;
-	tagvalue = (char *)mxMalloc(tagvalueLength);
-	tagvalueStatus = mxGetString(argv[2], tagvalue, tagvalueLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsEndpointSetTag(endpoint, (char const *)tagname, (char const *)tagvalue, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(tagname);
-
-	mxFree(tagvalue);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsEndpointSetOption(resc, resv, argc, (mxArray**)(argv)){
-	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
-
-	int option = (int)(mxGetScalar(argv[1]));
-
-	int value = (int)(mxGetScalar(argv[2]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsEndpointSetOption(endpoint, option, value, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsEndpointGetOption(resc, resv, argc, (mxArray**)(argv)){
-	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
-
-	int option = (int)(mxGetScalar(argv[1]));
-
-	int result = helicsEndpointGetOption(endpoint, option);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-}
-
-
-void _wrap_helicsEndpointAddSourceTarget(resc, resv, argc, (mxArray**)(argv)){
-	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
-
-	char *targetEndpoint;
-	size_t targetEndpointLength;
-	int targetEndpointStatus;
-	targetEndpointLength = mxGetN(argv[1]) + 1;
-	targetEndpoint = (char *)mxMalloc(targetEndpointLength);
-	targetEndpointStatus = mxGetString(argv[1], targetEndpoint, targetEndpointLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsEndpointAddSourceTarget(endpoint, (char const *)targetEndpoint, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(targetEndpoint);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsEndpointAddDestinationTarget(resc, resv, argc, (mxArray**)(argv)){
-	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
-
-	char *targetEndpoint;
-	size_t targetEndpointLength;
-	int targetEndpointStatus;
-	targetEndpointLength = mxGetN(argv[1]) + 1;
-	targetEndpoint = (char *)mxMalloc(targetEndpointLength);
-	targetEndpointStatus = mxGetString(argv[1], targetEndpoint, targetEndpointLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsEndpointAddDestinationTarget(endpoint, (char const *)targetEndpoint, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(targetEndpoint);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsEndpointRemoveTarget(resc, resv, argc, (mxArray**)(argv)){
-	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
-
-	char *targetEndpoint;
-	size_t targetEndpointLength;
-	int targetEndpointStatus;
-	targetEndpointLength = mxGetN(argv[1]) + 1;
-	targetEndpoint = (char *)mxMalloc(targetEndpointLength);
-	targetEndpointStatus = mxGetString(argv[1], targetEndpoint, targetEndpointLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsEndpointRemoveTarget(endpoint, (char const *)targetEndpoint, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(targetEndpoint);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsEndpointAddSourceFilter(resc, resv, argc, (mxArray**)(argv)){
-	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
-
-	char *filterName;
-	size_t filterNameLength;
-	int filterNameStatus;
-	filterNameLength = mxGetN(argv[1]) + 1;
-	filterName = (char *)mxMalloc(filterNameLength);
-	filterNameStatus = mxGetString(argv[1], filterName, filterNameLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsEndpointAddSourceFilter(endpoint, (char const *)filterName, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(filterName);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsEndpointAddDestinationFilter(resc, resv, argc, (mxArray**)(argv)){
-	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
-
-	char *filterName;
-	size_t filterNameLength;
-	int filterNameStatus;
-	filterNameLength = mxGetN(argv[1]) + 1;
-	filterName = (char *)mxMalloc(filterNameLength);
-	filterNameStatus = mxGetString(argv[1], filterName, filterNameLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsEndpointAddDestinationFilter(endpoint, (char const *)filterName, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(filterName);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsMessageGetSource(resc, resv, argc, (mxArray**)(argv)){
-	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
-
-	char *result = helicsMessageGetSource(message);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsMessageGetDestination(resc, resv, argc, (mxArray**)(argv)){
-	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
-
-	char *result = helicsMessageGetDestination(message);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsMessageGetOriginalSource(resc, resv, argc, (mxArray**)(argv)){
-	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
-
-	char *result = helicsMessageGetOriginalSource(message);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsMessageGetOriginalDestination(resc, resv, argc, (mxArray**)(argv)){
-	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
-
-	char *result = helicsMessageGetOriginalDestination(message);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsMessageGetTime(resc, resv, argc, (mxArray**)(argv)){
-	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
-
-	HelicsTime result = helicsMessageGetTime(message);
-
-	mxArray *_out = mxCreateDoubleScalar(result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsMessageGetString(resc, resv, argc, (mxArray**)(argv)){
-	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
-
-	char *result = helicsMessageGetString(message);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsMessageGetMessageID(resc, resv, argc, (mxArray**)(argv)){
-	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
-
-	int result = helicsMessageGetMessageID(message);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsMessageGetFlagOption(resc, resv, argc, (mxArray**)(argv)){
-	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
-
-	int flag = (int)(mxGetScalar(argv[1]));
-
-	HelicsBool result = helicsMessageGetFlagOption(message, flag);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-}
-
-
-void _wrap_helicsMessageGetByteCount(resc, resv, argc, (mxArray**)(argv)){
-	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
-
-	int result = helicsMessageGetByteCount(message);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsMessageGetBytes(resc, resv, argc, (mxArray**)(argv)){
-	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
-
-	int maxMessageLength = helicsMessageGetByteCount(message) + 2;
-
-	char *data = (char *)mxMalloc(maxMessageLength);
-
-	int *actualSize = (int *)0;
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsMessageGetBytes(message, (void *)data, maxMessageLength, actualSize, &err);
-
-	mwSize dims[2] = {1,(mwSize)*actualSize};
-	mxArray *_out = mxCreateCharArray(2,dims);
-	mxChar *out_data = (mxChar *)mxGetData(_out);
-	for(int i=0; i<*actualSize; ++i){
-		out_data[i] = data[i];
-	}
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	mxFree(data);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsMessageGetBytesPointer(resc, resv, argc, (mxArray**)(argv)){
-	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
-
-	void *reault = helicsMessageGetBytesPointer(message);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsMessageIsValid(resc, resv, argc, (mxArray**)(argv)){
-	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
-
-	HelicsBool result = helicsMessageIsValid(message);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsMessageSetSource(resc, resv, argc, (mxArray**)(argv)){
-	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
-
-	char *src;
-	size_t srcLength;
-	int srcStatus;
-	srcLength = mxGetN(argv[1]) + 1;
-	src = (char *)mxMalloc(srcLength);
-	srcStatus = mxGetString(argv[1], src, srcLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsMessageSetSource(message, (char const *)src, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(src);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsMessageSetDestination(resc, resv, argc, (mxArray**)(argv)){
-	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
-
-	char *dst;
-	size_t dstLength;
-	int dstStatus;
-	dstLength = mxGetN(argv[1]) + 1;
-	dst = (char *)mxMalloc(dstLength);
-	dstStatus = mxGetString(argv[1], dst, dstLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsMessageSetDestination(message, (char const *)dst, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(dst);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsMessageSetOriginalSource(resc, resv, argc, (mxArray**)(argv)){
-	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
-
-	char *src;
-	size_t srcLength;
-	int srcStatus;
-	srcLength = mxGetN(argv[1]) + 1;
-	src = (char *)mxMalloc(srcLength);
-	srcStatus = mxGetString(argv[1], src, srcLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsMessageSetOriginalSource(message, (char const *)src, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(src);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsMessageSetOriginalDestination(resc, resv, argc, (mxArray**)(argv)){
-	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
-
-	char *dst;
-	size_t dstLength;
-	int dstStatus;
-	dstLength = mxGetN(argv[1]) + 1;
-	dst = (char *)mxMalloc(dstLength);
-	dstStatus = mxGetString(argv[1], dst, dstLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsMessageSetOriginalDestination(message, (char const *)dst, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(dst);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsMessageSetTime(resc, resv, argc, (mxArray**)(argv)){
-	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
-
-	HelicsTime time = (HelicsTime)(mxGetScalar(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsMessageSetTime(message, time, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsMessageResize(resc, resv, argc, (mxArray**)(argv)){
-	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
-
-	int newSize = (int)(mxGetScalar(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsMessageResize(message, newSize, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsMessageReserve(resc, resv, argc, (mxArray**)(argv)){
-	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
-
-	int reserveSize = (int)(mxGetScalar(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsMessageReserve(message, reserveSize, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsMessageSetMessageID(resc, resv, argc, (mxArray**)(argv)){
-	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
-
-	int32_t messageID = *((int32_t *)mxGetData(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsMessageSetMessageID(message, messageID, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsMessageClearFlags(resc, resv, argc, (mxArray**)(argv)){
-	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
-
-	helicsMessageClearFlags(message);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsMessageSetFlagOption(resc, resv, argc, (mxArray**)(argv)){
-	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
-
-	int flag = (int)(mxGetScalar(argv[1]));
-
-	HelicsBool flagValue = (HelicsBool)(mxGetScalar(argv[2]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsMessageSetFlagOption(message, flag, flagValue, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsMessageSetString(resc, resv, argc, (mxArray**)(argv)){
-	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
-
-	char *str;
-	size_t strLength;
-	int strStatus;
-	strLength = mxGetN(argv[1]) + 1;
-	str = (char *)mxMalloc(strLength);
-	strStatus = mxGetString(argv[1], str, strLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsMessageSetString(message, (char const *)str, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(str);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsMessageSetData(resc, resv, argc, (mxArray**)(argv)){
-	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
-
-	char *data;
-	size_t dataLength;
-	int dataStatus;
-	dataLength = mxGetN(argv[1]) + 1;
-	data = (char *)mxMalloc(dataLength);
-	dataStatus = mxGetString(argv[1], data, dataLength);
-
-	int inputDataLength = dataLength - 1;
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsMessageSetData(message, (void *)data, inputDataLength, &err);
-
-	mxArray *_out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsMessageAppendData(resc, resv, argc, (mxArray**)(argv)){
-	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
-
-	char *data;
-	size_t dataLength;
-	int dataStatus;
-	dataLength = mxGetN(argv[1]) + 1;
-	data = (char *)mxMalloc(dataLength);
-	dataStatus = mxGetString(argv[1], data, dataLength);
-
-	int inputDataLength = dataLength - 1;
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsMessageAppendData(message, (void *)data, inputDataLength, &err);
-
-	mxArray *_out = (mxArray *)0;
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsMessageCopy(resc, resv, argc, (mxArray**)(argv)){
-	HelicsMessage src_message = (HelicsMessage)(mxGetData(argv[0]));
-
-	HelicsMessage dst_message = (HelicsMessage)(mxGetData(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsMessageCopy(src_message, dst_message, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsMessageClone(resc, resv, argc, (mxArray**)(argv)){
-	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsMessage result = helicsMessageClone(message, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsMessageFree(resc, resv, argc, (mxArray**)(argv)){
-	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
-
-	helicsMessageFree(message);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsMessageClear(resc, resv, argc, (mxArray**)(argv)){
-	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsMessageClear(message, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateRegisterFilter(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsFilterTypes type = (HelicsFilterTypes)(mxGetScalar(argv[1]));
-
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[2]) + 1;
-	name = (char *)mxMalloc(nameLength);
-	nameStatus = mxGetString(argv[2], name, nameLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsFilter result = helicsFederateRegisterFilter(fed, type, (char const *)name, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	mxFree(name);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateRegisterGlobalFilter(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsFilterTypes type = (HelicsFilterTypes)(mxGetScalar(argv[1]));
-
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[2]) + 1;
-	name = (char *)mxMalloc(nameLength);
-	nameStatus = mxGetString(argv[2], name, nameLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsFilter result = helicsFederateRegisterGlobalFilter(fed, type, (char const *)name, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	mxFree(name);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateRegisterCloningFilter(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[1]) + 1;
-	name = (char *)mxMalloc(nameLength);
-	nameStatus = mxGetString(argv[1], name, nameLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsFilter result = helicsFederateRegisterCloningFilter(fed, (char const *)name, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(name);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateRegisterGlobalCloningFilter(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[1]) + 1;
-	name = (char *)mxMalloc(nameLength);
-	nameStatus = mxGetString(argv[1], name, nameLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsFilter result = helicsFederateRegisterGlobalCloningFilter(fed, (char const *)name, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(name);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsCoreRegisterFilter(resc, resv, argc, (mxArray**)(argv)){
-	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
-
-	HelicsFilterTypes type = (HelicsFilterTypes)(mxGetScalar(argv[1]));
-
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[2]) + 1;
-	name = (char *)mxMalloc(nameLength);
-	nameStatus = mxGetString(argv[2], name, nameLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsFilter result = helicsCoreRegisterFilter(core, type, (char const *)name, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	mxFree(name);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsCoreRegisterCloningFilter(resc, resv, argc, (mxArray**)(argv)){
-	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
-
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[1]) + 1;
-	name = (char *)mxMalloc(nameLength);
-	nameStatus = mxGetString(argv[1], name, nameLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsFilter result = helicsCoreRegisterCloningFilter(core, (char const *)name, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(name);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateGetFilterCount(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	int result = helicsFederateGetFilterCount(fed);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsFederateGetFilter(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[1]) + 1;
-	name = (char *)mxMalloc(nameLength);
-	nameStatus = mxGetString(argv[1], name, nameLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsFilter result = helicsFederateGetFilter(fed, (char const *)name, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(name);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateGetFilterByIndex(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	int index = (int)(mxGetScalar(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsFilter result = helicsFederateGetFilterByIndex(fed, index, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFilterIsValid(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFilter filt = (HelicsFilter)(mxGetData(argv[0]));
-
-	HelicsBool result = helicsFilterIsValid(filt);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsFilterGetName(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFilter filt = (HelicsFilter)(mxGetData(argv[0]));
-
-	char *result = helicsFilterGetName(filt);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsFilterSet(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFilter filt = (HelicsFilter)(mxGetData(argv[0]));
-
-	char *prop;
-	size_t propLength;
-	int propStatus;
-	propLength = mxGetN(argv[1]) + 1;
-	prop = (char *)mxMalloc(propLength);
-	propStatus = mxGetString(argv[1], prop, propLength);
-
-	double val = mxGetScalar(argv[2]);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFilterSet(filt, (char const *)prop, val, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(prop);
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFilterSetString(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFilter filt = (HelicsFilter)(mxGetData(argv[0]));
-
-	char *prop;
-	size_t propLength;
-	int propStatus;
-	propLength = mxGetN(argv[1]) + 1;
-	prop = (char *)mxMalloc(propLength);
-	propStatus = mxGetString(argv[1], prop, propLength);
-
-	char *val;
-	size_t valLength;
-	int valStatus;
-	valLength = mxGetN(argv[2]) + 1;
-	val = (char *)mxMalloc(valLength);
-	valStatus = mxGetString(argv[2], val, valLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFilterSetString(filt, (char const *)prop, (char const *)val, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(prop);
-
-	mxFree(val);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFilterAddDestinationTarget(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFilter filt = (HelicsFilter)(mxGetData(argv[0]));
-
-	char *dst;
-	size_t dstLength;
-	int dstStatus;
-	dstLength = mxGetN(argv[1]) + 1;
-	dst = (char *)mxMalloc(dstLength);
-	dstStatus = mxGetString(argv[1], dst, dstLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFilterAddDestinationTarget(filt, (char const *)dst, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(dst);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFilterAddSourceTarget(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFilter filt = (HelicsFilter)(mxGetData(argv[0]));
-
-	char *source;
-	size_t sourceLength;
-	int sourceStatus;
-	sourceLength = mxGetN(argv[1]) + 1;
-	source = (char *)mxMalloc(sourceLength);
-	sourceStatus = mxGetString(argv[1], source, sourceLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFilterAddSourceTarget(filt, (char const *)source, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(source);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFilterAddDeliveryEndpoint(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFilter filt = (HelicsFilter)(mxGetData(argv[0]));
-
-	char *deliveryEndpoint;
-	size_t deliveryEndpointLength;
-	int deliveryEndpointStatus;
-	deliveryEndpointLength = mxGetN(argv[1]) + 1;
-	deliveryEndpoint = (char *)mxMalloc(deliveryEndpointLength);
-	deliveryEndpointStatus = mxGetString(argv[1], deliveryEndpoint, deliveryEndpointLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFilterAddDeliveryEndpoint(filt, (char const *)deliveryEndpoint, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(deliveryEndpoint);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFilterRemoveTarget(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFilter filt = (HelicsFilter)(mxGetData(argv[0]));
-
-	char *target;
-	size_t targetLength;
-	int targetStatus;
-	targetLength = mxGetN(argv[1]) + 1;
-	target = (char *)mxMalloc(targetLength);
-	targetStatus = mxGetString(argv[1], target, targetLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFilterRemoveTarget(filt, (char const *)target, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(target);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFilterRemoveDeliveryEndpoint(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFilter filt = (HelicsFilter)(mxGetData(argv[0]));
-
-	char *deliveryEndpoint;
-	size_t deliveryEndpointLength;
-	int deliveryEndpointStatus;
-	deliveryEndpointLength = mxGetN(argv[1]) + 1;
-	deliveryEndpoint = (char *)mxMalloc(deliveryEndpointLength);
-	deliveryEndpointStatus = mxGetString(argv[1], deliveryEndpoint, deliveryEndpointLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFilterRemoveDeliveryEndpoint(filt, (char const *)deliveryEndpoint, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(deliveryEndpoint);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFilterGetInfo(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFilter filt = (HelicsFilter)(mxGetData(argv[0]));
-
-	char *result = helicsFilterGetInfo(filt);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsFilterSetInfo(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFilter filt = (HelicsFilter)(mxGetData(argv[0]));
-
-	char *info;
-	size_t infoLength;
-	int infoStatus;
-	infoLength = mxGetN(argv[1]) + 1;
-	info = (char *)mxMalloc(infoLength);
-	infoStatus = mxGetString(argv[1], info, infoLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFilterSetInfo(filt, (char const *)info, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(info);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFilterGetTag(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFilter filt = (HelicsFilter)(mxGetData(argv[0]));
-
-	char *tagname;
-	size_t tagnameLength;
-	int tagnameStatus;
-	tagnameLength = mxGetN(argv[1]) + 1;
-	tagname = (char *)mxMalloc(tagnameLength);
-	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
-
-	char *result = helicsFilterGetTag(filt, (char const *)tagname);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(tagname);
-}
-
-
-void _wrap_helicsFilterSetTag(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFilter filt = (HelicsFilter)(mxGetData(argv[0]));
-
-	char *tagname;
-	size_t tagnameLength;
-	int tagnameStatus;
-	tagnameLength = mxGetN(argv[1]) + 1;
-	tagname = (char *)mxMalloc(tagnameLength);
-	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
-
-	char *tagvalue;
-	size_t tagvalueLength;
-	int tagvalueStatus;
-	tagvalueLength = mxGetN(argv[2]) + 1;
-	tagvalue = (char *)mxMalloc(tagvalueLength);
-	tagvalueStatus = mxGetString(argv[2], tagvalue, tagvalueLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFilterSetTag(filt, (char const *)tagname, (char const *)tagvalue, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(tagname);
-
-	mxFree(tagvalue);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFilterSetOption(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFilter filt = (HelicsFilter)(mxGetData(argv[0]));
-
-	int option = (int)(mxGetScalar(argv[1]));
-
-	int value = (int)(mxGetScalar(argv[2]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFilterSetOption(filt, option, value, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFilterGetOption(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFilter filt = (HelicsFilter)(mxGetData(argv[0]));
-
-	int option = (int)(mxGetScalar(argv[1]));
-
-	int result = helicsFilterGetOption(filt, option);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-}
-
-
-void _wrap_helicsFederateRegisterTranslator(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsTranslatorTypes type = (HelicsTranslatorTypes)(mxGetScalar(argv[1]));
-
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[2]) + 1;
-	name = (char *)mxMalloc(nameLength);
-	nameStatus = mxGetString(argv[2], name, nameLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsTranslator result = helicsFederateRegisterTranslator(fed, type, (char const *)name, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	mxFree(name);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateRegisterGlobalTranslator(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	HelicsTranslatorTypes type = (HelicsTranslatorTypes)(mxGetScalar(argv[1]));
-
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[2]) + 1;
-	name = (char *)mxMalloc(nameLength);
-	nameStatus = mxGetString(argv[2], name, nameLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsTranslator result = helicsFederateRegisterGlobalTranslator(fed, type, (char const *)name, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	mxFree(name);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsCoreRegisterTranslator(resc, resv, argc, (mxArray**)(argv)){
-	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
-
-	HelicsTranslatorTypes type = (HelicsTranslatorTypes)(mxGetScalar(argv[1]));
-
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[2]) + 1;
-	name = (char *)mxMalloc(nameLength);
-	nameStatus = mxGetString(argv[2], name, nameLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsTranslator result = helicsCoreRegisterTranslator(core, type, (char const *)name, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	mxFree(name);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateGetTranslatorCount(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	int result = helicsFederateGetTranslatorCount(fed);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsFederateGetTranslator(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[1]) + 1;
-	name = (char *)mxMalloc(nameLength);
-	nameStatus = mxGetString(argv[1], name, nameLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsTranslator result = helicsFederateGetTranslator(fed, (char const *)name, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(name);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsFederateGetTranslatorByIndex(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	int index = (int)(mxGetScalar(argv[1]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	HelicsTranslator result = helicsFederateGetTranslatorByIndex(fed, index, &err);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsTranslatorIsValid(resc, resv, argc, (mxArray**)(argv)){
-	HelicsTranslator trans = (HelicsTranslator)(mxGetData(argv[0]));
-
-	HelicsBool result = helicsTranslatorIsValid(trans);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsTranslatorGetName(resc, resv, argc, (mxArray**)(argv)){
-	HelicsTranslator trans = (HelicsTranslator)(mxGetData(argv[0]));
-
-	char *result = helicsTranslatorGetName(trans);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsTranslatorSet(resc, resv, argc, (mxArray**)(argv)){
-	HelicsTranslator trans = (HelicsTranslator)(mxGetData(argv[0]));
-
-	char *prop;
-	size_t propLength;
-	int propStatus;
-	propLength = mxGetN(argv[1]) + 1;
-	prop = (char *)mxMalloc(propLength);
-	propStatus = mxGetString(argv[1], prop, propLength);
-
-	double val = mxGetScalar(argv[2]);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsTranslatorSet(trans, (char const *)prop, val, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(prop);
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsTranslatorSetString(resc, resv, argc, (mxArray**)(argv)){
-	HelicsTranslator trans = (HelicsTranslator)(mxGetData(argv[0]));
-
-	char *prop;
-	size_t propLength;
-	int propStatus;
-	propLength = mxGetN(argv[1]) + 1;
-	prop = (char *)mxMalloc(propLength);
-	propStatus = mxGetString(argv[1], prop, propLength);
-
-	char *val;
-	size_t valLength;
-	int valStatus;
-	valLength = mxGetN(argv[2]) + 1;
-	val = (char *)mxMalloc(valLength);
-	valStatus = mxGetString(argv[2], val, valLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsTranslatorSetString(trans, (char const *)prop, (char const *)val, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(prop);
-
-	mxFree(val);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsTranslatorAddInputTarget(resc, resv, argc, (mxArray**)(argv)){
-	HelicsTranslator trans = (HelicsTranslator)(mxGetData(argv[0]));
-
-	char *input;
-	size_t inputLength;
-	int inputStatus;
-	inputLength = mxGetN(argv[1]) + 1;
-	input = (char *)mxMalloc(inputLength);
-	inputStatus = mxGetString(argv[1], input, inputLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsTranslatorAddInputTarget(trans, (char const *)input, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(input);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsTranslatorAddPublicationTarget(resc, resv, argc, (mxArray**)(argv)){
-	HelicsTranslator trans = (HelicsTranslator)(mxGetData(argv[0]));
-
-	char *pub;
-	size_t pubLength;
-	int pubStatus;
-	pubLength = mxGetN(argv[1]) + 1;
-	pub = (char *)mxMalloc(pubLength);
-	pubStatus = mxGetString(argv[1], pub, pubLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsTranslatorAddPublicationTarget(trans, (char const *)pub, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(pub);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsTranslatorAddSourceEndpoint(resc, resv, argc, (mxArray**)(argv)){
-	HelicsTranslator trans = (HelicsTranslator)(mxGetData(argv[0]));
-
-	char *ept;
-	size_t eptLength;
-	int eptStatus;
-	eptLength = mxGetN(argv[1]) + 1;
-	ept = (char *)mxMalloc(eptLength);
-	eptStatus = mxGetString(argv[1], ept, eptLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsTranslatorAddSourceEndpoint(trans, (char const *)ept, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(ept);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsTranslatorAddDestinationEndpoint(resc, resv, argc, (mxArray**)(argv)){
-	HelicsTranslator trans = (HelicsTranslator)(mxGetData(argv[0]));
-
-	char *ept;
-	size_t eptLength;
-	int eptStatus;
-	eptLength = mxGetN(argv[1]) + 1;
-	ept = (char *)mxMalloc(eptLength);
-	eptStatus = mxGetString(argv[1], ept, eptLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsTranslatorAddDestinationEndpoint(trans, (char const *)ept, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(ept);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsTranslatorRemoveTarget(resc, resv, argc, (mxArray**)(argv)){
-	HelicsTranslator trans = (HelicsTranslator)(mxGetData(argv[0]));
-
-	char *target;
-	size_t targetLength;
-	int targetStatus;
-	targetLength = mxGetN(argv[1]) + 1;
-	target = (char *)mxMalloc(targetLength);
-	targetStatus = mxGetString(argv[1], target, targetLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsTranslatorRemoveTarget(trans, (char const *)target, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(target);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsTranslatorGetInfo(resc, resv, argc, (mxArray**)(argv)){
-	HelicsTranslator trans = (HelicsTranslator)(mxGetData(argv[0]));
-
-	char *result = helicsTranslatorGetInfo(trans);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-}
-
-
-void _wrap_helicsTranslatorSetInfo(resc, resv, argc, (mxArray**)(argv)){
-	HelicsTranslator trans = (HelicsTranslator)(mxGetData(argv[0]));
-
-	char *info;
-	size_t infoLength;
-	int infoStatus;
-	infoLength = mxGetN(argv[1]) + 1;
-	info = (char *)mxMalloc(infoLength);
-	infoStatus = mxGetString(argv[1], info, infoLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsTranslatorSetInfo(trans, (char const *)info, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(info);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsTranslatorGetTag(resc, resv, argc, (mxArray**)(argv)){
-	HelicsTranslator trans = (HelicsTranslator)(mxGetData(argv[0]));
-
-	char *tagname;
-	size_t tagnameLength;
-	int tagnameStatus;
-	tagnameLength = mxGetN(argv[1]) + 1;
-	tagname = (char *)mxMalloc(tagnameLength);
-	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
-
-	char *result = helicsTranslatorGetTag(trans, (char const *)tagname);
-
-	mxArray *_out = mxCreateString((const char *)result);
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(tagname);
-}
-
-
-void _wrap_helicsTranslatorSetTag(resc, resv, argc, (mxArray**)(argv)){
-	HelicsTranslator trans = (HelicsTranslator)(mxGetData(argv[0]));
-
-	char *tagname;
-	size_t tagnameLength;
-	int tagnameStatus;
-	tagnameLength = mxGetN(argv[1]) + 1;
-	tagname = (char *)mxMalloc(tagnameLength);
-	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
-
-	char *tagvalue;
-	size_t tagvalueLength;
-	int tagvalueStatus;
-	tagvalueLength = mxGetN(argv[2]) + 1;
-	tagvalue = (char *)mxMalloc(tagvalueLength);
-	tagvalueStatus = mxGetString(argv[2], tagvalue, tagvalueLength);
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsTranslatorSetTag(trans, (char const *)tagname, (char const *)tagvalue, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-	mxFree(tagname);
-
-	mxFree(tagvalue);
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsTranslatorSetOption(resc, resv, argc, (mxArray**)(argv)){
-	HelicsTranslator trans = (HelicsTranslator)(mxGetData(argv[0]));
-
-	int option = (int)(mxGetScalar(argv[1]));
-
-	int value = (int)(mxGetScalar(argv[2]));
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsTranslatorSetOption(trans, option, value, &err);
-
-	mxArray _out = (mxArray *)0;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-
-
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsTranslatorGetOption(resc, resv, argc, (mxArray**)(argv)){
-	HelicsTranslator trans = (HelicsTranslator)(mxGetData(argv[0]));
-
-	int option = (int)(mxGetScalar(argv[1]));
-
-	int result = helicsTranslatorGetOption(trans, option);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)result;
-
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-
-
-
-}
-
-
-void matlabBrokerLoggingCallback(int loglevel, const char* identifier, const char* message, void* userData){
-	mxArray *lhs;
-	mxArray *rhs[4];	rhs[0] = const_cast<mxArray *>(userData);
-	rhs[1] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)loglevel;
-	rhs[2] = mxCreateString(identifier);
-	rhs[3] = mxCreateString(message);
-	int status = mexCallMATLAB(0,&lhs,4,rhs,"feval");
-	mxDestroyArray(lhs);
-	mxDestroyArray(rhs[1]);
-	mxDestroyArray(rhs[2]);
-	mxDestroyArray(rhs[3]);
-}
-
-void _wrap_helicsBrokerSetLoggingCallback(resc, resv, argc, (mxArray**)(argv)){
-	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
-
-	void *userData = mxGetData(argv[1]);
-	HelicsError err = helicsErrorInitialize();
-
-	helicsBrokerSetLoggingCallback(broker, &matlabBrokerLoggingCallback, userData, &err);
-
-	mxArray *_out = (mxArray *)0;
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void matlabCoreLoggingCallback(int loglevel, const char* identifier, const char* message, void* userData){
-	mxArray *lhs;
-	mxArray *rhs[4];	rhs[0] = const_cast<mxArray *>(userData);
-	rhs[1] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)loglevel;
-	rhs[2] = mxCreateString(identifier);
-	rhs[3] = mxCreateString(message);
-	int status = mexCallMATLAB(0,&lhs,4,rhs,"feval");
-	mxDestroyArray(lhs);
-	mxDestroyArray(rhs[1]);
-	mxDestroyArray(rhs[2]);
-	mxDestroyArray(rhs[3]);
-}
-
-void _wrap_helicsCoreSetLoggingCallback(resc, resv, argc, (mxArray**)(argv)){
-	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
-
-	void *userData = mxGetData(argv[1]);
-	HelicsError err = helicsErrorInitialize();
-
-	helicsCoreSetLoggingCallback(core, &matlabCoreLoggingCallback, userData, &err);
-
-	mxArray *_out = (mxArray *)0;
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void matlabFederateLoggingCallback(int loglevel, const char* identifier, const char* message, void* userData){
-	mxArray *lhs;
-	mxArray *rhs[4];	rhs[0] = const_cast<mxArray *>(userData);
-	rhs[1] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(out)) = (int64_T)loglevel;
-	rhs[2] = mxCreateString(identifier);
-	rhs[3] = mxCreateString(message);
-	int status = mexCallMATLAB(0,&lhs,4,rhs,"feval");
-	mxDestroyArray(lhs);
-	mxDestroyArray(rhs[1]);
-	mxDestroyArray(rhs[2]);
-	mxDestroyArray(rhs[3]);
-}
-
-void _wrap_helicsFederateSetLoggingCallback(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	void *userData = mxGetData(argv[1]);
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateSetLoggingCallback(fed, &matlabFederateLoggingCallback, userData, &err);
-
-	mxArray *_out = (mxArray *)0;
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-HelicsMessage matlabFilterCustomCallback(HelicsMessage message, void* userData){
-	mxArray *lhs;
-	mxArray *rhs[2];	rhs[0] = const_cast<mxArray *>(userData);
-	rhs[1] = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((unit64_T*)mxGetData(rhs[1])) = (uint64_T)message;
-	int status = mexCallMATLAB(1,&lhs,2,rhs,"feval");
-	HelicsMessage rv = (HelicsMessage)(mxGetData(lhs[0]));
-	mxDestroyArray(rhs[1]);
-	return rv;
-}
-
-void _wrap_helicsFilterSetCustomCallback(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFilter filter = (HelicsFilter)(mxGetData(argv[0]));
-
-	void *userData = mxGetData(argv[1]);
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFilterSetCustomCallback(filter, &matlabFilterCustomCallback, userData, &err);
-
-	mxArray *_out = (mxArray *)0;
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-HelicsMessage matlabFederateQueryCallback(const char* query, int querySize, HelicsQueryBuffer buffer, void* userData){
-	mxArray *lhs;
-	mxArray *rhs[2];\mxSize dims[2] = {1, querySize};
-	rhs[0] = const_cast<mxArray *>(userData);
-	rhs[1] = mxCreateCharArray(2, dims);
-	mxChar *pQuery = (mxChar *)mxGetData(rhs[1]);
-	for(int i=0; i<querySize; ++i){
-		pQuery[i] = query[i];
-	}
-	int status = mexCallMATLAB(1,&lhs,2,rhs,"feval");
-	char *rStr;]n	size_t rStrSize = mxGetN(lhs[0]) + 1;
-	rStr = (char *)mxMalloc(rStrSize);
-int status = mxGetString(lhs[0], (const char *)rStr, rStrSize);
-	HelicsError err = helicsErrorInitialize();
-
-helicsQueryBufferFill(buffer, (const char *)rStr, (int)rStrSize, err);
-	mxDestroyArray(rhs[1]);
-	mxFree(rStr);
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-void _wrap_helicsFederateSetQueryCallback(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFilter filter = (HelicsFilter)(mxGetData(argv[0]));
-
-	void *userData = mxGetData(argv[1]);
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateSetQueryCallback(filter, &matlabFilterCustomCallback, userData, &err);
-
-	mxArray *_out = (mxArray *)0;
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void matlabFederateSetTimeRequestEntryCallback(HelicsTime currentTime, HelicsTime requestTime, HelicsBool iterating, void* userData){
-	mxArray *lhs;
-	mxArray *rhs[4];	rhs[0] = const_cast<mxArray *>(userData);
-	rhs[1] = mxCreateDoubleScalar(currentTime);
-	rhs[2] = mxCreateDoubleScalar(requestTime);
-	rhs[3] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(rhs[2]) =  (int46_T)iterating;
-	int status = mexCallMATLAB(0,&lhs,4,rhs,"feval");
-	mxDestroyArray(lhs);
-	mxDestroyArray(rhs[1]);
-	mxDestroyArray(rhs[2]);
-	mxDestroyArray(rhs[3]);
-}
-
-void _wrap_helicsFederateSetTimeRequestEntryCallback(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	void *userData = mxGetData(argv[1]);
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateSetTimeRequestEntryCallback(fed, &matlabFederateSetTimeRequestEntryCallback, userData, &err);
-
-	mxArray *_out = (mxArray *)0;
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void matlabFederateTimeUpdateCallback(HelicsTime newTime, HelicsBool iterating, void* userData){
-	mxArray *lhs;
-	mxArray *rhs[3];	rhs[0] = const_cast<mxArray *>(userData);
-	rhs[1] = mxCreateDoubleScalar((double)newTime);
-	rhs[2] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(rhs[2]) =  (int46_T)iterating;
-	int status = mexCallMATLAB(0,&lhs,3,rhs,"feval");
-	mxDestroyArray(lhs);
-	mxDestroyArray(rhs[1]);
-	mxDestroyArray(rhs[2]);
-}
-
-void _wrap_helicsFederateSetTimeUpdateCallback(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	void *userData = mxGetData(argv[1]);
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateSetTimeUpdateCallback(fed, &matlabFederateTimeUpdateCallback, userData, &err);
-
-	mxArray *_out = (mxArray *)0;
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void matlabFederateSetStateChangeCallback(HelicsFederateState newState, HelicsFederateState oldState, void* userData){
-	mxArray *lhs;
-	mxArray *rhs[3];	rhs[0] = const_cast<mxArray *>(userData);
-	rhs[1] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(rhs[2]) =  (int46_T)newState;
-	rhs[2] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(rhs[2]) =  (int46_T)oldState;
-	int status = mexCallMATLAB(0,&lhs,3,rhs,"feval");
-	mxDestroyArray(lhs);
-	mxDestroyArray(rhs[1]);
-	mxDestroyArray(rhs[2]);
-}
-
-void _wrap_helicsFederateSetStateChangeCallback(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	void *userData = mxGetData(argv[1]);
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateSetStateChangeCallback(fed, &matlabFederateSetStateChangeCallback, userData, &err);
-
-	mxArray *_out = (mxArray *)0;
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void matlabFederateSetTimeRequestReturnCallback(HelicsTime newTime, HelicsBool iterating, void* userData){
-	mxArray *lhs;
-	mxArray *rhs[3];	rhs[0] = const_cast<mxArray *>(userData);
-	rhs[1] = mxCreateDoubleScalar(newTime);
-	rhs[2] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(rhs[2]) =  (int46_T)iterating;
-	int status = mexCallMATLAB(0,&lhs,3,rhs,"feval");
-	mxDestroyArray(lhs);
-	mxDestroyArray(rhs[1]);
-	mxDestroyArray(rhs[2]);
-}
-
-void _wrap_helicsFederateSetTimeRequestReturnCallback(resc, resv, argc, (mxArray**)(argv)){
-	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
-
-	void *userData = mxGetData(argv[1]);
-	HelicsError err = helicsErrorInitialize();
-
-	helicsFederateSetTimeRequestReturnCallback(fed, &matlabFederateSetTimeRequestReturnCallback, userData, &err);
-
-	mxArray *_out = (mxArray *)0;
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
-
-void _wrap_helicsQueryBufferFill(resc, resv, argc, (mxArray**)(argv)){
-	HelicsQueryBuffer buffer = (HelicsQueryBuffer)(mxGetData(argv[0]));
-
-	char *str;
-	size_t strLength;
-	int strStatus;
-	strLength = mxGetN(argv[1]) + 1;
-	str = (char *)mxMalloc(strLength);
-	strStatus = mxGetString(argv[1], str, strLength);
-
-	int strSize = strLength - 1;
-
-	HelicsError err = helicsErrorInitialize();
-
-	helicsQueryBufferFill(buffer, str, strSize, &err);
-
-	mxArray *_out = (mxArray *)0;
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-
-	if(err.error_code != HELICS_OK){
-		throwHelicsMatlabError(&err);
-	}
-}
-
 
