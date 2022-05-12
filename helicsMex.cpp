@@ -1775,16 +1775,16 @@ void _wrap_helicsDoubleToBytes(resc, resv, argc, (mxArray**)(argv)){
 
 
 void _wrap_helicsStringToBytes(resc, resv, argc, (mxArray**)(argv)){
-	char *string;
-	size_t stringLength;
-	int stringStatus;
-	stringLength = mxGetN(argv[0]) + 1;
-	string = (char *)mxMalloc(stringLength);
-	stringStatus = mxGetString(argv[0], string, stringLength);
+	char *str;
+	size_t strLength;
+	int strStatus;
+	strLength = mxGetN(argv[0]) + 1;
+	str = (char *)mxMalloc(strLength);
+	strStatus = mxGetString(argv[0], str, strLength);
 
-	 HelicsDataBuffer data = helicsCreateDataBuffer(stringLength);
+	 HelicsDataBuffer data = helicsCreateDataBuffer(strLength);
 
-	int32_t result = helicsStringToBytes(string, data);
+	int32_t result = helicsStringToBytes(str, data);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
 	*((uint64_T*)mxGetData(_out)) = (uint64_T)data;
@@ -6624,16 +6624,16 @@ void _wrap_helicsPublicationPublishBytes(resc, resv, argc, (mxArray**)(argv)){
 void _wrap_helicsPublicationPublishString(resc, resv, argc, (mxArray**)(argv)){
 	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
 
-	char *string;
-	size_t stringLength;
-	int stringStatus;
-	stringLength = mxGetN(argv[1]) + 1;
-	string = (char *)mxMalloc(stringLength);
-	stringStatus = mxGetString(argv[1], string, stringLength);
+	char *str;
+	size_t strLength;
+	int strStatus;
+	strLength = mxGetN(argv[1]) + 1;
+	str = (char *)mxMalloc(strLength);
+	strStatus = mxGetString(argv[1], str, strLength);
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsPublicationPublishString(pub, (char const *)string, &err);
+	helicsPublicationPublishString(pub, (char const *)str, &err);
 
 	mxArray _out = (mxArray *)0;
 
@@ -6644,7 +6644,7 @@ void _wrap_helicsPublicationPublishString(resc, resv, argc, (mxArray**)(argv)){
 
 
 
-	mxFree(string);
+	mxFree(str);
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -6864,18 +6864,18 @@ void _wrap_helicsPublicationPublishComplexVector(resc, resv, argc, (mxArray**)(a
 void _wrap_helicsPublicationPublishNamedPoint(resc, resv, argc, (mxArray**)(argv)){
 	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
 
-	char *string;
-	size_t stringLength;
-	int stringStatus;
-	stringLength = mxGetN(argv[1]) + 1;
-	string = (char *)mxMalloc(stringLength);
-	stringStatus = mxGetString(argv[1], string, stringLength);
+	char *str;
+	size_t strLength;
+	int strStatus;
+	strLength = mxGetN(argv[1]) + 1;
+	str = (char *)mxMalloc(strLength);
+	strStatus = mxGetString(argv[1], str, strLength);
 
 	double val = mxGetScalar(argv[2]);
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsPublicationPublishNamedPoint(pub, (char const *)string, val, &err);
+	helicsPublicationPublishNamedPoint(pub, (char const *)str, val, &err);
 
 	mxArray _out = (mxArray *)0;
 
@@ -6886,7 +6886,7 @@ void _wrap_helicsPublicationPublishNamedPoint(resc, resv, argc, (mxArray**)(argv
 
 
 
-	mxFree(string);
+	mxFree(str);
 
 
 
@@ -7390,16 +7390,16 @@ void _wrap_helicsInputSetDefaultBytes(resc, resv, argc, (mxArray**)(argv)){
 void _wrap_helicsInputSetDefaultString(resc, resv, argc, (mxArray**)(argv)){
 	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
 
-	char *string;
-	size_t stringLength;
-	int stringStatus;
-	stringLength = mxGetN(argv[1]) + 1;
-	string = (char *)mxMalloc(stringLength);
-	stringStatus = mxGetString(argv[1], string, stringLength);
+	char *str;
+	size_t strLength;
+	int strStatus;
+	strLength = mxGetN(argv[1]) + 1;
+	str = (char *)mxMalloc(strLength);
+	strStatus = mxGetString(argv[1], str, strLength);
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsInputSetDefaultString(ipt, (char const *)string, &err);
+	helicsInputSetDefaultString(ipt, (char const *)str, &err);
 
 	mxArray _out = (mxArray *)0;
 
@@ -7410,7 +7410,7 @@ void _wrap_helicsInputSetDefaultString(resc, resv, argc, (mxArray**)(argv)){
 
 
 
-	mxFree(string);
+	mxFree(str);
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -7630,18 +7630,18 @@ void _wrap_helicsInputSetDefaultComplexVector(resc, resv, argc, (mxArray**)(argv
 void _wrap_helicsInputSetDefaultNamedPoint(resc, resv, argc, (mxArray**)(argv)){
 	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
 
-	char *string;
-	size_t stringLength;
-	int stringStatus;
-	stringLength = mxGetN(argv[1]) + 1;
-	string = (char *)mxMalloc(stringLength);
-	stringStatus = mxGetString(argv[1], string, stringLength);
+	char *str;
+	size_t strLength;
+	int strStatus;
+	strLength = mxGetN(argv[1]) + 1;
+	str = (char *)mxMalloc(strLength);
+	strStatus = mxGetString(argv[1], str, strLength);
 
 	double val = mxGetScalar(argv[2]);
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsInputSetDefaultNamedPoint(ipt, (char const *)string, val, &err);
+	helicsInputSetDefaultNamedPoint(ipt, (char const *)str, val, &err);
 
 	mxArray _out = (mxArray *)0;
 
@@ -7652,7 +7652,7 @@ void _wrap_helicsInputSetDefaultNamedPoint(resc, resv, argc, (mxArray**)(argv)){
 
 
 
-	mxFree(string);
+	mxFree(str);
 
 
 
@@ -9838,16 +9838,16 @@ void _wrap_helicsMessageSetFlagOption(resc, resv, argc, (mxArray**)(argv)){
 void _wrap_helicsMessageSetString(resc, resv, argc, (mxArray**)(argv)){
 	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
 
-	char *string;
-	size_t stringLength;
-	int stringStatus;
-	stringLength = mxGetN(argv[1]) + 1;
-	string = (char *)mxMalloc(stringLength);
-	stringStatus = mxGetString(argv[1], string, stringLength);
+	char *str;
+	size_t strLength;
+	int strStatus;
+	strLength = mxGetN(argv[1]) + 1;
+	str = (char *)mxMalloc(strLength);
+	strStatus = mxGetString(argv[1], str, strLength);
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsMessageSetString(message, (char const *)string, &err);
+	helicsMessageSetString(message, (char const *)str, &err);
 
 	mxArray _out = (mxArray *)0;
 
@@ -9858,7 +9858,7 @@ void _wrap_helicsMessageSetString(resc, resv, argc, (mxArray**)(argv)){
 
 
 
-	mxFree(string);
+	mxFree(str);
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);

@@ -4236,7 +4236,7 @@ class HelicsHeaderParser (object):
             if argNum != 2:
                 raise RuntimeError("the function signature for helicsStringToBytes has changed!")
             arg0 = functionDict.get("arguments", {}).get(0, {})
-            if arg0.get("spelling","") != "string" or arg0.get("pointer_type", "") != "Char_S_*":
+            if arg0.get("spelling","") != "str" or arg0.get("pointer_type", "") != "Char_S_*":
                 raise RuntimeError("the function signature for helicsStringToBytes has changed!")
             arg1 = functionDict.get("arguments", {}).get(1, {})
             if arg1.get("spelling","") != "data" or arg1.get("type", "") != "HelicsDataBuffer":
@@ -4244,13 +4244,13 @@ class HelicsHeaderParser (object):
             functionName = functionDict.get("spelling","")
             functionComment = "%{\n"
             functionComment += "\tconvert a string to serialized bytes.\n\n"
-            functionComment += "\t@param string The string.\n"
+            functionComment += "\t@param str The string.\n"
             functionComment += "\t@return HelicsDataBuffer.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(resc, resv, argc, (mxArray**)(argv))" + "{\n"
-            functionWrapper += initializeArgChar('string',0)
-            functionWrapper += "\t HelicsDataBuffer data = helicsCreateDataBuffer(stringLength);\n\n"
-            functionWrapper += f"\tint32_t result = {functionName}(string, data);\n\n"
+            functionWrapper += initializeArgChar('str',0)
+            functionWrapper += "\t HelicsDataBuffer data = helicsCreateDataBuffer(strLength);\n\n"
+            functionWrapper += f"\tint32_t result = {functionName}(str, data);\n\n"
             functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
             functionWrapper += "\t*((uint64_T*)mxGetData(_out)) = (uint64_T)data;\n\n"
             functionWrapper += "\tif(_out){\n"

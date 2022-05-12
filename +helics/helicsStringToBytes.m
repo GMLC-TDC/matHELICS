@@ -1,7 +1,7 @@
 %{
 	convert a string to serialized bytes.
 
-	@param string The string.
+	@param str The string.
 	@return HelicsDataBuffer.
 %}
 function varargout = helicsStringToBytes(varargin)
