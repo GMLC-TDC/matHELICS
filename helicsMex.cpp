@@ -489,7 +489,7 @@ void _wrap_helicsDataBufferFree(int resc, mxArray *resv[], int argc, mxArray *ar
 
 	helicsDataBufferFree(data);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -838,7 +838,7 @@ void _wrap_helicsGetSystemInfo(int resc, mxArray *resv[], int argc, mxArray *arg
 void _wrap_helicsLoadSignalHandler(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	helicsLoadSignalHandler();
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -850,7 +850,7 @@ void _wrap_helicsLoadSignalHandler(int resc, mxArray *resv[], int argc, mxArray 
 void _wrap_helicsLoadThreadedSignalHandler(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	helicsLoadThreadedSignalHandler();
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -862,7 +862,7 @@ void _wrap_helicsLoadThreadedSignalHandler(int resc, mxArray *resv[], int argc, 
 void _wrap_helicsClearSignalHandler(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	helicsClearSignalHandler();
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -883,7 +883,7 @@ void _wrap_helicsAbort(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 
 	helicsAbort(errorCode, (char const *)errorString);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -1230,7 +1230,7 @@ void _wrap_helicsBrokerDataLink(int resc, mxArray *resv[], int argc, mxArray *ar
 
 	helicsBrokerDataLink(broker, (char const *)source, (char const *)target, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -1270,7 +1270,7 @@ void _wrap_helicsBrokerAddSourceFilterToEndpoint(int resc, mxArray *resv[], int 
 
 	helicsBrokerAddSourceFilterToEndpoint(broker, (char const *)filter, (char const *)endpoint, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -1310,7 +1310,7 @@ void _wrap_helicsBrokerAddDestinationFilterToEndpoint(int resc, mxArray *resv[],
 
 	helicsBrokerAddDestinationFilterToEndpoint(broker, (char const *)filter, (char const *)endpoint, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -1343,7 +1343,7 @@ void _wrap_helicsBrokerMakeConnections(int resc, mxArray *resv[], int argc, mxAr
 
 	helicsBrokerMakeConnections(broker, (char const *)file, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -1452,7 +1452,7 @@ void _wrap_helicsCoreDataLink(int resc, mxArray *resv[], int argc, mxArray *argv
 
 	helicsCoreDataLink(core, (char const *)source, (char const *)target, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -1492,7 +1492,7 @@ void _wrap_helicsCoreAddSourceFilterToEndpoint(int resc, mxArray *resv[], int ar
 
 	helicsCoreAddSourceFilterToEndpoint(core, (char const *)filter, (char const *)endpoint, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -1532,7 +1532,7 @@ void _wrap_helicsCoreAddDestinationFilterToEndpoint(int resc, mxArray *resv[], i
 
 	helicsCoreAddDestinationFilterToEndpoint(core, (char const *)filter, (char const *)endpoint, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -1565,7 +1565,7 @@ void _wrap_helicsCoreMakeConnections(int resc, mxArray *resv[], int argc, mxArra
 
 	helicsCoreMakeConnections(core, (char const *)file, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -1653,7 +1653,7 @@ void _wrap_helicsCoreSetReadyToInit(int resc, mxArray *resv[], int argc, mxArray
 
 	helicsCoreSetReadyToInit(core, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -1698,7 +1698,7 @@ void _wrap_helicsCoreDisconnect(int resc, mxArray *resv[], int argc, mxArray *ar
 
 	helicsCoreDisconnect(core, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -1748,7 +1748,7 @@ void _wrap_helicsBrokerDisconnect(int resc, mxArray *resv[], int argc, mxArray *
 
 	helicsBrokerDisconnect(broker, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -1768,7 +1768,7 @@ void _wrap_helicsFederateDestroy(int resc, mxArray *resv[], int argc, mxArray *a
 
 	helicsFederateDestroy(fed);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -1784,7 +1784,7 @@ void _wrap_helicsBrokerDestroy(int resc, mxArray *resv[], int argc, mxArray *arg
 
 	helicsBrokerDestroy(broker);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -1800,7 +1800,7 @@ void _wrap_helicsCoreDestroy(int resc, mxArray *resv[], int argc, mxArray *argv[
 
 	helicsCoreDestroy(core);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -1816,7 +1816,7 @@ void _wrap_helicsCoreFree(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 
 	helicsCoreFree(core);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -1832,7 +1832,7 @@ void _wrap_helicsBrokerFree(int resc, mxArray *resv[], int argc, mxArray *argv[]
 
 	helicsBrokerFree(broker);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -2129,7 +2129,7 @@ void _wrap_helicsFederateInfoLoadFromString(int resc, mxArray *resv[], int argc,
 
 	helicsFederateInfoLoadFromString(fi, (char const *)args, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -2151,7 +2151,7 @@ void _wrap_helicsFederateInfoFree(int resc, mxArray *resv[], int argc, mxArray *
 
 	helicsFederateInfoFree(fi);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -2193,7 +2193,7 @@ void _wrap_helicsFederateInfoSetCoreName(int resc, mxArray *resv[], int argc, mx
 
 	helicsFederateInfoSetCoreName(fi, (char const *)corename, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -2224,7 +2224,7 @@ void _wrap_helicsFederateInfoSetCoreInitString(int resc, mxArray *resv[], int ar
 
 	helicsFederateInfoSetCoreInitString(fi, (char const *)coreInit, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -2255,7 +2255,7 @@ void _wrap_helicsFederateInfoSetBrokerInitString(int resc, mxArray *resv[], int 
 
 	helicsFederateInfoSetBrokerInitString(fi, (char const *)brokerInit, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -2281,7 +2281,7 @@ void _wrap_helicsFederateInfoSetCoreType(int resc, mxArray *resv[], int argc, mx
 
 	helicsFederateInfoSetCoreType(fi, coretype, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -2312,7 +2312,7 @@ void _wrap_helicsFederateInfoSetCoreTypeFromString(int resc, mxArray *resv[], in
 
 	helicsFederateInfoSetCoreTypeFromString(fi, (char const *)coretype, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -2343,7 +2343,7 @@ void _wrap_helicsFederateInfoSetBroker(int resc, mxArray *resv[], int argc, mxAr
 
 	helicsFederateInfoSetBroker(fi, (char const *)broker, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -2374,7 +2374,7 @@ void _wrap_helicsFederateInfoSetBrokerKey(int resc, mxArray *resv[], int argc, m
 
 	helicsFederateInfoSetBrokerKey(fi, (char const *)brokerkey, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -2400,7 +2400,7 @@ void _wrap_helicsFederateInfoSetBrokerPort(int resc, mxArray *resv[], int argc, 
 
 	helicsFederateInfoSetBrokerPort(fi, brokerPort, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -2431,7 +2431,7 @@ void _wrap_helicsFederateInfoSetLocalPort(int resc, mxArray *resv[], int argc, m
 
 	helicsFederateInfoSetLocalPort(fi, (char const *)localPort, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -2569,7 +2569,7 @@ void _wrap_helicsFederateInfoSetFlagOption(int resc, mxArray *resv[], int argc, 
 
 	helicsFederateInfoSetFlagOption(fi, flag, value, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -2602,7 +2602,7 @@ void _wrap_helicsFederateInfoSetSeparator(int resc, mxArray *resv[], int argc, m
 
 	helicsFederateInfoSetSeparator(fi, separator[0], &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -2630,7 +2630,7 @@ void _wrap_helicsFederateInfoSetTimeProperty(int resc, mxArray *resv[], int argc
 
 	helicsFederateInfoSetTimeProperty(fi, timeProperty, propertyValue, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -2660,7 +2660,7 @@ void _wrap_helicsFederateInfoSetIntegerProperty(int resc, mxArray *resv[], int a
 
 	helicsFederateInfoSetIntegerProperty(fi, intProperty, propertyValue, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -2693,7 +2693,7 @@ void _wrap_helicsFederateRegisterInterfaces(int resc, mxArray *resv[], int argc,
 
 	helicsFederateRegisterInterfaces(fed, (char const *)file, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -2726,7 +2726,7 @@ void _wrap_helicsFederateGlobalError(int resc, mxArray *resv[], int argc, mxArra
 
 	helicsFederateGlobalError(fed, errorCode, (char const *)errorString, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -2761,7 +2761,7 @@ void _wrap_helicsFederateLocalError(int resc, mxArray *resv[], int argc, mxArray
 
 	helicsFederateLocalError(fed, errorCode, (char const *)errorString, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -2787,7 +2787,7 @@ void _wrap_helicsFederateFinalize(int resc, mxArray *resv[], int argc, mxArray *
 
 	helicsFederateFinalize(fed, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -2809,7 +2809,7 @@ void _wrap_helicsFederateFinalizeAsync(int resc, mxArray *resv[], int argc, mxAr
 
 	helicsFederateFinalizeAsync(fed, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -2831,7 +2831,7 @@ void _wrap_helicsFederateFinalizeComplete(int resc, mxArray *resv[], int argc, m
 
 	helicsFederateFinalizeComplete(fed, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -2853,7 +2853,7 @@ void _wrap_helicsFederateDisconnect(int resc, mxArray *resv[], int argc, mxArray
 
 	helicsFederateDisconnect(fed, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -2875,7 +2875,7 @@ void _wrap_helicsFederateDisconnectAsync(int resc, mxArray *resv[], int argc, mx
 
 	helicsFederateDisconnectAsync(fed, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -2897,7 +2897,7 @@ void _wrap_helicsFederateDisconnectComplete(int resc, mxArray *resv[], int argc,
 
 	helicsFederateDisconnectComplete(fed, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -2917,7 +2917,7 @@ void _wrap_helicsFederateFree(int resc, mxArray *resv[], int argc, mxArray *argv
 
 	helicsFederateFree(fed);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -2931,7 +2931,7 @@ void _wrap_helicsFederateFree(int resc, mxArray *resv[], int argc, mxArray *argv
 void _wrap_helicsCloseLibrary(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	helicsCloseLibrary();
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -2947,7 +2947,7 @@ void _wrap_helicsFederateEnterInitializingMode(int resc, mxArray *resv[], int ar
 
 	helicsFederateEnterInitializingMode(fed, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -2969,7 +2969,7 @@ void _wrap_helicsFederateEnterInitializingModeAsync(int resc, mxArray *resv[], i
 
 	helicsFederateEnterInitializingModeAsync(fed, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -3014,7 +3014,7 @@ void _wrap_helicsFederateEnterInitializingModeComplete(int resc, mxArray *resv[]
 
 	helicsFederateEnterInitializingModeComplete(fed, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -3036,7 +3036,7 @@ void _wrap_helicsFederateEnterExecutingMode(int resc, mxArray *resv[], int argc,
 
 	helicsFederateEnterExecutingMode(fed, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -3058,7 +3058,7 @@ void _wrap_helicsFederateEnterExecutingModeAsync(int resc, mxArray *resv[], int 
 
 	helicsFederateEnterExecutingModeAsync(fed, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -3080,7 +3080,7 @@ void _wrap_helicsFederateEnterExecutingModeComplete(int resc, mxArray *resv[], i
 
 	helicsFederateEnterExecutingModeComplete(fed, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -3131,7 +3131,7 @@ void _wrap_helicsFederateEnterExecutingModeIterativeAsync(int resc, mxArray *res
 
 	helicsFederateEnterExecutingModeIterativeAsync(fed, iterate, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -3332,7 +3332,7 @@ void _wrap_helicsFederateRequestTimeAsync(int resc, mxArray *resv[], int argc, m
 
 	helicsFederateRequestTimeAsync(fed, requestTime, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -3382,7 +3382,7 @@ void _wrap_helicsFederateRequestTimeIterativeAsync(int resc, mxArray *resv[], in
 
 	helicsFederateRequestTimeIterativeAsync(fed, requestTime, iterate, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -3440,7 +3440,7 @@ void _wrap_helicsFederateProcessCommunications(int resc, mxArray *resv[], int ar
 
 	helicsFederateProcessCommunications(fed, period, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -3484,7 +3484,7 @@ void _wrap_helicsFederateSetTimeProperty(int resc, mxArray *resv[], int argc, mx
 
 	helicsFederateSetTimeProperty(fed, timeProperty, time, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -3514,7 +3514,7 @@ void _wrap_helicsFederateSetFlagOption(int resc, mxArray *resv[], int argc, mxAr
 
 	helicsFederateSetFlagOption(fed, flag, flagValue, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -3547,7 +3547,7 @@ void _wrap_helicsFederateSetSeparator(int resc, mxArray *resv[], int argc, mxArr
 
 	helicsFederateSetSeparator(fed, separator[0], &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -3575,7 +3575,7 @@ void _wrap_helicsFederateSetIntegerProperty(int resc, mxArray *resv[], int argc,
 
 	helicsFederateSetIntegerProperty(fed, intProperty, propertyVal, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -3717,7 +3717,7 @@ void _wrap_helicsFederateSetGlobal(int resc, mxArray *resv[], int argc, mxArray 
 
 	helicsFederateSetGlobal(fed, (char const *)valueName, (char const *)value, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -3757,7 +3757,7 @@ void _wrap_helicsFederateSetTag(int resc, mxArray *resv[], int argc, mxArray *ar
 
 	helicsFederateSetTag(fed, (char const *)tagName, (char const *)value, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -3821,7 +3821,7 @@ void _wrap_helicsFederateAddDependency(int resc, mxArray *resv[], int argc, mxAr
 
 	helicsFederateAddDependency(fed, (char const *)fedName, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -3852,7 +3852,7 @@ void _wrap_helicsFederateSetLogFile(int resc, mxArray *resv[], int argc, mxArray
 
 	helicsFederateSetLogFile(fed, (char const *)logFile, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -3883,7 +3883,7 @@ void _wrap_helicsFederateLogErrorMessage(int resc, mxArray *resv[], int argc, mx
 
 	helicsFederateLogErrorMessage(fed, (char const *)logmessage, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -3914,7 +3914,7 @@ void _wrap_helicsFederateLogWarningMessage(int resc, mxArray *resv[], int argc, 
 
 	helicsFederateLogWarningMessage(fed, (char const *)logmessage, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -3945,7 +3945,7 @@ void _wrap_helicsFederateLogInfoMessage(int resc, mxArray *resv[], int argc, mxA
 
 	helicsFederateLogInfoMessage(fed, (char const *)logmessage, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -3976,7 +3976,7 @@ void _wrap_helicsFederateLogDebugMessage(int resc, mxArray *resv[], int argc, mx
 
 	helicsFederateLogDebugMessage(fed, (char const *)logmessage, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -4009,7 +4009,7 @@ void _wrap_helicsFederateLogLevelMessage(int resc, mxArray *resv[], int argc, mx
 
 	helicsFederateLogLevelMessage(fed, loglevel, (char const *)logmessage, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -4049,7 +4049,7 @@ void _wrap_helicsFederateSendCommand(int resc, mxArray *resv[], int argc, mxArra
 
 	helicsFederateSendCommand(fed, (char const *)target, (char const *)command, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -4155,7 +4155,7 @@ void _wrap_helicsCoreSetGlobal(int resc, mxArray *resv[], int argc, mxArray *arg
 
 	helicsCoreSetGlobal(core, (char const *)valueName, (char const *)value, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -4195,7 +4195,7 @@ void _wrap_helicsBrokerSetGlobal(int resc, mxArray *resv[], int argc, mxArray *a
 
 	helicsBrokerSetGlobal(broker, (char const *)valueName, (char const *)value, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -4235,7 +4235,7 @@ void _wrap_helicsCoreSendCommand(int resc, mxArray *resv[], int argc, mxArray *a
 
 	helicsCoreSendCommand(core, (char const *)target, (char const *)command, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -4275,7 +4275,7 @@ void _wrap_helicsBrokerSendCommand(int resc, mxArray *resv[], int argc, mxArray 
 
 	helicsBrokerSendCommand(broker, (char const *)target, (char const *)command, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -4308,7 +4308,7 @@ void _wrap_helicsCoreSetLogFile(int resc, mxArray *resv[], int argc, mxArray *ar
 
 	helicsCoreSetLogFile(core, (char const *)logFileName, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -4339,7 +4339,7 @@ void _wrap_helicsBrokerSetLogFile(int resc, mxArray *resv[], int argc, mxArray *
 
 	helicsBrokerSetLogFile(broker, (char const *)logFileName, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -4365,7 +4365,7 @@ void _wrap_helicsBrokerSetTimeBarrier(int resc, mxArray *resv[], int argc, mxArr
 
 	helicsBrokerSetTimeBarrier(broker, barrierTime, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -4387,7 +4387,7 @@ void _wrap_helicsBrokerClearTimeBarrier(int resc, mxArray *resv[], int argc, mxA
 
 	helicsBrokerClearTimeBarrier(broker);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -4414,7 +4414,7 @@ void _wrap_helicsBrokerGlobalError(int resc, mxArray *resv[], int argc, mxArray 
 
 	helicsBrokerGlobalError(broker, errorCode, (char const *)errorString, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -4449,7 +4449,7 @@ void _wrap_helicsCoreGlobalError(int resc, mxArray *resv[], int argc, mxArray *a
 
 	helicsCoreGlobalError(core, errorCode, (char const *)errorString, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -4586,7 +4586,7 @@ void _wrap_helicsQueryExecuteAsync(int resc, mxArray *resv[], int argc, mxArray 
 
 	helicsQueryExecuteAsync(query, fed, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -4656,7 +4656,7 @@ void _wrap_helicsQuerySetTarget(int resc, mxArray *resv[], int argc, mxArray *ar
 
 	helicsQuerySetTarget(query, (char const *)target, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -4687,7 +4687,7 @@ void _wrap_helicsQuerySetQueryString(int resc, mxArray *resv[], int argc, mxArra
 
 	helicsQuerySetQueryString(query, (char const *)queryString, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -4713,7 +4713,7 @@ void _wrap_helicsQuerySetOrdering(int resc, mxArray *resv[], int argc, mxArray *
 
 	helicsQuerySetOrdering(query, mode, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -4735,7 +4735,7 @@ void _wrap_helicsQueryFree(int resc, mxArray *resv[], int argc, mxArray *argv[])
 
 	helicsQueryFree(query);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -4749,7 +4749,7 @@ void _wrap_helicsQueryFree(int resc, mxArray *resv[], int argc, mxArray *argv[])
 void _wrap_helicsCleanupLibrary(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	helicsCleanupLibrary();
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -5334,7 +5334,7 @@ void _wrap_helicsFederateClearUpdates(int resc, mxArray *resv[], int argc, mxArr
 
 	helicsFederateClearUpdates(fed);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -5359,7 +5359,7 @@ void _wrap_helicsFederateRegisterFromPublicationJSON(int resc, mxArray *resv[], 
 
 	helicsFederateRegisterFromPublicationJSON(fed, (char const *)json, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -5390,7 +5390,7 @@ void _wrap_helicsFederatePublishJSON(int resc, mxArray *resv[], int argc, mxArra
 
 	helicsFederatePublishJSON(fed, (char const *)json, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -5467,7 +5467,7 @@ void _wrap_helicsPublicationPublishString(int resc, mxArray *resv[], int argc, m
 
 	helicsPublicationPublishString(pub, (char const *)str, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -5493,7 +5493,7 @@ void _wrap_helicsPublicationPublishInteger(int resc, mxArray *resv[], int argc, 
 
 	helicsPublicationPublishInteger(pub, val, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -5519,7 +5519,7 @@ void _wrap_helicsPublicationPublishBoolean(int resc, mxArray *resv[], int argc, 
 
 	helicsPublicationPublishBoolean(pub, val, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -5545,7 +5545,7 @@ void _wrap_helicsPublicationPublishDouble(int resc, mxArray *resv[], int argc, m
 
 	helicsPublicationPublishDouble(pub, val, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -5571,7 +5571,7 @@ void _wrap_helicsPublicationPublishTime(int resc, mxArray *resv[], int argc, mxA
 
 	helicsPublicationPublishTime(pub, val, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -5602,7 +5602,7 @@ void _wrap_helicsPublicationPublishChar(int resc, mxArray *resv[], int argc, mxA
 
 	helicsPublicationPublishChar(pub, val[0], &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -5709,7 +5709,7 @@ void _wrap_helicsPublicationPublishNamedPoint(int resc, mxArray *resv[], int arg
 
 	helicsPublicationPublishNamedPoint(pub, (char const *)str, val, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -5742,7 +5742,7 @@ void _wrap_helicsPublicationAddTarget(int resc, mxArray *resv[], int argc, mxArr
 
 	helicsPublicationAddTarget(pub, (char const *)target, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -5790,7 +5790,7 @@ void _wrap_helicsInputAddTarget(int resc, mxArray *resv[], int argc, mxArray *ar
 
 	helicsInputAddTarget(ipt, (char const *)target, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -6233,7 +6233,7 @@ void _wrap_helicsInputSetDefaultString(int resc, mxArray *resv[], int argc, mxAr
 
 	helicsInputSetDefaultString(ipt, (char const *)str, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -6259,7 +6259,7 @@ void _wrap_helicsInputSetDefaultInteger(int resc, mxArray *resv[], int argc, mxA
 
 	helicsInputSetDefaultInteger(ipt, val, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -6285,7 +6285,7 @@ void _wrap_helicsInputSetDefaultBoolean(int resc, mxArray *resv[], int argc, mxA
 
 	helicsInputSetDefaultBoolean(ipt, val, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -6311,7 +6311,7 @@ void _wrap_helicsInputSetDefaultTime(int resc, mxArray *resv[], int argc, mxArra
 
 	helicsInputSetDefaultTime(ipt, val, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -6342,7 +6342,7 @@ void _wrap_helicsInputSetDefaultChar(int resc, mxArray *resv[], int argc, mxArra
 
 	helicsInputSetDefaultChar(ipt, val[0], &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -6368,7 +6368,7 @@ void _wrap_helicsInputSetDefaultDouble(int resc, mxArray *resv[], int argc, mxAr
 
 	helicsInputSetDefaultDouble(ipt, val, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -6475,7 +6475,7 @@ void _wrap_helicsInputSetDefaultNamedPoint(int resc, mxArray *resv[], int argc, 
 
 	helicsInputSetDefaultNamedPoint(ipt, (char const *)str, val, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -6701,7 +6701,7 @@ void _wrap_helicsInputSetInfo(int resc, mxArray *resv[], int argc, mxArray *argv
 
 	helicsInputSetInfo(inp, (char const *)info, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -6764,7 +6764,7 @@ void _wrap_helicsInputSetTag(int resc, mxArray *resv[], int argc, mxArray *argv[
 
 	helicsInputSetTag(inp, (char const *)tagname, (char const *)tagvalue, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -6813,7 +6813,7 @@ void _wrap_helicsPublicationSetInfo(int resc, mxArray *resv[], int argc, mxArray
 
 	helicsPublicationSetInfo(pub, (char const *)info, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -6876,7 +6876,7 @@ void _wrap_helicsPublicationSetTag(int resc, mxArray *resv[], int argc, mxArray 
 
 	helicsPublicationSetTag(pub, (char const *)tagname, (char const *)tagvalue, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -6927,7 +6927,7 @@ void _wrap_helicsInputSetOption(int resc, mxArray *resv[], int argc, mxArray *ar
 
 	helicsInputSetOption(inp, option, value, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -6978,7 +6978,7 @@ void _wrap_helicsPublicationSetOption(int resc, mxArray *resv[], int argc, mxArr
 
 	helicsPublicationSetOption(pub, option, val, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -7006,7 +7006,7 @@ void _wrap_helicsPublicationSetMinimumChange(int resc, mxArray *resv[], int argc
 
 	helicsPublicationSetMinimumChange(pub, tolerance, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -7032,7 +7032,7 @@ void _wrap_helicsInputSetMinimumChange(int resc, mxArray *resv[], int argc, mxAr
 
 	helicsInputSetMinimumChange(inp, tolerance, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -7087,7 +7087,7 @@ void _wrap_helicsInputClearUpdate(int resc, mxArray *resv[], int argc, mxArray *
 
 	helicsInputClearUpdate(ipt);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -7386,7 +7386,7 @@ void _wrap_helicsEndpointSetDefaultDestination(int resc, mxArray *resv[], int ar
 
 	helicsEndpointSetDefaultDestination(endpoint, (char const *)dst, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -7570,7 +7570,7 @@ void _wrap_helicsEndpointSendMessage(int resc, mxArray *resv[], int argc, mxArra
 
 	helicsEndpointSendMessage(endpoint, message, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -7596,7 +7596,7 @@ void _wrap_helicsEndpointSendMessageZeroCopy(int resc, mxArray *resv[], int argc
 
 	helicsEndpointSendMessageZeroCopy(endpoint, message, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -7627,7 +7627,7 @@ void _wrap_helicsEndpointSubscribe(int resc, mxArray *resv[], int argc, mxArray 
 
 	helicsEndpointSubscribe(endpoint, (char const *)key, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -7797,7 +7797,7 @@ void _wrap_helicsFederateClearMessages(int resc, mxArray *resv[], int argc, mxAr
 
 	helicsFederateClearMessages(fed);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -7887,7 +7887,7 @@ void _wrap_helicsEndpointSetInfo(int resc, mxArray *resv[], int argc, mxArray *a
 
 	helicsEndpointSetInfo(endpoint, (char const *)info, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -7950,7 +7950,7 @@ void _wrap_helicsEndpointSetTag(int resc, mxArray *resv[], int argc, mxArray *ar
 
 	helicsEndpointSetTag(endpoint, (char const *)tagname, (char const *)tagvalue, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -7980,7 +7980,7 @@ void _wrap_helicsEndpointSetOption(int resc, mxArray *resv[], int argc, mxArray 
 
 	helicsEndpointSetOption(endpoint, option, value, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -8034,7 +8034,7 @@ void _wrap_helicsEndpointAddSourceTarget(int resc, mxArray *resv[], int argc, mx
 
 	helicsEndpointAddSourceTarget(endpoint, (char const *)targetEndpoint, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -8065,7 +8065,7 @@ void _wrap_helicsEndpointAddDestinationTarget(int resc, mxArray *resv[], int arg
 
 	helicsEndpointAddDestinationTarget(endpoint, (char const *)targetEndpoint, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -8096,7 +8096,7 @@ void _wrap_helicsEndpointRemoveTarget(int resc, mxArray *resv[], int argc, mxArr
 
 	helicsEndpointRemoveTarget(endpoint, (char const *)targetEndpoint, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -8127,7 +8127,7 @@ void _wrap_helicsEndpointAddSourceFilter(int resc, mxArray *resv[], int argc, mx
 
 	helicsEndpointAddSourceFilter(endpoint, (char const *)filterName, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -8158,7 +8158,7 @@ void _wrap_helicsEndpointAddDestinationFilter(int resc, mxArray *resv[], int arg
 
 	helicsEndpointAddDestinationFilter(endpoint, (char const *)filterName, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -8407,7 +8407,7 @@ void _wrap_helicsMessageSetSource(int resc, mxArray *resv[], int argc, mxArray *
 
 	helicsMessageSetSource(message, (char const *)src, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -8438,7 +8438,7 @@ void _wrap_helicsMessageSetDestination(int resc, mxArray *resv[], int argc, mxAr
 
 	helicsMessageSetDestination(message, (char const *)dst, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -8469,7 +8469,7 @@ void _wrap_helicsMessageSetOriginalSource(int resc, mxArray *resv[], int argc, m
 
 	helicsMessageSetOriginalSource(message, (char const *)src, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -8500,7 +8500,7 @@ void _wrap_helicsMessageSetOriginalDestination(int resc, mxArray *resv[], int ar
 
 	helicsMessageSetOriginalDestination(message, (char const *)dst, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -8526,7 +8526,7 @@ void _wrap_helicsMessageSetTime(int resc, mxArray *resv[], int argc, mxArray *ar
 
 	helicsMessageSetTime(message, time, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -8552,7 +8552,7 @@ void _wrap_helicsMessageResize(int resc, mxArray *resv[], int argc, mxArray *arg
 
 	helicsMessageResize(message, newSize, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -8578,7 +8578,7 @@ void _wrap_helicsMessageReserve(int resc, mxArray *resv[], int argc, mxArray *ar
 
 	helicsMessageReserve(message, reserveSize, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -8604,7 +8604,7 @@ void _wrap_helicsMessageSetMessageID(int resc, mxArray *resv[], int argc, mxArra
 
 	helicsMessageSetMessageID(message, messageID, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -8626,7 +8626,7 @@ void _wrap_helicsMessageClearFlags(int resc, mxArray *resv[], int argc, mxArray 
 
 	helicsMessageClearFlags(message);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -8648,7 +8648,7 @@ void _wrap_helicsMessageSetFlagOption(int resc, mxArray *resv[], int argc, mxArr
 
 	helicsMessageSetFlagOption(message, flag, flagValue, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -8681,7 +8681,7 @@ void _wrap_helicsMessageSetString(int resc, mxArray *resv[], int argc, mxArray *
 
 	helicsMessageSetString(message, (char const *)str, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -8764,7 +8764,7 @@ void _wrap_helicsMessageCopy(int resc, mxArray *resv[], int argc, mxArray *argv[
 
 	helicsMessageCopy(src_message, dst_message, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -8809,7 +8809,7 @@ void _wrap_helicsMessageFree(int resc, mxArray *resv[], int argc, mxArray *argv[
 
 	helicsMessageFree(message);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -8827,7 +8827,7 @@ void _wrap_helicsMessageClear(int resc, mxArray *resv[], int argc, mxArray *argv
 
 	helicsMessageClear(message, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -9171,7 +9171,7 @@ void _wrap_helicsFilterSet(int resc, mxArray *resv[], int argc, mxArray *argv[])
 
 	helicsFilterSet(filt, (char const *)prop, val, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -9211,7 +9211,7 @@ void _wrap_helicsFilterSetString(int resc, mxArray *resv[], int argc, mxArray *a
 
 	helicsFilterSetString(filt, (char const *)prop, (char const *)val, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -9244,7 +9244,7 @@ void _wrap_helicsFilterAddDestinationTarget(int resc, mxArray *resv[], int argc,
 
 	helicsFilterAddDestinationTarget(filt, (char const *)dst, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -9275,7 +9275,7 @@ void _wrap_helicsFilterAddSourceTarget(int resc, mxArray *resv[], int argc, mxAr
 
 	helicsFilterAddSourceTarget(filt, (char const *)source, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -9306,7 +9306,7 @@ void _wrap_helicsFilterAddDeliveryEndpoint(int resc, mxArray *resv[], int argc, 
 
 	helicsFilterAddDeliveryEndpoint(filt, (char const *)deliveryEndpoint, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -9337,7 +9337,7 @@ void _wrap_helicsFilterRemoveTarget(int resc, mxArray *resv[], int argc, mxArray
 
 	helicsFilterRemoveTarget(filt, (char const *)target, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -9368,7 +9368,7 @@ void _wrap_helicsFilterRemoveDeliveryEndpoint(int resc, mxArray *resv[], int arg
 
 	helicsFilterRemoveDeliveryEndpoint(filt, (char const *)deliveryEndpoint, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -9415,7 +9415,7 @@ void _wrap_helicsFilterSetInfo(int resc, mxArray *resv[], int argc, mxArray *arg
 
 	helicsFilterSetInfo(filt, (char const *)info, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -9478,7 +9478,7 @@ void _wrap_helicsFilterSetTag(int resc, mxArray *resv[], int argc, mxArray *argv
 
 	helicsFilterSetTag(filt, (char const *)tagname, (char const *)tagvalue, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -9508,7 +9508,7 @@ void _wrap_helicsFilterSetOption(int resc, mxArray *resv[], int argc, mxArray *a
 
 	helicsFilterSetOption(filt, option, value, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -9781,7 +9781,7 @@ void _wrap_helicsTranslatorSet(int resc, mxArray *resv[], int argc, mxArray *arg
 
 	helicsTranslatorSet(trans, (char const *)prop, val, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -9821,7 +9821,7 @@ void _wrap_helicsTranslatorSetString(int resc, mxArray *resv[], int argc, mxArra
 
 	helicsTranslatorSetString(trans, (char const *)prop, (char const *)val, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -9854,7 +9854,7 @@ void _wrap_helicsTranslatorAddInputTarget(int resc, mxArray *resv[], int argc, m
 
 	helicsTranslatorAddInputTarget(trans, (char const *)input, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -9885,7 +9885,7 @@ void _wrap_helicsTranslatorAddPublicationTarget(int resc, mxArray *resv[], int a
 
 	helicsTranslatorAddPublicationTarget(trans, (char const *)pub, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -9916,7 +9916,7 @@ void _wrap_helicsTranslatorAddSourceEndpoint(int resc, mxArray *resv[], int argc
 
 	helicsTranslatorAddSourceEndpoint(trans, (char const *)ept, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -9947,7 +9947,7 @@ void _wrap_helicsTranslatorAddDestinationEndpoint(int resc, mxArray *resv[], int
 
 	helicsTranslatorAddDestinationEndpoint(trans, (char const *)ept, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -9978,7 +9978,7 @@ void _wrap_helicsTranslatorRemoveTarget(int resc, mxArray *resv[], int argc, mxA
 
 	helicsTranslatorRemoveTarget(trans, (char const *)target, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -10025,7 +10025,7 @@ void _wrap_helicsTranslatorSetInfo(int resc, mxArray *resv[], int argc, mxArray 
 
 	helicsTranslatorSetInfo(trans, (char const *)info, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -10088,7 +10088,7 @@ void _wrap_helicsTranslatorSetTag(int resc, mxArray *resv[], int argc, mxArray *
 
 	helicsTranslatorSetTag(trans, (char const *)tagname, (char const *)tagvalue, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -10118,7 +10118,7 @@ void _wrap_helicsTranslatorSetOption(int resc, mxArray *resv[], int argc, mxArra
 
 	helicsTranslatorSetOption(trans, option, value, &err);
 
-	mxArray _out = (mxArray *)0;
+	mxArray *_out = (mxArray *)0;
 
 	if(_out){
 		--resc;
@@ -10297,7 +10297,7 @@ void _wrap_helicsFilterSetCustomCallback(int resc, mxArray *resv[], int argc, co
 
 HelicsMessage matlabFederateQueryCallback(const char* query, int querySize, HelicsQueryBuffer buffer, void *userData){
 	mxArray *lhs;
-	mxArray *rhs[2];
+	mxArray *rhs[4];
 	mxSize dims[2] = {1, querySize};
 	rhs[0] = const_cast<mxArray *>(userData);
 	rhs[1] = mxCreateCharArray(2, dims);
@@ -10305,15 +10305,14 @@ HelicsMessage matlabFederateQueryCallback(const char* query, int querySize, Heli
 	for(int i=0; i<querySize; ++i){
 		pQuery[i] = query[i];
 	}
-	int status = mexCallMATLAB(1,&lhs,2,rhs,"feval");
-	char *rStr;
-	size_t rStrSize = mxGetN(lhs[0]) + 1;
-	rStr = (char *)mxMalloc(rStrSize);
-	int status = mxGetString(lhs[0], (const char *)rStr, rStrSize);
-	HelicsError err = helicsErrorInitialize();
-
-	helicsQueryBufferFill(buffer, (const char *)rStr, (int)rStrSize, err);
+	rhs[2] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+	*((int64_T*)mxGetData(rhs[2])) = (int64_T)querySize;
+	rhs[3] = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	*((unit64_T*)mxGetData(rhs[3])) = (uint64_T)buffer;
+	int status = mexCallMATLAB(0,&lhs,4,rhs,"feval");
 	mxDestroyArray(rhs[1]);
+	mxDestroyArray(rhs[2]);
+	mxDestroyArray(rhs[3]);
 	mxFree(rStr);
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);

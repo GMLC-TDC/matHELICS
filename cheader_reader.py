@@ -1871,7 +1871,7 @@ class HelicsHeaderParser (object):
                     for a in functionDict.get("arguments",{}).keys():
                         functionWrapperStr += getArgFunctionCallStr(functionDict.get("arguments",{}).get(a,{}), int(a))
                     functionWrapperStr += ");\n\n"
-                    functionWrapperStr += "\tmxArray _out = (mxArray *)0;\n\n"
+                    functionWrapperStr += "\tmxArray *_out = (mxArray *)0;\n\n"
                     functionWrapperStr += "\tif(_out){\n"
                     functionWrapperStr += "\t\t--resc;\n"
                     functionWrapperStr += "\t\t*resv++ = _out;\n"
@@ -3812,19 +3812,19 @@ class HelicsHeaderParser (object):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
-                raise RuntimeError("the function signature for helicsFederateSetLoggingCallback has changed!")
+                raise RuntimeError("the function signature for helicsFilterSetCustomCallback has changed!")
             arg0 = functionDict.get("arguments", {}).get(0, {})
             if arg0.get("spelling","") != "filter" or arg0.get("type", "") != "HelicsFilter":
-                raise RuntimeError("the function signature for helicsFederateSetLoggingCallback has changed!")
+                raise RuntimeError("the function signature for helicsFilterSetCustomCallback has changed!")
             arg1 = functionDict.get("arguments", {}).get(1, {})
             if arg1.get("spelling","") != "filtCall" or arg1.get("pointer_type", "") != "FunctionProto_*":
-                raise RuntimeError("the function signature for helicsFederateSetLoggingCallback has changed!")
+                raise RuntimeError("the function signature for helicsFilterSetCustomCallback has changed!")
             arg2 = functionDict.get("arguments", {}).get(2, {})
             if arg2.get("spelling","") != "userdata" or arg2.get("pointer_type", "") != "Void_*":
-                raise RuntimeError("the function signature for helicsFederateSetLoggingCallback has changed!")
+                raise RuntimeError("the function signature for helicsFilterSetCustomCallback has changed!")
             arg3 = functionDict.get("arguments", {}).get(3, {})
             if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
-                raise RuntimeError("the function signature for helicsFederateSetLoggingCallback has changed!")
+                raise RuntimeError("the function signature for helicsFilterSetCustomCallback has changed!")
             functionName = functionDict.get("spelling","")
             functionComment = "%{\n"
             functionComment += "\tSet a general callback for a custom filter.\n\n"
@@ -3883,11 +3883,11 @@ class HelicsHeaderParser (object):
             functionComment += "\tSet callback for queries executed against a federate.\n\n"
             functionComment += "\t@details There are many queries that HELICS understands directly, but it is occasionally useful to a have a federate be able to respond\n\ttospecific queries with answers specific to a federate.\n\n"
             functionComment += "\t@param fed The federate object in which to set the callback.\n"
-            functionComment += "\t@param queryAnswer A function handle with the signature const char*(const char *query).\n"
+            functionComment += "\t@param queryAnswer A function handle with the signature const void(const char *query, int querySize, HelicsQueryBuffer buffer).\n"
             functionComment += "%}\n"
             functionWrapper = "HelicsMessage matlabFederateQueryCallback(const char* query, int querySize, HelicsQueryBuffer buffer, void *userData){\n"
             functionWrapper += "\tmxArray *lhs;\n"
-            functionWrapper += "\tmxArray *rhs[2];\n"
+            functionWrapper += "\tmxArray *rhs[4];\n"
             functionWrapper += "\tmxSize dims[2] = {1, querySize};\n"
             functionWrapper += "\trhs[0] = const_cast<mxArray *>(userData);\n"
             functionWrapper += "\trhs[1] = mxCreateCharArray(2, dims);\n"
@@ -3895,14 +3895,14 @@ class HelicsHeaderParser (object):
             functionWrapper += "\tfor(int i=0; i<querySize; ++i){\n"
             functionWrapper += "\t\tpQuery[i] = query[i];\n"
             functionWrapper += "\t}\n"
-            functionWrapper += '\tint status = mexCallMATLAB(1,&lhs,2,rhs,"feval");\n'
-            functionWrapper += "\tchar *rStr;\n"
-            functionWrapper += "\tsize_t rStrSize = mxGetN(lhs[0]) + 1;\n"
-            functionWrapper += "\trStr = (char *)mxMalloc(rStrSize);\n"
-            functionWrapper += "\tint status = mxGetString(lhs[0], (const char *)rStr, rStrSize);\n"
-            functionWrapper += initializeArgHelicsErrorPtr("err")
-            functionWrapper += "\thelicsQueryBufferFill(buffer, (const char *)rStr, (int)rStrSize, err);\n"
+            functionWrapper += "\trhs[2] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);\n"
+            functionWrapper += "\t*((int64_T*)mxGetData(rhs[2])) = (int64_T)querySize;\n"
+            functionWrapper += "\trhs[3] = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
+            functionWrapper += "\t*((unit64_T*)mxGetData(rhs[3])) = (uint64_T)buffer;\n"
+            functionWrapper += '\tint status = mexCallMATLAB(0,&lhs,4,rhs,"feval");\n'
             functionWrapper += "\tmxDestroyArray(rhs[1]);\n"
+            functionWrapper += "\tmxDestroyArray(rhs[2]);\n"
+            functionWrapper += "\tmxDestroyArray(rhs[3]);\n"
             functionWrapper += "\tmxFree(rStr);\n"
             functionWrapper += f'{argHelicsErrorPtrPostFunctionCall("err")}\n'
             functionWrapper += "}\n\n"

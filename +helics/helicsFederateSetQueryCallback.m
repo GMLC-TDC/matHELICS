@@ -5,7 +5,7 @@
 	tospecific queries with answers specific to a federate.
 
 	@param fed The federate object in which to set the callback.
-	@param queryAnswer A function handle with the signature const char*(const char *query).
+	@param queryAnswer A function handle with the signature const void(const char *query, int querySize, HelicsQueryBuffer buffer).
 %}
 function varargout = helicsFederateSetQueryCallback(varargin)
 	[varargout{1:nargout}] = helicsMex("helicsFederateSetQueryCallback", varargin{:});
