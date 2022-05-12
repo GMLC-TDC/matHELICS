@@ -1,7 +1,8 @@
-#include "/home/gridappsd/git/HELICS/install/include/helics/helics.h"
+#include "helics/helics.h"
 #include <mex.h>
-#include <map>
+#include <stdexcept>
 #include <string>
+#include <unordered_map>
 
 static int mexFunctionCalled = 0;
 
@@ -48,7 +49,7 @@ static void throwHelicsMatlabError(HelicsError *err) {
 	}
 }
 
-static const std::map<std::string,int> wrapperFunctionMap{
+static const std::unordered_map<std::string,int> wrapperFunctionMap{
 	{"HELICS_DATA_TYPE_CHAR",2},
 	{"helicsCreateDataBuffer",66},
 	{"helicsWrapDataInBuffer",67},
@@ -435,11 +436,16 @@ static const std::map<std::string,int> wrapperFunctionMap{
 	{"helicsQueryBufferFill",450}
 };
 
-void mexFunction(int resc, mxArray *resv[], int argc, const mxArray #argv[]) {
+void mexFunction(int resc, mxArray *resv[], int argc, const mxArray *argv[]) {
 	if(--argc < 0 || !mxIsString(*argv)){
 		mexErrMsgTxt("This mex file should only be called from inside the .m files. First input should be the function ID.");
 	}
-	int functionId = wrapperFunctionMap[std::string(mxArrayToString(*argv++))];
+	int functionId;
+	try {
+		functionId = wrapperFunctionMap.at(std::string(mxArrayToString(*argv++)));
+	} catch (const std::out_of_range& e) {
+		mexErrMsgTxt("unrecognized function id.");
+	}
 	int flag=0;
 	/* Prevent unloading this file until MATLAB exits */
 	if(!mexFunctionCalled) {
