@@ -437,9 +437,9 @@ static const std::unordered_map<std::string,int> wrapperFunctionMap{
 };
 
 void _wrap_HELICS_DATA_TYPE_CHAR(int resc, mxArray *resv[], int argc, mxArray *argv[]){
-	mxArray *out = mxCreateNumericMatrix(1,1,mxINT64_CLASS,mxREAL);
+	mxArray *_out = mxCreateNumericMatrix(1,1,mxINT64_CLASS,mxREAL);
 	*((int64_T*)mxGetData(_out)) = (int64_t)HELICS_DATA_TYPE_CHAR;
-	resv[0] = out;
+	resv[0] = _out;
 }
 
 void _wrap_helicsCreateDataBuffer(int resc, mxArray *resv[], int argc, mxArray *argv[]){
@@ -575,7 +575,7 @@ void _wrap_helicsDataBufferReserve(int resc, mxArray *resv[], int argc, mxArray 
 void _wrap_helicsIntToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
 	int64_t value = *((int64_t *)mxGetData(argv[0]));
 
-	 HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(int));
+	HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(int));
 
 	int32_t result = helicsIntToBytes(value, data);
 
@@ -592,7 +592,7 @@ void _wrap_helicsIntToBytes(int resc, mxArray *resv[], int argc, const mxArray *
 void _wrap_helicsDoubleToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
 	double value = mxGetScalar(argv[0]);
 
-	 HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(double));
+	HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(double));
 
 	int32_t result = helicsDoubleToBytes(value, data);
 
@@ -614,7 +614,7 @@ void _wrap_helicsStringToBytes(int resc, mxArray *resv[], int argc, const mxArra
 	str = (char *)mxMalloc(strLength);
 	strStatus = mxGetString(argv[0], str, strLength);
 
-	 HelicsDataBuffer data = helicsCreateDataBuffer(strLength);
+	HelicsDataBuffer data = helicsCreateDataBuffer(static_cast<int32_t>(strLength));
 
 	int32_t result = helicsStringToBytes(str, data);
 
@@ -631,7 +631,7 @@ void _wrap_helicsStringToBytes(int resc, mxArray *resv[], int argc, const mxArra
 void _wrap_helicsBoolToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
 	HelicsBool value = (HelicsBool)(mxGetScalar(argv[0]));
 
-	 HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(HelicsBool));
+	HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(HelicsBool));
 
 	int32_t result = helicsBoolToBytes(value, data);
 
@@ -653,7 +653,7 @@ void _wrap_helicsCharToBytes(int resc, mxArray *resv[], int argc, const mxArray 
 	value = (char *)mxMalloc(valueLength);
 	valueStatus = mxGetString(argv[0], value, valueLength);
 
-	 HelicsDataBuffer data = helicsCreateDataBuffer(valueLength);
+	HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(char));
 
 	int32_t result = helicsCharToBytes(*value, data);
 
@@ -670,7 +670,7 @@ void _wrap_helicsCharToBytes(int resc, mxArray *resv[], int argc, const mxArray 
 void _wrap_helicsTimeToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
 	HelicsTime value = (HelicsTime)(mxGetScalar(argv[0]));
 
-	 HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(HelicsTime));
+	HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(HelicsTime));
 
 	int32_t result = helicsTimeToBytes(value, data);
 
@@ -685,7 +685,7 @@ void _wrap_helicsTimeToBytes(int resc, mxArray *resv[], int argc, const mxArray 
 
 
 void _wrap_helicsComplexToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	mxComplexDouble *value = xmGetComplexDoubles(argv[1]);
+	mxComplexDouble *value = mxGetComplexDoubles(argv[1]);
 
 	HelicsDataBuffer data = helicsCreateDataBuffer(2*sizeof(double));
 
@@ -706,7 +706,7 @@ void _wrap_helicsVectorToBytes(int resc, mxArray *resv[], int argc, const mxArra
 
 	double *value =  (double *)mxGetDoubles(argv[0]);
 
-	 HelicsDataBuffer data = helicsCreateDataBuffer(dataSize*sizeof(double));
+	HelicsDataBuffer data = helicsCreateDataBuffer(dataSize*sizeof(double));
 
 	int32_t result = helicsVectorToBytes((const double *)value, dataSize, data);
 
@@ -788,9 +788,9 @@ void _wrap_helicsDataBufferToBool(int resc, mxArray *resv[], int argc, mxArray *
 
 
 void _wrap_helicsGetVersion(int resc, mxArray *resv[], int argc, mxArray *argv[]){
-	char *result = helicsGetVersion();
+	const char *result = helicsGetVersion();
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -800,9 +800,9 @@ void _wrap_helicsGetVersion(int resc, mxArray *resv[], int argc, mxArray *argv[]
 
 
 void _wrap_helicsGetBuildFlags(int resc, mxArray *resv[], int argc, mxArray *argv[]){
-	char *result = helicsGetBuildFlags();
+	const char *result = helicsGetBuildFlags();
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -812,9 +812,9 @@ void _wrap_helicsGetBuildFlags(int resc, mxArray *resv[], int argc, mxArray *arg
 
 
 void _wrap_helicsGetCompilerVersion(int resc, mxArray *resv[], int argc, mxArray *argv[]){
-	char *result = helicsGetCompilerVersion();
+	const char *result = helicsGetCompilerVersion();
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -824,9 +824,9 @@ void _wrap_helicsGetCompilerVersion(int resc, mxArray *resv[], int argc, mxArray
 
 
 void _wrap_helicsGetSystemInfo(int resc, mxArray *resv[], int argc, mxArray *argv[]){
-	char *result = helicsGetSystemInfo();
+	const char *result = helicsGetSystemInfo();
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -979,21 +979,21 @@ void _wrap_helicsCreateCoreFromArgs(int resc, mxArray *resv[], int argc, const m
 	name = (char *)mxMalloc(nameLength);
 	nameStatus = mxGetString(argv[1], name, nameLength);
 
-	int arg3 = 0;
-	char **arg4 = (char **)0;
+	int arg2 = 0;
+	char **arg3 = (char **)0;
 	int ii;
-	arg3 = static_cast<int>(mxGetNumberOfElements(argv[2]));
-	arg4 = (char **)mxMalloc((arg3)*sizeof(char *));
-	for (ii=0;ii<arg3;ii++){
+	arg2 = static_cast<int>(mxGetNumberOfElements(argv[2]));
+	arg3 = (char **)mxMalloc((arg2)*sizeof(char *));
+	for (ii=0;ii<arg2;ii++){
 		mxArray *cellElement=mxGetCell(argv[2], ii);
-		int len = mxGetN(cellElement) + 1;
-		arg4[ii] = (char *)mxMalloc(len);
-		int flag = mxGetString(cellElement, arg4[ii], len);
+		size_t len = mxGetN(cellElement) + 1;
+		arg3[ii] = (char *)mxMalloc(static_cast<int>len);
+		int flag = mxGetString(cellElement, arg3[ii], len);
 	}
 
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsCore result = helicsCreateCoreFromArgs(type, name, arg3, arg4, &err);
+	HelicsCore result = helicsCreateCoreFromArgs(type, name, arg2, arg3, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
 	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
@@ -1007,7 +1007,7 @@ void _wrap_helicsCreateCoreFromArgs(int resc, mxArray *resv[], int argc, const m
 
 	mxFree(name);
 
-	mxFree(arg4);
+	mxFree(arg3);
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -1116,21 +1116,21 @@ void _wrap_helicsCreateBrokerFromArgs(int resc, mxArray *resv[], int argc, const
 	name = (char *)mxMalloc(nameLength);
 	nameStatus = mxGetString(argv[1], name, nameLength);
 
-	int arg3 = 0;
-	char **arg4 = (char **)0;
+	int arg2 = 0;
+	char **arg3 = (char **)0;
 	int ii;
 	arg2 = static_cast<int>(mxGetNumberOfElements(argv[2]));
 	arg3 = (char **)mxMalloc((arg2)*sizeof(char *));
-	for (ii=0;ii<arg3;ii++){
+	for (ii=0;ii<arg2;ii++){
 		mxArray *cellElement=mxGetCell(argv[2], ii);
-		int len = mxGetN(cellElement) + 1;
-		arg4[ii] = (char *)mxMalloc(len);
-		int flag = mxGetString(cellElement, arg4[ii], len);
+		size_t len = mxGetN(cellElement) + 1;
+		arg3[ii] = (char *)mxMalloc(static_cast<int>len);
+		int flag = mxGetString(cellElement, arg3[ii], len);
 	}
 
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsBroker result = helicsCreateBrokerFromArgs(type, name, arg3, arg4, &err);
+	HelicsBroker result = helicsCreateBrokerFromArgs(type, name, arg2, arg3, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
 	*((uint64_T*)mxGetData(_out)) = (uint64_T)result;
@@ -1144,7 +1144,7 @@ void _wrap_helicsCreateBrokerFromArgs(int resc, mxArray *resv[], int argc, const
 
 	mxFree(name);
 
-	mxFree(arg4);
+	mxFree(arg3);
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -1585,9 +1585,9 @@ void _wrap_helicsCoreMakeConnections(int resc, mxArray *resv[], int argc, mxArra
 void _wrap_helicsBrokerGetIdentifier(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
 
-	char *result = helicsBrokerGetIdentifier(broker);
+	const char *result = helicsBrokerGetIdentifier(broker);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -1601,9 +1601,9 @@ void _wrap_helicsBrokerGetIdentifier(int resc, mxArray *resv[], int argc, mxArra
 void _wrap_helicsCoreGetIdentifier(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
 
-	char *result = helicsCoreGetIdentifier(core);
+	const char *result = helicsCoreGetIdentifier(core);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -1617,9 +1617,9 @@ void _wrap_helicsCoreGetIdentifier(int resc, mxArray *resv[], int argc, mxArray 
 void _wrap_helicsBrokerGetAddress(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
 
-	char *result = helicsBrokerGetAddress(broker);
+	const char *result = helicsBrokerGetAddress(broker);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -1633,9 +1633,9 @@ void _wrap_helicsBrokerGetAddress(int resc, mxArray *resv[], int argc, mxArray *
 void _wrap_helicsCoreGetAddress(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
 
-	char *result = helicsCoreGetAddress(core);
+	const char *result = helicsCoreGetAddress(core);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -2085,21 +2085,21 @@ void _wrap_helicsFederateInfoClone(int resc, mxArray *resv[], int argc, mxArray 
 void _wrap_helicsFederateInfoLoadFromArgs(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
 	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
 
-	int arg2 = 0;
-	char **arg3 = (char **)0;
+	int arg1 = 0;
+	char **arg2 = (char **)0;
 	int ii;
-	arg2 = static_cast<int>(mxGetNumberOfElements(argv[1]));
-	arg3 = (char **)mxMalloc((arg2)*sizeof(char *));
-	for (ii=0;ii<arg2;ii++){
+	arg1 = static_cast<int>(mxGetNumberOfElements(argv[1]));
+	arg2 = (char **)mxMalloc((arg1)*sizeof(char *));
+	for (ii=0;ii<arg1;ii++){
 		mxArray *cellElement=mxGetCell(argv[1], ii);
-		int len = mxGetN(cellElement) + 1;
-		arg3[ii] = (char *)mxMalloc(len);
-		int flag = mxGetString(cellElement, arg3[ii], len);
+		size_t len = mxGetN(cellElement) + 1;
+		arg2[ii] = (char *)mxMalloc(static_cast<int>len);
+		int flag = mxGetString(cellElement, arg2[ii], len);
 	}
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateInfoLoadFromArgs(fi, arg2, arg3, &err);
+	helicsFederateInfoLoadFromArgs(fi, arg1, arg2, &err);
 
 	mxArray *_out = (mxArray *)0;
 	if(_out){
@@ -2107,7 +2107,7 @@ void _wrap_helicsFederateInfoLoadFromArgs(int resc, mxArray *resv[], int argc, c
 		*resv++ = _out;
 	}
 
-	mxFree(arg3);
+	mxFree(arg2);
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -3404,13 +3404,11 @@ void _wrap_helicsFederateRequestTimeIterativeAsync(int resc, mxArray *resv[], in
 void _wrap_helicsFederateRequestTimeIterativeComplete(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
 	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
 
-	HelicsTime requestTime = (HelicsTime)(mxGetScalar(argv[1]));
-
 	HelicsIterationResult *outIteration = (HelicsIterationResult *)0;
 
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsTime result = helicsFederateRequestTimeIterativeComplete(fed, requestTime, outIteration, &err);
+	HelicsTime result = helicsFederateRequestTimeIterativeComplete(fed, outIteration, &err);
 
 	mxArray *_out = mxCreateDoubleScalar(result);
 
@@ -3460,9 +3458,9 @@ void _wrap_helicsFederateProcessCommunications(int resc, mxArray *resv[], int ar
 void _wrap_helicsFederateGetName(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
 
-	char *result = helicsFederateGetName(fed);
+	const char *result = helicsFederateGetName(fed);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -3788,9 +3786,9 @@ void _wrap_helicsFederateGetTag(int resc, mxArray *resv[], int argc, mxArray *ar
 
 	HelicsError err = helicsErrorInitialize();
 
-	char *result = helicsFederateGetTag(fed, (char const *)tagName, &err);
+	const char *result = helicsFederateGetTag(fed, (char const *)tagName, &err);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -4073,9 +4071,9 @@ void _wrap_helicsFederateGetCommand(int resc, mxArray *resv[], int argc, mxArray
 
 	HelicsError err = helicsErrorInitialize();
 
-	char *result = helicsFederateGetCommand(fed, &err);
+	const char *result = helicsFederateGetCommand(fed, &err);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -4095,9 +4093,9 @@ void _wrap_helicsFederateGetCommandSource(int resc, mxArray *resv[], int argc, m
 
 	HelicsError err = helicsErrorInitialize();
 
-	char *result = helicsFederateGetCommandSource(fed, &err);
+	const char *result = helicsFederateGetCommandSource(fed, &err);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -4117,9 +4115,9 @@ void _wrap_helicsFederateWaitCommand(int resc, mxArray *resv[], int argc, mxArra
 
 	HelicsError err = helicsErrorInitialize();
 
-	char *result = helicsFederateWaitCommand(fed, &err);
+	const char *result = helicsFederateWaitCommand(fed, &err);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -4506,9 +4504,9 @@ void _wrap_helicsQueryExecute(int resc, mxArray *resv[], int argc, mxArray *argv
 
 	HelicsError err = helicsErrorInitialize();
 
-	char *result = helicsQueryExecute(query, fed, &err);
+	const char *result = helicsQueryExecute(query, fed, &err);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -4532,9 +4530,9 @@ void _wrap_helicsQueryCoreExecute(int resc, mxArray *resv[], int argc, mxArray *
 
 	HelicsError err = helicsErrorInitialize();
 
-	char *result = helicsQueryCoreExecute(query, core, &err);
+	const char *result = helicsQueryCoreExecute(query, core, &err);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -4558,9 +4556,9 @@ void _wrap_helicsQueryBrokerExecute(int resc, mxArray *resv[], int argc, mxArray
 
 	HelicsError err = helicsErrorInitialize();
 
-	char *result = helicsQueryBrokerExecute(query, broker, &err);
+	const char *result = helicsQueryBrokerExecute(query, broker, &err);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -4608,9 +4606,9 @@ void _wrap_helicsQueryExecuteComplete(int resc, mxArray *resv[], int argc, mxArr
 
 	HelicsError err = helicsErrorInitialize();
 
-	char *result = helicsQueryExecuteComplete(query, &err);
+	const char *result = helicsQueryExecuteComplete(query, &err);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -5835,13 +5833,14 @@ void _wrap_helicsInputGetBytes(int resc, mxArray *resv[], int argc, const mxArra
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsInputGetBytes(ipt, data, maxDatalen, actualSize, &err);
+	helicsInputGetBytes(ipt, data, maxDataLen, actualSize, &err);
 
+	mxChar *dataChar = (mxChar *)data;
 	mwSize dims[2] = {1, *actualSize};
 	mxArray *_out = mxCreateCharArray(2, dims);
 	mxChar *out_data = (mxChar *)mxGetData(_out);
-	for(int i=0; i<actualSize; ++i){
-		out_data[i] = data[i];
+	for(int i=0; i<(*actualSize); ++i){
+		out_data[i] = dataChar[i];
 	}
 
 	if(_out){
@@ -5885,12 +5884,12 @@ void _wrap_helicsInputGetString(int resc, mxArray *resv[], int argc, const mxArr
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsInputGetString(ipt, outputString, maxStringLen, actualLength, val, &err);
+	helicsInputGetString(ipt, outputString, maxStringLen, actualLength, &err);
 
 	mwSize dims[2] = {1, *actualLength};
 	mxArray *_out = mxCreateCharArray(2, dims);
 	mxChar *out_data = (mxChar *)mxGetData(_out);
-	for(int i=0; i<actualLength; ++i){
+	for(int i=0; i<(*actualLength); ++i){
 		out_data[i] = outputString[i];
 	}
 
@@ -6050,7 +6049,7 @@ void _wrap_helicsInputGetComplex(int resc, mxArray *resv[], int argc, const mxAr
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsInputGetComplex(ipt, &(vaules[0]), &(values[1]), &err);
+	helicsInputGetComplex(ipt, &(values[0]), &(values[1]), &err);
 
 	mxComplexDouble complex_result;
 	complex_result.real = values[0];
@@ -6091,7 +6090,7 @@ void _wrap_helicsInputGetVector(int resc, mxArray *resv[], int argc, const mxArr
 
 	int maxLength = helicsInputGetVectorSize(ipt);
 
-	double data[maxLength];
+	double data[];
 
 	int *actualSize = (int *)0;
 
@@ -6099,12 +6098,12 @@ void _wrap_helicsInputGetVector(int resc, mxArray *resv[], int argc, const mxArr
 
 	helicsInputGetVector(ipt, data, maxLength, actualSize, &err);
 
-	mxDouble result_data[*actualSize];
+	mxDouble *result_data = (mxDouble *)mxMalloc(*actualSize * sizeof(mxDouble));
 	for(int i=0; i<(*actualSize); ++i){
 		result_data[i] = (mxDouble)data[i];
 	}
 	mxArray *_out = mxCreateDoubleMatrix(*actualSize, 1, mxREAL);
-	int status = mxSetDoubles(_out, &(resutl_data[0]));
+	int status = mxSetDoubles(_out, &(result_data[0]));
 
 	if(_out){
 		--resc;
@@ -6122,7 +6121,7 @@ void _wrap_helicsInputGetComplexVector(int resc, mxArray *resv[], int argc, cons
 
 	int maxLength = helicsInputGetVectorSize(ipt);
 
-	double data[maxLength];
+	double data[];
 
 	int *actualSize = (int *)0;
 
@@ -6130,13 +6129,13 @@ void _wrap_helicsInputGetComplexVector(int resc, mxArray *resv[], int argc, cons
 
 	helicsInputGetComplexVector(ipt, data, maxLength, actualSize, &err);
 
-	mxComplexDouble result_data[*actualSize/2];
+	mxComplexDouble *result_data = (mxComplexDouble *)mxMalloc((*actualSize/2)*sizeof(mxComplexDouble));
 	for(int i=0; i<(*actualSize/2); ++i){
 		result_data[i].real = data[2*(i)];
 		result_data[i].imag = data[2*(i) + 1];
 	}
 	mxArray *_out = mxCreateDoubleMatrix(*actualSize/2, 1, mxCOMPLEX);
-	int status = mxSetComplexDoubles(_out, &(resutl_data[0]));
+	int status = mxSetComplexDoubles(_out, &(result_data[0]));
 
 	if(_out){
 		--resc;
@@ -6167,7 +6166,7 @@ void _wrap_helicsInputGetNamedPoint(int resc, mxArray *resv[], int argc, const m
 	mwSize dims[2] = {1, *actualLength};
 	mxArray *_out = mxCreateCharArray(2, dims);
 	mxChar *out_data = (mxChar *)mxGetData(_out);
-	for(int i=0; i<actualLength; ++i){
+	for(int i=0; i<(*actualLength); ++i){
 		out_data[i] = outputString[i];
 	}
 
@@ -6177,7 +6176,7 @@ void _wrap_helicsInputGetNamedPoint(int resc, mxArray *resv[], int argc, const m
 	}
 
 	if(--resc>=0){
-		mxArray *_out1 = mxCreateScalar(*val);
+		mxArray *_out1 = mxCreateDoubleScalar(*val);
 		*resv++ = _out1;
 	}
 
@@ -6388,7 +6387,7 @@ void _wrap_helicsInputSetDefaultDouble(int resc, mxArray *resv[], int argc, mxAr
 void _wrap_helicsInputSetDefaultComplex(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
 	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
 
-	mxComplexDouble *value = xmGetComplexDoubles(argv[1]);
+	mxComplexDouble *value = mxGetComplexDoubles(argv[1]);
 
 	HelicsError err = helicsErrorInitialize();
 
@@ -6436,7 +6435,7 @@ void _wrap_helicsInputSetDefaultComplexVector(int resc, mxArray *resv[], int arg
 
 	int vectorLength =  (int)mxGetN(argv[1])*2;
 
-	double vectorInput[vectorLength];
+	double *vectorInput = (double *)malloc(vectorLength * sizeof(double));
 	mxComplexDouble *vals = mxGetComplexDoubles(argv[1]);
 	for(int i=0; i<vectorLength/2; ++i){
 		vectorInput[2*i] = vals[i].real;
@@ -6497,9 +6496,9 @@ void _wrap_helicsInputSetDefaultNamedPoint(int resc, mxArray *resv[], int argc, 
 void _wrap_helicsInputGetType(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
 
-	char *result = helicsInputGetType(ipt);
+	const char *result = helicsInputGetType(ipt);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -6513,9 +6512,9 @@ void _wrap_helicsInputGetType(int resc, mxArray *resv[], int argc, mxArray *argv
 void _wrap_helicsInputGetPublicationType(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
 
-	char *result = helicsInputGetPublicationType(ipt);
+	const char *result = helicsInputGetPublicationType(ipt);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -6546,9 +6545,9 @@ void _wrap_helicsInputGetPublicationDataType(int resc, mxArray *resv[], int argc
 void _wrap_helicsPublicationGetType(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
 
-	char *result = helicsPublicationGetType(pub);
+	const char *result = helicsPublicationGetType(pub);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -6562,9 +6561,9 @@ void _wrap_helicsPublicationGetType(int resc, mxArray *resv[], int argc, mxArray
 void _wrap_helicsInputGetName(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
 
-	char *result = helicsInputGetName(ipt);
+	const char *result = helicsInputGetName(ipt);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -6578,9 +6577,9 @@ void _wrap_helicsInputGetName(int resc, mxArray *resv[], int argc, mxArray *argv
 void _wrap_helicsSubscriptionGetTarget(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
 
-	char *result = helicsSubscriptionGetTarget(ipt);
+	const char *result = helicsSubscriptionGetTarget(ipt);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -6594,9 +6593,9 @@ void _wrap_helicsSubscriptionGetTarget(int resc, mxArray *resv[], int argc, mxAr
 void _wrap_helicsPublicationGetName(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
 
-	char *result = helicsPublicationGetName(pub);
+	const char *result = helicsPublicationGetName(pub);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -6610,9 +6609,9 @@ void _wrap_helicsPublicationGetName(int resc, mxArray *resv[], int argc, mxArray
 void _wrap_helicsInputGetUnits(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
 
-	char *result = helicsInputGetUnits(ipt);
+	const char *result = helicsInputGetUnits(ipt);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -6626,9 +6625,9 @@ void _wrap_helicsInputGetUnits(int resc, mxArray *resv[], int argc, mxArray *arg
 void _wrap_helicsInputGetInjectionUnits(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
 
-	char *result = helicsInputGetInjectionUnits(ipt);
+	const char *result = helicsInputGetInjectionUnits(ipt);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -6642,9 +6641,9 @@ void _wrap_helicsInputGetInjectionUnits(int resc, mxArray *resv[], int argc, mxA
 void _wrap_helicsInputGetExtractionUnits(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
 
-	char *result = helicsInputGetExtractionUnits(ipt);
+	const char *result = helicsInputGetExtractionUnits(ipt);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -6658,9 +6657,9 @@ void _wrap_helicsInputGetExtractionUnits(int resc, mxArray *resv[], int argc, mx
 void _wrap_helicsPublicationGetUnits(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
 
-	char *result = helicsPublicationGetUnits(pub);
+	const char *result = helicsPublicationGetUnits(pub);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -6674,9 +6673,9 @@ void _wrap_helicsPublicationGetUnits(int resc, mxArray *resv[], int argc, mxArra
 void _wrap_helicsInputGetInfo(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsInput inp = (HelicsInput)(mxGetData(argv[0]));
 
-	char *result = helicsInputGetInfo(inp);
+	const char *result = helicsInputGetInfo(inp);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -6728,9 +6727,9 @@ void _wrap_helicsInputGetTag(int resc, mxArray *resv[], int argc, mxArray *argv[
 	tagname = (char *)mxMalloc(tagnameLength);
 	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
 
-	char *result = helicsInputGetTag(inp, (char const *)tagname);
+	const char *result = helicsInputGetTag(inp, (char const *)tagname);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -6786,9 +6785,9 @@ void _wrap_helicsInputSetTag(int resc, mxArray *resv[], int argc, mxArray *argv[
 void _wrap_helicsPublicationGetInfo(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
 
-	char *result = helicsPublicationGetInfo(pub);
+	const char *result = helicsPublicationGetInfo(pub);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -6840,9 +6839,9 @@ void _wrap_helicsPublicationGetTag(int resc, mxArray *resv[], int argc, mxArray 
 	tagname = (char *)mxMalloc(tagnameLength);
 	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
 
-	char *result = helicsPublicationGetTag(pub, (char const *)tagname);
+	const char *result = helicsPublicationGetTag(pub, (char const *)tagname);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -7406,9 +7405,9 @@ void _wrap_helicsEndpointSetDefaultDestination(int resc, mxArray *resv[], int ar
 void _wrap_helicsEndpointGetDefaultDestination(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
 
-	char *result = helicsEndpointGetDefaultDestination(endpoint);
+	const char *result = helicsEndpointGetDefaultDestination(endpoint);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -7811,9 +7810,9 @@ void _wrap_helicsFederateClearMessages(int resc, mxArray *resv[], int argc, mxAr
 void _wrap_helicsEndpointGetType(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
 
-	char *result = helicsEndpointGetType(endpoint);
+	const char *result = helicsEndpointGetType(endpoint);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -7827,9 +7826,9 @@ void _wrap_helicsEndpointGetType(int resc, mxArray *resv[], int argc, mxArray *a
 void _wrap_helicsEndpointGetName(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
 
-	char *result = helicsEndpointGetName(endpoint);
+	const char *result = helicsEndpointGetName(endpoint);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -7860,9 +7859,9 @@ void _wrap_helicsFederateGetEndpointCount(int resc, mxArray *resv[], int argc, m
 void _wrap_helicsEndpointGetInfo(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsEndpoint end = (HelicsEndpoint)(mxGetData(argv[0]));
 
-	char *result = helicsEndpointGetInfo(end);
+	const char *result = helicsEndpointGetInfo(end);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -7914,9 +7913,9 @@ void _wrap_helicsEndpointGetTag(int resc, mxArray *resv[], int argc, mxArray *ar
 	tagname = (char *)mxMalloc(tagnameLength);
 	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
 
-	char *result = helicsEndpointGetTag(endpoint, (char const *)tagname);
+	const char *result = helicsEndpointGetTag(endpoint, (char const *)tagname);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -8178,9 +8177,9 @@ void _wrap_helicsEndpointAddDestinationFilter(int resc, mxArray *resv[], int arg
 void _wrap_helicsMessageGetSource(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
 
-	char *result = helicsMessageGetSource(message);
+	const char *result = helicsMessageGetSource(message);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -8194,9 +8193,9 @@ void _wrap_helicsMessageGetSource(int resc, mxArray *resv[], int argc, mxArray *
 void _wrap_helicsMessageGetDestination(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
 
-	char *result = helicsMessageGetDestination(message);
+	const char *result = helicsMessageGetDestination(message);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -8210,9 +8209,9 @@ void _wrap_helicsMessageGetDestination(int resc, mxArray *resv[], int argc, mxAr
 void _wrap_helicsMessageGetOriginalSource(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
 
-	char *result = helicsMessageGetOriginalSource(message);
+	const char *result = helicsMessageGetOriginalSource(message);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -8226,9 +8225,9 @@ void _wrap_helicsMessageGetOriginalSource(int resc, mxArray *resv[], int argc, m
 void _wrap_helicsMessageGetOriginalDestination(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
 
-	char *result = helicsMessageGetOriginalDestination(message);
+	const char *result = helicsMessageGetOriginalDestination(message);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -8258,9 +8257,9 @@ void _wrap_helicsMessageGetTime(int resc, mxArray *resv[], int argc, mxArray *ar
 void _wrap_helicsMessageGetString(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
 
-	char *result = helicsMessageGetString(message);
+	const char *result = helicsMessageGetString(message);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -8342,7 +8341,7 @@ void _wrap_helicsMessageGetBytes(int resc, mxArray *resv[], int argc, const mxAr
 	mwSize dims[2] = {1,(mwSize)*actualSize};
 	mxArray *_out = mxCreateCharArray(2,dims);
 	mxChar *out_data = (mxChar *)mxGetData(_out);
-	for(int i=0; i<*actualSize; ++i){
+	for(int i=0; i<(*actualSize); ++i){
 		out_data[i] = data[i];
 	}
 
@@ -9142,9 +9141,9 @@ void _wrap_helicsFilterIsValid(int resc, mxArray *resv[], int argc, mxArray *arg
 void _wrap_helicsFilterGetName(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsFilter filt = (HelicsFilter)(mxGetData(argv[0]));
 
-	char *result = helicsFilterGetName(filt);
+	const char *result = helicsFilterGetName(filt);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -9388,9 +9387,9 @@ void _wrap_helicsFilterRemoveDeliveryEndpoint(int resc, mxArray *resv[], int arg
 void _wrap_helicsFilterGetInfo(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsFilter filt = (HelicsFilter)(mxGetData(argv[0]));
 
-	char *result = helicsFilterGetInfo(filt);
+	const char *result = helicsFilterGetInfo(filt);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -9442,9 +9441,9 @@ void _wrap_helicsFilterGetTag(int resc, mxArray *resv[], int argc, mxArray *argv
 	tagname = (char *)mxMalloc(tagnameLength);
 	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
 
-	char *result = helicsFilterGetTag(filt, (char const *)tagname);
+	const char *result = helicsFilterGetTag(filt, (char const *)tagname);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -9752,9 +9751,9 @@ void _wrap_helicsTranslatorIsValid(int resc, mxArray *resv[], int argc, mxArray 
 void _wrap_helicsTranslatorGetName(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsTranslator trans = (HelicsTranslator)(mxGetData(argv[0]));
 
-	char *result = helicsTranslatorGetName(trans);
+	const char *result = helicsTranslatorGetName(trans);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -9998,9 +9997,9 @@ void _wrap_helicsTranslatorRemoveTarget(int resc, mxArray *resv[], int argc, mxA
 void _wrap_helicsTranslatorGetInfo(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsTranslator trans = (HelicsTranslator)(mxGetData(argv[0]));
 
-	char *result = helicsTranslatorGetInfo(trans);
+	const char *result = helicsTranslatorGetInfo(trans);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
@@ -10052,9 +10051,9 @@ void _wrap_helicsTranslatorGetTag(int resc, mxArray *resv[], int argc, mxArray *
 	tagname = (char *)mxMalloc(tagnameLength);
 	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
 
-	char *result = helicsTranslatorGetTag(trans, (char const *)tagname);
+	const char *result = helicsTranslatorGetTag(trans, (char const *)tagname);
 
-	mxArray *_out = mxCreateString((const char *)result);
+	mxArray *_out = mxCreateString(result);
 
 	if(_out){
 		--resc;
