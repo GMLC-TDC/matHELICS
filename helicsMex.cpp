@@ -438,7 +438,7 @@ static const std::unordered_map<std::string,int> wrapperFunctionMap{
 
 void _wrap_HELICS_DATA_TYPE_CHAR(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	mxArray *_out = mxCreateNumericMatrix(1,1,mxINT64_CLASS,mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_t)HELICS_DATA_TYPE_CHAR;
+	*((int64_t*)mxGetData(_out)) = (int64_t)HELICS_DATA_TYPE_CHAR;
 	resv[0] = _out;
 }
 
@@ -506,7 +506,7 @@ void _wrap_helicsDataBufferSize(int resc, mxArray *resv[], int argc, mxArray *ar
 	int32_t result = helicsDataBufferSize(data);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -523,7 +523,7 @@ void _wrap_helicsDataBufferCapacity(int resc, mxArray *resv[], int argc, mxArray
 	int32_t result = helicsDataBufferCapacity(data);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -559,7 +559,7 @@ void _wrap_helicsDataBufferReserve(int resc, mxArray *resv[], int argc, mxArray 
 	HelicsBool result = helicsDataBufferReserve(data, newCapacity);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -572,7 +572,7 @@ void _wrap_helicsDataBufferReserve(int resc, mxArray *resv[], int argc, mxArray 
 }
 
 
-void _wrap_helicsIntToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsIntToBytes(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	int64_t value = *((int64_t *)mxGetData(argv[0]));
 
 	HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(int));
@@ -589,7 +589,7 @@ void _wrap_helicsIntToBytes(int resc, mxArray *resv[], int argc, const mxArray *
 }
 
 
-void _wrap_helicsDoubleToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsDoubleToBytes(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	double value = mxGetScalar(argv[0]);
 
 	HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(double));
@@ -606,7 +606,7 @@ void _wrap_helicsDoubleToBytes(int resc, mxArray *resv[], int argc, const mxArra
 }
 
 
-void _wrap_helicsStringToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsStringToBytes(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	char *str;
 	size_t strLength;
 	int strStatus;
@@ -628,7 +628,7 @@ void _wrap_helicsStringToBytes(int resc, mxArray *resv[], int argc, const mxArra
 }
 
 
-void _wrap_helicsBoolToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsBoolToBytes(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsBool value = (HelicsBool)(mxGetScalar(argv[0]));
 
 	HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(HelicsBool));
@@ -645,7 +645,7 @@ void _wrap_helicsBoolToBytes(int resc, mxArray *resv[], int argc, const mxArray 
 }
 
 
-void _wrap_helicsCharToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsCharToBytes(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	char *value;
 	size_t valueLength;
 	int valueStatus;
@@ -667,7 +667,7 @@ void _wrap_helicsCharToBytes(int resc, mxArray *resv[], int argc, const mxArray 
 }
 
 
-void _wrap_helicsTimeToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsTimeToBytes(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsTime value = (HelicsTime)(mxGetScalar(argv[0]));
 
 	HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(HelicsTime));
@@ -684,7 +684,7 @@ void _wrap_helicsTimeToBytes(int resc, mxArray *resv[], int argc, const mxArray 
 }
 
 
-void _wrap_helicsComplexToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsComplexToBytes(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	mxComplexDouble *value = mxGetComplexDoubles(argv[1]);
 
 	HelicsDataBuffer data = helicsCreateDataBuffer(2*sizeof(double));
@@ -701,7 +701,7 @@ void _wrap_helicsComplexToBytes(int resc, mxArray *resv[], int argc, const mxArr
 }
 
 
-void _wrap_helicsVectorToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsVectorToBytes(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	int dataSize =  (int)mxGetNumberOfElements(argv[0]);
 
 	double *value =  (double *)mxGetDoubles(argv[0]);
@@ -726,7 +726,7 @@ void _wrap_helicsDataBufferType(int resc, mxArray *resv[], int argc, mxArray *ar
 	int result = helicsDataBufferType(data);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -743,7 +743,7 @@ void _wrap_helicsDataBufferToInt(int resc, mxArray *resv[], int argc, mxArray *a
 	int64_t result = helicsDataBufferToInt(data);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -776,7 +776,7 @@ void _wrap_helicsDataBufferToBool(int resc, mxArray *resv[], int argc, mxArray *
 	HelicsBool result = helicsDataBufferToBool(data);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -907,7 +907,7 @@ void _wrap_helicsIsCoreTypeAvailable(int resc, mxArray *resv[], int argc, mxArra
 	HelicsBool result = helicsIsCoreTypeAvailable((char const *)type);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -964,7 +964,7 @@ void _wrap_helicsCreateCore(int resc, mxArray *resv[], int argc, mxArray *argv[]
 }
 
 
-void _wrap_helicsCreateCoreFromArgs(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsCreateCoreFromArgs(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	char *type;
 	size_t typeLength;
 	int typeStatus;
@@ -1044,7 +1044,7 @@ void _wrap_helicsCoreIsValid(int resc, mxArray *resv[], int argc, mxArray *argv[
 	HelicsBool result = helicsCoreIsValid(core);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -1101,7 +1101,7 @@ void _wrap_helicsCreateBroker(int resc, mxArray *resv[], int argc, mxArray *argv
 }
 
 
-void _wrap_helicsCreateBrokerFromArgs(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsCreateBrokerFromArgs(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	char *type;
 	size_t typeLength;
 	int typeStatus;
@@ -1181,7 +1181,7 @@ void _wrap_helicsBrokerIsValid(int resc, mxArray *resv[], int argc, mxArray *arg
 	HelicsBool result = helicsBrokerIsValid(broker);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -1198,7 +1198,7 @@ void _wrap_helicsBrokerIsConnected(int resc, mxArray *resv[], int argc, mxArray 
 	HelicsBool result = helicsBrokerIsConnected(broker);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -1370,7 +1370,7 @@ void _wrap_helicsCoreWaitForDisconnect(int resc, mxArray *resv[], int argc, mxAr
 	HelicsBool result = helicsCoreWaitForDisconnect(core, msToWait, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -1397,7 +1397,7 @@ void _wrap_helicsBrokerWaitForDisconnect(int resc, mxArray *resv[], int argc, mx
 	HelicsBool result = helicsBrokerWaitForDisconnect(broker, msToWait, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -1420,7 +1420,7 @@ void _wrap_helicsCoreIsConnected(int resc, mxArray *resv[], int argc, mxArray *a
 	HelicsBool result = helicsCoreIsConnected(core);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -1676,7 +1676,7 @@ void _wrap_helicsCoreConnect(int resc, mxArray *resv[], int argc, mxArray *argv[
 	HelicsBool result = helicsCoreConnect(core, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -2082,7 +2082,7 @@ void _wrap_helicsFederateInfoClone(int resc, mxArray *resv[], int argc, mxArray 
 }
 
 
-void _wrap_helicsFederateInfoLoadFromArgs(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsFederateInfoLoadFromArgs(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsFederateInfo fi = (HelicsFederateInfo)(mxGetData(argv[0]));
 
 	int arg1 = 0;
@@ -2168,7 +2168,7 @@ void _wrap_helicsFederateIsValid(int resc, mxArray *resv[], int argc, mxArray *a
 	HelicsBool result = helicsFederateIsValid(fed);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -2459,7 +2459,7 @@ void _wrap_helicsGetPropertyIndex(int resc, mxArray *resv[], int argc, mxArray *
 	int result = helicsGetPropertyIndex((char const *)val);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -2481,7 +2481,7 @@ void _wrap_helicsGetFlagIndex(int resc, mxArray *resv[], int argc, mxArray *argv
 	int result = helicsGetFlagIndex((char const *)val);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -2503,7 +2503,7 @@ void _wrap_helicsGetOptionIndex(int resc, mxArray *resv[], int argc, mxArray *ar
 	int result = helicsGetOptionIndex((char const *)val);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -2525,7 +2525,7 @@ void _wrap_helicsGetOptionValue(int resc, mxArray *resv[], int argc, mxArray *ar
 	int result = helicsGetOptionValue((char const *)val);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -2547,7 +2547,7 @@ void _wrap_helicsGetDataType(int resc, mxArray *resv[], int argc, mxArray *argv[
 	int result = helicsGetDataType((char const *)val);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -2992,7 +2992,7 @@ void _wrap_helicsFederateIsAsyncOperationCompleted(int resc, mxArray *resv[], in
 	HelicsBool result = helicsFederateIsAsyncOperationCompleted(fed, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -3105,7 +3105,7 @@ void _wrap_helicsFederateEnterExecutingModeIterative(int resc, mxArray *resv[], 
 	HelicsIterationResult result = helicsFederateEnterExecutingModeIterative(fed, iterate, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -3156,7 +3156,7 @@ void _wrap_helicsFederateEnterExecutingModeIterativeComplete(int resc, mxArray *
 	HelicsIterationResult result = helicsFederateEnterExecutingModeIterativeComplete(fed, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -3179,7 +3179,7 @@ void _wrap_helicsFederateGetState(int resc, mxArray *resv[], int argc, mxArray *
 	HelicsFederateState result = helicsFederateGetState(fed, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -3291,7 +3291,7 @@ void _wrap_helicsFederateRequestNextStep(int resc, mxArray *resv[], int argc, mx
 }
 
 
-void _wrap_helicsFederateRequestTimeIterative(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsFederateRequestTimeIterative(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
 
 	HelicsTime requestTime = (HelicsTime)(mxGetScalar(argv[1]));
@@ -3313,7 +3313,7 @@ void _wrap_helicsFederateRequestTimeIterative(int resc, mxArray *resv[], int arg
 
 	if(--resc>=0){
 		mxArray *_out1 = mxCreateNumericMatrix(1,1,mxINT64_CLASS,mxREAL);
-		*((int64_T*)mxGetData(_out1)) = (int64_T)outIteration;
+		*((int64_t*)mxGetData(_out1)) = (int64_t)outIteration;
 		*resv++ = _out1;
 	}
 
@@ -3401,7 +3401,7 @@ void _wrap_helicsFederateRequestTimeIterativeAsync(int resc, mxArray *resv[], in
 }
 
 
-void _wrap_helicsFederateRequestTimeIterativeComplete(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsFederateRequestTimeIterativeComplete(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
 
 	HelicsIterationResult *outIteration = (HelicsIterationResult *)0;
@@ -3419,7 +3419,7 @@ void _wrap_helicsFederateRequestTimeIterativeComplete(int resc, mxArray *resv[],
 
 	if(--resc>=0){
 		mxArray *_out1 = mxCreateNumericMatrix(1,1,mxINT64_CLASS,mxREAL);
-		*((int64_T*)mxGetData(_out1)) = (int64_T)outIteration;
+		*((int64_t*)mxGetData(_out1)) = (int64_t)outIteration;
 		*resv++ = _out1;
 	}
 
@@ -3628,7 +3628,7 @@ void _wrap_helicsFederateGetFlagOption(int resc, mxArray *resv[], int argc, mxAr
 	HelicsBool result = helicsFederateGetFlagOption(fed, flag, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -3655,7 +3655,7 @@ void _wrap_helicsFederateGetIntegerProperty(int resc, mxArray *resv[], int argc,
 	int result = helicsFederateGetIntegerProperty(fed, intProperty, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -4629,7 +4629,7 @@ void _wrap_helicsQueryIsCompleted(int resc, mxArray *resv[], int argc, mxArray *
 	HelicsBool result = helicsQueryIsCompleted(query);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -5411,7 +5411,7 @@ void _wrap_helicsPublicationIsValid(int resc, mxArray *resv[], int argc, mxArray
 	HelicsBool result = helicsPublicationIsValid(pub);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -5422,7 +5422,7 @@ void _wrap_helicsPublicationIsValid(int resc, mxArray *resv[], int argc, mxArray
 }
 
 
-void _wrap_helicsPublicationPublishBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsPublicationPublishBytes(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
 
 	char *data;
@@ -5617,7 +5617,7 @@ void _wrap_helicsPublicationPublishChar(int resc, mxArray *resv[], int argc, mxA
 }
 
 
-void _wrap_helicsPublicationPublishComplex(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsPublicationPublishComplex(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
 
 	mxComplexDouble *complexValue = mxGetComplexDoubles(argv[1]);
@@ -5640,7 +5640,7 @@ void _wrap_helicsPublicationPublishComplex(int resc, mxArray *resv[], int argc, 
 }
 
 
-void _wrap_helicsPublicationPublishVector(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsPublicationPublishVector(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
 
 	int vectorLength =  (int)mxGetNumberOfElements(argv[1]);
@@ -5663,7 +5663,7 @@ void _wrap_helicsPublicationPublishVector(int resc, mxArray *resv[], int argc, c
 }
 
 
-void _wrap_helicsPublicationPublishComplexVector(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsPublicationPublishComplexVector(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
 
 	int vectorLength =  (int)mxGetN(argv[1])*2;
@@ -5763,7 +5763,7 @@ void _wrap_helicsInputIsValid(int resc, mxArray *resv[], int argc, mxArray *argv
 	HelicsBool result = helicsInputIsValid(ipt);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -5811,7 +5811,7 @@ void _wrap_helicsInputGetByteCount(int resc, mxArray *resv[], int argc, mxArray 
 	int result = helicsInputGetByteCount(ipt);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -5822,7 +5822,7 @@ void _wrap_helicsInputGetByteCount(int resc, mxArray *resv[], int argc, mxArray 
 }
 
 
-void _wrap_helicsInputGetBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsInputGetBytes(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
 
 	int maxDataLen = helicsInputGetByteCount(ipt) + 2;
@@ -5862,7 +5862,7 @@ void _wrap_helicsInputGetStringSize(int resc, mxArray *resv[], int argc, mxArray
 	int result = helicsInputGetStringSize(ipt);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -5873,7 +5873,7 @@ void _wrap_helicsInputGetStringSize(int resc, mxArray *resv[], int argc, mxArray
 }
 
 
-void _wrap_helicsInputGetString(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsInputGetString(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
 
 	int maxStringLen = helicsInputGetStringSize(ipt) + 2;
@@ -5914,7 +5914,7 @@ void _wrap_helicsInputGetInteger(int resc, mxArray *resv[], int argc, mxArray *a
 	int64_t result = helicsInputGetInteger(ipt, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -5937,7 +5937,7 @@ void _wrap_helicsInputGetBoolean(int resc, mxArray *resv[], int argc, mxArray *a
 	HelicsBool result = helicsInputGetBoolean(ipt, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -6018,7 +6018,7 @@ void _wrap_helicsInputGetChar(int resc, mxArray *resv[], int argc, mxArray *argv
 }
 
 
-void _wrap_helicsInputGetComplexObject(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsInputGetComplexObject(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
 
 	HelicsError err = helicsErrorInitialize();
@@ -6042,7 +6042,7 @@ void _wrap_helicsInputGetComplexObject(int resc, mxArray *resv[], int argc, cons
 }
 
 
-void _wrap_helicsInputGetComplex(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsInputGetComplex(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
 
 	double values[2];
@@ -6074,7 +6074,7 @@ void _wrap_helicsInputGetVectorSize(int resc, mxArray *resv[], int argc, mxArray
 	int result = helicsInputGetVectorSize(ipt);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -6085,7 +6085,7 @@ void _wrap_helicsInputGetVectorSize(int resc, mxArray *resv[], int argc, mxArray
 }
 
 
-void _wrap_helicsInputGetVector(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsInputGetVector(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
 
 	int maxLength = helicsInputGetVectorSize(ipt);
@@ -6116,7 +6116,7 @@ void _wrap_helicsInputGetVector(int resc, mxArray *resv[], int argc, const mxArr
 }
 
 
-void _wrap_helicsInputGetComplexVector(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsInputGetComplexVector(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
 
 	int maxLength = helicsInputGetVectorSize(ipt);
@@ -6148,7 +6148,7 @@ void _wrap_helicsInputGetComplexVector(int resc, mxArray *resv[], int argc, cons
 }
 
 
-void _wrap_helicsInputGetNamedPoint(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsInputGetNamedPoint(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
 
 	int maxStringLen = helicsInputGetStringSize(ipt) + 2;
@@ -6188,7 +6188,7 @@ void _wrap_helicsInputGetNamedPoint(int resc, mxArray *resv[], int argc, const m
 }
 
 
-void _wrap_helicsInputSetDefaultBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsInputSetDefaultBytes(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
 
 	char *data;
@@ -6384,7 +6384,7 @@ void _wrap_helicsInputSetDefaultDouble(int resc, mxArray *resv[], int argc, mxAr
 }
 
 
-void _wrap_helicsInputSetDefaultComplex(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsInputSetDefaultComplex(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
 
 	mxComplexDouble *value = mxGetComplexDoubles(argv[1]);
@@ -6407,7 +6407,7 @@ void _wrap_helicsInputSetDefaultComplex(int resc, mxArray *resv[], int argc, con
 }
 
 
-void _wrap_helicsInputSetDefaultVector(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsInputSetDefaultVector(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
 
 	int vectorLength =  (int)mxGetNumberOfElements(argv[1]);
@@ -6430,7 +6430,7 @@ void _wrap_helicsInputSetDefaultVector(int resc, mxArray *resv[], int argc, cons
 }
 
 
-void _wrap_helicsInputSetDefaultComplexVector(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsInputSetDefaultComplexVector(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsInput ipt = (HelicsInput)(mxGetData(argv[0]));
 
 	int vectorLength =  (int)mxGetN(argv[1])*2;
@@ -6531,7 +6531,7 @@ void _wrap_helicsInputGetPublicationDataType(int resc, mxArray *resv[], int argc
 	int result = helicsInputGetPublicationDataType(ipt);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -6902,7 +6902,7 @@ void _wrap_helicsInputGetOption(int resc, mxArray *resv[], int argc, mxArray *ar
 	int result = helicsInputGetOption(inp, option);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -6953,7 +6953,7 @@ void _wrap_helicsPublicationGetOption(int resc, mxArray *resv[], int argc, mxArr
 	int result = helicsPublicationGetOption(pub, option);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -7054,7 +7054,7 @@ void _wrap_helicsInputIsUpdated(int resc, mxArray *resv[], int argc, mxArray *ar
 	HelicsBool result = helicsInputIsUpdated(ipt);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -7103,7 +7103,7 @@ void _wrap_helicsFederateGetPublicationCount(int resc, mxArray *resv[], int argc
 	int result = helicsFederateGetPublicationCount(fed);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -7120,7 +7120,7 @@ void _wrap_helicsFederateGetInputCount(int resc, mxArray *resv[], int argc, mxAr
 	int result = helicsFederateGetInputCount(fed);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -7360,7 +7360,7 @@ void _wrap_helicsEndpointIsValid(int resc, mxArray *resv[], int argc, mxArray *a
 	HelicsBool result = helicsEndpointIsValid(endpoint);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -7418,7 +7418,7 @@ void _wrap_helicsEndpointGetDefaultDestination(int resc, mxArray *resv[], int ar
 }
 
 
-void _wrap_helicsEndpointSendBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsEndpointSendBytes(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
 
 	char *data;
@@ -7448,7 +7448,7 @@ void _wrap_helicsEndpointSendBytes(int resc, mxArray *resv[], int argc, const mx
 }
 
 
-void _wrap_helicsEndpointSendBytesTo(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsEndpointSendBytesTo(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
 
 	char *data;
@@ -7487,7 +7487,7 @@ void _wrap_helicsEndpointSendBytesTo(int resc, mxArray *resv[], int argc, const 
 }
 
 
-void _wrap_helicsEndpointSendBytesToAt(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsEndpointSendBytesToAt(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
 
 	char *data;
@@ -7528,7 +7528,7 @@ void _wrap_helicsEndpointSendBytesToAt(int resc, mxArray *resv[], int argc, cons
 }
 
 
-void _wrap_helicsEndpointSendBytesAt(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsEndpointSendBytesAt(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsEndpoint endpoint = (HelicsEndpoint)(mxGetData(argv[0]));
 
 	char *data;
@@ -7649,7 +7649,7 @@ void _wrap_helicsFederateHasMessage(int resc, mxArray *resv[], int argc, mxArray
 	HelicsBool result = helicsFederateHasMessage(fed);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -7666,7 +7666,7 @@ void _wrap_helicsEndpointHasMessage(int resc, mxArray *resv[], int argc, mxArray
 	HelicsBool result = helicsEndpointHasMessage(endpoint);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -7683,7 +7683,7 @@ void _wrap_helicsFederatePendingMessageCount(int resc, mxArray *resv[], int argc
 	int result = helicsFederatePendingMessageCount(fed);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -7700,7 +7700,7 @@ void _wrap_helicsEndpointPendingMessageCount(int resc, mxArray *resv[], int argc
 	int result = helicsEndpointPendingMessageCount(endpoint);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -7845,7 +7845,7 @@ void _wrap_helicsFederateGetEndpointCount(int resc, mxArray *resv[], int argc, m
 	int result = helicsFederateGetEndpointCount(fed);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -8006,7 +8006,7 @@ void _wrap_helicsEndpointGetOption(int resc, mxArray *resv[], int argc, mxArray 
 	int result = helicsEndpointGetOption(endpoint, option);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -8276,7 +8276,7 @@ void _wrap_helicsMessageGetMessageID(int resc, mxArray *resv[], int argc, mxArra
 	int result = helicsMessageGetMessageID(message);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -8295,7 +8295,7 @@ void _wrap_helicsMessageGetFlagOption(int resc, mxArray *resv[], int argc, mxArr
 	HelicsBool result = helicsMessageGetFlagOption(message, flag);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -8314,7 +8314,7 @@ void _wrap_helicsMessageGetByteCount(int resc, mxArray *resv[], int argc, mxArra
 	int result = helicsMessageGetByteCount(message);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -8325,7 +8325,7 @@ void _wrap_helicsMessageGetByteCount(int resc, mxArray *resv[], int argc, mxArra
 }
 
 
-void _wrap_helicsMessageGetBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsMessageGetBytes(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
 
 	int maxMessageLength = helicsMessageGetByteCount(message) + 2;
@@ -8381,7 +8381,7 @@ void _wrap_helicsMessageIsValid(int resc, mxArray *resv[], int argc, mxArray *ar
 	HelicsBool result = helicsMessageIsValid(message);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -8697,7 +8697,7 @@ void _wrap_helicsMessageSetString(int resc, mxArray *resv[], int argc, mxArray *
 }
 
 
-void _wrap_helicsMessageSetData(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsMessageSetData(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
 
 	char *data;
@@ -8726,7 +8726,7 @@ void _wrap_helicsMessageSetData(int resc, mxArray *resv[], int argc, const mxArr
 }
 
 
-void _wrap_helicsMessageAppendData(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsMessageAppendData(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsMessage message = (HelicsMessage)(mxGetData(argv[0]));
 
 	char *data;
@@ -9051,7 +9051,7 @@ void _wrap_helicsFederateGetFilterCount(int resc, mxArray *resv[], int argc, mxA
 	int result = helicsFederateGetFilterCount(fed);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -9127,7 +9127,7 @@ void _wrap_helicsFilterIsValid(int resc, mxArray *resv[], int argc, mxArray *arg
 	HelicsBool result = helicsFilterIsValid(filt);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -9534,7 +9534,7 @@ void _wrap_helicsFilterGetOption(int resc, mxArray *resv[], int argc, mxArray *a
 	int result = helicsFilterGetOption(filt, option);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -9661,7 +9661,7 @@ void _wrap_helicsFederateGetTranslatorCount(int resc, mxArray *resv[], int argc,
 	int result = helicsFederateGetTranslatorCount(fed);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -9737,7 +9737,7 @@ void _wrap_helicsTranslatorIsValid(int resc, mxArray *resv[], int argc, mxArray 
 	HelicsBool result = helicsTranslatorIsValid(trans);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -10144,7 +10144,7 @@ void _wrap_helicsTranslatorGetOption(int resc, mxArray *resv[], int argc, mxArra
 	int result = helicsTranslatorGetOption(trans, option);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(_out)) = (int64_T)result;
+	*((int64_t*)mxGetData(_out)) = (int64_t)result;
 
 	if(_out){
 		--resc;
@@ -10162,7 +10162,7 @@ void matlabBrokerLoggingCallback(int loglevel, const char* identifier, const cha
 	mxArray *rhs[4];
 	rhs[0] = reinterpret_cast<mxArray *>(userData);
 	rhs[1] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(rhs[1])) = (int64_T)loglevel;
+	*((int64_t*)mxGetData(rhs[1])) = (int64_t)loglevel;
 	rhs[2] = mxCreateString(identifier);
 	rhs[3] = mxCreateString(message);
 	int status = mexCallMATLAB(0,&lhs,4,rhs,"feval");
@@ -10172,7 +10172,7 @@ void matlabBrokerLoggingCallback(int loglevel, const char* identifier, const cha
 	mxDestroyArray(rhs[3]);
 }
 
-void _wrap_helicsBrokerSetLoggingCallback(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsBrokerSetLoggingCallback(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsBroker broker = (HelicsBroker)(mxGetData(argv[0]));
 
 	void *userData = mxGetData(argv[1]);
@@ -10197,7 +10197,7 @@ void matlabCoreLoggingCallback(int loglevel, const char* identifier, const char*
 	mxArray *rhs[4];
 	rhs[0] = reinterpret_cast<mxArray *>(userData);
 	rhs[1] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(rhs[1])) = (int64_T)loglevel;
+	*((int64_t*)mxGetData(rhs[1])) = (int64_t)loglevel;
 	rhs[2] = mxCreateString(identifier);
 	rhs[3] = mxCreateString(message);
 	int status = mexCallMATLAB(0,&lhs,4,rhs,"feval");
@@ -10207,7 +10207,7 @@ void matlabCoreLoggingCallback(int loglevel, const char* identifier, const char*
 	mxDestroyArray(rhs[3]);
 }
 
-void _wrap_helicsCoreSetLoggingCallback(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsCoreSetLoggingCallback(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsCore core = (HelicsCore)(mxGetData(argv[0]));
 
 	void *userData = mxGetData(argv[1]);
@@ -10232,7 +10232,7 @@ void matlabFederateLoggingCallback(int loglevel, const char* identifier, const c
 	mxArray *rhs[4];
 	rhs[0] = reinterpret_cast<mxArray *>(userData);
 	rhs[1] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(rhs[1])) = (int64_T)loglevel;
+	*((int64_t*)mxGetData(rhs[1])) = (int64_t)loglevel;
 	rhs[2] = mxCreateString(identifier);
 	rhs[3] = mxCreateString(message);
 	int status = mexCallMATLAB(0,&lhs,4,rhs,"feval");
@@ -10242,7 +10242,7 @@ void matlabFederateLoggingCallback(int loglevel, const char* identifier, const c
 	mxDestroyArray(rhs[3]);
 }
 
-void _wrap_helicsFederateSetLoggingCallback(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsFederateSetLoggingCallback(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
 
 	void *userData = mxGetData(argv[1]);
@@ -10263,7 +10263,7 @@ void _wrap_helicsFederateSetLoggingCallback(int resc, mxArray *resv[], int argc,
 
 
 HelicsMessage matlabFilterCustomCallback(HelicsMessage message, void *userData){
-	mxArray **lhs;
+	mxArray *lhs[1];
 	mxArray *rhs[2];
 	rhs[0] = reinterpret_cast<mxArray *>(userData);
 	rhs[1] = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
@@ -10274,7 +10274,7 @@ HelicsMessage matlabFilterCustomCallback(HelicsMessage message, void *userData){
 	return rv;
 }
 
-void _wrap_helicsFilterSetCustomCallback(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsFilterSetCustomCallback(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsFilter filter = (HelicsFilter)(mxGetData(argv[0]));
 
 	void *userData = mxGetData(argv[1]);
@@ -10297,7 +10297,7 @@ void _wrap_helicsFilterSetCustomCallback(int resc, mxArray *resv[], int argc, co
 HelicsMessage matlabFederateQueryCallback(const char* query, int querySize, HelicsQueryBuffer buffer, void *userData){
 	mxArray *lhs;
 	mxArray *rhs[4];
-	mxSize dims[2] = {1, querySize};
+	mwSize dims[2] = {1, querySize};
 	rhs[0] = reinterpret_cast<mxArray *>(userData);
 	rhs[1] = mxCreateCharArray(2, dims);
 	mxChar *pQuery = (mxChar *)mxGetData(rhs[1]);
@@ -10305,7 +10305,7 @@ HelicsMessage matlabFederateQueryCallback(const char* query, int querySize, Heli
 		pQuery[i] = query[i];
 	}
 	rhs[2] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(rhs[2])) = (int64_T)querySize;
+	*((int64_t*)mxGetData(rhs[2])) = (int64_t)querySize;
 	rhs[3] = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
 	*((uint64_t*)mxGetData(rhs[3])) = (uint64_t)buffer;
 	int status = mexCallMATLAB(0,&lhs,4,rhs,"feval");
@@ -10318,7 +10318,7 @@ HelicsMessage matlabFederateQueryCallback(const char* query, int querySize, Heli
 	}
 }
 
-void _wrap_helicsFederateSetQueryCallback(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsFederateSetQueryCallback(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsFilter filter = (HelicsFilter)(mxGetData(argv[0]));
 
 	void *userData = mxGetData(argv[1]);
@@ -10345,7 +10345,7 @@ void matlabFederateSetTimeRequestEntryCallback(HelicsTime currentTime, HelicsTim
 	rhs[1] = mxCreateDoubleScalar(currentTime);
 	rhs[2] = mxCreateDoubleScalar(requestTime);
 	rhs[3] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(rhs[2]) =  (int46_T)iterating;
+	*((int64_t*)mxGetData(rhs[2]) =  (int64_t)iterating;
 	int status = mexCallMATLAB(0,&lhs,4,rhs,"feval");
 	mxDestroyArray(lhs);
 	mxDestroyArray(rhs[1]);
@@ -10353,7 +10353,7 @@ void matlabFederateSetTimeRequestEntryCallback(HelicsTime currentTime, HelicsTim
 	mxDestroyArray(rhs[3]);
 }
 
-void _wrap_helicsFederateSetTimeRequestEntryCallback(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsFederateSetTimeRequestEntryCallback(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
 
 	void *userData = mxGetData(argv[1]);
@@ -10379,14 +10379,14 @@ void matlabFederateTimeUpdateCallback(HelicsTime newTime, HelicsBool iterating, 
 	rhs[0] = reinterpret_cast<mxArray *>(userData);
 	rhs[1] = mxCreateDoubleScalar((double)newTime);
 	rhs[2] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(rhs[2]) =  (int46_T)iterating;
+	*((int64_t*)mxGetData(rhs[2]) =  (int64_t)iterating;
 	int status = mexCallMATLAB(0,&lhs,3,rhs,"feval");
 	mxDestroyArray(lhs);
 	mxDestroyArray(rhs[1]);
 	mxDestroyArray(rhs[2]);
 }
 
-void _wrap_helicsFederateSetTimeUpdateCallback(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsFederateSetTimeUpdateCallback(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
 
 	void *userData = mxGetData(argv[1]);
@@ -10411,16 +10411,16 @@ void matlabFederateSetStateChangeCallback(HelicsFederateState newState, HelicsFe
 	mxArray *rhs[3];
 	rhs[0] = reinterpret_cast<mxArray *>(userData);
 	rhs[1] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(rhs[2]) =  (int46_T)newState;
+	*((int64_t*)mxGetData(rhs[2]) =  (int64_t)newState;
 	rhs[2] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(rhs[2]) =  (int46_T)oldState;
+	*((int64_t*)mxGetData(rhs[2]) =  (int64_t)oldState;
 	int status = mexCallMATLAB(0,&lhs,3,rhs,"feval");
 	mxDestroyArray(lhs);
 	mxDestroyArray(rhs[1]);
 	mxDestroyArray(rhs[2]);
 }
 
-void _wrap_helicsFederateSetStateChangeCallback(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsFederateSetStateChangeCallback(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
 
 	void *userData = mxGetData(argv[1]);
@@ -10446,14 +10446,14 @@ void matlabFederateSetTimeRequestReturnCallback(HelicsTime newTime, HelicsBool i
 	rhs[0] = reinterpret_cast<mxArray *>(userData);
 	rhs[1] = mxCreateDoubleScalar(newTime);
 	rhs[2] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(rhs[2]) =  (int46_T)iterating;
+	*((int64_t*)mxGetData(rhs[2]) =  (int64_t)iterating;
 	int status = mexCallMATLAB(0,&lhs,3,rhs,"feval");
 	mxDestroyArray(lhs);
 	mxDestroyArray(rhs[1]);
 	mxDestroyArray(rhs[2]);
 }
 
-void _wrap_helicsFederateSetTimeRequestReturnCallback(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsFederateSetTimeRequestReturnCallback(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsFederate fed = (HelicsFederate)(mxGetData(argv[0]));
 
 	void *userData = mxGetData(argv[1]);
@@ -10473,7 +10473,7 @@ void _wrap_helicsFederateSetTimeRequestReturnCallback(int resc, mxArray *resv[],
 }
 
 
-void _wrap_helicsQueryBufferFill(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsQueryBufferFill(int resc, mxArray *resv[], int argc, mxArray *argv[]){
 	HelicsQueryBuffer buffer = (HelicsQueryBuffer)(mxGetData(argv[0]));
 
 	char *str;
@@ -10519,1150 +10519,1150 @@ void mexFunction(int resc, mxArray *resv[], int argc, const mxArray *argv[]) {
 	}
 	switch (functionId) {
 	case 2:
-		_wrap_HELICS_DATA_TYPE_CHAR(resc, resv, argc, (mxArray**)(argv));
+		_wrap_HELICS_DATA_TYPE_CHAR(resc, resv, argc, argv);
 		break;
 	case 66:
-		_wrap_helicsCreateDataBuffer(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCreateDataBuffer(resc, resv, argc, argv);
 		break;
 	case 67:
-		_wrap_helicsWrapDataInBuffer(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsWrapDataInBuffer(resc, resv, argc, argv);
 		break;
 	case 68:
-		_wrap_helicsDataBufferFree(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsDataBufferFree(resc, resv, argc, argv);
 		break;
 	case 69:
-		_wrap_helicsDataBufferSize(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsDataBufferSize(resc, resv, argc, argv);
 		break;
 	case 70:
-		_wrap_helicsDataBufferCapacity(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsDataBufferCapacity(resc, resv, argc, argv);
 		break;
 	case 71:
-		_wrap_helicsDataBufferData(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsDataBufferData(resc, resv, argc, argv);
 		break;
 	case 72:
-		_wrap_helicsDataBufferReserve(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsDataBufferReserve(resc, resv, argc, argv);
 		break;
 	case 73:
-		_wrap_helicsIntToBytes(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsIntToBytes(resc, resv, argc, argv);
 		break;
 	case 74:
-		_wrap_helicsDoubleToBytes(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsDoubleToBytes(resc, resv, argc, argv);
 		break;
 	case 75:
-		_wrap_helicsStringToBytes(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsStringToBytes(resc, resv, argc, argv);
 		break;
 	case 76:
-		_wrap_helicsBoolToBytes(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsBoolToBytes(resc, resv, argc, argv);
 		break;
 	case 77:
-		_wrap_helicsCharToBytes(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCharToBytes(resc, resv, argc, argv);
 		break;
 	case 78:
-		_wrap_helicsTimeToBytes(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsTimeToBytes(resc, resv, argc, argv);
 		break;
 	case 79:
-		_wrap_helicsComplexToBytes(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsComplexToBytes(resc, resv, argc, argv);
 		break;
 	case 80:
-		_wrap_helicsVectorToBytes(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsVectorToBytes(resc, resv, argc, argv);
 		break;
 	case 81:
-		_wrap_helicsDataBufferType(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsDataBufferType(resc, resv, argc, argv);
 		break;
 	case 82:
-		_wrap_helicsDataBufferToInt(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsDataBufferToInt(resc, resv, argc, argv);
 		break;
 	case 83:
-		_wrap_helicsDataBufferToDouble(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsDataBufferToDouble(resc, resv, argc, argv);
 		break;
 	case 84:
-		_wrap_helicsDataBufferToBool(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsDataBufferToBool(resc, resv, argc, argv);
 		break;
 	case 85:
-		_wrap_helicsGetVersion(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsGetVersion(resc, resv, argc, argv);
 		break;
 	case 86:
-		_wrap_helicsGetBuildFlags(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsGetBuildFlags(resc, resv, argc, argv);
 		break;
 	case 87:
-		_wrap_helicsGetCompilerVersion(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsGetCompilerVersion(resc, resv, argc, argv);
 		break;
 	case 88:
-		_wrap_helicsGetSystemInfo(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsGetSystemInfo(resc, resv, argc, argv);
 		break;
 	case 91:
-		_wrap_helicsLoadSignalHandler(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsLoadSignalHandler(resc, resv, argc, argv);
 		break;
 	case 92:
-		_wrap_helicsLoadThreadedSignalHandler(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsLoadThreadedSignalHandler(resc, resv, argc, argv);
 		break;
 	case 93:
-		_wrap_helicsClearSignalHandler(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsClearSignalHandler(resc, resv, argc, argv);
 		break;
 	case 96:
-		_wrap_helicsAbort(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsAbort(resc, resv, argc, argv);
 		break;
 	case 97:
-		_wrap_helicsIsCoreTypeAvailable(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsIsCoreTypeAvailable(resc, resv, argc, argv);
 		break;
 	case 98:
-		_wrap_helicsCreateCore(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCreateCore(resc, resv, argc, argv);
 		break;
 	case 99:
-		_wrap_helicsCreateCoreFromArgs(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCreateCoreFromArgs(resc, resv, argc, argv);
 		break;
 	case 100:
-		_wrap_helicsCoreClone(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCoreClone(resc, resv, argc, argv);
 		break;
 	case 101:
-		_wrap_helicsCoreIsValid(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCoreIsValid(resc, resv, argc, argv);
 		break;
 	case 102:
-		_wrap_helicsCreateBroker(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCreateBroker(resc, resv, argc, argv);
 		break;
 	case 103:
-		_wrap_helicsCreateBrokerFromArgs(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCreateBrokerFromArgs(resc, resv, argc, argv);
 		break;
 	case 104:
-		_wrap_helicsBrokerClone(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsBrokerClone(resc, resv, argc, argv);
 		break;
 	case 105:
-		_wrap_helicsBrokerIsValid(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsBrokerIsValid(resc, resv, argc, argv);
 		break;
 	case 106:
-		_wrap_helicsBrokerIsConnected(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsBrokerIsConnected(resc, resv, argc, argv);
 		break;
 	case 107:
-		_wrap_helicsBrokerDataLink(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsBrokerDataLink(resc, resv, argc, argv);
 		break;
 	case 108:
-		_wrap_helicsBrokerAddSourceFilterToEndpoint(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsBrokerAddSourceFilterToEndpoint(resc, resv, argc, argv);
 		break;
 	case 109:
-		_wrap_helicsBrokerAddDestinationFilterToEndpoint(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsBrokerAddDestinationFilterToEndpoint(resc, resv, argc, argv);
 		break;
 	case 110:
-		_wrap_helicsBrokerMakeConnections(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsBrokerMakeConnections(resc, resv, argc, argv);
 		break;
 	case 111:
-		_wrap_helicsCoreWaitForDisconnect(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCoreWaitForDisconnect(resc, resv, argc, argv);
 		break;
 	case 112:
-		_wrap_helicsBrokerWaitForDisconnect(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsBrokerWaitForDisconnect(resc, resv, argc, argv);
 		break;
 	case 113:
-		_wrap_helicsCoreIsConnected(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCoreIsConnected(resc, resv, argc, argv);
 		break;
 	case 114:
-		_wrap_helicsCoreDataLink(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCoreDataLink(resc, resv, argc, argv);
 		break;
 	case 115:
-		_wrap_helicsCoreAddSourceFilterToEndpoint(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCoreAddSourceFilterToEndpoint(resc, resv, argc, argv);
 		break;
 	case 116:
-		_wrap_helicsCoreAddDestinationFilterToEndpoint(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCoreAddDestinationFilterToEndpoint(resc, resv, argc, argv);
 		break;
 	case 117:
-		_wrap_helicsCoreMakeConnections(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCoreMakeConnections(resc, resv, argc, argv);
 		break;
 	case 118:
-		_wrap_helicsBrokerGetIdentifier(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsBrokerGetIdentifier(resc, resv, argc, argv);
 		break;
 	case 119:
-		_wrap_helicsCoreGetIdentifier(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCoreGetIdentifier(resc, resv, argc, argv);
 		break;
 	case 120:
-		_wrap_helicsBrokerGetAddress(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsBrokerGetAddress(resc, resv, argc, argv);
 		break;
 	case 121:
-		_wrap_helicsCoreGetAddress(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCoreGetAddress(resc, resv, argc, argv);
 		break;
 	case 122:
-		_wrap_helicsCoreSetReadyToInit(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCoreSetReadyToInit(resc, resv, argc, argv);
 		break;
 	case 123:
-		_wrap_helicsCoreConnect(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCoreConnect(resc, resv, argc, argv);
 		break;
 	case 124:
-		_wrap_helicsCoreDisconnect(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCoreDisconnect(resc, resv, argc, argv);
 		break;
 	case 125:
-		_wrap_helicsGetFederateByName(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsGetFederateByName(resc, resv, argc, argv);
 		break;
 	case 126:
-		_wrap_helicsBrokerDisconnect(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsBrokerDisconnect(resc, resv, argc, argv);
 		break;
 	case 127:
-		_wrap_helicsFederateDestroy(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateDestroy(resc, resv, argc, argv);
 		break;
 	case 128:
-		_wrap_helicsBrokerDestroy(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsBrokerDestroy(resc, resv, argc, argv);
 		break;
 	case 129:
-		_wrap_helicsCoreDestroy(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCoreDestroy(resc, resv, argc, argv);
 		break;
 	case 130:
-		_wrap_helicsCoreFree(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCoreFree(resc, resv, argc, argv);
 		break;
 	case 131:
-		_wrap_helicsBrokerFree(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsBrokerFree(resc, resv, argc, argv);
 		break;
 	case 132:
-		_wrap_helicsCreateValueFederate(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCreateValueFederate(resc, resv, argc, argv);
 		break;
 	case 133:
-		_wrap_helicsCreateValueFederateFromConfig(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCreateValueFederateFromConfig(resc, resv, argc, argv);
 		break;
 	case 134:
-		_wrap_helicsCreateMessageFederate(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCreateMessageFederate(resc, resv, argc, argv);
 		break;
 	case 135:
-		_wrap_helicsCreateMessageFederateFromConfig(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCreateMessageFederateFromConfig(resc, resv, argc, argv);
 		break;
 	case 136:
-		_wrap_helicsCreateCombinationFederate(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCreateCombinationFederate(resc, resv, argc, argv);
 		break;
 	case 137:
-		_wrap_helicsCreateCombinationFederateFromConfig(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCreateCombinationFederateFromConfig(resc, resv, argc, argv);
 		break;
 	case 138:
-		_wrap_helicsFederateClone(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateClone(resc, resv, argc, argv);
 		break;
 	case 139:
-		_wrap_helicsCreateFederateInfo(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCreateFederateInfo(resc, resv, argc, argv);
 		break;
 	case 140:
-		_wrap_helicsFederateInfoClone(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateInfoClone(resc, resv, argc, argv);
 		break;
 	case 141:
-		_wrap_helicsFederateInfoLoadFromArgs(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateInfoLoadFromArgs(resc, resv, argc, argv);
 		break;
 	case 142:
-		_wrap_helicsFederateInfoLoadFromString(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateInfoLoadFromString(resc, resv, argc, argv);
 		break;
 	case 143:
-		_wrap_helicsFederateInfoFree(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateInfoFree(resc, resv, argc, argv);
 		break;
 	case 144:
-		_wrap_helicsFederateIsValid(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateIsValid(resc, resv, argc, argv);
 		break;
 	case 145:
-		_wrap_helicsFederateInfoSetCoreName(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateInfoSetCoreName(resc, resv, argc, argv);
 		break;
 	case 146:
-		_wrap_helicsFederateInfoSetCoreInitString(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateInfoSetCoreInitString(resc, resv, argc, argv);
 		break;
 	case 147:
-		_wrap_helicsFederateInfoSetBrokerInitString(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateInfoSetBrokerInitString(resc, resv, argc, argv);
 		break;
 	case 148:
-		_wrap_helicsFederateInfoSetCoreType(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateInfoSetCoreType(resc, resv, argc, argv);
 		break;
 	case 149:
-		_wrap_helicsFederateInfoSetCoreTypeFromString(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateInfoSetCoreTypeFromString(resc, resv, argc, argv);
 		break;
 	case 150:
-		_wrap_helicsFederateInfoSetBroker(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateInfoSetBroker(resc, resv, argc, argv);
 		break;
 	case 151:
-		_wrap_helicsFederateInfoSetBrokerKey(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateInfoSetBrokerKey(resc, resv, argc, argv);
 		break;
 	case 152:
-		_wrap_helicsFederateInfoSetBrokerPort(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateInfoSetBrokerPort(resc, resv, argc, argv);
 		break;
 	case 153:
-		_wrap_helicsFederateInfoSetLocalPort(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateInfoSetLocalPort(resc, resv, argc, argv);
 		break;
 	case 154:
-		_wrap_helicsGetPropertyIndex(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsGetPropertyIndex(resc, resv, argc, argv);
 		break;
 	case 155:
-		_wrap_helicsGetFlagIndex(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsGetFlagIndex(resc, resv, argc, argv);
 		break;
 	case 156:
-		_wrap_helicsGetOptionIndex(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsGetOptionIndex(resc, resv, argc, argv);
 		break;
 	case 157:
-		_wrap_helicsGetOptionValue(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsGetOptionValue(resc, resv, argc, argv);
 		break;
 	case 158:
-		_wrap_helicsGetDataType(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsGetDataType(resc, resv, argc, argv);
 		break;
 	case 159:
-		_wrap_helicsFederateInfoSetFlagOption(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateInfoSetFlagOption(resc, resv, argc, argv);
 		break;
 	case 160:
-		_wrap_helicsFederateInfoSetSeparator(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateInfoSetSeparator(resc, resv, argc, argv);
 		break;
 	case 161:
-		_wrap_helicsFederateInfoSetTimeProperty(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateInfoSetTimeProperty(resc, resv, argc, argv);
 		break;
 	case 162:
-		_wrap_helicsFederateInfoSetIntegerProperty(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateInfoSetIntegerProperty(resc, resv, argc, argv);
 		break;
 	case 163:
-		_wrap_helicsFederateRegisterInterfaces(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateRegisterInterfaces(resc, resv, argc, argv);
 		break;
 	case 164:
-		_wrap_helicsFederateGlobalError(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateGlobalError(resc, resv, argc, argv);
 		break;
 	case 165:
-		_wrap_helicsFederateLocalError(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateLocalError(resc, resv, argc, argv);
 		break;
 	case 166:
-		_wrap_helicsFederateFinalize(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateFinalize(resc, resv, argc, argv);
 		break;
 	case 167:
-		_wrap_helicsFederateFinalizeAsync(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateFinalizeAsync(resc, resv, argc, argv);
 		break;
 	case 168:
-		_wrap_helicsFederateFinalizeComplete(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateFinalizeComplete(resc, resv, argc, argv);
 		break;
 	case 169:
-		_wrap_helicsFederateDisconnect(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateDisconnect(resc, resv, argc, argv);
 		break;
 	case 170:
-		_wrap_helicsFederateDisconnectAsync(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateDisconnectAsync(resc, resv, argc, argv);
 		break;
 	case 171:
-		_wrap_helicsFederateDisconnectComplete(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateDisconnectComplete(resc, resv, argc, argv);
 		break;
 	case 172:
-		_wrap_helicsFederateFree(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateFree(resc, resv, argc, argv);
 		break;
 	case 173:
-		_wrap_helicsCloseLibrary(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCloseLibrary(resc, resv, argc, argv);
 		break;
 	case 174:
-		_wrap_helicsFederateEnterInitializingMode(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateEnterInitializingMode(resc, resv, argc, argv);
 		break;
 	case 175:
-		_wrap_helicsFederateEnterInitializingModeAsync(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateEnterInitializingModeAsync(resc, resv, argc, argv);
 		break;
 	case 176:
-		_wrap_helicsFederateIsAsyncOperationCompleted(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateIsAsyncOperationCompleted(resc, resv, argc, argv);
 		break;
 	case 177:
-		_wrap_helicsFederateEnterInitializingModeComplete(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateEnterInitializingModeComplete(resc, resv, argc, argv);
 		break;
 	case 178:
-		_wrap_helicsFederateEnterExecutingMode(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateEnterExecutingMode(resc, resv, argc, argv);
 		break;
 	case 179:
-		_wrap_helicsFederateEnterExecutingModeAsync(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateEnterExecutingModeAsync(resc, resv, argc, argv);
 		break;
 	case 180:
-		_wrap_helicsFederateEnterExecutingModeComplete(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateEnterExecutingModeComplete(resc, resv, argc, argv);
 		break;
 	case 181:
-		_wrap_helicsFederateEnterExecutingModeIterative(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateEnterExecutingModeIterative(resc, resv, argc, argv);
 		break;
 	case 182:
-		_wrap_helicsFederateEnterExecutingModeIterativeAsync(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateEnterExecutingModeIterativeAsync(resc, resv, argc, argv);
 		break;
 	case 183:
-		_wrap_helicsFederateEnterExecutingModeIterativeComplete(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateEnterExecutingModeIterativeComplete(resc, resv, argc, argv);
 		break;
 	case 184:
-		_wrap_helicsFederateGetState(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateGetState(resc, resv, argc, argv);
 		break;
 	case 185:
-		_wrap_helicsFederateGetCore(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateGetCore(resc, resv, argc, argv);
 		break;
 	case 186:
-		_wrap_helicsFederateRequestTime(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateRequestTime(resc, resv, argc, argv);
 		break;
 	case 187:
-		_wrap_helicsFederateRequestTimeAdvance(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateRequestTimeAdvance(resc, resv, argc, argv);
 		break;
 	case 188:
-		_wrap_helicsFederateRequestNextStep(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateRequestNextStep(resc, resv, argc, argv);
 		break;
 	case 189:
-		_wrap_helicsFederateRequestTimeIterative(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateRequestTimeIterative(resc, resv, argc, argv);
 		break;
 	case 190:
-		_wrap_helicsFederateRequestTimeAsync(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateRequestTimeAsync(resc, resv, argc, argv);
 		break;
 	case 191:
-		_wrap_helicsFederateRequestTimeComplete(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateRequestTimeComplete(resc, resv, argc, argv);
 		break;
 	case 192:
-		_wrap_helicsFederateRequestTimeIterativeAsync(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateRequestTimeIterativeAsync(resc, resv, argc, argv);
 		break;
 	case 193:
-		_wrap_helicsFederateRequestTimeIterativeComplete(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateRequestTimeIterativeComplete(resc, resv, argc, argv);
 		break;
 	case 194:
-		_wrap_helicsFederateProcessCommunications(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateProcessCommunications(resc, resv, argc, argv);
 		break;
 	case 195:
-		_wrap_helicsFederateGetName(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateGetName(resc, resv, argc, argv);
 		break;
 	case 196:
-		_wrap_helicsFederateSetTimeProperty(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateSetTimeProperty(resc, resv, argc, argv);
 		break;
 	case 197:
-		_wrap_helicsFederateSetFlagOption(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateSetFlagOption(resc, resv, argc, argv);
 		break;
 	case 198:
-		_wrap_helicsFederateSetSeparator(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateSetSeparator(resc, resv, argc, argv);
 		break;
 	case 199:
-		_wrap_helicsFederateSetIntegerProperty(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateSetIntegerProperty(resc, resv, argc, argv);
 		break;
 	case 200:
-		_wrap_helicsFederateGetTimeProperty(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateGetTimeProperty(resc, resv, argc, argv);
 		break;
 	case 201:
-		_wrap_helicsFederateGetFlagOption(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateGetFlagOption(resc, resv, argc, argv);
 		break;
 	case 202:
-		_wrap_helicsFederateGetIntegerProperty(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateGetIntegerProperty(resc, resv, argc, argv);
 		break;
 	case 203:
-		_wrap_helicsFederateGetCurrentTime(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateGetCurrentTime(resc, resv, argc, argv);
 		break;
 	case 204:
-		_wrap_helicsFederateSetGlobal(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateSetGlobal(resc, resv, argc, argv);
 		break;
 	case 205:
-		_wrap_helicsFederateSetTag(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateSetTag(resc, resv, argc, argv);
 		break;
 	case 206:
-		_wrap_helicsFederateGetTag(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateGetTag(resc, resv, argc, argv);
 		break;
 	case 207:
-		_wrap_helicsFederateAddDependency(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateAddDependency(resc, resv, argc, argv);
 		break;
 	case 208:
-		_wrap_helicsFederateSetLogFile(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateSetLogFile(resc, resv, argc, argv);
 		break;
 	case 209:
-		_wrap_helicsFederateLogErrorMessage(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateLogErrorMessage(resc, resv, argc, argv);
 		break;
 	case 210:
-		_wrap_helicsFederateLogWarningMessage(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateLogWarningMessage(resc, resv, argc, argv);
 		break;
 	case 211:
-		_wrap_helicsFederateLogInfoMessage(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateLogInfoMessage(resc, resv, argc, argv);
 		break;
 	case 212:
-		_wrap_helicsFederateLogDebugMessage(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateLogDebugMessage(resc, resv, argc, argv);
 		break;
 	case 213:
-		_wrap_helicsFederateLogLevelMessage(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateLogLevelMessage(resc, resv, argc, argv);
 		break;
 	case 214:
-		_wrap_helicsFederateSendCommand(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateSendCommand(resc, resv, argc, argv);
 		break;
 	case 215:
-		_wrap_helicsFederateGetCommand(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateGetCommand(resc, resv, argc, argv);
 		break;
 	case 216:
-		_wrap_helicsFederateGetCommandSource(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateGetCommandSource(resc, resv, argc, argv);
 		break;
 	case 217:
-		_wrap_helicsFederateWaitCommand(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateWaitCommand(resc, resv, argc, argv);
 		break;
 	case 218:
-		_wrap_helicsCoreSetGlobal(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCoreSetGlobal(resc, resv, argc, argv);
 		break;
 	case 219:
-		_wrap_helicsBrokerSetGlobal(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsBrokerSetGlobal(resc, resv, argc, argv);
 		break;
 	case 220:
-		_wrap_helicsCoreSendCommand(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCoreSendCommand(resc, resv, argc, argv);
 		break;
 	case 221:
-		_wrap_helicsBrokerSendCommand(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsBrokerSendCommand(resc, resv, argc, argv);
 		break;
 	case 222:
-		_wrap_helicsCoreSetLogFile(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCoreSetLogFile(resc, resv, argc, argv);
 		break;
 	case 223:
-		_wrap_helicsBrokerSetLogFile(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsBrokerSetLogFile(resc, resv, argc, argv);
 		break;
 	case 224:
-		_wrap_helicsBrokerSetTimeBarrier(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsBrokerSetTimeBarrier(resc, resv, argc, argv);
 		break;
 	case 225:
-		_wrap_helicsBrokerClearTimeBarrier(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsBrokerClearTimeBarrier(resc, resv, argc, argv);
 		break;
 	case 226:
-		_wrap_helicsBrokerGlobalError(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsBrokerGlobalError(resc, resv, argc, argv);
 		break;
 	case 227:
-		_wrap_helicsCoreGlobalError(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCoreGlobalError(resc, resv, argc, argv);
 		break;
 	case 228:
-		_wrap_helicsCreateQuery(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCreateQuery(resc, resv, argc, argv);
 		break;
 	case 229:
-		_wrap_helicsQueryExecute(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsQueryExecute(resc, resv, argc, argv);
 		break;
 	case 230:
-		_wrap_helicsQueryCoreExecute(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsQueryCoreExecute(resc, resv, argc, argv);
 		break;
 	case 231:
-		_wrap_helicsQueryBrokerExecute(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsQueryBrokerExecute(resc, resv, argc, argv);
 		break;
 	case 232:
-		_wrap_helicsQueryExecuteAsync(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsQueryExecuteAsync(resc, resv, argc, argv);
 		break;
 	case 233:
-		_wrap_helicsQueryExecuteComplete(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsQueryExecuteComplete(resc, resv, argc, argv);
 		break;
 	case 234:
-		_wrap_helicsQueryIsCompleted(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsQueryIsCompleted(resc, resv, argc, argv);
 		break;
 	case 235:
-		_wrap_helicsQuerySetTarget(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsQuerySetTarget(resc, resv, argc, argv);
 		break;
 	case 236:
-		_wrap_helicsQuerySetQueryString(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsQuerySetQueryString(resc, resv, argc, argv);
 		break;
 	case 237:
-		_wrap_helicsQuerySetOrdering(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsQuerySetOrdering(resc, resv, argc, argv);
 		break;
 	case 238:
-		_wrap_helicsQueryFree(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsQueryFree(resc, resv, argc, argv);
 		break;
 	case 239:
-		_wrap_helicsCleanupLibrary(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCleanupLibrary(resc, resv, argc, argv);
 		break;
 	case 240:
-		_wrap_helicsFederateRegisterSubscription(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateRegisterSubscription(resc, resv, argc, argv);
 		break;
 	case 241:
-		_wrap_helicsFederateRegisterPublication(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateRegisterPublication(resc, resv, argc, argv);
 		break;
 	case 242:
-		_wrap_helicsFederateRegisterTypePublication(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateRegisterTypePublication(resc, resv, argc, argv);
 		break;
 	case 243:
-		_wrap_helicsFederateRegisterGlobalPublication(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateRegisterGlobalPublication(resc, resv, argc, argv);
 		break;
 	case 244:
-		_wrap_helicsFederateRegisterGlobalTypePublication(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateRegisterGlobalTypePublication(resc, resv, argc, argv);
 		break;
 	case 245:
-		_wrap_helicsFederateRegisterInput(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateRegisterInput(resc, resv, argc, argv);
 		break;
 	case 246:
-		_wrap_helicsFederateRegisterTypeInput(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateRegisterTypeInput(resc, resv, argc, argv);
 		break;
 	case 247:
-		_wrap_helicsFederateRegisterGlobalInput(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateRegisterGlobalInput(resc, resv, argc, argv);
 		break;
 	case 248:
-		_wrap_helicsFederateRegisterGlobalTypeInput(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateRegisterGlobalTypeInput(resc, resv, argc, argv);
 		break;
 	case 249:
-		_wrap_helicsFederateGetPublication(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateGetPublication(resc, resv, argc, argv);
 		break;
 	case 250:
-		_wrap_helicsFederateGetPublicationByIndex(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateGetPublicationByIndex(resc, resv, argc, argv);
 		break;
 	case 251:
-		_wrap_helicsFederateGetInput(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateGetInput(resc, resv, argc, argv);
 		break;
 	case 252:
-		_wrap_helicsFederateGetInputByIndex(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateGetInputByIndex(resc, resv, argc, argv);
 		break;
 	case 253:
-		_wrap_helicsFederateGetSubscription(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateGetSubscription(resc, resv, argc, argv);
 		break;
 	case 254:
-		_wrap_helicsFederateClearUpdates(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateClearUpdates(resc, resv, argc, argv);
 		break;
 	case 255:
-		_wrap_helicsFederateRegisterFromPublicationJSON(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateRegisterFromPublicationJSON(resc, resv, argc, argv);
 		break;
 	case 256:
-		_wrap_helicsFederatePublishJSON(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederatePublishJSON(resc, resv, argc, argv);
 		break;
 	case 257:
-		_wrap_helicsPublicationIsValid(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsPublicationIsValid(resc, resv, argc, argv);
 		break;
 	case 258:
-		_wrap_helicsPublicationPublishBytes(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsPublicationPublishBytes(resc, resv, argc, argv);
 		break;
 	case 259:
-		_wrap_helicsPublicationPublishString(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsPublicationPublishString(resc, resv, argc, argv);
 		break;
 	case 260:
-		_wrap_helicsPublicationPublishInteger(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsPublicationPublishInteger(resc, resv, argc, argv);
 		break;
 	case 261:
-		_wrap_helicsPublicationPublishBoolean(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsPublicationPublishBoolean(resc, resv, argc, argv);
 		break;
 	case 262:
-		_wrap_helicsPublicationPublishDouble(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsPublicationPublishDouble(resc, resv, argc, argv);
 		break;
 	case 263:
-		_wrap_helicsPublicationPublishTime(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsPublicationPublishTime(resc, resv, argc, argv);
 		break;
 	case 264:
-		_wrap_helicsPublicationPublishChar(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsPublicationPublishChar(resc, resv, argc, argv);
 		break;
 	case 265:
-		_wrap_helicsPublicationPublishComplex(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsPublicationPublishComplex(resc, resv, argc, argv);
 		break;
 	case 266:
-		_wrap_helicsPublicationPublishVector(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsPublicationPublishVector(resc, resv, argc, argv);
 		break;
 	case 267:
-		_wrap_helicsPublicationPublishComplexVector(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsPublicationPublishComplexVector(resc, resv, argc, argv);
 		break;
 	case 268:
-		_wrap_helicsPublicationPublishNamedPoint(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsPublicationPublishNamedPoint(resc, resv, argc, argv);
 		break;
 	case 269:
-		_wrap_helicsPublicationAddTarget(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsPublicationAddTarget(resc, resv, argc, argv);
 		break;
 	case 270:
-		_wrap_helicsInputIsValid(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputIsValid(resc, resv, argc, argv);
 		break;
 	case 271:
-		_wrap_helicsInputAddTarget(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputAddTarget(resc, resv, argc, argv);
 		break;
 	case 272:
-		_wrap_helicsInputGetByteCount(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputGetByteCount(resc, resv, argc, argv);
 		break;
 	case 273:
-		_wrap_helicsInputGetBytes(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputGetBytes(resc, resv, argc, argv);
 		break;
 	case 274:
-		_wrap_helicsInputGetStringSize(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputGetStringSize(resc, resv, argc, argv);
 		break;
 	case 275:
-		_wrap_helicsInputGetString(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputGetString(resc, resv, argc, argv);
 		break;
 	case 276:
-		_wrap_helicsInputGetInteger(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputGetInteger(resc, resv, argc, argv);
 		break;
 	case 277:
-		_wrap_helicsInputGetBoolean(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputGetBoolean(resc, resv, argc, argv);
 		break;
 	case 278:
-		_wrap_helicsInputGetDouble(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputGetDouble(resc, resv, argc, argv);
 		break;
 	case 279:
-		_wrap_helicsInputGetTime(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputGetTime(resc, resv, argc, argv);
 		break;
 	case 280:
-		_wrap_helicsInputGetChar(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputGetChar(resc, resv, argc, argv);
 		break;
 	case 281:
-		_wrap_helicsInputGetComplexObject(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputGetComplexObject(resc, resv, argc, argv);
 		break;
 	case 282:
-		_wrap_helicsInputGetComplex(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputGetComplex(resc, resv, argc, argv);
 		break;
 	case 283:
-		_wrap_helicsInputGetVectorSize(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputGetVectorSize(resc, resv, argc, argv);
 		break;
 	case 284:
-		_wrap_helicsInputGetVector(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputGetVector(resc, resv, argc, argv);
 		break;
 	case 285:
-		_wrap_helicsInputGetComplexVector(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputGetComplexVector(resc, resv, argc, argv);
 		break;
 	case 286:
-		_wrap_helicsInputGetNamedPoint(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputGetNamedPoint(resc, resv, argc, argv);
 		break;
 	case 287:
-		_wrap_helicsInputSetDefaultBytes(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputSetDefaultBytes(resc, resv, argc, argv);
 		break;
 	case 288:
-		_wrap_helicsInputSetDefaultString(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputSetDefaultString(resc, resv, argc, argv);
 		break;
 	case 289:
-		_wrap_helicsInputSetDefaultInteger(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputSetDefaultInteger(resc, resv, argc, argv);
 		break;
 	case 290:
-		_wrap_helicsInputSetDefaultBoolean(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputSetDefaultBoolean(resc, resv, argc, argv);
 		break;
 	case 291:
-		_wrap_helicsInputSetDefaultTime(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputSetDefaultTime(resc, resv, argc, argv);
 		break;
 	case 292:
-		_wrap_helicsInputSetDefaultChar(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputSetDefaultChar(resc, resv, argc, argv);
 		break;
 	case 293:
-		_wrap_helicsInputSetDefaultDouble(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputSetDefaultDouble(resc, resv, argc, argv);
 		break;
 	case 294:
-		_wrap_helicsInputSetDefaultComplex(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputSetDefaultComplex(resc, resv, argc, argv);
 		break;
 	case 295:
-		_wrap_helicsInputSetDefaultVector(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputSetDefaultVector(resc, resv, argc, argv);
 		break;
 	case 296:
-		_wrap_helicsInputSetDefaultComplexVector(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputSetDefaultComplexVector(resc, resv, argc, argv);
 		break;
 	case 297:
-		_wrap_helicsInputSetDefaultNamedPoint(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputSetDefaultNamedPoint(resc, resv, argc, argv);
 		break;
 	case 298:
-		_wrap_helicsInputGetType(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputGetType(resc, resv, argc, argv);
 		break;
 	case 299:
-		_wrap_helicsInputGetPublicationType(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputGetPublicationType(resc, resv, argc, argv);
 		break;
 	case 300:
-		_wrap_helicsInputGetPublicationDataType(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputGetPublicationDataType(resc, resv, argc, argv);
 		break;
 	case 301:
-		_wrap_helicsPublicationGetType(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsPublicationGetType(resc, resv, argc, argv);
 		break;
 	case 302:
-		_wrap_helicsInputGetName(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputGetName(resc, resv, argc, argv);
 		break;
 	case 303:
-		_wrap_helicsSubscriptionGetTarget(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsSubscriptionGetTarget(resc, resv, argc, argv);
 		break;
 	case 304:
-		_wrap_helicsPublicationGetName(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsPublicationGetName(resc, resv, argc, argv);
 		break;
 	case 305:
-		_wrap_helicsInputGetUnits(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputGetUnits(resc, resv, argc, argv);
 		break;
 	case 306:
-		_wrap_helicsInputGetInjectionUnits(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputGetInjectionUnits(resc, resv, argc, argv);
 		break;
 	case 307:
-		_wrap_helicsInputGetExtractionUnits(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputGetExtractionUnits(resc, resv, argc, argv);
 		break;
 	case 308:
-		_wrap_helicsPublicationGetUnits(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsPublicationGetUnits(resc, resv, argc, argv);
 		break;
 	case 309:
-		_wrap_helicsInputGetInfo(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputGetInfo(resc, resv, argc, argv);
 		break;
 	case 310:
-		_wrap_helicsInputSetInfo(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputSetInfo(resc, resv, argc, argv);
 		break;
 	case 311:
-		_wrap_helicsInputGetTag(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputGetTag(resc, resv, argc, argv);
 		break;
 	case 312:
-		_wrap_helicsInputSetTag(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputSetTag(resc, resv, argc, argv);
 		break;
 	case 313:
-		_wrap_helicsPublicationGetInfo(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsPublicationGetInfo(resc, resv, argc, argv);
 		break;
 	case 314:
-		_wrap_helicsPublicationSetInfo(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsPublicationSetInfo(resc, resv, argc, argv);
 		break;
 	case 315:
-		_wrap_helicsPublicationGetTag(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsPublicationGetTag(resc, resv, argc, argv);
 		break;
 	case 316:
-		_wrap_helicsPublicationSetTag(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsPublicationSetTag(resc, resv, argc, argv);
 		break;
 	case 317:
-		_wrap_helicsInputGetOption(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputGetOption(resc, resv, argc, argv);
 		break;
 	case 318:
-		_wrap_helicsInputSetOption(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputSetOption(resc, resv, argc, argv);
 		break;
 	case 319:
-		_wrap_helicsPublicationGetOption(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsPublicationGetOption(resc, resv, argc, argv);
 		break;
 	case 320:
-		_wrap_helicsPublicationSetOption(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsPublicationSetOption(resc, resv, argc, argv);
 		break;
 	case 321:
-		_wrap_helicsPublicationSetMinimumChange(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsPublicationSetMinimumChange(resc, resv, argc, argv);
 		break;
 	case 322:
-		_wrap_helicsInputSetMinimumChange(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputSetMinimumChange(resc, resv, argc, argv);
 		break;
 	case 323:
-		_wrap_helicsInputIsUpdated(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputIsUpdated(resc, resv, argc, argv);
 		break;
 	case 324:
-		_wrap_helicsInputLastUpdateTime(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputLastUpdateTime(resc, resv, argc, argv);
 		break;
 	case 325:
-		_wrap_helicsInputClearUpdate(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsInputClearUpdate(resc, resv, argc, argv);
 		break;
 	case 326:
-		_wrap_helicsFederateGetPublicationCount(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateGetPublicationCount(resc, resv, argc, argv);
 		break;
 	case 327:
-		_wrap_helicsFederateGetInputCount(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateGetInputCount(resc, resv, argc, argv);
 		break;
 	case 328:
-		_wrap_helicsFederateRegisterEndpoint(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateRegisterEndpoint(resc, resv, argc, argv);
 		break;
 	case 329:
-		_wrap_helicsFederateRegisterGlobalEndpoint(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateRegisterGlobalEndpoint(resc, resv, argc, argv);
 		break;
 	case 330:
-		_wrap_helicsFederateRegisterTargetedEndpoint(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateRegisterTargetedEndpoint(resc, resv, argc, argv);
 		break;
 	case 331:
-		_wrap_helicsFederateRegisterGlobalTargetedEndpoint(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateRegisterGlobalTargetedEndpoint(resc, resv, argc, argv);
 		break;
 	case 332:
-		_wrap_helicsFederateGetEndpoint(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateGetEndpoint(resc, resv, argc, argv);
 		break;
 	case 333:
-		_wrap_helicsFederateGetEndpointByIndex(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateGetEndpointByIndex(resc, resv, argc, argv);
 		break;
 	case 334:
-		_wrap_helicsEndpointIsValid(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsEndpointIsValid(resc, resv, argc, argv);
 		break;
 	case 335:
-		_wrap_helicsEndpointSetDefaultDestination(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsEndpointSetDefaultDestination(resc, resv, argc, argv);
 		break;
 	case 336:
-		_wrap_helicsEndpointGetDefaultDestination(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsEndpointGetDefaultDestination(resc, resv, argc, argv);
 		break;
 	case 337:
-		_wrap_helicsEndpointSendBytes(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsEndpointSendBytes(resc, resv, argc, argv);
 		break;
 	case 338:
-		_wrap_helicsEndpointSendBytesTo(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsEndpointSendBytesTo(resc, resv, argc, argv);
 		break;
 	case 339:
-		_wrap_helicsEndpointSendBytesToAt(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsEndpointSendBytesToAt(resc, resv, argc, argv);
 		break;
 	case 340:
-		_wrap_helicsEndpointSendBytesAt(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsEndpointSendBytesAt(resc, resv, argc, argv);
 		break;
 	case 341:
-		_wrap_helicsEndpointSendMessage(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsEndpointSendMessage(resc, resv, argc, argv);
 		break;
 	case 342:
-		_wrap_helicsEndpointSendMessageZeroCopy(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsEndpointSendMessageZeroCopy(resc, resv, argc, argv);
 		break;
 	case 343:
-		_wrap_helicsEndpointSubscribe(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsEndpointSubscribe(resc, resv, argc, argv);
 		break;
 	case 344:
-		_wrap_helicsFederateHasMessage(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateHasMessage(resc, resv, argc, argv);
 		break;
 	case 345:
-		_wrap_helicsEndpointHasMessage(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsEndpointHasMessage(resc, resv, argc, argv);
 		break;
 	case 346:
-		_wrap_helicsFederatePendingMessageCount(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederatePendingMessageCount(resc, resv, argc, argv);
 		break;
 	case 347:
-		_wrap_helicsEndpointPendingMessageCount(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsEndpointPendingMessageCount(resc, resv, argc, argv);
 		break;
 	case 348:
-		_wrap_helicsEndpointGetMessage(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsEndpointGetMessage(resc, resv, argc, argv);
 		break;
 	case 349:
-		_wrap_helicsEndpointCreateMessage(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsEndpointCreateMessage(resc, resv, argc, argv);
 		break;
 	case 350:
-		_wrap_helicsFederateGetMessage(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateGetMessage(resc, resv, argc, argv);
 		break;
 	case 351:
-		_wrap_helicsFederateCreateMessage(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateCreateMessage(resc, resv, argc, argv);
 		break;
 	case 352:
-		_wrap_helicsFederateClearMessages(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateClearMessages(resc, resv, argc, argv);
 		break;
 	case 353:
-		_wrap_helicsEndpointGetType(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsEndpointGetType(resc, resv, argc, argv);
 		break;
 	case 354:
-		_wrap_helicsEndpointGetName(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsEndpointGetName(resc, resv, argc, argv);
 		break;
 	case 355:
-		_wrap_helicsFederateGetEndpointCount(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateGetEndpointCount(resc, resv, argc, argv);
 		break;
 	case 356:
-		_wrap_helicsEndpointGetInfo(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsEndpointGetInfo(resc, resv, argc, argv);
 		break;
 	case 357:
-		_wrap_helicsEndpointSetInfo(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsEndpointSetInfo(resc, resv, argc, argv);
 		break;
 	case 358:
-		_wrap_helicsEndpointGetTag(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsEndpointGetTag(resc, resv, argc, argv);
 		break;
 	case 359:
-		_wrap_helicsEndpointSetTag(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsEndpointSetTag(resc, resv, argc, argv);
 		break;
 	case 360:
-		_wrap_helicsEndpointSetOption(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsEndpointSetOption(resc, resv, argc, argv);
 		break;
 	case 361:
-		_wrap_helicsEndpointGetOption(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsEndpointGetOption(resc, resv, argc, argv);
 		break;
 	case 362:
-		_wrap_helicsEndpointAddSourceTarget(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsEndpointAddSourceTarget(resc, resv, argc, argv);
 		break;
 	case 363:
-		_wrap_helicsEndpointAddDestinationTarget(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsEndpointAddDestinationTarget(resc, resv, argc, argv);
 		break;
 	case 364:
-		_wrap_helicsEndpointRemoveTarget(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsEndpointRemoveTarget(resc, resv, argc, argv);
 		break;
 	case 365:
-		_wrap_helicsEndpointAddSourceFilter(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsEndpointAddSourceFilter(resc, resv, argc, argv);
 		break;
 	case 366:
-		_wrap_helicsEndpointAddDestinationFilter(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsEndpointAddDestinationFilter(resc, resv, argc, argv);
 		break;
 	case 367:
-		_wrap_helicsMessageGetSource(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsMessageGetSource(resc, resv, argc, argv);
 		break;
 	case 368:
-		_wrap_helicsMessageGetDestination(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsMessageGetDestination(resc, resv, argc, argv);
 		break;
 	case 369:
-		_wrap_helicsMessageGetOriginalSource(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsMessageGetOriginalSource(resc, resv, argc, argv);
 		break;
 	case 370:
-		_wrap_helicsMessageGetOriginalDestination(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsMessageGetOriginalDestination(resc, resv, argc, argv);
 		break;
 	case 371:
-		_wrap_helicsMessageGetTime(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsMessageGetTime(resc, resv, argc, argv);
 		break;
 	case 372:
-		_wrap_helicsMessageGetString(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsMessageGetString(resc, resv, argc, argv);
 		break;
 	case 373:
-		_wrap_helicsMessageGetMessageID(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsMessageGetMessageID(resc, resv, argc, argv);
 		break;
 	case 374:
-		_wrap_helicsMessageGetFlagOption(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsMessageGetFlagOption(resc, resv, argc, argv);
 		break;
 	case 375:
-		_wrap_helicsMessageGetByteCount(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsMessageGetByteCount(resc, resv, argc, argv);
 		break;
 	case 376:
-		_wrap_helicsMessageGetBytes(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsMessageGetBytes(resc, resv, argc, argv);
 		break;
 	case 377:
-		_wrap_helicsMessageGetBytesPointer(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsMessageGetBytesPointer(resc, resv, argc, argv);
 		break;
 	case 378:
-		_wrap_helicsMessageIsValid(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsMessageIsValid(resc, resv, argc, argv);
 		break;
 	case 379:
-		_wrap_helicsMessageSetSource(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsMessageSetSource(resc, resv, argc, argv);
 		break;
 	case 380:
-		_wrap_helicsMessageSetDestination(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsMessageSetDestination(resc, resv, argc, argv);
 		break;
 	case 381:
-		_wrap_helicsMessageSetOriginalSource(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsMessageSetOriginalSource(resc, resv, argc, argv);
 		break;
 	case 382:
-		_wrap_helicsMessageSetOriginalDestination(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsMessageSetOriginalDestination(resc, resv, argc, argv);
 		break;
 	case 383:
-		_wrap_helicsMessageSetTime(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsMessageSetTime(resc, resv, argc, argv);
 		break;
 	case 384:
-		_wrap_helicsMessageResize(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsMessageResize(resc, resv, argc, argv);
 		break;
 	case 385:
-		_wrap_helicsMessageReserve(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsMessageReserve(resc, resv, argc, argv);
 		break;
 	case 386:
-		_wrap_helicsMessageSetMessageID(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsMessageSetMessageID(resc, resv, argc, argv);
 		break;
 	case 387:
-		_wrap_helicsMessageClearFlags(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsMessageClearFlags(resc, resv, argc, argv);
 		break;
 	case 388:
-		_wrap_helicsMessageSetFlagOption(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsMessageSetFlagOption(resc, resv, argc, argv);
 		break;
 	case 389:
-		_wrap_helicsMessageSetString(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsMessageSetString(resc, resv, argc, argv);
 		break;
 	case 390:
-		_wrap_helicsMessageSetData(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsMessageSetData(resc, resv, argc, argv);
 		break;
 	case 391:
-		_wrap_helicsMessageAppendData(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsMessageAppendData(resc, resv, argc, argv);
 		break;
 	case 392:
-		_wrap_helicsMessageCopy(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsMessageCopy(resc, resv, argc, argv);
 		break;
 	case 393:
-		_wrap_helicsMessageClone(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsMessageClone(resc, resv, argc, argv);
 		break;
 	case 394:
-		_wrap_helicsMessageFree(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsMessageFree(resc, resv, argc, argv);
 		break;
 	case 395:
-		_wrap_helicsMessageClear(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsMessageClear(resc, resv, argc, argv);
 		break;
 	case 396:
-		_wrap_helicsFederateRegisterFilter(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateRegisterFilter(resc, resv, argc, argv);
 		break;
 	case 397:
-		_wrap_helicsFederateRegisterGlobalFilter(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateRegisterGlobalFilter(resc, resv, argc, argv);
 		break;
 	case 398:
-		_wrap_helicsFederateRegisterCloningFilter(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateRegisterCloningFilter(resc, resv, argc, argv);
 		break;
 	case 399:
-		_wrap_helicsFederateRegisterGlobalCloningFilter(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateRegisterGlobalCloningFilter(resc, resv, argc, argv);
 		break;
 	case 400:
-		_wrap_helicsCoreRegisterFilter(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCoreRegisterFilter(resc, resv, argc, argv);
 		break;
 	case 401:
-		_wrap_helicsCoreRegisterCloningFilter(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCoreRegisterCloningFilter(resc, resv, argc, argv);
 		break;
 	case 402:
-		_wrap_helicsFederateGetFilterCount(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateGetFilterCount(resc, resv, argc, argv);
 		break;
 	case 403:
-		_wrap_helicsFederateGetFilter(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateGetFilter(resc, resv, argc, argv);
 		break;
 	case 404:
-		_wrap_helicsFederateGetFilterByIndex(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateGetFilterByIndex(resc, resv, argc, argv);
 		break;
 	case 405:
-		_wrap_helicsFilterIsValid(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFilterIsValid(resc, resv, argc, argv);
 		break;
 	case 406:
-		_wrap_helicsFilterGetName(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFilterGetName(resc, resv, argc, argv);
 		break;
 	case 407:
-		_wrap_helicsFilterSet(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFilterSet(resc, resv, argc, argv);
 		break;
 	case 408:
-		_wrap_helicsFilterSetString(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFilterSetString(resc, resv, argc, argv);
 		break;
 	case 409:
-		_wrap_helicsFilterAddDestinationTarget(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFilterAddDestinationTarget(resc, resv, argc, argv);
 		break;
 	case 410:
-		_wrap_helicsFilterAddSourceTarget(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFilterAddSourceTarget(resc, resv, argc, argv);
 		break;
 	case 411:
-		_wrap_helicsFilterAddDeliveryEndpoint(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFilterAddDeliveryEndpoint(resc, resv, argc, argv);
 		break;
 	case 412:
-		_wrap_helicsFilterRemoveTarget(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFilterRemoveTarget(resc, resv, argc, argv);
 		break;
 	case 413:
-		_wrap_helicsFilterRemoveDeliveryEndpoint(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFilterRemoveDeliveryEndpoint(resc, resv, argc, argv);
 		break;
 	case 414:
-		_wrap_helicsFilterGetInfo(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFilterGetInfo(resc, resv, argc, argv);
 		break;
 	case 415:
-		_wrap_helicsFilterSetInfo(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFilterSetInfo(resc, resv, argc, argv);
 		break;
 	case 416:
-		_wrap_helicsFilterGetTag(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFilterGetTag(resc, resv, argc, argv);
 		break;
 	case 417:
-		_wrap_helicsFilterSetTag(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFilterSetTag(resc, resv, argc, argv);
 		break;
 	case 418:
-		_wrap_helicsFilterSetOption(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFilterSetOption(resc, resv, argc, argv);
 		break;
 	case 419:
-		_wrap_helicsFilterGetOption(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFilterGetOption(resc, resv, argc, argv);
 		break;
 	case 420:
-		_wrap_helicsFederateRegisterTranslator(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateRegisterTranslator(resc, resv, argc, argv);
 		break;
 	case 421:
-		_wrap_helicsFederateRegisterGlobalTranslator(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateRegisterGlobalTranslator(resc, resv, argc, argv);
 		break;
 	case 422:
-		_wrap_helicsCoreRegisterTranslator(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCoreRegisterTranslator(resc, resv, argc, argv);
 		break;
 	case 423:
-		_wrap_helicsFederateGetTranslatorCount(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateGetTranslatorCount(resc, resv, argc, argv);
 		break;
 	case 424:
-		_wrap_helicsFederateGetTranslator(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateGetTranslator(resc, resv, argc, argv);
 		break;
 	case 425:
-		_wrap_helicsFederateGetTranslatorByIndex(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateGetTranslatorByIndex(resc, resv, argc, argv);
 		break;
 	case 426:
-		_wrap_helicsTranslatorIsValid(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsTranslatorIsValid(resc, resv, argc, argv);
 		break;
 	case 427:
-		_wrap_helicsTranslatorGetName(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsTranslatorGetName(resc, resv, argc, argv);
 		break;
 	case 428:
-		_wrap_helicsTranslatorSet(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsTranslatorSet(resc, resv, argc, argv);
 		break;
 	case 429:
-		_wrap_helicsTranslatorSetString(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsTranslatorSetString(resc, resv, argc, argv);
 		break;
 	case 430:
-		_wrap_helicsTranslatorAddInputTarget(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsTranslatorAddInputTarget(resc, resv, argc, argv);
 		break;
 	case 431:
-		_wrap_helicsTranslatorAddPublicationTarget(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsTranslatorAddPublicationTarget(resc, resv, argc, argv);
 		break;
 	case 432:
-		_wrap_helicsTranslatorAddSourceEndpoint(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsTranslatorAddSourceEndpoint(resc, resv, argc, argv);
 		break;
 	case 433:
-		_wrap_helicsTranslatorAddDestinationEndpoint(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsTranslatorAddDestinationEndpoint(resc, resv, argc, argv);
 		break;
 	case 434:
-		_wrap_helicsTranslatorRemoveTarget(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsTranslatorRemoveTarget(resc, resv, argc, argv);
 		break;
 	case 435:
-		_wrap_helicsTranslatorGetInfo(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsTranslatorGetInfo(resc, resv, argc, argv);
 		break;
 	case 436:
-		_wrap_helicsTranslatorSetInfo(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsTranslatorSetInfo(resc, resv, argc, argv);
 		break;
 	case 437:
-		_wrap_helicsTranslatorGetTag(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsTranslatorGetTag(resc, resv, argc, argv);
 		break;
 	case 438:
-		_wrap_helicsTranslatorSetTag(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsTranslatorSetTag(resc, resv, argc, argv);
 		break;
 	case 439:
-		_wrap_helicsTranslatorSetOption(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsTranslatorSetOption(resc, resv, argc, argv);
 		break;
 	case 440:
-		_wrap_helicsTranslatorGetOption(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsTranslatorGetOption(resc, resv, argc, argv);
 		break;
 	case 441:
-		_wrap_helicsBrokerSetLoggingCallback(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsBrokerSetLoggingCallback(resc, resv, argc, argv);
 		break;
 	case 442:
-		_wrap_helicsCoreSetLoggingCallback(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsCoreSetLoggingCallback(resc, resv, argc, argv);
 		break;
 	case 443:
-		_wrap_helicsFederateSetLoggingCallback(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateSetLoggingCallback(resc, resv, argc, argv);
 		break;
 	case 444:
-		_wrap_helicsFilterSetCustomCallback(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFilterSetCustomCallback(resc, resv, argc, argv);
 		break;
 	case 445:
-		_wrap_helicsFederateSetQueryCallback(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateSetQueryCallback(resc, resv, argc, argv);
 		break;
 	case 446:
-		_wrap_helicsFederateSetTimeRequestEntryCallback(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateSetTimeRequestEntryCallback(resc, resv, argc, argv);
 		break;
 	case 447:
-		_wrap_helicsFederateSetTimeUpdateCallback(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateSetTimeUpdateCallback(resc, resv, argc, argv);
 		break;
 	case 448:
-		_wrap_helicsFederateSetStateChangeCallback(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateSetStateChangeCallback(resc, resv, argc, argv);
 		break;
 	case 449:
-		_wrap_helicsFederateSetTimeRequestReturnCallback(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsFederateSetTimeRequestReturnCallback(resc, resv, argc, argv);
 		break;
 	case 450:
-		_wrap_helicsQueryBufferFill(resc, resv, argc, (mxArray**)(argv));
+		_wrap_helicsQueryBufferFill(resc, resv, argc, argv);
 		break;
 	default:
 		mexErrMsgIdAndTxt("helics:mexFunction","An unknown function id was encountered. Call the mex function with a valid function id.");
