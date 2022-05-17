@@ -10294,7 +10294,7 @@ void _wrap_helicsFilterSetCustomCallback(int resc, mxArray *resv[], int argc, co
 }
 
 
-HelicsMessage matlabFederateQueryCallback(const char* query, int querySize, HelicsQueryBuffer buffer, void *userData){
+void matlabFederateQueryCallback(const char* query, int querySize, HelicsQueryBuffer buffer, void *userData){
 	mxArray *lhs;
 	mxArray *rhs[4];
 	mwSize dims[2] = {1, querySize};

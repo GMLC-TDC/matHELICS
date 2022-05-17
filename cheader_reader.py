@@ -3885,7 +3885,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param fed The federate object in which to set the callback.\n"
             functionComment += "\t@param queryAnswer A function handle with the signature const void(const char *query, int querySize, HelicsQueryBuffer buffer).\n"
             functionComment += "%}\n"
-            functionWrapper = "HelicsMessage matlabFederateQueryCallback(const char* query, int querySize, HelicsQueryBuffer buffer, void *userData){\n"
+            functionWrapper = "void matlabFederateQueryCallback(const char* query, int querySize, HelicsQueryBuffer buffer, void *userData){\n"
             functionWrapper += "\tmxArray *lhs;\n"
             functionWrapper += "\tmxArray *rhs[4];\n"
             functionWrapper += "\tmwSize dims[2] = {1, querySize};\n"
