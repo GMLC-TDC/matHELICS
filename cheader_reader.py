@@ -1710,7 +1710,7 @@ class HelicsHeaderParser (object):
                     macroFile.write("\tend\n")
                     macroFile.write("\tv = vInitialized;\n")
                     macroFile.write("end\n")
-                macroWrapperStr += f"void _wrap_{macroSpelling}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+                macroWrapperStr += f"void _wrap_{macroSpelling}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
                 macroWrapperStr += "\tmxArray *_out = mxCreateNumericMatrix(1,1,mxINT64_CLASS,mxREAL);\n"
                 macroWrapperStr += f"\t*((int64_t*)mxGetData(_out)) = (int64_t){macroSpelling};\n"
                 macroWrapperStr += "\tresv[0] = _out;\n"
@@ -1849,7 +1849,7 @@ class HelicsHeaderParser (object):
                 functionMainElements += f"\tcase {cursorIdx}:\n"
                 functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
                 functionMainElements += f"\t\tbreak;\n"
-                functionWrapperStr += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+                functionWrapperStr += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
                 for a in functionDict.get("arguments",{}).keys():
                     functionWrapperStr += getArgInitializationStr(functionDict.get("arguments",{}).get(a,{}), int(a))
                 if functionDict.get("result_type","") != "Void":
@@ -2319,7 +2319,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param arguments The list of string values from a command line.\n\n"
             functionComment += "\t@return A HelicsCore object.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgChar("type", 0)
             functionWrapper += initializeArgChar("name", 1)
             functionWrapper += "\tint arg2 = 0;\n"
@@ -2379,7 +2379,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param arguments The list of string values from a command line.\n\n"
             functionComment += "\t@return A HelicsBroker object.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgChar("type", 0)
             functionWrapper += initializeArgChar("name", 1)
             functionWrapper += "\tint arg2 = 0;\n"
@@ -2434,7 +2434,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param fi A federateInfo object.\n"
             functionComment += "\t@param arguments A list of strings from the command line.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsFederateInfo", "fi", 0)
             functionWrapper += "\tint arg1 = 0;\n"
             functionWrapper += "\tchar **arg2 = (char **)0;\n"
@@ -2486,7 +2486,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param endpoint The endpoint to send the data from.\n"
             functionComment += "\t@param data The data to send.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsEndpoint", "endpoint", 0)
             functionWrapper += initializeArgChar("data", 1)
             functionWrapper += "\tint inputDataLength = (int)(dataLength - 1);\n\n"
@@ -2533,7 +2533,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param data The data to send.\n"
             functionComment += "\t@param time The time to send the message at.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsEndpoint", "endpoint", 0)
             functionWrapper += initializeArgChar("data", 1)
             functionWrapper += "\tint inputDataLength = (int)(dataLength - 1);\n\n"
@@ -2581,7 +2581,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param data The data to send.\n"
             functionComment += "\t@param dst The destination to send the message to.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsEndpoint", "endpoint", 0)
             functionWrapper += initializeArgChar("data", 1)
             functionWrapper += "\tint inputDataLength = (int)(dataLength - 1);\n\n"
@@ -2634,7 +2634,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param dst The destination to send the message to.\n"
             functionComment += "\t@param time The time to send the message at.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsEndpoint", "endpoint", 0)
             functionWrapper += initializeArgChar("data", 1)
             functionWrapper += "\tint inputDataLength = (int)(dataLength - 1);\n\n"
@@ -2687,7 +2687,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param iterate The requested iteration mode.\n\n"
             functionComment += "\t@return granted time and HelicsIterationResult.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsFederate", "fed", 0)
             functionWrapper += initializeArgHelicsTime("requestTime", 1)
             functionWrapper += f"\tHelicsIterationRequest iterate = (HelicsIterationRequest)(mxGetScalar(argv[2]));\n\n"
@@ -2732,7 +2732,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param fed The federate to make the request of.\n\n"
             functionComment += "\t@return tuple of HelicsTime and HelicsIterationResult.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsFederate", "fed", 0)
             functionWrapper += initializeArgHelicsIterationResultPtr("outIteration")
             functionWrapper += initializeArgHelicsErrorPtr("err")
@@ -2781,7 +2781,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param ipt The input to get the data for.\n\n"
             functionComment += "\t@return  raw Bytes of the value, the value is uninterpreted raw bytes.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0)
             functionWrapper += "\tint maxDataLen = helicsInputGetByteCount(ipt) + 2;\n\n"
             functionWrapper += "\tvoid *data = malloc(maxDataLen);\n\n"
@@ -2825,7 +2825,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param ipt The input to get the data for.\n\n"
             functionComment += "\t@return  A complex number.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0)
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\tHelicsComplex result = {functionName}(ipt, &err);\n\n"
@@ -2869,7 +2869,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param ipt The input to get the data for.\n\n"
             functionComment += "\t@return  A complex number.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0)
             functionWrapper += "\tdouble values[2];\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
@@ -2920,7 +2920,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param ipt The input to get the result for.\n\n"
             functionComment += "\t@return a string and a double value for the named point\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0)
             functionWrapper += "\tint maxStringLen = helicsInputGetStringSize(ipt) + 2;\n\n"
             functionWrapper += "\tchar *outputString = (char *)malloc(maxStringLen);\n\n"
@@ -2977,7 +2977,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param ipt The input to get the string for.\n\n"
             functionComment += "\t@return the string value.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0)
             functionWrapper += "\tint maxStringLen = helicsInputGetStringSize(ipt) + 2;\n\n"
             functionWrapper += "\tchar *outputString = (char *)malloc(maxStringLen);\n\n"
@@ -3029,7 +3029,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param ipt The input to get the vector for.\n\n"
             functionComment += "\t@return  a list of floating point values.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0)
             functionWrapper += "\tint maxLength = helicsInputGetVectorSize(ipt);\n\n"
             functionWrapper += "\tdouble *data = (double *)malloc(maxLength * sizeof(double));\n\n"
@@ -3080,7 +3080,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param ipt The input to get the vector for.\n\n"
             functionComment += "\t@return a list of complex values.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0)
             functionWrapper += "\tint maxLength = helicsInputGetVectorSize(ipt);\n\n"
             functionWrapper += "\tdouble *data = (double *)malloc(maxLength * sizeof(double));\n\n"
@@ -3129,7 +3129,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param ipt The input to set the default for.\n"
             functionComment += "\t@param raw data to use for the default.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0)
             functionWrapper += initializeArgChar("data", 1)
             functionWrapper += "\tint inputDataLength = dataLength - 1;\n\n"
@@ -3172,7 +3172,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param ipt The input to get the data for.\n"
             functionComment += "\t@param value The default complex value.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0)
             functionWrapper += "\tmxComplexDouble *value = mxGetComplexDoubles(argv[1]);\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
@@ -3214,7 +3214,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param ipt The input to get the data for.\n"
             functionComment += "\t@param vectorInput The default list of floating point values.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0)
             functionWrapper += "\tint vectorLength =  (int)mxGetNumberOfElements(argv[1]);\n\n"
             functionWrapper += "\tdouble *vectorInput =  (double *)mxGetDoubles(argv[1]);\n\n"
@@ -3256,7 +3256,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param ipt The input to get the data for.\n"
             functionComment += "\t@param vectorInput The default list of complex values.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0)
             functionWrapper += "\tint vectorLength =  (int)mxGetN(argv[1])*2;\n\n"
             functionWrapper += "\tdouble *vectorInput = (double *)malloc(vectorLength * sizeof(double));\n"
@@ -3303,7 +3303,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param message The message object in question.\n"
             functionComment += "\t@param data A string containing the message data to append.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsMessage", "message", 0)
             functionWrapper += initializeArgChar("data", 1)
             functionWrapper += "\tint inputDataLength = dataLength - 1;\n\n"
@@ -3348,7 +3348,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param message A message object to get the data for.\n\n"
             functionComment += "\t@return Raw string data.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsMessage", "message", 0)
             functionWrapper += "\tint maxMessageLength = helicsMessageGetByteCount(message) + 2;\n\n"
             functionWrapper += "\tchar *data = (char *)malloc(maxMessageLength);\n\n"
@@ -3397,7 +3397,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param message The message object in question.\n"
             functionComment += "\t@param data A string containing the message data.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsMessage", "message", 0)
             functionWrapper += initializeArgChar("data", 1)
             functionWrapper += "\tint inputDataLength = dataLength - 1;\n\n"
@@ -3439,7 +3439,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param pub The publication to publish for.\n"
             functionComment += "\t@param data the raw byte data to publish.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsPublication", "pub", 0)
             functionWrapper += initializeArgChar("data", 1)
             functionWrapper += "\tint inputDataLength = dataLength - 1;\n\n"
@@ -3481,7 +3481,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param pub The publication to publish for.\n"
             functionComment += "\t@param value The complex number.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsPublication", "pub", 0)
             functionWrapper += "\tmxComplexDouble *complexValue = mxGetComplexDoubles(argv[1]);\n"
             functionWrapper += "\tdouble value[2] = {complexValue[0].real, complexValue[0].imag};\n\n"
@@ -3523,7 +3523,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param pub The publication to publish for.\n"
             functionComment += "\t@param vectorInput The list of floating point values.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsPublication", "pub", 0)
             functionWrapper += "\tint vectorLength =  (int)mxGetNumberOfElements(argv[1]);\n\n"
             functionWrapper += "\tdouble *vectorInput =  (double *)mxGetDoubles(argv[1]);\n\n"
@@ -3565,7 +3565,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param pub The publication to publish for.\n"
             functionComment += "\t@param vectorInput The list of complex values.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsPublication", "pub", 0)
             functionWrapper += "\tint vectorLength =  (int)mxGetN(argv[1])*2;\n\n"
             functionWrapper += "\tdouble *vectorInput = (double *)malloc(vectorLength * sizeof(double));\n"
@@ -3613,7 +3613,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param buffer The buffer received in a helicsQueryCallback.\n"
             functionComment += "\t@param string The string with the data to fill the buffer with.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsQueryBuffer", "buffer", 0)
             functionWrapper += initializeArgChar("str", 1)
             functionWrapper += "\tint strSize = strLength - 1;\n\n"
@@ -3678,7 +3678,7 @@ class HelicsHeaderParser (object):
             functionWrapper += "\tmxDestroyArray(rhs[2]);\n"
             functionWrapper += "\tmxDestroyArray(rhs[3]);\n"
             functionWrapper += "}\n\n"
-            functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsBroker", "broker", 0)
             functionWrapper += "\tvoid *userData = mxGetData(argv[1]);\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
@@ -3734,7 +3734,7 @@ class HelicsHeaderParser (object):
             functionWrapper += "\tmxDestroyArray(rhs[2]);\n"
             functionWrapper += "\tmxDestroyArray(rhs[3]);\n"
             functionWrapper += "}\n\n"
-            functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsCore", "core", 0)
             functionWrapper += "\tvoid *userData = mxGetData(argv[1]);\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
@@ -3790,7 +3790,7 @@ class HelicsHeaderParser (object):
             functionWrapper += "\tmxDestroyArray(rhs[2]);\n"
             functionWrapper += "\tmxDestroyArray(rhs[3]);\n"
             functionWrapper += "}\n\n"
-            functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsFederate", "fed", 0)
             functionWrapper += "\tvoid *userData = mxGetData(argv[1]);\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
@@ -3843,7 +3843,7 @@ class HelicsHeaderParser (object):
             functionWrapper += "\tmxDestroyArray(rhs[1]);\n"
             functionWrapper += "\treturn rv;\n"
             functionWrapper += "}\n\n"
-            functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsFilter", "filter", 0)
             functionWrapper += "\tvoid *userData = mxGetData(argv[1]);\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
@@ -3903,14 +3903,12 @@ class HelicsHeaderParser (object):
             functionWrapper += "\tmxDestroyArray(rhs[1]);\n"
             functionWrapper += "\tmxDestroyArray(rhs[2]);\n"
             functionWrapper += "\tmxDestroyArray(rhs[3]);\n"
-            functionWrapper += "\tfree(rStr);\n"
-            functionWrapper += f'{argHelicsErrorPtrPostFunctionCall("err")}\n'
             functionWrapper += "}\n\n"
-            functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsFilter", "filter", 0)
             functionWrapper += "\tvoid *userData = mxGetData(argv[1]);\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
-            functionWrapper += f"\t{functionName}(filter, &matlabFilterCustomCallback, userData, &err);\n\n"
+            functionWrapper += f"\t{functionName}(filter, &matlabFederateQueryCallback, userData, &err);\n\n"
             functionWrapper += "\tmxArray *_out = (mxArray *)0;\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
@@ -3954,13 +3952,13 @@ class HelicsHeaderParser (object):
             functionWrapper += "\trhs[0] = reinterpret_cast<mxArray *>(userData);\n"
             functionWrapper += "\trhs[1] = mxCreateDoubleScalar((double)newTime);\n"
             functionWrapper += "\trhs[2] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((int64_t*)mxGetData(rhs[2]) =  (int64_t)iterating;\n"
+            functionWrapper += "\t*((int64_t*)mxGetData(rhs[2])) =  (int64_t)iterating;\n"
             functionWrapper += '\tint status = mexCallMATLAB(0,&lhs,3,rhs,"feval");\n'
             functionWrapper += "\tmxDestroyArray(lhs);\n"
             functionWrapper += "\tmxDestroyArray(rhs[1]);\n"
             functionWrapper += "\tmxDestroyArray(rhs[2]);\n"
             functionWrapper += "}\n\n"
-            functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsFederate", "fed", 0)
             functionWrapper += "\tvoid *userData = mxGetData(argv[1]);\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
@@ -4007,15 +4005,15 @@ class HelicsHeaderParser (object):
             functionWrapper += "\tmxArray *rhs[3];\n"
             functionWrapper += "\trhs[0] = reinterpret_cast<mxArray *>(userData);\n"
             functionWrapper += "\trhs[1] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((int64_t*)mxGetData(rhs[2]) =  (int64_t)newState;\n"
+            functionWrapper += "\t*((int64_t*)mxGetData(rhs[2])) =  (int64_t)newState;\n"
             functionWrapper += "\trhs[2] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((int64_t*)mxGetData(rhs[2]) =  (int64_t)oldState;\n"
+            functionWrapper += "\t*((int64_t*)mxGetData(rhs[2])) =  (int64_t)oldState;\n"
             functionWrapper += '\tint status = mexCallMATLAB(0,&lhs,3,rhs,"feval");\n'
             functionWrapper += "\tmxDestroyArray(lhs);\n"
             functionWrapper += "\tmxDestroyArray(rhs[1]);\n"
             functionWrapper += "\tmxDestroyArray(rhs[2]);\n"
             functionWrapper += "}\n\n"
-            functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsFederate", "fed", 0)
             functionWrapper += "\tvoid *userData = mxGetData(argv[1]);\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
@@ -4065,14 +4063,14 @@ class HelicsHeaderParser (object):
             functionWrapper += "\trhs[1] = mxCreateDoubleScalar(currentTime);\n"
             functionWrapper += "\trhs[2] = mxCreateDoubleScalar(requestTime);\n"
             functionWrapper += "\trhs[3] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((int64_t*)mxGetData(rhs[2]) =  (int64_t)iterating;\n"
+            functionWrapper += "\t*((int64_t*)mxGetData(rhs[2])) =  (int64_t)iterating;\n"
             functionWrapper += '\tint status = mexCallMATLAB(0,&lhs,4,rhs,"feval");\n'
             functionWrapper += "\tmxDestroyArray(lhs);\n"
             functionWrapper += "\tmxDestroyArray(rhs[1]);\n"
             functionWrapper += "\tmxDestroyArray(rhs[2]);\n"
             functionWrapper += "\tmxDestroyArray(rhs[3]);\n"
             functionWrapper += "}\n\n"
-            functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsFederate", "fed", 0)
             functionWrapper += "\tvoid *userData = mxGetData(argv[1]);\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
@@ -4121,13 +4119,13 @@ class HelicsHeaderParser (object):
             functionWrapper += "\trhs[0] = reinterpret_cast<mxArray *>(userData);\n"
             functionWrapper += "\trhs[1] = mxCreateDoubleScalar(newTime);\n"
             functionWrapper += "\trhs[2] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((int64_t*)mxGetData(rhs[2]) =  (int64_t)iterating;\n"
+            functionWrapper += "\t*((int64_t*)mxGetData(rhs[2])) =  (int64_t)iterating;\n"
             functionWrapper += '\tint status = mexCallMATLAB(0,&lhs,3,rhs,"feval");\n'
             functionWrapper += "\tmxDestroyArray(lhs);\n"
             functionWrapper += "\tmxDestroyArray(rhs[1]);\n"
             functionWrapper += "\tmxDestroyArray(rhs[2]);\n"
             functionWrapper += "}\n\n"
-            functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsFederate", "fed", 0)
             functionWrapper += "\tvoid *userData = mxGetData(argv[1]);\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
@@ -4162,7 +4160,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param value The integer.\n"
             functionComment += "\t@return HelicsDataBuffer.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgInt64_t('value',0)
             functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(sizeof(int));\n\n"
             functionWrapper += f"\tint32_t result = {functionName}(value, data);\n\n"
@@ -4196,7 +4194,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param value The double.\n"
             functionComment += "\t@return HelicsDataBuffer.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgDouble('value',0)
             functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(sizeof(double));\n\n"
             functionWrapper += f"\tint32_t result = {functionName}(value, data);\n\n"
@@ -4230,7 +4228,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param str The string.\n"
             functionComment += "\t@return HelicsDataBuffer.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgChar('str',0)
             functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(static_cast<int32_t>(strLength));\n\n"
             functionWrapper += f"\tint32_t result = {functionName}(str, data);\n\n"
@@ -4264,7 +4262,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param value The HelicsBool.\n"
             functionComment += "\t@return HelicsDataBuffer.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsBool('value',0)
             functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(sizeof(HelicsBool));\n\n"
             functionWrapper += f"\tint32_t result = {functionName}(value, data);\n\n"
@@ -4298,7 +4296,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param value The char.\n"
             functionComment += "\t@return HelicsDataBuffer.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgChar('value',0)
             functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(sizeof(char));\n\n"
             functionWrapper += f"\tint32_t result = {functionName}(*value, data);\n\n"
@@ -4332,7 +4330,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param value The HelicsTime value.\n"
             functionComment += "\t@return HelicsDataBuffer.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsTime('value',0)
             functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(sizeof(HelicsTime));\n\n"
             functionWrapper += f"\tint32_t result = {functionName}(value, data);\n\n"
@@ -4369,7 +4367,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param value The complex value.\n"
             functionComment += "\t@return HelicsDataBuffer.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += "\tmxComplexDouble *value = mxGetComplexDoubles(argv[1]);\n\n"
             functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(2*sizeof(double));\n\n"
             functionWrapper += f"\tint32_t result = {functionName}(value->real, value->imag, data);\n\n"
@@ -4406,7 +4404,7 @@ class HelicsHeaderParser (object):
             functionComment += "\t@param value The vector of doubles.\n"
             functionComment += "\t@return HelicsDataBuffer.\n"
             functionComment += "%}\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, mxArray *argv[])" + "{\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += "\tint dataSize =  (int)mxGetNumberOfElements(argv[0]);\n\n"
             functionWrapper += "\tdouble *value =  (double *)mxGetDoubles(argv[0]);\n\n"
             functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(dataSize*sizeof(double));\n\n"
