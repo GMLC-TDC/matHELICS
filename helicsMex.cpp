@@ -987,8 +987,8 @@ void _wrap_helicsCreateCoreFromArgs(int resc, mxArray *resv[], int argc, const m
 	for (ii=0;ii<arg2;ii++){
 		mxArray *cellElement=mxGetCell(argv[2], ii);
 		size_t len = mxGetN(cellElement) + 1;
-		arg3[ii] = (char *)mxMalloc(static_cast<int>len);
-		int flag = mxGetString(cellElement, arg3[ii], len);
+		arg3[ii] = (char *)mxMalloc(static_cast<int>(len));
+		int flag = mxGetString(cellElement, arg3[ii], static_cast<int>(len));
 	}
 
 	HelicsError err = helicsErrorInitialize();
@@ -1124,8 +1124,8 @@ void _wrap_helicsCreateBrokerFromArgs(int resc, mxArray *resv[], int argc, const
 	for (ii=0;ii<arg2;ii++){
 		mxArray *cellElement=mxGetCell(argv[2], ii);
 		size_t len = mxGetN(cellElement) + 1;
-		arg3[ii] = (char *)mxMalloc(static_cast<int>len);
-		int flag = mxGetString(cellElement, arg3[ii], len);
+		arg3[ii] = (char *)mxMalloc(static_cast<int>(len));
+		int flag = mxGetString(cellElement, arg3[ii], static_cast<int>(len));
 	}
 
 	HelicsError err = helicsErrorInitialize();
@@ -2093,8 +2093,8 @@ void _wrap_helicsFederateInfoLoadFromArgs(int resc, mxArray *resv[], int argc, c
 	for (ii=0;ii<arg1;ii++){
 		mxArray *cellElement=mxGetCell(argv[1], ii);
 		size_t len = mxGetN(cellElement) + 1;
-		arg2[ii] = (char *)mxMalloc(static_cast<int>len);
-		int flag = mxGetString(cellElement, arg2[ii], len);
+		arg2[ii] = (char *)mxMalloc(static_cast<int>(len));
+		int flag = mxGetString(cellElement, arg2[ii], static_cast<int>(len));
 	}
 
 	HelicsError err = helicsErrorInitialize();
@@ -5620,7 +5620,7 @@ void _wrap_helicsPublicationPublishChar(int resc, mxArray *resv[], int argc, mxA
 void _wrap_helicsPublicationPublishComplex(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
 	HelicsPublication pub = (HelicsPublication)(mxGetData(argv[0]));
 
-	mxComplexDouble *complexValue = mxGetComplexDouble(argv[1]);
+	mxComplexDouble *complexValue = mxGetComplexDoubles(argv[1]);
 	double value[2] = {complexValue[0].real, complexValue[0].imag};
 
 	HelicsError err = helicsErrorInitialize();
@@ -5668,7 +5668,7 @@ void _wrap_helicsPublicationPublishComplexVector(int resc, mxArray *resv[], int 
 
 	int vectorLength =  (int)mxGetN(argv[1])*2;
 
-	double vectorInput[vectorLength];
+	double *vectorInput = (double *)malloc(vectorLength * sizeof(double));
 	mxComplexDouble *vals = mxGetComplexDoubles(argv[1]);
 	for(int i=0; i<vectorLength/2; ++i){
 		vectorInput[2*i] = vals[i].real;
@@ -6090,7 +6090,7 @@ void _wrap_helicsInputGetVector(int resc, mxArray *resv[], int argc, const mxArr
 
 	int maxLength = helicsInputGetVectorSize(ipt);
 
-	double data[];
+	double *data = (double *)malloc(maxLength * sizeof(double));
 
 	int *actualSize = (int *)0;
 
@@ -6121,7 +6121,7 @@ void _wrap_helicsInputGetComplexVector(int resc, mxArray *resv[], int argc, cons
 
 	int maxLength = helicsInputGetVectorSize(ipt);
 
-	double data[];
+	double *data = (double *)malloc(maxLength * sizeof(double));
 
 	int *actualSize = (int *)0;
 
@@ -6399,7 +6399,7 @@ void _wrap_helicsInputSetDefaultComplex(int resc, mxArray *resv[], int argc, con
 		*resv++ = _out;
 	}
 
-	mxFree(data);
+	mxFree(value);
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -10160,7 +10160,7 @@ void _wrap_helicsTranslatorGetOption(int resc, mxArray *resv[], int argc, mxArra
 void matlabBrokerLoggingCallback(int loglevel, const char* identifier, const char* message, void *userData){
 	mxArray *lhs;
 	mxArray *rhs[4];
-	rhs[0] = const_cast<mxArray *>(userData);
+	rhs[0] = reinterpret_cast<mxArray *>(userData);
 	rhs[1] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
 	*((int64_T*)mxGetData(rhs[1])) = (int64_T)loglevel;
 	rhs[2] = mxCreateString(identifier);
@@ -10195,9 +10195,9 @@ void _wrap_helicsBrokerSetLoggingCallback(int resc, mxArray *resv[], int argc, c
 void matlabCoreLoggingCallback(int loglevel, const char* identifier, const char* message, void *userData){
 	mxArray *lhs;
 	mxArray *rhs[4];
-	rhs[0] = const_cast<mxArray *>(userData);
+	rhs[0] = reinterpret_cast<mxArray *>(userData);
 	rhs[1] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_T*)mxGetData(rhs[1]) = (int64_T)loglevel;
+	*((int64_T*)mxGetData(rhs[1])) = (int64_T)loglevel;
 	rhs[2] = mxCreateString(identifier);
 	rhs[3] = mxCreateString(message);
 	int status = mexCallMATLAB(0,&lhs,4,rhs,"feval");
@@ -10230,7 +10230,7 @@ void _wrap_helicsCoreSetLoggingCallback(int resc, mxArray *resv[], int argc, con
 void matlabFederateLoggingCallback(int loglevel, const char* identifier, const char* message, void *userData){
 	mxArray *lhs;
 	mxArray *rhs[4];
-	rhs[0] = const_cast<mxArray *>(userData);
+	rhs[0] = reinterpret_cast<mxArray *>(userData);
 	rhs[1] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
 	*((int64_T*)mxGetData(rhs[1])) = (int64_T)loglevel;
 	rhs[2] = mxCreateString(identifier);
@@ -10265,7 +10265,7 @@ void _wrap_helicsFederateSetLoggingCallback(int resc, mxArray *resv[], int argc,
 HelicsMessage matlabFilterCustomCallback(HelicsMessage message, void *userData){
 	mxArray *lhs;
 	mxArray *rhs[2];
-	rhs[0] = const_cast<mxArray *>(userData);
+	rhs[0] = reinterpret_cast<mxArray *>(userData);
 	rhs[1] = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
 	*((unit64_T*)mxGetData(rhs[1])) = (uint64_T)message;
 	int status = mexCallMATLAB(1,&lhs,2,rhs,"feval");
@@ -10298,7 +10298,7 @@ HelicsMessage matlabFederateQueryCallback(const char* query, int querySize, Heli
 	mxArray *lhs;
 	mxArray *rhs[4];
 	mxSize dims[2] = {1, querySize};
-	rhs[0] = const_cast<mxArray *>(userData);
+	rhs[0] = reinterpret_cast<mxArray *>(userData);
 	rhs[1] = mxCreateCharArray(2, dims);
 	mxChar *pQuery = (mxChar *)mxGetData(rhs[1]);
 	for(int i=0; i<querySize; ++i){
@@ -10341,7 +10341,7 @@ void _wrap_helicsFederateSetQueryCallback(int resc, mxArray *resv[], int argc, c
 void matlabFederateSetTimeRequestEntryCallback(HelicsTime currentTime, HelicsTime requestTime, HelicsBool iterating, void *userData){
 	mxArray *lhs;
 	mxArray *rhs[4];
-	rhs[0] = const_cast<mxArray *>(userData);
+	rhs[0] = reinterpret_cast<mxArray *>(userData);
 	rhs[1] = mxCreateDoubleScalar(currentTime);
 	rhs[2] = mxCreateDoubleScalar(requestTime);
 	rhs[3] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
@@ -10376,7 +10376,7 @@ void _wrap_helicsFederateSetTimeRequestEntryCallback(int resc, mxArray *resv[], 
 void matlabFederateTimeUpdateCallback(HelicsTime newTime, HelicsBool iterating, void *userData){
 	mxArray *lhs;
 	mxArray *rhs[3];
-	rhs[0] = const_cast<mxArray *>(userData);
+	rhs[0] = reinterpret_cast<mxArray *>(userData);
 	rhs[1] = mxCreateDoubleScalar((double)newTime);
 	rhs[2] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
 	*((int64_T*)mxGetData(rhs[2]) =  (int46_T)iterating;
@@ -10409,7 +10409,7 @@ void _wrap_helicsFederateSetTimeUpdateCallback(int resc, mxArray *resv[], int ar
 void matlabFederateSetStateChangeCallback(HelicsFederateState newState, HelicsFederateState oldState, void *userData){
 	mxArray *lhs;
 	mxArray *rhs[3];
-	rhs[0] = const_cast<mxArray *>(userData);
+	rhs[0] = reinterpret_cast<mxArray *>(userData);
 	rhs[1] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
 	*((int64_T*)mxGetData(rhs[2]) =  (int46_T)newState;
 	rhs[2] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
@@ -10443,7 +10443,7 @@ void _wrap_helicsFederateSetStateChangeCallback(int resc, mxArray *resv[], int a
 void matlabFederateSetTimeRequestReturnCallback(HelicsTime newTime, HelicsBool iterating, void *userData){
 	mxArray *lhs;
 	mxArray *rhs[3];
-	rhs[0] = const_cast<mxArray *>(userData);
+	rhs[0] = reinterpret_cast<mxArray *>(userData);
 	rhs[1] = mxCreateDoubleScalar(newTime);
 	rhs[2] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
 	*((int64_T*)mxGetData(rhs[2]) =  (int46_T)iterating;
