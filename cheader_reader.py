@@ -1817,7 +1817,8 @@ class HelicsHeaderParser (object):
                 "helicsCharToBytes",
                 "helicsTimeToBytes",
                 "helicsComplexToBytes",
-                "helicsVectorToBytes"
+                "helicsVectorToBytes",
+                "helicsCloseLibrary"
             ]
             functionsToIgnore = ["helicsErrorInitialize", "helicsErrorClear"]
             functionName = functionDict.get("spelling")
@@ -2279,7 +2280,8 @@ class HelicsHeaderParser (object):
                 "helicsCharToBytes": helicsCharToBytesMatlabWrapper,
                 "helicsTimeToBytes": helicsTimeToBytesMatlabWrapper,
                 "helicsComplexToBytes": helicsComplexToBytesMatlabWrapper,
-                "helicsVectorToBytes": helicsVectorToBytesMatlabWrapper
+                "helicsVectorToBytes": helicsVectorToBytesMatlabWrapper,
+                "helicsCloseLibrary": helicsCloseLibraryMatlabWrapper
             }
             functionComment, functionWrapper, functionMainElement = modifiedPythonFunctionList[functionDict.get("spelling","")](functionDict, cursorIdx)
             
@@ -4415,6 +4417,31 @@ class HelicsHeaderParser (object):
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
             functionWrapper += "\t}\n"
+            functionWrapper += "}\n\n\n"
+            functionMainElements = f"\tcase {cursorIdx}:\n"
+            functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
+            functionMainElements += f"\t\tbreak;\n"
+            return functionComment, functionWrapper, functionMainElements
+        
+        def helicsCloseLibraryMatlabWrapper(functionDict: dict(), cursorIdx: int):
+            #check to see if function signiture changed
+            argNum = len(functionDict.get("arguments", {}).keys())
+            if argNum != 0:
+                raise RuntimeError("the function signature for helicsCloseLibrary has changed!")
+            functionName = functionDict.get("spelling","")
+            functionComment = "%{\n"
+            functionComment += "\tCall when done using the helics library.\n"
+            functionComment += "\tThis function will ensure the threads are closed properly.\n"
+            functionComment += "\tIf possible this should be the last call before exiting.\n"
+            functionComment += "%}\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
+            functionWrapper += f"\t{functionName}();\n\n"
+            functionWrapper += "\tmxArray *_out = (mxArray *)0;\n"
+            functionWrapper += "\tif(_out){\n"
+            functionWrapper += "\t\t--resc;\n"
+            functionWrapper += "\t\t*resv++ = _out;\n"
+            functionWrapper += "\t}\n"
+            functionWrapper += "\tmexUnlock();\n"
             functionWrapper += "}\n\n\n"
             functionMainElements = f"\tcase {cursorIdx}:\n"
             functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"

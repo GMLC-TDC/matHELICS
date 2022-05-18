@@ -2932,11 +2932,11 @@ void _wrap_helicsCloseLibrary(int resc, mxArray *resv[], int argc, const mxArray
 	helicsCloseLibrary();
 
 	mxArray *_out = (mxArray *)0;
-
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
+	mexUnlock();
 }
 
 
