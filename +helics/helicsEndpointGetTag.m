@@ -6,5 +6,5 @@
 	@return A string with the tag data.
 %}
 function varargout = helicsEndpointGetTag(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsEndpointGetTag", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsEndpointGetTag', varargin{:});
 end

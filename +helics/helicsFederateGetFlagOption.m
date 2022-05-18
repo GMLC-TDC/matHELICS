@@ -9,5 +9,5 @@
 	@return The value of the flag.
 %}
 function varargout = helicsFederateGetFlagOption(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateGetFlagOption", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateGetFlagOption', varargin{:});
 end

@@ -1706,7 +1706,7 @@ class HelicsHeaderParser (object):
                     macroFile.write(f"function v = {macroSpelling}()\n")
                     macroFile.write("\tpersistent vInitialized;\n")
                     macroFile.write("\tif isempty(vInitialized)\n")
-                    macroFile.write(f"\t\tvInitialized = helicsMex(\"{macroSpelling}\");\n")
+                    macroFile.write(f"\t\tvInitialized = helicsMex('{macroSpelling}');\n")
                     macroFile.write("\tend\n")
                     macroFile.write("\tv = vInitialized;\n")
                     macroFile.write("end\n")
@@ -1842,7 +1842,7 @@ class HelicsHeaderParser (object):
                 with open(f"+helics/{functionName}.m", "w") as functionMFile:
                     functionMFile.write(functionComment)
                     functionMFile.write(f"function varargout = {functionName}(varargin)\n")
-                    functionMFile.write("\t[varargout{1:nargout}] = helicsMex(" + f"\"{functionName}\", varargin" + "{:});\n")
+                    functionMFile.write("\t[varargout{1:nargout}] = helicsMex(" + f"'{functionName}', varargin" + "{:});\n")
                     functionMFile.write("end\n")
                 functionWrapperStr = ""
                 functionMainElements = ""
@@ -2286,7 +2286,7 @@ class HelicsHeaderParser (object):
             with open(f'+helics/{functionDict.get("spelling","")}.m', "w") as functionMFile:
                 functionMFile.write(functionComment)
                 functionMFile.write(f'function varargout = {functionDict.get("spelling","")}(varargin)\n')
-                functionMFile.write("\t[varargout{1:nargout}] = helicsMex(" + f'\"{functionDict.get("spelling","")}\", varargin' + "{:});\n")
+                functionMFile.write("\t[varargout{1:nargout}] = helicsMex(" + f'\'{functionDict.get("spelling","")}\', varargin' + "{:});\n")
                 functionMFile.write("end\n")
             return functionWrapper, functionMainElement, (functionDict.get("spelling",""), cursorIdx)
         

@@ -8,5 +8,5 @@
 	@return The double value of the input.
 %}
 function varargout = helicsInputGetDouble(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsInputGetDouble", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsInputGetDouble', varargin{:});
 end

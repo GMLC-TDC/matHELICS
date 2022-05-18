@@ -6,5 +6,5 @@
 	@return A pointer to a string with the name.
 %}
 function varargout = helicsFederateGetName(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateGetName", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateGetName', varargin{:});
 end

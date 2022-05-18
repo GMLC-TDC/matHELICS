@@ -8,5 +8,5 @@
 	@return A core object, nullptr if invalid.
 %}
 function varargout = helicsFederateGetCore(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateGetCore", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateGetCore', varargin{:});
 end

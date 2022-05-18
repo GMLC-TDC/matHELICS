@@ -6,5 +6,5 @@
 	@param dst The destination to send the message to.
 %}
 function varargout = helicsEndpointSendBytesTo(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsEndpointSendBytesTo", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsEndpointSendBytesTo', varargin{:});
 end

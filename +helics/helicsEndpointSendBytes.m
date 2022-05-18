@@ -5,5 +5,5 @@
 	@param data The data to send.
 %}
 function varargout = helicsEndpointSendBytes(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsEndpointSendBytes", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsEndpointSendBytes', varargin{:});
 end

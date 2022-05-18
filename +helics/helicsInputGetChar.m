@@ -9,5 +9,5 @@
 	        NAK (negative acknowledgment) symbol returned on error
 %}
 function varargout = helicsInputGetChar(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsInputGetChar", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsInputGetChar', varargin{:});
 end

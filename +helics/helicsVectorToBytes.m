@@ -5,5 +5,5 @@
 	@return HelicsDataBuffer.
 %}
 function varargout = helicsVectorToBytes(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsVectorToBytes", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsVectorToBytes', varargin{:});
 end

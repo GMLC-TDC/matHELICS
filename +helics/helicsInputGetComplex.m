@@ -6,5 +6,5 @@
 	@return  A complex number.
 %}
 function varargout = helicsInputGetComplex(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsInputGetComplex", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsInputGetComplex', varargin{:});
 end

@@ -6,5 +6,5 @@
 	@return HELICS_TRUE if the Input object represents a valid input.
 %}
 function varargout = helicsInputIsValid(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsInputIsValid", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsInputIsValid', varargin{:});
 end

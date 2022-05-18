@@ -12,5 +12,5 @@
 
 %}
 function varargout = helicsTranslatorAddPublicationTarget(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsTranslatorAddPublicationTarget", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsTranslatorAddPublicationTarget', varargin{:});
 end

@@ -6,5 +6,5 @@
 	@return The size of the data payload.
 %}
 function varargout = helicsMessageGetByteCount(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsMessageGetByteCount", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsMessageGetByteCount', varargin{:});
 end

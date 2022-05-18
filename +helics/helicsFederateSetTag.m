@@ -9,5 +9,5 @@
 	@param[in,out] err A pointer to an error object for catching errors.
 %}
 function varargout = helicsFederateSetTag(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateSetTag", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateSetTag', varargin{:});
 end

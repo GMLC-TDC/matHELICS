@@ -7,5 +7,5 @@
 	@param[in,out] err A pointer to an error object for catching errors.
 %}
 function varargout = helicsFederateLogDebugMessage(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateLogDebugMessage", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateLogDebugMessage', varargin{:});
 end

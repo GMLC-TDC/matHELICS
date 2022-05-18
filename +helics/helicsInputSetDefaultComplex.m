@@ -5,5 +5,5 @@
 	@param value The default complex value.
 %}
 function varargout = helicsInputSetDefaultComplex(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsInputSetDefaultComplex", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsInputSetDefaultComplex', varargin{:});
 end

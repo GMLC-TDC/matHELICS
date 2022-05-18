@@ -15,5 +15,5 @@
 	@return An object containing the publication.
 %}
 function varargout = helicsFederateRegisterGlobalTypeInput(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateRegisterGlobalTypeInput", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateRegisterGlobalTypeInput', varargin{:});
 end

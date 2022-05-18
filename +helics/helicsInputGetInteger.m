@@ -8,5 +8,5 @@
 	@return An int64_t value with the current value of the input.
 %}
 function varargout = helicsInputGetInteger(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsInputGetInteger", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsInputGetInteger', varargin{:});
 end

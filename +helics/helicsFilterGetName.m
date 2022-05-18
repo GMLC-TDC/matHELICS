@@ -6,5 +6,5 @@
 	@return A string with the name of the filter.
 %}
 function varargout = helicsFilterGetName(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFilterGetName", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFilterGetName', varargin{:});
 end

@@ -6,5 +6,5 @@
 	@return A string with the default destination.
 %}
 function varargout = helicsEndpointGetDefaultDestination(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsEndpointGetDefaultDestination", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsEndpointGetDefaultDestination', varargin{:});
 end

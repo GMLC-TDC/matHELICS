@@ -10,5 +10,5 @@
 	@return A HelicsInput, which will be NULL if an invalid index.
 %}
 function varargout = helicsFederateGetInputByIndex(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateGetInputByIndex", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateGetInputByIndex', varargin{:});
 end

@@ -11,5 +11,5 @@
 	@return A new reference to the same federate.
 %}
 function varargout = helicsFederateClone(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateClone", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateClone', varargin{:});
 end

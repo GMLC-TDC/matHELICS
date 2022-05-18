@@ -9,5 +9,5 @@
 
 %}
 function varargout = helicsFederateInfoSetLocalPort(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateInfoSetLocalPort", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateInfoSetLocalPort', varargin{:});
 end

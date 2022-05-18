@@ -11,5 +11,5 @@
 	exists.
 %}
 function varargout = helicsFederateGetFilter(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateGetFilter", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateGetFilter', varargin{:});
 end

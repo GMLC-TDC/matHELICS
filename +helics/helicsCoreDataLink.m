@@ -9,5 +9,5 @@
 
 %}
 function varargout = helicsCoreDataLink(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsCoreDataLink", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsCoreDataLink', varargin{:});
 end

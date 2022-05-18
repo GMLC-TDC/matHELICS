@@ -8,5 +8,5 @@
 	@return A string with the command for the federate, if the string is empty no command is available.
 %}
 function varargout = helicsFederateGetCommand(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateGetCommand", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateGetCommand', varargin{:});
 end

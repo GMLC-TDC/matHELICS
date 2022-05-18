@@ -5,5 +5,5 @@
 	@return HelicsDataBuffer.
 %}
 function varargout = helicsTimeToBytes(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsTimeToBytes", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsTimeToBytes', varargin{:});
 end

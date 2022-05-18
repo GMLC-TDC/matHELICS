@@ -6,5 +6,5 @@
 	@return A string with the destination endpoint.
 %}
 function varargout = helicsMessageGetDestination(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsMessageGetDestination", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsMessageGetDestination', varargin{:});
 end

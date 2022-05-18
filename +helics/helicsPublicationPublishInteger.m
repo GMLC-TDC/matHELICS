@@ -8,5 +8,5 @@
 
 %}
 function varargout = helicsPublicationPublishInteger(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsPublicationPublishInteger", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsPublicationPublishInteger', varargin{:});
 end

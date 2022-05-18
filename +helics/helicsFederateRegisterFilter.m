@@ -14,5 +14,5 @@
 	@return A HelicsFilter object.
 %}
 function varargout = helicsFederateRegisterFilter(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateRegisterFilter", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateRegisterFilter', varargin{:});
 end

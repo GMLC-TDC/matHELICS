@@ -14,5 +14,5 @@
 	@return A HelicsTranslator object.
 %}
 function varargout = helicsFederateRegisterTranslator(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateRegisterTranslator", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateRegisterTranslator', varargin{:});
 end

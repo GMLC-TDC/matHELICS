@@ -5,5 +5,5 @@
 	@param vectorInput The list of floating point values.
 %}
 function varargout = helicsPublicationPublishVector(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsPublicationPublishVector", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsPublicationPublishVector', varargin{:});
 end

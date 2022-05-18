@@ -9,5 +9,5 @@
 	@return A new reference to the same broker.
 %}
 function varargout = helicsCoreClone(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsCoreClone", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsCoreClone', varargin{:});
 end

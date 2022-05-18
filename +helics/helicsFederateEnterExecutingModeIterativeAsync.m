@@ -10,5 +10,5 @@
 	@param[in,out] err An error object that will contain an error code and string if any error occurred during the execution of the function.
 %}
 function varargout = helicsFederateEnterExecutingModeIterativeAsync(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateEnterExecutingModeIterativeAsync", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateEnterExecutingModeIterativeAsync', varargin{:});
 end

@@ -6,5 +6,5 @@
 	@return the value of the option, for boolean options will be 0 or 1
 %}
 function varargout = helicsEndpointGetOption(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsEndpointGetOption", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsEndpointGetOption', varargin{:});
 end

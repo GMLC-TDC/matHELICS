@@ -12,5 +12,5 @@
 	@return NULL if no fed is available by that name otherwise a HelicsFederate with that name.
 %}
 function varargout = helicsGetFederateByName(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsGetFederateByName", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsGetFederateByName', varargin{:});
 end

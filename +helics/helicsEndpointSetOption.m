@@ -9,5 +9,5 @@
 
 %}
 function varargout = helicsEndpointSetOption(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsEndpointSetOption", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsEndpointSetOption', varargin{:});
 end

@@ -12,5 +12,5 @@
 	@return An opaque message federate object.
 %}
 function varargout = helicsCreateMessageFederateFromConfig(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsCreateMessageFederateFromConfig", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsCreateMessageFederateFromConfig', varargin{:});
 end

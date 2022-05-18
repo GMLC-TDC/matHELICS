@@ -9,5 +9,5 @@
 	@return HELICS_FALSE if not connected, HELICS_TRUE if it is connected.
 %}
 function varargout = helicsCoreConnect(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsCoreConnect", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsCoreConnect', varargin{:});
 end

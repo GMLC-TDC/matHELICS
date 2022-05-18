@@ -8,5 +8,5 @@
 	@return State the resulting state if void return HELICS_OK.
 %}
 function varargout = helicsFederateGetState(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateGetState", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateGetState', varargin{:});
 end

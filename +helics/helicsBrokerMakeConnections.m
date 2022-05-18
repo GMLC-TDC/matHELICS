@@ -8,5 +8,5 @@
 
 %}
 function varargout = helicsBrokerMakeConnections(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsBrokerMakeConnections", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsBrokerMakeConnections', varargin{:});
 end

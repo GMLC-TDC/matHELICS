@@ -4,5 +4,5 @@
 	as well as information about the HELICS build.  Used for debugging reports and gathering other information.
 %}
 function varargout = helicsGetSystemInfo(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsGetSystemInfo", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsGetSystemInfo', varargin{:});
 end

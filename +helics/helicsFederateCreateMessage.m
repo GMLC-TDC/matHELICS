@@ -11,5 +11,5 @@
 	@return A HelicsMessage containing the message data.
 %}
 function varargout = helicsFederateCreateMessage(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateCreateMessage", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateCreateMessage', varargin{:});
 end

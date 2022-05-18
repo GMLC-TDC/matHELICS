@@ -15,5 +15,5 @@
 	@return An object containing the subscription.
 %}
 function varargout = helicsFederateRegisterSubscription(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateRegisterSubscription", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateRegisterSubscription', varargin{:});
 end

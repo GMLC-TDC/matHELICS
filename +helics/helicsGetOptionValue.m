@@ -7,5 +7,5 @@
 	@return An int with the option value or (-1) if not a valid value.
 %}
 function varargout = helicsGetOptionValue(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsGetOptionValue", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsGetOptionValue', varargin{:});
 end

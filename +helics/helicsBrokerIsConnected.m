@@ -6,5 +6,5 @@
 	@return HELICS_FALSE if not connected.
 %}
 function varargout = helicsBrokerIsConnected(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsBrokerIsConnected", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsBrokerIsConnected', varargin{:});
 end

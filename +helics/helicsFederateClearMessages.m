@@ -6,5 +6,5 @@
 	@param fed The federate to clear the message for.
 %}
 function varargout = helicsFederateClearMessages(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateClearMessages", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateClearMessages', varargin{:});
 end

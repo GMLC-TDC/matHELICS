@@ -5,5 +5,5 @@
 	@param value The complex number.
 %}
 function varargout = helicsPublicationPublishComplex(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsPublicationPublishComplex", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsPublicationPublishComplex', varargin{:});
 end

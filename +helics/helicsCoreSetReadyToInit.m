@@ -10,5 +10,5 @@
 
 %}
 function varargout = helicsCoreSetReadyToInit(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsCoreSetReadyToInit", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsCoreSetReadyToInit', varargin{:});
 end

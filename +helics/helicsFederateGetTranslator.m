@@ -11,5 +11,5 @@
 	err will contain an error code.
 %}
 function varargout = helicsFederateGetTranslator(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateGetTranslator", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateGetTranslator', varargin{:});
 end

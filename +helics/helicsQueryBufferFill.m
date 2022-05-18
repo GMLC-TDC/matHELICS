@@ -7,5 +7,5 @@
 	@param string The string with the data to fill the buffer with.
 %}
 function varargout = helicsQueryBufferFill(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsQueryBufferFill", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsQueryBufferFill', varargin{:});
 end

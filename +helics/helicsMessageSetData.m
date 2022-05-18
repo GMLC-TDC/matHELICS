@@ -5,5 +5,5 @@
 	@param data A string containing the message data.
 %}
 function varargout = helicsMessageSetData(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsMessageSetData", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsMessageSetData', varargin{:});
 end

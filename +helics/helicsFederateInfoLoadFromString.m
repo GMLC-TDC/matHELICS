@@ -8,5 +8,5 @@
 
 %}
 function varargout = helicsFederateInfoLoadFromString(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateInfoLoadFromString", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateInfoLoadFromString', varargin{:});
 end

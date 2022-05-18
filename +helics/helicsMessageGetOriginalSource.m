@@ -6,5 +6,5 @@
 	@return A string with the source of a message.
 %}
 function varargout = helicsMessageGetOriginalSource(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsMessageGetOriginalSource", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsMessageGetOriginalSource', varargin{:});
 end

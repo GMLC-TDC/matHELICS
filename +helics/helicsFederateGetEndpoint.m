@@ -12,5 +12,5 @@
 	The object will not be valid and err will contain an error code if no endpoint with the specified name exists.
 %}
 function varargout = helicsFederateGetEndpoint(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateGetEndpoint", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateGetEndpoint', varargin{:});
 end

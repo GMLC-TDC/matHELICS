@@ -8,5 +8,5 @@
 	@param[in,out] err An error object to fill out in case of an error.
 %}
 function varargout = helicsPublicationSetOption(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsPublicationSetOption", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsPublicationSetOption', varargin{:});
 end

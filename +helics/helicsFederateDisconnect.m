@@ -3,5 +3,5 @@
 	from the core.  This call is identical to helicsFederateFinalize.
 %}
 function varargout = helicsFederateDisconnect(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateDisconnect", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateDisconnect', varargin{:});
 end

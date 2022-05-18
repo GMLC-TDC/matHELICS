@@ -9,5 +9,5 @@
 
 %}
 function varargout = helicsTranslatorSet(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsTranslatorSet", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsTranslatorSet', varargin{:});
 end

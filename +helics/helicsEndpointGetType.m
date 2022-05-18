@@ -6,5 +6,5 @@
 	@return The defined type of the endpoint.
 %}
 function varargout = helicsEndpointGetType(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsEndpointGetType", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsEndpointGetType', varargin{:});
 end

@@ -5,5 +5,5 @@
 	@param vectorInput The list of complex values.
 %}
 function varargout = helicsPublicationPublishComplexVector(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsPublicationPublishComplexVector", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsPublicationPublishComplexVector', varargin{:});
 end

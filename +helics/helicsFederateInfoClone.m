@@ -9,5 +9,5 @@
 	 @return A HelicsFederateInfo object which is a reference to the created object.
 %}
 function varargout = helicsFederateInfoClone(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateInfoClone", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateInfoClone', varargin{:});
 end

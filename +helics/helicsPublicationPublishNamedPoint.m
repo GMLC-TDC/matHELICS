@@ -9,5 +9,5 @@
 
 %}
 function varargout = helicsPublicationPublishNamedPoint(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsPublicationPublishNamedPoint", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsPublicationPublishNamedPoint', varargin{:});
 end

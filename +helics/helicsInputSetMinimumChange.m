@@ -7,5 +7,5 @@
 	@param[in,out] err An error object to fill out in case of an error.
 %}
 function varargout = helicsInputSetMinimumChange(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsInputSetMinimumChange", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsInputSetMinimumChange', varargin{:});
 end

@@ -8,5 +8,5 @@
 	@return A HelicsBroker object.
 %}
 function varargout = helicsCreateBrokerFromArgs(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsCreateBrokerFromArgs", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsCreateBrokerFromArgs', varargin{:});
 end

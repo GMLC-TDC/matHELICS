@@ -8,5 +8,5 @@
 	@return A boolean value of current input value.
 %}
 function varargout = helicsInputGetBoolean(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsInputGetBoolean", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsInputGetBoolean', varargin{:});
 end

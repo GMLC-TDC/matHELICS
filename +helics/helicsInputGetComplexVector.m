@@ -6,5 +6,5 @@
 	@return a list of complex values.
 %}
 function varargout = helicsInputGetComplexVector(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsInputGetComplexVector", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsInputGetComplexVector', varargin{:});
 end

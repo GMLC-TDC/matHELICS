@@ -8,5 +8,5 @@
 
 %}
 function varargout = helicsPublicationPublishBoolean(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsPublicationPublishBoolean", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsPublicationPublishBoolean', varargin{:});
 end

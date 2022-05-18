@@ -7,5 +7,5 @@
 	@return An integer value with the current value of the given option.
 %}
 function varargout = helicsInputGetOption(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsInputGetOption", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsInputGetOption', varargin{:});
 end

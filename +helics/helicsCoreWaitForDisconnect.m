@@ -10,5 +10,5 @@
 	@return HELICS_TRUE if the disconnect was successful, HELICS_FALSE if there was a timeout.
 %}
 function varargout = helicsCoreWaitForDisconnect(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsCoreWaitForDisconnect", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsCoreWaitForDisconnect', varargin{:});
 end

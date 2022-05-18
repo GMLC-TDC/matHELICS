@@ -8,5 +8,5 @@
 	@param[in,out] err An error object that will contain an error code and string if any error occurred during the execution of the function.
 %}
 function varargout = helicsFederateSetTimeProperty(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateSetTimeProperty", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateSetTimeProperty', varargin{:});
 end

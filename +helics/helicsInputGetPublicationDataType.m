@@ -6,5 +6,5 @@
 	@return An int containing the enumeration value of the publication type.
 %}
 function varargout = helicsInputGetPublicationDataType(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsInputGetPublicationDataType", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsInputGetPublicationDataType', varargin{:});
 end

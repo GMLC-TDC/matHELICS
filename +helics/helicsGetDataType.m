@@ -7,5 +7,5 @@
 	@return An int with the data type or HELICS_DATA_TYPE_UNKNOWN(-1) if not a valid value.
 %}
 function varargout = helicsGetDataType(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsGetDataType", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsGetDataType', varargin{:});
 end

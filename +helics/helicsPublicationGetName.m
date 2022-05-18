@@ -8,5 +8,5 @@
 	@return A const char with the publication name.
 %}
 function varargout = helicsPublicationGetName(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsPublicationGetName", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsPublicationGetName', varargin{:});
 end

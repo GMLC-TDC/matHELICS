@@ -15,5 +15,5 @@
 
 %}
 function varargout = helicsCreateCore(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsCreateCore", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsCreateCore', varargin{:});
 end

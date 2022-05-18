@@ -11,5 +11,5 @@
 	@return A new HelicsMessage.
 %}
 function varargout = helicsEndpointCreateMessage(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsEndpointCreateMessage", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsEndpointCreateMessage', varargin{:});
 end

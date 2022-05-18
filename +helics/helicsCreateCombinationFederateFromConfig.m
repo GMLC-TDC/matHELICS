@@ -12,5 +12,5 @@
 	@return An opaque combination federate object.
 %}
 function varargout = helicsCreateCombinationFederateFromConfig(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsCreateCombinationFederateFromConfig", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsCreateCombinationFederateFromConfig', varargin{:});
 end

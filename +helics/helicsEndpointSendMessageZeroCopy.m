@@ -8,5 +8,5 @@
 	@param[in,out] err A pointer to an error object for catching errors.
 %}
 function varargout = helicsEndpointSendMessageZeroCopy(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsEndpointSendMessageZeroCopy", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsEndpointSendMessageZeroCopy', varargin{:});
 end

@@ -8,5 +8,5 @@
 
 %}
 function varargout = helicsFederateInfoSetCoreTypeFromString(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateInfoSetCoreTypeFromString", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateInfoSetCoreTypeFromString', varargin{:});
 end

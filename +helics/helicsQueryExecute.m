@@ -14,5 +14,5 @@
 	invalid.
 %}
 function varargout = helicsQueryExecute(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsQueryExecute", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsQueryExecute', varargin{:});
 end

@@ -7,5 +7,5 @@
 	@param time The time to send the message at.
 %}
 function varargout = helicsEndpointSendBytesToAt(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsEndpointSendBytesToAt", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsEndpointSendBytesToAt', varargin{:});
 end

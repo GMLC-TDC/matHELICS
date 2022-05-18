@@ -6,5 +6,5 @@
 	@return the string value.
 %}
 function varargout = helicsInputGetString(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsInputGetString", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsInputGetString', varargin{:});
 end

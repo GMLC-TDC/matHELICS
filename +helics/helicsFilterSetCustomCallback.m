@@ -7,5 +7,5 @@
 	@param filtCall A function handle with the signature HelicsMessage(HelicsMessage message).
 %}
 function varargout = helicsFilterSetCustomCallback(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFilterSetCustomCallback", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFilterSetCustomCallback', varargin{:});
 end

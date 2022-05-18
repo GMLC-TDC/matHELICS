@@ -15,5 +15,5 @@
 	@return An object containing the input.
 %}
 function varargout = helicsFederateRegisterInput(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateRegisterInput", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateRegisterInput', varargin{:});
 end

@@ -7,5 +7,5 @@
 
 %}
 function varargout = helicsCoreDisconnect(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsCoreDisconnect", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsCoreDisconnect', varargin{:});
 end

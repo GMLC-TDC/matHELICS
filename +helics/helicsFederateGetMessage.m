@@ -8,5 +8,5 @@
 	@return A HelicsMessage which references the data in the message.
 %}
 function varargout = helicsFederateGetMessage(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateGetMessage", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateGetMessage', varargin{:});
 end

@@ -7,5 +7,5 @@
 	@param requestTimeReturn A callback with the signature void(double newTime, bool iterating).
 %}
 function varargout = helicsFederateSetTimeRequestReturnCallback(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateSetTimeRequestReturnCallback", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateSetTimeRequestReturnCallback', varargin{:});
 end

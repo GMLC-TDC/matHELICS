@@ -6,5 +6,5 @@
 	helicsFederateClearMessages() can also be used to clear up all stored messages at once
 %}
 function varargout = helicsMessageFree(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsMessageFree", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsMessageFree', varargin{:});
 end

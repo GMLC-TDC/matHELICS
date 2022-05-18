@@ -6,5 +6,5 @@
 	@return A count of the number of filters registered through a federate.
 %}
 function varargout = helicsFederateGetFilterCount(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateGetFilterCount", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateGetFilterCount', varargin{:});
 end

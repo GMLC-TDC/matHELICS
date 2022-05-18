@@ -6,5 +6,5 @@
 	@return A string with the info field string.
 %}
 function varargout = helicsPublicationGetInfo(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsPublicationGetInfo", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsPublicationGetInfo', varargin{:});
 end

@@ -6,5 +6,5 @@
 	@param stateChange A function handle with the signature void(int newState, int oldState).
 %}
 function varargout = helicsFederateSetStateChangeCallback(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateSetStateChangeCallback", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateSetStateChangeCallback', varargin{:});
 end

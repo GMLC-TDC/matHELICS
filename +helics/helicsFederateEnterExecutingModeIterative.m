@@ -12,5 +12,5 @@
 	@return An iteration structure with field containing the time and iteration status.
 %}
 function varargout = helicsFederateEnterExecutingModeIterative(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateEnterExecutingModeIterative", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateEnterExecutingModeIterative', varargin{:});
 end

@@ -8,5 +8,5 @@
 
 %}
 function varargout = helicsEndpointRemoveTarget(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsEndpointRemoveTarget", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsEndpointRemoveTarget', varargin{:});
 end

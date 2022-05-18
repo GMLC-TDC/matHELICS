@@ -6,5 +6,5 @@
 	@return  a list of floating point values.
 %}
 function varargout = helicsInputGetVector(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsInputGetVector", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsInputGetVector', varargin{:});
 end

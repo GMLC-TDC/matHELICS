@@ -8,5 +8,5 @@
 	@return HELICS_FALSE if not completed, HELICS_TRUE if completed.
 %}
 function varargout = helicsFederateIsAsyncOperationCompleted(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateIsAsyncOperationCompleted", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateIsAsyncOperationCompleted', varargin{:});
 end

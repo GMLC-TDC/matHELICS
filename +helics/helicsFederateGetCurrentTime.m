@@ -8,5 +8,5 @@
 	@return The current time of the federate.
 %}
 function varargout = helicsFederateGetCurrentTime(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateGetCurrentTime", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateGetCurrentTime', varargin{:});
 end

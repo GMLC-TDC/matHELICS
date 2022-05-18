@@ -10,5 +10,5 @@
 	@return A HelicsPublication.
 %}
 function varargout = helicsFederateGetPublicationByIndex(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateGetPublicationByIndex", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateGetPublicationByIndex', varargin{:});
 end

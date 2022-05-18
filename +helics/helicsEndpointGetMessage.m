@@ -6,5 +6,5 @@
 	@return A message object.
 %}
 function varargout = helicsEndpointGetMessage(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsEndpointGetMessage", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsEndpointGetMessage', varargin{:});
 end

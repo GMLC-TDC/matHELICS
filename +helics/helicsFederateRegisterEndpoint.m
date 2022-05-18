@@ -15,5 +15,5 @@
 	@return An object containing the endpoint, or nullptr on failure.
 %}
 function varargout = helicsFederateRegisterEndpoint(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateRegisterEndpoint", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateRegisterEndpoint', varargin{:});
 end

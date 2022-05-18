@@ -6,5 +6,5 @@
 	@return A void enumeration, HELICS_OK if everything worked.
 %}
 function varargout = helicsInputGetType(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsInputGetType", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsInputGetType', varargin{:});
 end

@@ -8,5 +8,5 @@
 	@return The time granted to the federate, will return HELICS_TIME_MAXTIME if the simulation has terminated.
 %}
 function varargout = helicsFederateRequestTimeComplete(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateRequestTimeComplete", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateRequestTimeComplete', varargin{:});
 end

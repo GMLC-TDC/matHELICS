@@ -9,5 +9,5 @@
 
 %}
 function varargout = helicsFilterRemoveTarget(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFilterRemoveTarget", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFilterRemoveTarget', varargin{:});
 end

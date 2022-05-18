@@ -6,5 +6,5 @@
 	@return Raw string data.
 %}
 function varargout = helicsMessageGetBytes(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsMessageGetBytes", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsMessageGetBytes', varargin{:});
 end

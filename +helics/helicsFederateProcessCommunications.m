@@ -8,5 +8,5 @@
 
 %}
 function varargout = helicsFederateProcessCommunications(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateProcessCommunications", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateProcessCommunications', varargin{:});
 end

@@ -5,5 +5,5 @@
 	@param vectorInput The default list of floating point values.
 %}
 function varargout = helicsInputSetDefaultVector(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsInputSetDefaultVector", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsInputSetDefaultVector', varargin{:});
 end

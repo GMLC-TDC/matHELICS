@@ -12,5 +12,5 @@
 	The return will be nullptr if query is an invalid object
 %}
 function varargout = helicsQueryExecuteComplete(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsQueryExecuteComplete", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsQueryExecuteComplete', varargin{:});
 end

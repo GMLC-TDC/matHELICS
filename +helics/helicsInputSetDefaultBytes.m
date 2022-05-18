@@ -5,5 +5,5 @@
 	@param raw data to use for the default.
 %}
 function varargout = helicsInputSetDefaultBytes(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsInputSetDefaultBytes", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsInputSetDefaultBytes', varargin{:});
 end

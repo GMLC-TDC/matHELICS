@@ -9,5 +9,5 @@
 	@return The value of the property.
 %}
 function varargout = helicsFederateGetIntegerProperty(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateGetIntegerProperty", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateGetIntegerProperty', varargin{:});
 end

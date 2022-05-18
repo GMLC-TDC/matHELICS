@@ -9,5 +9,5 @@
 
 %}
 function varargout = helicsBrokerAddSourceFilterToEndpoint(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsBrokerAddSourceFilterToEndpoint", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsBrokerAddSourceFilterToEndpoint', varargin{:});
 end

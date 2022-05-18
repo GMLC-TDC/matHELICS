@@ -11,5 +11,5 @@
 	@return granted time and HelicsIterationResult.
 %}
 function varargout = helicsFederateRequestTimeIterative(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateRequestTimeIterative", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateRequestTimeIterative', varargin{:});
 end

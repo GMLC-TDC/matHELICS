@@ -11,5 +11,5 @@
 	@return An opaque value federate object.
 %}
 function varargout = helicsCreateValueFederateFromConfig(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsCreateValueFederateFromConfig", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsCreateValueFederateFromConfig', varargin{:});
 end

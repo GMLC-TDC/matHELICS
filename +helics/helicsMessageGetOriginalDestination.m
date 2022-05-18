@@ -6,5 +6,5 @@
 	@return A string with the original destination of a message.
 %}
 function varargout = helicsMessageGetOriginalDestination(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsMessageGetOriginalDestination", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsMessageGetOriginalDestination', varargin{:});
 end

@@ -8,5 +8,5 @@
 
 %}
 function varargout = helicsFederatePublishJSON(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederatePublishJSON", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederatePublishJSON', varargin{:});
 end

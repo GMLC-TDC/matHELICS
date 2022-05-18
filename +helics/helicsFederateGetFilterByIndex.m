@@ -10,5 +10,5 @@
 	@return A HelicsFilter, which will be NULL if an invalid index is given.
 %}
 function varargout = helicsFederateGetFilterByIndex(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateGetFilterByIndex", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateGetFilterByIndex', varargin{:});
 end

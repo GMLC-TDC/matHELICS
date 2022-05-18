@@ -10,5 +10,5 @@
 	@param[in,out] err An error object to fill out in case of an error.
 %}
 function varargout = helicsMessageResize(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsMessageResize", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsMessageResize', varargin{:});
 end

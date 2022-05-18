@@ -6,5 +6,5 @@
 	@return The time associated with a message.
 %}
 function varargout = helicsMessageGetTime(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsMessageGetTime", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsMessageGetTime', varargin{:});
 end

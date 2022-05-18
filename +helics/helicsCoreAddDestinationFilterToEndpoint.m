@@ -9,5 +9,5 @@
 
 %}
 function varargout = helicsCoreAddDestinationFilterToEndpoint(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsCoreAddDestinationFilterToEndpoint", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsCoreAddDestinationFilterToEndpoint', varargin{:});
 end

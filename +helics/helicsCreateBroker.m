@@ -16,5 +16,5 @@
 
 %}
 function varargout = helicsCreateBroker(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsCreateBroker", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsCreateBroker', varargin{:});
 end

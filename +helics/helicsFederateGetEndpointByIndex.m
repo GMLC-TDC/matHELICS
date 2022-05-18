@@ -12,5 +12,5 @@
 	The HelicsEndpoint returned will be NULL if given an invalid index.
 %}
 function varargout = helicsFederateGetEndpointByIndex(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateGetEndpointByIndex", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateGetEndpointByIndex', varargin{:});
 end

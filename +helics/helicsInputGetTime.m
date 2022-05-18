@@ -8,5 +8,5 @@
 	@return The resulting time value.
 %}
 function varargout = helicsInputGetTime(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsInputGetTime", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsInputGetTime', varargin{:});
 end

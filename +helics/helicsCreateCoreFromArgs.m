@@ -8,5 +8,5 @@
 	@return A HelicsCore object.
 %}
 function varargout = helicsCreateCoreFromArgs(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsCreateCoreFromArgs", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsCreateCoreFromArgs', varargin{:});
 end

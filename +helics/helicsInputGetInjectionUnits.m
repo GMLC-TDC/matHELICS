@@ -6,5 +6,5 @@
 	@return A void enumeration, HELICS_OK if everything worked.
 %}
 function varargout = helicsInputGetInjectionUnits(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsInputGetInjectionUnits", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsInputGetInjectionUnits', varargin{:});
 end

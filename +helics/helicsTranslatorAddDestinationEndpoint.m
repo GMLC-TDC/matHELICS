@@ -11,5 +11,5 @@
 
 %}
 function varargout = helicsTranslatorAddDestinationEndpoint(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsTranslatorAddDestinationEndpoint", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsTranslatorAddDestinationEndpoint', varargin{:});
 end

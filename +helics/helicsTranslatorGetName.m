@@ -6,5 +6,5 @@
 	@return A string with the name of the translator.
 %}
 function varargout = helicsTranslatorGetName(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsTranslatorGetName", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsTranslatorGetName', varargin{:});
 end

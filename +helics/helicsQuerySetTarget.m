@@ -8,5 +8,5 @@
 	@param[in,out] err An error object that will contain an error code and string if any error occurred during the execution of the function.
 %}
 function varargout = helicsQuerySetTarget(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsQuerySetTarget", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsQuerySetTarget', varargin{:});
 end

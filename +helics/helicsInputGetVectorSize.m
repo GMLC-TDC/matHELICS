@@ -4,5 +4,5 @@
 	@return The number of doubles in a returned vector.
 %}
 function varargout = helicsInputGetVectorSize(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsInputGetVectorSize", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsInputGetVectorSize', varargin{:});
 end

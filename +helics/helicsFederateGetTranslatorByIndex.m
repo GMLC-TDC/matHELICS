@@ -10,5 +10,5 @@
 	@return A HelicsTranslator, which will be NULL if an invalid index is given.
 %}
 function varargout = helicsFederateGetTranslatorByIndex(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateGetTranslatorByIndex", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateGetTranslatorByIndex', varargin{:});
 end

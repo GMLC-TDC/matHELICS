@@ -6,5 +6,5 @@
 	@return HELICS_TRUE if the endpoint has a message, HELICS_FALSE otherwise.
 %}
 function varargout = helicsEndpointHasMessage(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsEndpointHasMessage", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsEndpointHasMessage', varargin{:});
 end

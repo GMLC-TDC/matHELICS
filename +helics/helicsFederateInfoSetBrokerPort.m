@@ -10,5 +10,5 @@
 
 %}
 function varargout = helicsFederateInfoSetBrokerPort(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateInfoSetBrokerPort", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateInfoSetBrokerPort', varargin{:});
 end

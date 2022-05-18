@@ -10,5 +10,5 @@
 	@details This would be the same JSON that would be used to publish data.
 %}
 function varargout = helicsFederateRegisterFromPublicationJSON(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateRegisterFromPublicationJSON", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateRegisterFromPublicationJSON', varargin{:});
 end

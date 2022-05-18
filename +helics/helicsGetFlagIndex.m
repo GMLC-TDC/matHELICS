@@ -4,5 +4,5 @@
 	@return An int with the property code or (-1) if not a valid property.
 %}
 function varargout = helicsGetFlagIndex(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsGetFlagIndex", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsGetFlagIndex', varargin{:});
 end

@@ -11,5 +11,5 @@
 	specified key exists.
 %}
 function varargout = helicsFederateGetPublication(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateGetPublication", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateGetPublication', varargin{:});
 end

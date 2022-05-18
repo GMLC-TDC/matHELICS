@@ -5,5 +5,5 @@
 	@return An int with the property code or (-1) if not a valid property.
 %}
 function varargout = helicsGetPropertyIndex(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsGetPropertyIndex", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsGetPropertyIndex', varargin{:});
 end

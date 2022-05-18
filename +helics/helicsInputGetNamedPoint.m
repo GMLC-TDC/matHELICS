@@ -6,5 +6,5 @@
 	@return a string and a double value for the named point
 %}
 function varargout = helicsInputGetNamedPoint(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsInputGetNamedPoint", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsInputGetNamedPoint', varargin{:});
 end

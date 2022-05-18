@@ -9,5 +9,5 @@
 	and false if an asynchronous query has not completed or is invalid
 %}
 function varargout = helicsQueryIsCompleted(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsQueryIsCompleted", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsQueryIsCompleted', varargin{:});
 end

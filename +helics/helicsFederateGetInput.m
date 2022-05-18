@@ -11,5 +11,5 @@
 	key exists.
 %}
 function varargout = helicsFederateGetInput(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateGetInput", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateGetInput', varargin{:});
 end

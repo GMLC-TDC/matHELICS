@@ -6,5 +6,5 @@
 	@return A string representing the payload of a message.
 %}
 function varargout = helicsMessageGetString(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsMessageGetString", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsMessageGetString', varargin{:});
 end

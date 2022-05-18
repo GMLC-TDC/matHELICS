@@ -4,5 +4,5 @@
 	@param endpoint The endpoint to query.
 %}
 function varargout = helicsEndpointPendingMessageCount(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsEndpointPendingMessageCount", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsEndpointPendingMessageCount', varargin{:});
 end

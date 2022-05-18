@@ -6,5 +6,5 @@
 	@return A count of the number of translators registered through a federate.
 %}
 function varargout = helicsFederateGetTranslatorCount(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateGetTranslatorCount", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateGetTranslatorCount', varargin{:});
 end

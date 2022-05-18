@@ -6,5 +6,5 @@
 	@return A string with the identifier of the core.
 %}
 function varargout = helicsCoreGetIdentifier(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsCoreGetIdentifier", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsCoreGetIdentifier', varargin{:});
 end

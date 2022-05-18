@@ -6,5 +6,5 @@
 	@return HELICS_TRUE if the Endpoint object represents a valid endpoint.
 %}
 function varargout = helicsEndpointIsValid(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsEndpointIsValid", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsEndpointIsValid', varargin{:});
 end

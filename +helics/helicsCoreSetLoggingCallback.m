@@ -9,5 +9,5 @@
 	@param logger A function handle with the signature void(int loglevel, string identifier, string message).
 %}
 function varargout = helicsCoreSetLoggingCallback(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsCoreSetLoggingCallback", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsCoreSetLoggingCallback', varargin{:});
 end

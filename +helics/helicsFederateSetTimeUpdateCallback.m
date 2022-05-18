@@ -6,5 +6,5 @@
 	@param timeUpdate A function handle with the signature void(double newTime, int iterating).
 %}
 function varargout = helicsFederateSetTimeUpdateCallback(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateSetTimeUpdateCallback", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateSetTimeUpdateCallback', varargin{:});
 end

@@ -7,5 +7,5 @@
 	@return The flags associated with a message.
 %}
 function varargout = helicsMessageGetFlagOption(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsMessageGetFlagOption", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsMessageGetFlagOption', varargin{:});
 end

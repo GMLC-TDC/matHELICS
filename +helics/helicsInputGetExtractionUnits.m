@@ -8,5 +8,5 @@
 	@return A void enumeration, HELICS_OK if everything worked.
 %}
 function varargout = helicsInputGetExtractionUnits(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsInputGetExtractionUnits", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsInputGetExtractionUnits', varargin{:});
 end

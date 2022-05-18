@@ -6,5 +6,5 @@
 	@return The name of the endpoint.
 %}
 function varargout = helicsEndpointGetName(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsEndpointGetName", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsEndpointGetName', varargin{:});
 end

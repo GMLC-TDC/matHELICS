@@ -6,5 +6,5 @@
 	@return tuple of HelicsTime and HelicsIterationResult.
 %}
 function varargout = helicsFederateRequestTimeIterativeComplete(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateRequestTimeIterativeComplete", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateRequestTimeIterativeComplete', varargin{:});
 end

@@ -15,5 +15,5 @@
 	@return An object containing the publication.
 %}
 function varargout = helicsFederateRegisterPublication(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateRegisterPublication", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateRegisterPublication', varargin{:});
 end

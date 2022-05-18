@@ -8,5 +8,5 @@
 	@param queryAnswer A function handle with the signature const void(const char *query, int querySize, HelicsQueryBuffer buffer).
 %}
 function varargout = helicsFederateSetQueryCallback(varargin)
-	[varargout{1:nargout}] = helicsMex("helicsFederateSetQueryCallback", varargin{:});
+	[varargout{1:nargout}] = helicsMex('helicsFederateSetQueryCallback', varargin{:});
 end
