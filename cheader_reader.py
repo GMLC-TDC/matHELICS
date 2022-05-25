@@ -2119,7 +2119,7 @@ class HelicsHeaderParser (object):
         
         
         def initializeArgHelicsClass(helicsClass: str, argName: str, position: int) -> str:
-            retStr = f"\t{helicsClass} {argName} = ({helicsClass})(mxGetData(argv[{position}]));\n\n"
+            retStr = f"\t{helicsClass} {argName} = *({helicsClass}*)(mxGetData(argv[{position}]));\n\n"
             return retStr
         
         
