@@ -2,21 +2,21 @@
 HelicsVersion='3.2.0';
 % set up platform specific names and locations
 if ismac
-    basePath=['Helics-',HelicsVersion','-macOS-universal2'];
-    baseFile=['Helics-shared-',HelicsVersion','-macOS-universal2.tar.gz'];
+    basePath=['Helics-',HelicsVersion,'-macOS-universal2'];
+    baseFile=['Helics-shared-',HelicsVersion,-macOS-universal2.tar.gz'];
     targetFile='helics.dll';
 elseif isunix
-    basePath=['Helics-',HelicsVersion','-Linux-x86_64'];
-    baseFile=['Helics-shared-',HelicsVersion','Linux-x86_64.tar.gz'];
+    basePath=['Helics-',HelicsVersion,'-Linux-x86_64'];
+    baseFile=['Helics-shared-',HelicsVersion,'Linux-x86_64.tar.gz'];
     targetFile='helics.dll';
 elseif ispc
     if isequal(computer,'PCWIN64')
-        basePath=['Helics-',HelicsVersion','-win64'];
-        baseFile=['Helics-shared-',HelicsVersion','-win64.tar.gz'];
+        basePath=['Helics-',HelicsVersion,'-win64'];
+        baseFile=['Helics-shared-',HelicsVersion,'-win64.tar.gz'];
         targetFile='helics.dll';
     else
-        basePath=['Helics-',HelicsVersion','-win32'];
-        baseFile=['Helics-shared-',HelicsVersion','-win32.tar.gz'];
+        basePath=['Helics-',HelicsVersion,'-win32'];
+        baseFile=['Helics-shared-',HelicsVersion,'-win32.tar.gz'];
         targetFile='helics.dll';
     end
 else
