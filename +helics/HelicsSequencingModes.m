@@ -6,6 +6,10 @@ Attributes:
 	HELICS_SEQUENCING_MODE_ORDERED: value:1	sequencing mode to operate on the normal channels
 	HELICS_SEQUENCING_MODE_DEFAULT: value:2	select the default channel
 %}
-HELICS_SEQUENCING_MODE_FAST = 0;
-HELICS_SEQUENCING_MODE_ORDERED = 1;
-HELICS_SEQUENCING_MODE_DEFAULT = 2;
+classdef HelicsSequencingModes
+	properties (Constant)
+		HELICS_SEQUENCING_MODE_FAST = int32(0);
+		HELICS_SEQUENCING_MODE_ORDERED = int32(1);
+		HELICS_SEQUENCING_MODE_DEFAULT = int32(2);
+	end
+end

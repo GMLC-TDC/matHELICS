@@ -980,7 +980,7 @@ void _wrap_helicsCreateCoreFromArgs(int resc, mxArray *resv[], int argc, const m
 	nameStatus = mxGetString(argv[1], name, nameLength);
 
 	int arg2 = 0;
-	char **arg3 = (char **)0;
+	char **arg3;
 	int ii;
 	arg2 = static_cast<int>(mxGetNumberOfElements(argv[2]));
 	arg3 = (char **)malloc((arg2)*sizeof(char *));
@@ -1117,7 +1117,7 @@ void _wrap_helicsCreateBrokerFromArgs(int resc, mxArray *resv[], int argc, const
 	nameStatus = mxGetString(argv[1], name, nameLength);
 
 	int arg2 = 0;
-	char **arg3 = (char **)0;
+	char **arg3;
 	int ii;
 	arg2 = static_cast<int>(mxGetNumberOfElements(argv[2]));
 	arg3 = (char **)malloc((arg2)*sizeof(char *));
@@ -2086,7 +2086,7 @@ void _wrap_helicsFederateInfoLoadFromArgs(int resc, mxArray *resv[], int argc, c
 	HelicsFederateInfo fi = *(HelicsFederateInfo*)(mxGetData(argv[0]));
 
 	int arg1 = 0;
-	char **arg2 = (char **)0;
+	char **arg2;
 	int ii;
 	arg1 = static_cast<int>(mxGetNumberOfElements(argv[1]));
 	arg2 = (char **)malloc((arg1)*sizeof(char *));
@@ -3298,7 +3298,7 @@ void _wrap_helicsFederateRequestTimeIterative(int resc, mxArray *resv[], int arg
 
 	HelicsIterationRequest iterate = (HelicsIterationRequest)(mxGetScalar(argv[2]));
 
-	HelicsIterationResult *outIteration = (HelicsIterationResult *)0;
+	HelicsIterationResult outIteration = HelicsIterationResult.HELICS_ITERATION_RESULT_ERROR;
 
 	HelicsError err = helicsErrorInitialize();
 
@@ -3404,7 +3404,7 @@ void _wrap_helicsFederateRequestTimeIterativeAsync(int resc, mxArray *resv[], in
 void _wrap_helicsFederateRequestTimeIterativeComplete(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
 	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
 
-	HelicsIterationResult *outIteration = (HelicsIterationResult *)0;
+	HelicsIterationResult outIteration = HelicsIterationResult.HELICS_ITERATION_RESULT_ERROR;
 
 	HelicsError err = helicsErrorInitialize();
 
@@ -6157,11 +6157,11 @@ void _wrap_helicsInputGetNamedPoint(int resc, mxArray *resv[], int argc, const m
 
 	int actualLength = 0;
 
-	double *val = (double *)0;
+	double val = 0;
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsInputGetNamedPoint(ipt, outputString, maxStringLen, &actualLength, val, &err);
+	helicsInputGetNamedPoint(ipt, outputString, maxStringLen, &actualLength, &val, &err);
 
 	mwSize dims[2] = {1, actualLength};
 	mxArray *_out = mxCreateCharArray(2, dims);
@@ -6176,7 +6176,7 @@ void _wrap_helicsInputGetNamedPoint(int resc, mxArray *resv[], int argc, const m
 	}
 
 	if(--resc>=0){
-		mxArray *_out1 = mxCreateDoubleScalar(*val);
+		mxArray *_out1 = mxCreateDoubleScalar(val);
 		*resv++ = _out1;
 	}
 
