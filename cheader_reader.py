@@ -1753,7 +1753,7 @@ class HelicsHeaderParser (object):
                     varFile.write("\tend\n")
                     varFile.write("\tv = vInitialized;\n")
                     varFile.write("end\n")
-            elif isinstance(varValue, float) or isinstance(varValue, int):
+            elif isinstance(varValue, float):
                 with open(f"+helics/{varSpelling}.m", "w") as varFile:
                     if varComment != None:
                         varFile.write("%{\n")
@@ -1763,6 +1763,19 @@ class HelicsHeaderParser (object):
                     varFile.write("\tpersistent vInitialized;\n")
                     varFile.write("\tif isempty(vInitialized)\n")
                     varFile.write(f"\t\tvInitialized = {varValue};\n")
+                    varFile.write("\tend\n")
+                    varFile.write("\tv = vInitialized;\n")
+                    varFile.write("end\n")
+            elif isinstance(varValue, int):
+                with open(f"+helics/{varSpelling}.m", "w") as varFile:
+                    if varComment != None:
+                        varFile.write("%{\n")
+                        varFile.write(f"{varComment}\n")
+                        varFile.write("%}\n")
+                    varFile.write(f"function v = {varSpelling}()\n")
+                    varFile.write("\tpersistent vInitialized;\n")
+                    varFile.write("\tif isempty(vInitialized)\n")
+                    varFile.write(f"\t\tvInitialized = int32({varValue});\n")
                     varFile.write("\tend\n")
                     varFile.write("\tv = vInitialized;\n")
                     varFile.write("end\n")
@@ -2015,7 +2028,7 @@ class HelicsHeaderParser (object):
                 "Double": returnDoubleTomxArray(),
                 "Int": returnIntTomxArray(),
                 "Void_*": returnVoidPtrTomxArray(),
-                "HelicsBool": returnIntTomxArray(),
+                "HelicsBool": returnEnumTomxArray(),
                 "HelicsBroker": returnVoidPtrTomxArray(),
                 "HelicsCore": returnVoidPtrTomxArray(),
                 "HelicsDataBuffer": returnVoidPtrTomxArray(),
