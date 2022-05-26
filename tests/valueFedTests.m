@@ -31,8 +31,8 @@ end
 try
 helicsFederateInfoSetCoreTypeFromString(fedInfo,'zmq');
 helicsFederateInfoSetCoreInitString(fedInfo,fedinitstring);
-helicsFederateInfoSetTimeProperty(fedInfo,HELICS_PROPERTY_TIME_DELTA, 0.01);
-helicsFederateInfoSetIntegerProperty(fedInfo,HELICS_PROPERTY_INT_LOG_LEVEL,HELICS_LOG_LEVEL_WARNING);
+helicsFederateInfoSetTimeProperty(fedInfo,HelicsProperties.HELICS_PROPERTY_TIME_DELTA, 0.01);
+helicsFederateInfoSetIntegerProperty(fedInfo,HelicsProperties.HELICS_PROPERTY_INT_LOG_LEVEL,HelicsLogLevels.HELICS_LOG_LEVEL_WARNING);
 catch ec
     success=false;
     helicsBrokerDestroy(fedStruct.broker);
@@ -95,7 +95,7 @@ try
 testCase.verifyThat(success,IsTrue);
 helics.helicsFederateEnterExecutingMode(feds.vFed);
 state=helics.helicsFederateGetState(feds.vFed);
-testCase.verifyEqual(state,helics.HELICS_STATE_EXECUTION);
+testCase.verifyEqual(state,helics.HelicsFederateState.HELICS_STATE_EXECUTION);
 success=closeStruct(feds);
 testCase.verifyThat(success,IsTrue);
 catch e
@@ -150,7 +150,7 @@ defaultValue = 'start';
     testValue2 = 'I am a string';
     testVal2 = 0.0;
 try
-    pubid = helicsFederateRegisterGlobalPublication(feds.vFed, 'pub1', HELICS_DATA_TYPE_NAMED_POINT, '');
+    pubid = helicsFederateRegisterGlobalPublication(feds.vFed, 'pub1', HelicsDataTypes.HELICS_DATA_TYPE_NAMED_POINT, '');
     subid = helicsFederateRegisterSubscription(feds.vFed, 'pub1', '');
 
     helicsInputSetDefaultNamedPoint(subid, defaultValue, defVal);
@@ -212,7 +212,7 @@ try
 defaultValue = HELICS_TRUE;
     testValue1 = HELICS_TRUE;
 
-    pubid = helicsFederateRegisterGlobalPublication(feds.vFed, 'pub1', HELICS_DATA_TYPE_BOOLEAN, '');
+    pubid = helicsFederateRegisterGlobalPublication(feds.vFed, 'pub1', HelicsDataTypes.HELICS_DATA_TYPE_BOOLEAN, '');
     subid = helicsFederateRegisterSubscription(feds.vFed, 'pub1', '');
 
     helicsInputSetDefaultBoolean(subid, defaultValue);
@@ -276,9 +276,9 @@ import helics.*
 testCase.verifyThat(success,IsTrue);
 
 try
-    pubid1 = helicsFederateRegisterPublication(feds.vFed, 'pub1', HELICS_DATA_TYPE_STRING, '');
-    pubid2 = helicsFederateRegisterGlobalPublication(feds.vFed, 'pub2', HELICS_DATA_TYPE_INT, '');
-    pubid3 = helicsFederateRegisterPublication(feds.vFed, 'pub3', HELICS_DATA_TYPE_DOUBLE, 'V');
+    pubid1 = helicsFederateRegisterPublication(feds.vFed, 'pub1', HelicsDataTypes.HELICS_DATA_TYPE_STRING, '');
+    pubid2 = helicsFederateRegisterGlobalPublication(feds.vFed, 'pub2', HelicsDataTypes.HELICS_DATA_TYPE_INT, '');
+    pubid3 = helicsFederateRegisterPublication(feds.vFed, 'pub3', HelicsDataTypes.HELICS_DATA_TYPE_DOUBLE, 'V');
 
     publication_key = helicsPublicationGetName(pubid1);
 
@@ -327,7 +327,7 @@ defaultValue = 1.0;
     testValue1 = 2.7586;
     testValue2 = 1e27;
 
-    pubid = helicsFederateRegisterGlobalPublication(feds.vFed, 'pub1', HELICS_DATA_TYPE_DOUBLE, '');
+    pubid = helicsFederateRegisterGlobalPublication(feds.vFed, 'pub1', HelicsDataTypes.HELICS_DATA_TYPE_DOUBLE, '');
     subid = helicsFederateRegisterSubscription(feds.vFed, 'pub1', '');
 
     helicsInputSetDefault(subid, defaultValue);
@@ -397,7 +397,7 @@ defaultValue = 1.0-1.0j;
     testValue1 = 2.7586+ 342.25626j;
     testValue2 = 1e27-0.3e-2j;
 
-    pubid = helicsFederateRegisterGlobalPublication(feds.vFed, 'pub1', HELICS_DATA_TYPE_COMPLEX, '');
+    pubid = helicsFederateRegisterGlobalPublication(feds.vFed, 'pub1', HelicsDataTypes.HELICS_DATA_TYPE_COMPLEX, '');
     subid = helicsFederateRegisterSubscription(feds.vFed, 'pub1', '');
 
     helicsInputSetDefault(subid, defaultValue);
@@ -466,7 +466,7 @@ defaultValue = int64(45626678);
     testValue1 = int64(-27);
     testValue2 = int64(0);
 
-    pubid = helicsFederateRegisterGlobalPublication(feds.vFed, 'pub1', HELICS_DATA_TYPE_INT, '');
+    pubid = helicsFederateRegisterGlobalPublication(feds.vFed, 'pub1', HelicsDataTypes.HELICS_DATA_TYPE_INT, '');
     subid = helicsFederateRegisterSubscription(feds.vFed, 'pub1', '');
 
     helicsInputSetDefault(subid, defaultValue);
@@ -535,7 +535,7 @@ defaultValue = 'string1';
     testValue1 = 'this is a longer test string to bypass sso';
     testValue2 = '';
 
-    pubid = helicsFederateRegisterGlobalPublication(feds.vFed, 'pub1', HELICS_DATA_TYPE_STRING, '');
+    pubid = helicsFederateRegisterGlobalPublication(feds.vFed, 'pub1', HelicsDataTypes.HELICS_DATA_TYPE_STRING, '');
     subid = helicsFederateRegisterSubscription(feds.vFed, 'pub1', '');
 
     helicsInputSetDefault(subid, defaultValue);
@@ -603,7 +603,7 @@ defaultValue = [34.5;22.1;-10.4];
     testValue1 = ones(22,1);
     testValue2 = [99.1;-99;2;0.0;-1e35;4.56e-7];
 
-    pubid = helicsFederateRegisterGlobalPublication(feds.vFed, 'pub1', HELICS_DATA_TYPE_VECTOR, '');
+    pubid = helicsFederateRegisterGlobalPublication(feds.vFed, 'pub1', HelicsDataTypes.HELICS_DATA_TYPE_VECTOR, '');
     subid = helicsFederateRegisterSubscription(feds.vFed, 'pub1', '');
 
     helicsInputSetDefault(subid, defaultValue);

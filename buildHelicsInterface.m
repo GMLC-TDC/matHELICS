@@ -36,6 +36,8 @@ end
 mex('-lhelics','-R2018a',['-I./',basePath,'/include/'],['-L./',basePath,'/lib'],['-L./',basePath,'/bin'],'helicsMex.cpp')
 %copy the needed dll file if on windows
 if ispc
-copyfile(fullfile(basePath,'bin',targetFile),'.');
+    if (~exist(targetFile,'file'))
+        copyfile(fullfile(basePath,'bin',targetFile),'.');
+    end
 end
 
