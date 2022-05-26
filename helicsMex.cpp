@@ -505,8 +505,8 @@ void _wrap_helicsDataBufferSize(int resc, mxArray *resv[], int argc, const mxArr
 
 	int32_t result = helicsDataBufferSize(data);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(_out)) = (int64_t)result;
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
+	*((int32_t*)mxGetData(_out)) = (int32_t)result;
 
 	if(_out){
 		--resc;
@@ -522,8 +522,8 @@ void _wrap_helicsDataBufferCapacity(int resc, mxArray *resv[], int argc, const m
 
 	int32_t result = helicsDataBufferCapacity(data);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(_out)) = (int64_t)result;
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
+	*((int32_t*)mxGetData(_out)) = (int32_t)result;
 
 	if(_out){
 		--resc;
@@ -3104,8 +3104,8 @@ void _wrap_helicsFederateEnterExecutingModeIterative(int resc, mxArray *resv[], 
 
 	HelicsIterationResult result = helicsFederateEnterExecutingModeIterative(fed, iterate, &err);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(_out)) = (int64_t)result;
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
+	*((int32_t*)mxGetData(_out)) = (int32_t)result;
 
 	if(_out){
 		--resc;
@@ -3155,8 +3155,8 @@ void _wrap_helicsFederateEnterExecutingModeIterativeComplete(int resc, mxArray *
 
 	HelicsIterationResult result = helicsFederateEnterExecutingModeIterativeComplete(fed, &err);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(_out)) = (int64_t)result;
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
+	*((int32_t*)mxGetData(_out)) = (int32_t)result;
 
 	if(_out){
 		--resc;
@@ -3178,8 +3178,8 @@ void _wrap_helicsFederateGetState(int resc, mxArray *resv[], int argc, const mxA
 
 	HelicsFederateState result = helicsFederateGetState(fed, &err);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(_out)) = (int64_t)result;
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
+	*((int32_t*)mxGetData(_out)) = (int32_t)result;
 
 	if(_out){
 		--resc;
@@ -3298,7 +3298,7 @@ void _wrap_helicsFederateRequestTimeIterative(int resc, mxArray *resv[], int arg
 
 	HelicsIterationRequest iterate = (HelicsIterationRequest)(mxGetScalar(argv[2]));
 
-	HelicsIterationResult outIteration = HelicsIterationResult::HELICS_ITERATION_RESULT_ERROR;
+	HelicsIterationResult outIteration = HELICS_ITERATION_RESULT_ERROR;
 
 	HelicsError err = helicsErrorInitialize();
 
@@ -3312,8 +3312,8 @@ void _wrap_helicsFederateRequestTimeIterative(int resc, mxArray *resv[], int arg
 	}
 
 	if(--resc>=0){
-		mxArray *_out1 = mxCreateNumericMatrix(1,1,mxINT64_CLASS,mxREAL);
-		*((int64_t*)mxGetData(_out1)) = (int64_t)outIteration;
+		mxArray *_out1 = mxCreateNumericMatrix(1,1,mxINT32_CLASS,mxREAL);
+		*((int32_t*)mxGetData(_out1)) = (int32_t)outIteration;
 		*resv++ = _out1;
 	}
 
@@ -3404,7 +3404,7 @@ void _wrap_helicsFederateRequestTimeIterativeAsync(int resc, mxArray *resv[], in
 void _wrap_helicsFederateRequestTimeIterativeComplete(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
 	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
 
-	HelicsIterationResult outIteration = HelicsIterationResult::HELICS_ITERATION_RESULT_ERROR;
+	HelicsIterationResult outIteration = HELICS_ITERATION_RESULT_ERROR;
 
 	HelicsError err = helicsErrorInitialize();
 
@@ -3418,8 +3418,8 @@ void _wrap_helicsFederateRequestTimeIterativeComplete(int resc, mxArray *resv[],
 	}
 
 	if(--resc>=0){
-		mxArray *_out1 = mxCreateNumericMatrix(1,1,mxINT64_CLASS,mxREAL);
-		*((int64_t*)mxGetData(_out1)) = (int64_t)outIteration;
+		mxArray *_out1 = mxCreateNumericMatrix(1,1,mxINT32_CLASS,mxREAL);
+		*((int32_t*)mxGetData(_out1)) = (int32_t)outIteration;
 		*resv++ = _out1;
 	}
 
@@ -5886,10 +5886,10 @@ void _wrap_helicsInputGetString(int resc, mxArray *resv[], int argc, const mxArr
 
 	helicsInputGetString(ipt, outputString, maxStringLen, &actualLength, &err);
 
-	mwSize dims[2] = {1, actualLength};
+	mwSize dims[2] = {1, actualLength - 1};
 	mxArray *_out = mxCreateCharArray(2, dims);
 	mxChar *out_data = (mxChar *)mxGetData(_out);
-	for(int i=0; i<actualLength; ++i){
+	for(int i=0; i<(actualLength-1); ++i){
 		out_data[i] = outputString[i];
 	}
 
@@ -6163,10 +6163,10 @@ void _wrap_helicsInputGetNamedPoint(int resc, mxArray *resv[], int argc, const m
 
 	helicsInputGetNamedPoint(ipt, outputString, maxStringLen, &actualLength, &val, &err);
 
-	mwSize dims[2] = {1, actualLength};
+	mwSize dims[2] = {1, actualLength-1};
 	mxArray *_out = mxCreateCharArray(2, dims);
 	mxChar *out_data = (mxChar *)mxGetData(_out);
-	for(int i=0; i<actualLength; ++i){
+	for(int i=0; i<(actualLength-1); ++i){
 		out_data[i] = outputString[i];
 	}
 

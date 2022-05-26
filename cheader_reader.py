@@ -2022,16 +2022,16 @@ class HelicsHeaderParser (object):
                 "HelicsEndpoint": returnVoidPtrTomxArray(),
                 "HelicsFederate": returnVoidPtrTomxArray(),
                 "HelicsFederateInfo": returnVoidPtrTomxArray(),
-                "HelicsFederateState": returnIntTomxArray(),
+                "HelicsFederateState": returnEnumTomxArray(),
                 "HelicsFilter": returnVoidPtrTomxArray(),
                 "HelicsInput": returnVoidPtrTomxArray(),
-                "HelicsIterationResult": returnIntTomxArray(),
+                "HelicsIterationResult": returnEnumTomxArray(),
                 "HelicsMessage": returnVoidPtrTomxArray(),
                 "HelicsPublication": returnVoidPtrTomxArray(),
                 "HelicsQuery": returnVoidPtrTomxArray(),
                 "HelicsTime": returnDoubleTomxArray(),
                 "HelicsTranslator": returnVoidPtrTomxArray(),
-                "int32_t": returnIntTomxArray(),
+                "int32_t": returnEnumTomxArray(),
                 "int64_t": returnIntTomxArray(),
             }
             retStr = ""           
@@ -2129,7 +2129,7 @@ class HelicsHeaderParser (object):
         
         
         def initializeArgHelicsIterationResultPtr(argName: str) -> str:
-            retStr = f"\tHelicsIterationResult {argName} = HelicsIterationResult.HELICS_ITERATION_RESULT_ERROR;\n\n"
+            retStr = f"\tHelicsIterationResult {argName} = HELICS_ITERATION_RESULT_ERROR;\n\n"
             return retStr
         
         
@@ -2203,6 +2203,12 @@ class HelicsHeaderParser (object):
         def returnIntTomxArray() -> str:
             retStr = "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);\n"
             retStr += "\t*((int64_t*)mxGetData(_out)) = (int64_t)result;\n\n"
+            return retStr
+        
+        
+        def returnEnumTomxArray() -> str:
+            retStr = "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);\n"
+            retStr += "\t*((int32_t*)mxGetData(_out)) = (int32_t)result;\n\n"
             return retStr
         
         
@@ -2695,15 +2701,15 @@ class HelicsHeaderParser (object):
             functionWrapper += f"\tHelicsIterationRequest iterate = (HelicsIterationRequest)(mxGetScalar(argv[2]));\n\n"
             functionWrapper += initializeArgHelicsIterationResultPtr("outIteration")
             functionWrapper += initializeArgHelicsErrorPtr("err")
-            functionWrapper += f"\tHelicsTime result = {functionName}(fed, requestTime, iterate, outIteration, &err);\n\n"
+            functionWrapper += f"\tHelicsTime result = {functionName}(fed, requestTime, iterate, &outIteration, &err);\n\n"
             functionWrapper += returnDoubleTomxArray()
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
             functionWrapper += "\t}\n\n"
             functionWrapper += "\tif(--resc>=0){\n"
-            functionWrapper += "\t\tmxArray *_out1 = mxCreateNumericMatrix(1,1,mxINT64_CLASS,mxREAL);\n"
-            functionWrapper += "\t\t*((int64_t*)mxGetData(_out1)) = (int64_t)outIteration;\n"
+            functionWrapper += "\t\tmxArray *_out1 = mxCreateNumericMatrix(1,1,mxINT32_CLASS,mxREAL);\n"
+            functionWrapper += "\t\t*((int32_t*)mxGetData(_out1)) = (int32_t)outIteration;\n"
             functionWrapper += "\t\t*resv++ = _out1;\n"
             functionWrapper += "\t}\n\n"            
             functionWrapper += f'{argHelicsErrorPtrPostFunctionCall("err")}\n'
@@ -2738,15 +2744,15 @@ class HelicsHeaderParser (object):
             functionWrapper += initializeArgHelicsClass("HelicsFederate", "fed", 0)
             functionWrapper += initializeArgHelicsIterationResultPtr("outIteration")
             functionWrapper += initializeArgHelicsErrorPtr("err")
-            functionWrapper += f"\tHelicsTime result = {functionName}(fed, outIteration, &err);\n\n"
+            functionWrapper += f"\tHelicsTime result = {functionName}(fed, &outIteration, &err);\n\n"
             functionWrapper += returnDoubleTomxArray()
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
             functionWrapper += "\t}\n\n"
             functionWrapper += "\tif(--resc>=0){\n"
-            functionWrapper += "\t\tmxArray *_out1 = mxCreateNumericMatrix(1,1,mxINT64_CLASS,mxREAL);\n"
-            functionWrapper += "\t\t*((int64_t*)mxGetData(_out1)) = (int64_t)outIteration;\n"
+            functionWrapper += "\t\tmxArray *_out1 = mxCreateNumericMatrix(1,1,mxINT32_CLASS,mxREAL);\n"
+            functionWrapper += "\t\t*((int32_t*)mxGetData(_out1)) = (int32_t)outIteration;\n"
             functionWrapper += "\t\t*resv++ = _out1;\n"
             functionWrapper += "\t}\n\n"            
             functionWrapper += f'{argHelicsErrorPtrPostFunctionCall("err")}\n'
@@ -2930,10 +2936,10 @@ class HelicsHeaderParser (object):
             functionWrapper += "\tdouble val = 0;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(ipt, outputString, maxStringLen, &actualLength, &val, &err);\n\n"
-            functionWrapper += "\tmwSize dims[2] = {1, actualLength};\n"
+            functionWrapper += "\tmwSize dims[2] = {1, actualLength-1};\n"
             functionWrapper += "\tmxArray *_out = mxCreateCharArray(2, dims);\n"
             functionWrapper += "\tmxChar *out_data = (mxChar *)mxGetData(_out);\n"
-            functionWrapper += "\tfor(int i=0; i<actualLength; ++i){\n"
+            functionWrapper += "\tfor(int i=0; i<(actualLength-1); ++i){\n"
             functionWrapper += "\t\tout_data[i] = outputString[i];\n"
             functionWrapper += "\t}\n\n"
             functionWrapper += "\tif(_out){\n"
@@ -2986,10 +2992,10 @@ class HelicsHeaderParser (object):
             functionWrapper += "\tint actualLength = 0;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(ipt, outputString, maxStringLen, &actualLength, &err);\n\n"
-            functionWrapper += "\tmwSize dims[2] = {1, actualLength};\n"
+            functionWrapper += "\tmwSize dims[2] = {1, actualLength - 1};\n"
             functionWrapper += "\tmxArray *_out = mxCreateCharArray(2, dims);\n"
             functionWrapper += "\tmxChar *out_data = (mxChar *)mxGetData(_out);\n"
-            functionWrapper += "\tfor(int i=0; i<actualLength; ++i){\n"
+            functionWrapper += "\tfor(int i=0; i<(actualLength-1); ++i){\n"
             functionWrapper += "\t\tout_data[i] = outputString[i];\n"
             functionWrapper += "\t}\n\n"
             functionWrapper += "\tif(_out){\n"
