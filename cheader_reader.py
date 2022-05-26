@@ -1670,8 +1670,7 @@ class HelicsHeaderParser (object):
             enumSpelling = enumDict.get('spelling','')
             enumComment = enumDict.get('brief_comment','')
             with open(f"+helics/{enumSpelling}.m","w") as enumMFile:
-                enumMFile.write(f"classdef {enumSpelling} < uint64\n")
-                enumMFile.write("\t%{\n"+f"\t{enumComment}\n\n\tAttributes:")
+                enumMFile.write("%{\n"+f"{enumComment}\n\nAttributes:")
                 docStrBody = ""
                 enumStrBody = ""
                 for enumKey in enumDict.get('enumerations',{}).keys():
@@ -1680,12 +1679,11 @@ class HelicsHeaderParser (object):
                     keywordComment = enumDict.get('enumerations',{}).get(enumKey,{}).get('brief_comment','')
                     if keywordComment == None:
                         keywordComment = ''
-                    docStrBody += f"\n\t\t{keywordSpelling}: value:{keywordValue}\t{keywordComment}"
-                    enumStrBody += f"\n\t\t{keywordSpelling} ({keywordValue})"
+                    docStrBody += f"\n\t{keywordSpelling}: value:{keywordValue}\t{keywordComment}"
+                    enumStrBody += f"\n{keywordSpelling} = {keywordValue};"
                 enumMFile.write(docStrBody)
-                enumMFile.write("\n\t%}\n\tenumeration")
+                enumMFile.write("\n%}")
                 enumMFile.write(enumStrBody)
-                enumMFile.write("\n\tend\nend")
                 
         
         
@@ -2787,14 +2785,14 @@ class HelicsHeaderParser (object):
             functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0)
             functionWrapper += "\tint maxDataLen = helicsInputGetByteCount(ipt) + 2;\n\n"
             functionWrapper += "\tvoid *data = malloc(maxDataLen);\n\n"
-            functionWrapper += "\tint *actualSize = (int *)0;\n\n"
+            functionWrapper += "\tint actualSize = 0;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
-            functionWrapper += f"\t{functionName}(ipt, data, maxDataLen, actualSize, &err);\n\n"
+            functionWrapper += f"\t{functionName}(ipt, data, maxDataLen, &actualSize, &err);\n\n"
             functionWrapper += "\tmxChar *dataChar = (mxChar *)data;\n"
-            functionWrapper += "\tmwSize dims[2] = {1, *actualSize};\n"
+            functionWrapper += "\tmwSize dims[2] = {1, actualSize};\n"
             functionWrapper += "\tmxArray *_out = mxCreateCharArray(2, dims);\n"
             functionWrapper += "\tmxChar *out_data = (mxChar *)mxGetData(_out);\n"
-            functionWrapper += "\tfor(int i=0; i<(*actualSize); ++i){\n"
+            functionWrapper += "\tfor(int i=0; i<actualSize; ++i){\n"
             functionWrapper += "\t\tout_data[i] = dataChar[i];\n"
             functionWrapper += "\t}\n\n"
             functionWrapper += "\tif(_out){\n"
@@ -2926,14 +2924,14 @@ class HelicsHeaderParser (object):
             functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0)
             functionWrapper += "\tint maxStringLen = helicsInputGetStringSize(ipt) + 2;\n\n"
             functionWrapper += "\tchar *outputString = (char *)malloc(maxStringLen);\n\n"
-            functionWrapper += "\tint *actualLength = (int *)0;\n\n"
+            functionWrapper += "\tint actualLength = 0;\n\n"
             functionWrapper += "\tdouble *val = (double *)0;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
-            functionWrapper += f"\t{functionName}(ipt, outputString, maxStringLen, actualLength, val, &err);\n\n"
-            functionWrapper += "\tmwSize dims[2] = {1, *actualLength};\n"
+            functionWrapper += f"\t{functionName}(ipt, outputString, maxStringLen, &actualLength, val, &err);\n\n"
+            functionWrapper += "\tmwSize dims[2] = {1, actualLength};\n"
             functionWrapper += "\tmxArray *_out = mxCreateCharArray(2, dims);\n"
             functionWrapper += "\tmxChar *out_data = (mxChar *)mxGetData(_out);\n"
-            functionWrapper += "\tfor(int i=0; i<(*actualLength); ++i){\n"
+            functionWrapper += "\tfor(int i=0; i<actualLength; ++i){\n"
             functionWrapper += "\t\tout_data[i] = outputString[i];\n"
             functionWrapper += "\t}\n\n"
             functionWrapper += "\tif(_out){\n"
@@ -2983,13 +2981,13 @@ class HelicsHeaderParser (object):
             functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0)
             functionWrapper += "\tint maxStringLen = helicsInputGetStringSize(ipt) + 2;\n\n"
             functionWrapper += "\tchar *outputString = (char *)malloc(maxStringLen);\n\n"
-            functionWrapper += "\tint *actualLength = (int *)0;\n\n"
+            functionWrapper += "\tint actualLength = 0;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
-            functionWrapper += f"\t{functionName}(ipt, outputString, maxStringLen, actualLength, &err);\n\n"
-            functionWrapper += "\tmwSize dims[2] = {1, *actualLength};\n"
+            functionWrapper += f"\t{functionName}(ipt, outputString, maxStringLen, &actualLength, &err);\n\n"
+            functionWrapper += "\tmwSize dims[2] = {1, actualLength};\n"
             functionWrapper += "\tmxArray *_out = mxCreateCharArray(2, dims);\n"
             functionWrapper += "\tmxChar *out_data = (mxChar *)mxGetData(_out);\n"
-            functionWrapper += "\tfor(int i=0; i<(*actualLength); ++i){\n"
+            functionWrapper += "\tfor(int i=0; i<actualLength; ++i){\n"
             functionWrapper += "\t\tout_data[i] = outputString[i];\n"
             functionWrapper += "\t}\n\n"
             functionWrapper += "\tif(_out){\n"
@@ -3035,14 +3033,14 @@ class HelicsHeaderParser (object):
             functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0)
             functionWrapper += "\tint maxLength = helicsInputGetVectorSize(ipt);\n\n"
             functionWrapper += "\tdouble *data = (double *)malloc(maxLength * sizeof(double));\n\n"
-            functionWrapper += "\tint *actualSize = (int *)0;\n\n"
+            functionWrapper += "\tint actualSize = 0;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
-            functionWrapper += f"\t{functionName}(ipt, data, maxLength, actualSize, &err);\n\n"
-            functionWrapper += "\tmxDouble *result_data = (mxDouble *)malloc(*actualSize * sizeof(mxDouble));\n"
-            functionWrapper += "\tfor(int i=0; i<(*actualSize); ++i){\n"
+            functionWrapper += f"\t{functionName}(ipt, data, maxLength, &actualSize, &err);\n\n"
+            functionWrapper += "\tmxDouble *result_data = (mxDouble *)malloc(actualSize * sizeof(mxDouble));\n"
+            functionWrapper += "\tfor(int i=0; i<actualSize; ++i){\n"
             functionWrapper += "\t\tresult_data[i] = (mxDouble)data[i];\n"
             functionWrapper += "\t}\n"
-            functionWrapper += "\tmxArray *_out = mxCreateDoubleMatrix(*actualSize, 1, mxREAL);\n"
+            functionWrapper += "\tmxArray *_out = mxCreateDoubleMatrix(actualSize, 1, mxREAL);\n"
             functionWrapper += "\tint status = mxSetDoubles(_out, &(result_data[0]));\n\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
@@ -3086,15 +3084,15 @@ class HelicsHeaderParser (object):
             functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0)
             functionWrapper += "\tint maxLength = helicsInputGetVectorSize(ipt);\n\n"
             functionWrapper += "\tdouble *data = (double *)malloc(maxLength * sizeof(double));\n\n"
-            functionWrapper += "\tint *actualSize = (int *)0;\n\n"
+            functionWrapper += "\tint actualSize = 0;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
-            functionWrapper += f"\t{functionName}(ipt, data, maxLength, actualSize, &err);\n\n"
-            functionWrapper += "\tmxComplexDouble *result_data = (mxComplexDouble *)malloc((*actualSize/2)*sizeof(mxComplexDouble));\n"
-            functionWrapper += "\tfor(int i=0; i<(*actualSize/2); ++i){\n"
+            functionWrapper += f"\t{functionName}(ipt, data, maxLength, &actualSize, &err);\n\n"
+            functionWrapper += "\tmxComplexDouble *result_data = (mxComplexDouble *)malloc((actualSize/2)*sizeof(mxComplexDouble));\n"
+            functionWrapper += "\tfor(int i=0; i<(actualSize/2); ++i){\n"
             functionWrapper += "\t\tresult_data[i].real = data[2*(i)];\n"
             functionWrapper += "\t\tresult_data[i].imag = data[2*(i) + 1];\n"
             functionWrapper += "\t}\n"
-            functionWrapper += "\tmxArray *_out = mxCreateDoubleMatrix(*actualSize/2, 1, mxCOMPLEX);\n"
+            functionWrapper += "\tmxArray *_out = mxCreateDoubleMatrix(actualSize/2, 1, mxCOMPLEX);\n"
             functionWrapper += "\tint status = mxSetComplexDoubles(_out, &(result_data[0]));\n\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
@@ -3354,13 +3352,13 @@ class HelicsHeaderParser (object):
             functionWrapper += initializeArgHelicsClass("HelicsMessage", "message", 0)
             functionWrapper += "\tint maxMessageLength = helicsMessageGetByteCount(message) + 2;\n\n"
             functionWrapper += "\tchar *data = (char *)malloc(maxMessageLength);\n\n"
-            functionWrapper += "\tint *actualSize = (int *)0;\n\n"
+            functionWrapper += "\tint actualSize = 0;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
-            functionWrapper += f"\t{functionName}(message, (void *)data, maxMessageLength, actualSize, &err);\n\n"
-            functionWrapper += "\tmwSize dims[2] = {1,(mwSize)*actualSize};\n"
+            functionWrapper += f"\t{functionName}(message, (void *)data, maxMessageLength, &actualSize, &err);\n\n"
+            functionWrapper += "\tmwSize dims[2] = {1,(mwSize)actualSize};\n"
             functionWrapper += "\tmxArray *_out = mxCreateCharArray(2,dims);\n"
             functionWrapper += "\tmxChar *out_data = (mxChar *)mxGetData(_out);\n"
-            functionWrapper += "\tfor(int i=0; i<(*actualSize); ++i){\n"
+            functionWrapper += "\tfor(int i=0; i<actualSize; ++i){\n"
             functionWrapper += "\t\tout_data[i] = data[i];\n"
             functionWrapper += "\t}\n\n"
             functionWrapper += "\tif(_out){\n"

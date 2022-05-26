@@ -5829,17 +5829,17 @@ void _wrap_helicsInputGetBytes(int resc, mxArray *resv[], int argc, const mxArra
 
 	void *data = malloc(maxDataLen);
 
-	int *actualSize = (int *)0;
+	int actualSize = 0;
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsInputGetBytes(ipt, data, maxDataLen, actualSize, &err);
+	helicsInputGetBytes(ipt, data, maxDataLen, &actualSize, &err);
 
 	mxChar *dataChar = (mxChar *)data;
-	mwSize dims[2] = {1, *actualSize};
+	mwSize dims[2] = {1, actualSize};
 	mxArray *_out = mxCreateCharArray(2, dims);
 	mxChar *out_data = (mxChar *)mxGetData(_out);
-	for(int i=0; i<(*actualSize); ++i){
+	for(int i=0; i<actualSize; ++i){
 		out_data[i] = dataChar[i];
 	}
 
@@ -5880,16 +5880,16 @@ void _wrap_helicsInputGetString(int resc, mxArray *resv[], int argc, const mxArr
 
 	char *outputString = (char *)malloc(maxStringLen);
 
-	int *actualLength = (int *)0;
+	int actualLength = 0;
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsInputGetString(ipt, outputString, maxStringLen, actualLength, &err);
+	helicsInputGetString(ipt, outputString, maxStringLen, &actualLength, &err);
 
-	mwSize dims[2] = {1, *actualLength};
+	mwSize dims[2] = {1, actualLength};
 	mxArray *_out = mxCreateCharArray(2, dims);
 	mxChar *out_data = (mxChar *)mxGetData(_out);
-	for(int i=0; i<(*actualLength); ++i){
+	for(int i=0; i<actualLength; ++i){
 		out_data[i] = outputString[i];
 	}
 
@@ -6092,17 +6092,17 @@ void _wrap_helicsInputGetVector(int resc, mxArray *resv[], int argc, const mxArr
 
 	double *data = (double *)malloc(maxLength * sizeof(double));
 
-	int *actualSize = (int *)0;
+	int actualSize = 0;
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsInputGetVector(ipt, data, maxLength, actualSize, &err);
+	helicsInputGetVector(ipt, data, maxLength, &actualSize, &err);
 
-	mxDouble *result_data = (mxDouble *)malloc(*actualSize * sizeof(mxDouble));
-	for(int i=0; i<(*actualSize); ++i){
+	mxDouble *result_data = (mxDouble *)malloc(actualSize * sizeof(mxDouble));
+	for(int i=0; i<actualSize; ++i){
 		result_data[i] = (mxDouble)data[i];
 	}
-	mxArray *_out = mxCreateDoubleMatrix(*actualSize, 1, mxREAL);
+	mxArray *_out = mxCreateDoubleMatrix(actualSize, 1, mxREAL);
 	int status = mxSetDoubles(_out, &(result_data[0]));
 
 	if(_out){
@@ -6123,18 +6123,18 @@ void _wrap_helicsInputGetComplexVector(int resc, mxArray *resv[], int argc, cons
 
 	double *data = (double *)malloc(maxLength * sizeof(double));
 
-	int *actualSize = (int *)0;
+	int actualSize = 0;
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsInputGetComplexVector(ipt, data, maxLength, actualSize, &err);
+	helicsInputGetComplexVector(ipt, data, maxLength, &actualSize, &err);
 
-	mxComplexDouble *result_data = (mxComplexDouble *)malloc((*actualSize/2)*sizeof(mxComplexDouble));
-	for(int i=0; i<(*actualSize/2); ++i){
+	mxComplexDouble *result_data = (mxComplexDouble *)malloc((actualSize/2)*sizeof(mxComplexDouble));
+	for(int i=0; i<(actualSize/2); ++i){
 		result_data[i].real = data[2*(i)];
 		result_data[i].imag = data[2*(i) + 1];
 	}
-	mxArray *_out = mxCreateDoubleMatrix(*actualSize/2, 1, mxCOMPLEX);
+	mxArray *_out = mxCreateDoubleMatrix(actualSize/2, 1, mxCOMPLEX);
 	int status = mxSetComplexDoubles(_out, &(result_data[0]));
 
 	if(_out){
@@ -6155,18 +6155,18 @@ void _wrap_helicsInputGetNamedPoint(int resc, mxArray *resv[], int argc, const m
 
 	char *outputString = (char *)malloc(maxStringLen);
 
-	int *actualLength = (int *)0;
+	int actualLength = 0;
 
 	double *val = (double *)0;
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsInputGetNamedPoint(ipt, outputString, maxStringLen, actualLength, val, &err);
+	helicsInputGetNamedPoint(ipt, outputString, maxStringLen, &actualLength, val, &err);
 
-	mwSize dims[2] = {1, *actualLength};
+	mwSize dims[2] = {1, actualLength};
 	mxArray *_out = mxCreateCharArray(2, dims);
 	mxChar *out_data = (mxChar *)mxGetData(_out);
-	for(int i=0; i<(*actualLength); ++i){
+	for(int i=0; i<actualLength; ++i){
 		out_data[i] = outputString[i];
 	}
 
@@ -8332,16 +8332,16 @@ void _wrap_helicsMessageGetBytes(int resc, mxArray *resv[], int argc, const mxAr
 
 	char *data = (char *)malloc(maxMessageLength);
 
-	int *actualSize = (int *)0;
+	int actualSize = 0;
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsMessageGetBytes(message, (void *)data, maxMessageLength, actualSize, &err);
+	helicsMessageGetBytes(message, (void *)data, maxMessageLength, &actualSize, &err);
 
-	mwSize dims[2] = {1,(mwSize)*actualSize};
+	mwSize dims[2] = {1,(mwSize)actualSize};
 	mxArray *_out = mxCreateCharArray(2,dims);
 	mxChar *out_data = (mxChar *)mxGetData(_out);
-	for(int i=0; i<(*actualSize); ++i){
+	for(int i=0; i<actualSize; ++i){
 		out_data[i] = data[i];
 	}
 
