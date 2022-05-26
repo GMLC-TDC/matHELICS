@@ -6,6 +6,10 @@ Attributes:
 	HELICS_FLAG_ENABLE_INIT_ENTRY: value:47	used to clear the HELICS_DELAY_INIT_ENTRY flag in cores
 	HELICS_FLAG_IGNORE: value:999	ignored flag used to test some code paths
 %}
-HELICS_FLAG_DELAY_INIT_ENTRY = 45;
-HELICS_FLAG_ENABLE_INIT_ENTRY = 47;
-HELICS_FLAG_IGNORE = 999;
+classdef HelicsCoreFlags
+	properties (Constant)
+		HELICS_FLAG_DELAY_INIT_ENTRY = int32(45);
+		HELICS_FLAG_ENABLE_INIT_ENTRY = int32(47);
+		HELICS_FLAG_IGNORE = int32(999);
+	end
+end

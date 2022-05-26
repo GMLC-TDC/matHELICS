@@ -1680,10 +1680,12 @@ class HelicsHeaderParser (object):
                     if keywordComment == None:
                         keywordComment = ''
                     docStrBody += f"\n\t{keywordSpelling}: value:{keywordValue}\t{keywordComment}"
-                    enumStrBody += f"\n{keywordSpelling} = {keywordValue};"
+                    enumStrBody += f"\n\t\t{keywordSpelling} = int32({keywordValue});"
                 enumMFile.write(docStrBody)
                 enumMFile.write("\n%}")
+                enumMFile.write(f"\nclassdef {enumSpelling}\n\tproperties (Constant)")
                 enumMFile.write(enumStrBody)
+                enumMFile.write("\n\tend\nend")
                 
         
         
@@ -1984,7 +1986,7 @@ class HelicsHeaderParser (object):
                 "HelicsFilterTypes": argDefaultFunctionCall(argDict.get("spelling",""), position),
                 "HelicsInput": argDefaultFunctionCall(argDict.get("spelling",""), position),
                 "HelicsIterationRequest": argDefaultFunctionCall(argDict.get("spelling",""), position),
-                "HelicsIterationResult_*": argDefaultFunctionCall(argDict.get("spelling",""), position), 
+                "HelicsIterationResult_*": argHelicsErrorPtrFunctionCall(argDict.get("spelling",""), position), 
                 "HelicsMessage": argDefaultFunctionCall(argDict.get("spelling",""), position),
                 "HelicsPublication": argDefaultFunctionCall(argDict.get("spelling",""), position),
                 "HelicsQuery": argDefaultFunctionCall(argDict.get("spelling",""), position),
@@ -2127,7 +2129,7 @@ class HelicsHeaderParser (object):
         
         
         def initializeArgHelicsIterationResultPtr(argName: str) -> str:
-            retStr = f"\tHelicsIterationResult *{argName} = (HelicsIterationResult *)0;\n\n"
+            retStr = f"\tHelicsIterationResult {argName} = HelicsIterationResult.HELICS_ITERATION_RESULT_ERROR;\n\n"
             return retStr
         
         
@@ -2222,8 +2224,8 @@ class HelicsHeaderParser (object):
         
         
         def HelicsIterationResultPtrPostFunctionCall(argName: str) -> str:
-            retStr = f"\tmxArray *{argName}Mx = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);\n"
-            retStr += f"\t*((int64_t*)mxGetData({argName}Mx)) = (int64_t){argName};\n"
+            retStr = f"\tmxArray *{argName}Mx = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);\n"
+            retStr += f"\t*((int32_t*)mxGetData({argName}Mx)) = (int32_t){argName};\n"
             retStr += "\tif(--resc >= 0) {\n"
             retStr += f"\t\t*resv++ = *{argName}Mx;\n"
             retStr += "\t}"
@@ -2323,7 +2325,7 @@ class HelicsHeaderParser (object):
             functionWrapper += initializeArgChar("type", 0)
             functionWrapper += initializeArgChar("name", 1)
             functionWrapper += "\tint arg2 = 0;\n"
-            functionWrapper += "\tchar **arg3 = (char **)0;\n"
+            functionWrapper += "\tchar **arg3;\n"
             functionWrapper += "\tint ii;\n"
             functionWrapper += "\targ2 = static_cast<int>(mxGetNumberOfElements(argv[2]));\n"
             functionWrapper += "\targ3 = (char **)malloc((arg2)*sizeof(char *));\n"
@@ -2383,7 +2385,7 @@ class HelicsHeaderParser (object):
             functionWrapper += initializeArgChar("type", 0)
             functionWrapper += initializeArgChar("name", 1)
             functionWrapper += "\tint arg2 = 0;\n"
-            functionWrapper += "\tchar **arg3 = (char **)0;\n"
+            functionWrapper += "\tchar **arg3;\n"
             functionWrapper += "\tint ii;\n"
             functionWrapper += "\targ2 = static_cast<int>(mxGetNumberOfElements(argv[2]));\n"
             functionWrapper += "\targ3 = (char **)malloc((arg2)*sizeof(char *));\n"
@@ -2437,7 +2439,7 @@ class HelicsHeaderParser (object):
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsFederateInfo", "fi", 0)
             functionWrapper += "\tint arg1 = 0;\n"
-            functionWrapper += "\tchar **arg2 = (char **)0;\n"
+            functionWrapper += "\tchar **arg2;\n"
             functionWrapper += "\tint ii;\n"
             functionWrapper += "\targ1 = static_cast<int>(mxGetNumberOfElements(argv[1]));\n"
             functionWrapper += "\targ2 = (char **)malloc((arg1)*sizeof(char *));\n"
@@ -2925,9 +2927,9 @@ class HelicsHeaderParser (object):
             functionWrapper += "\tint maxStringLen = helicsInputGetStringSize(ipt) + 2;\n\n"
             functionWrapper += "\tchar *outputString = (char *)malloc(maxStringLen);\n\n"
             functionWrapper += "\tint actualLength = 0;\n\n"
-            functionWrapper += "\tdouble *val = (double *)0;\n\n"
+            functionWrapper += "\tdouble val = 0;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
-            functionWrapper += f"\t{functionName}(ipt, outputString, maxStringLen, &actualLength, val, &err);\n\n"
+            functionWrapper += f"\t{functionName}(ipt, outputString, maxStringLen, &actualLength, &val, &err);\n\n"
             functionWrapper += "\tmwSize dims[2] = {1, actualLength};\n"
             functionWrapper += "\tmxArray *_out = mxCreateCharArray(2, dims);\n"
             functionWrapper += "\tmxChar *out_data = (mxChar *)mxGetData(_out);\n"
@@ -2939,7 +2941,7 @@ class HelicsHeaderParser (object):
             functionWrapper += "\t\t*resv++ = _out;\n"
             functionWrapper += "\t}\n\n"
             functionWrapper += "\tif(--resc>=0){\n"
-            functionWrapper += "\t\tmxArray *_out1 = mxCreateDoubleScalar(*val);\n"
+            functionWrapper += "\t\tmxArray *_out1 = mxCreateDoubleScalar(val);\n"
             functionWrapper += "\t\t*resv++ = _out1;\n"
             functionWrapper += "\t}\n\n" 
             functionWrapper += f'{argCharPostFunctionCall("outputString")}\n\n'
