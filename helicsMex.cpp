@@ -3298,11 +3298,11 @@ void _wrap_helicsFederateRequestTimeIterative(int resc, mxArray *resv[], int arg
 
 	HelicsIterationRequest iterate = (HelicsIterationRequest)(mxGetScalar(argv[2]));
 
-	HelicsIterationResult outIteration = HelicsIterationResult.HELICS_ITERATION_RESULT_ERROR;
+	HelicsIterationResult outIteration = HelicsIterationResult::HELICS_ITERATION_RESULT_ERROR;
 
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsTime result = helicsFederateRequestTimeIterative(fed, requestTime, iterate, outIteration, &err);
+	HelicsTime result = helicsFederateRequestTimeIterative(fed, requestTime, iterate, &outIteration, &err);
 
 	mxArray *_out = mxCreateDoubleScalar(result);
 
@@ -3404,11 +3404,11 @@ void _wrap_helicsFederateRequestTimeIterativeAsync(int resc, mxArray *resv[], in
 void _wrap_helicsFederateRequestTimeIterativeComplete(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
 	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
 
-	HelicsIterationResult outIteration = HelicsIterationResult.HELICS_ITERATION_RESULT_ERROR;
+	HelicsIterationResult outIteration = HelicsIterationResult::HELICS_ITERATION_RESULT_ERROR;
 
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsTime result = helicsFederateRequestTimeIterativeComplete(fed, outIteration, &err);
+	HelicsTime result = helicsFederateRequestTimeIterativeComplete(fed, &outIteration, &err);
 
 	mxArray *_out = mxCreateDoubleScalar(result);
 
