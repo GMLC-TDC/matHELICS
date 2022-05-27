@@ -6051,11 +6051,10 @@ void _wrap_helicsInputGetComplex(int resc, mxArray *resv[], int argc, const mxAr
 
 	helicsInputGetComplex(ipt, &(values[0]), &(values[1]), &err);
 
-	mxComplexDouble complex_result;
-	complex_result.real = values[0];
-	complex_result.imag = values[1];
 	mxArray *_out = mxCreateDoubleMatrix(1,1,mxCOMPLEX);
-	int status = mxSetComplexDoubles(_out, &complex_result);
+	mxComplexDouble *pc=mxGetComplexDoubles(_out);
+     pc->real=values[0];
+	 pc->imag=values[1];
 
 	if(_out){
 		--resc;
@@ -6098,7 +6097,7 @@ void _wrap_helicsInputGetVector(int resc, mxArray *resv[], int argc, const mxArr
 
 	helicsInputGetVector(ipt, data, maxLength, &actualSize, &err);
 
-	mxDouble *result_data = (mxDouble *)malloc(actualSize * sizeof(mxDouble));
+	mxDouble *result_data = (mxDouble *)mxMalloc(actualSize * sizeof(mxDouble));
 	for(int i=0; i<actualSize; ++i){
 		result_data[i] = (mxDouble)data[i];
 	}
@@ -6129,7 +6128,7 @@ void _wrap_helicsInputGetComplexVector(int resc, mxArray *resv[], int argc, cons
 
 	helicsInputGetComplexVector(ipt, data, maxLength, &actualSize, &err);
 
-	mxComplexDouble *result_data = (mxComplexDouble *)malloc((actualSize/2)*sizeof(mxComplexDouble));
+	mxComplexDouble *result_data = (mxComplexDouble *)mxMalloc((actualSize/2)*sizeof(mxComplexDouble));
 	for(int i=0; i<(actualSize/2); ++i){
 		result_data[i].real = data[2*(i)];
 		result_data[i].imag = data[2*(i) + 1];
