@@ -32,8 +32,8 @@ end
 try
 helicsFederateInfoSetCoreTypeFromString(fedInfo,'zmq');
 helicsFederateInfoSetCoreInitString(fedInfo,fedinitstring);
-helicsFederateInfoSetTimeProperty(fedInfo,HELICS_PROPERTY_TIME_DELTA, 0.01);
-helicsFederateInfoSetIntegerProperty(fedInfo,HELICS_PROPERTY_INT_LOG_LEVEL,HELICS_LOG_LEVEL_WARNING);
+helicsFederateInfoSetTimeProperty(fedInfo,HelicsProperties.HELICS_PROPERTY_TIME_DELTA, 0.01);
+helicsFederateInfoSetIntegerProperty(fedInfo,HelicsProperties.HELICS_PROPERTY_INT_LOG_LEVEL,HelicsLogLevels.HELICS_LOG_LEVEL_WARNING);
 catch ec
     success=false;
     helicsBrokerDestroy(fedStruct.broker);
@@ -92,7 +92,7 @@ epid1 = helicsFederateRegisterEndpoint(feds.mFed, 'ep1', '');
 testCase.verifyNotEqual(epid1,0);
 helicsFederateEnterExecutingMode(feds.mFed);
 state=helicsFederateGetState(feds.mFed);
-testCase.verifyEqual(state,helics.HELICS_STATE_EXECUTION);
+testCase.verifyEqual(state,helics.HelicsFederateState.HELICS_STATE_EXECUTION);
 success=closeStruct(feds);
 testCase.verifyThat(success,IsTrue);
 catch e

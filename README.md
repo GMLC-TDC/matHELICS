@@ -1,30 +1,25 @@
-# HELICS Libclang Parser
-This repository consists of a single python program, cheader_reader.py. 
-This script is designed to parse the HELICS C API header files which currently
-consist of helics.h and is designed to generate language specific bindings.
-The current supported language conversions are Python and MATLAB.
+# HELICS Matlab interface
+This repository contains the tools and files required for using HELICS with Matlab.
+For HELICS documentation see [HELICS.org](www.helics.org)
 
 ## Installation and Requirements
-### Linux
-1. the libclang-11-dev package.
-	`sudo apt install libclang-11-dev`
-2. Please refer to the requirements.txt file for required python packages.
+For most platforms the installation is as simple as downloading the repository and inside matlab executing the buildHelicsInterface Matlab script.
 
-### Mac
-TODO
+This should download the requried HELICS binary files and compile the platform specific mex file.  This does require a compiler be installed on the system and executing
 
-### Windows
-TODO
+``` matlab
+>> mex -setup
+``` 
 
-## Usage
-`python cheader_reader.py -p -m <full path to HELICS installation locaction>/include/helics/helics.h`
+inside matlab prior to running the script.  
 
--p tells the script to generate the HELICS Python language bindings.
+We anticipate making available some prebuilt mex files for even easier install in the near future for specific platforms.  
 
--m tells the script to generate the HELICS MATLAB bindings
+## Requirements
+Matlab 2018a or greater.  
+intalled compatible compiler to build the mex file
 
-### Output
-- HELICSHeaderClangParseLog.log: a log file for troubleshooting and debugging purposes.
-- capi.py: the HELICS Python language binding file to be used in pyhelics. This file is only generated if the -p option is provided.
-- +helics: the folder containing all the .m functions for the MATLAB bindings. This folder is only generated if the -m option is provided.
-- helicsMex.cpp: the mex file for the HELICS MATLAB bindings. This file is only generated if the -m option is provided.
+### building with custom HELICS version
+If you want to build with a custom HELICS version see [lib clang parser](./docs/libClangParser.md) for the code generation instructions
+
+Note:  just using with an updated HELICS library only requires changing the helics.[dll|so|dylib] file and no other modification is necessary. 
