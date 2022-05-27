@@ -6052,10 +6052,9 @@ void _wrap_helicsInputGetComplex(int resc, mxArray *resv[], int argc, const mxAr
 	helicsInputGetComplex(ipt, &(values[0]), &(values[1]), &err);
 
 	mxArray *_out = mxCreateDoubleMatrix(1,1,mxCOMPLEX);
-	mxComplexDouble *pc=mxGetComplexDoubles(_out);
-     pc->real=values[0];
-	 pc->imag=values[1];
-
+	mxComplexDouble *complex_result = mxGetComplexDoubles(_out);
+	complex_result->real = values[0];
+	complex_result->imag = values[1];
 	if(_out){
 		--resc;
 		*resv++ = _out;

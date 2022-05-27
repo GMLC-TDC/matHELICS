@@ -2895,11 +2895,10 @@ class HelicsHeaderParser (object):
             functionWrapper += "\tdouble values[2];\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(ipt, &(values[0]), &(values[1]), &err);\n\n"
-            functionWrapper += "\tmxComplexDouble complex_result;\n"
-            functionWrapper += "\tcomplex_result.real = values[0];\n"
-            functionWrapper += "\tcomplex_result.imag = values[1];\n"
             functionWrapper += "\tmxArray *_out = mxCreateDoubleMatrix(1,1,mxCOMPLEX);\n"
-            functionWrapper += "\tint status = mxSetComplexDoubles(_out, &complex_result);\n\n"
+            functionWrapper += "\tmxComplexDouble *complex_result = mxGetComplexDoubles(_out);\n"
+            functionWrapper += "\tcomplex_result->real = values[0];\n"
+            functionWrapper += "\tcomplex_result->imag = values[1];\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -3057,7 +3056,7 @@ class HelicsHeaderParser (object):
             functionWrapper += "\tint actualSize = 0;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(ipt, data, maxLength, &actualSize, &err);\n\n"
-            functionWrapper += "\tmxDouble *result_data = (mxDouble *)malloc(actualSize * sizeof(mxDouble));\n"
+            functionWrapper += "\tmxDouble *result_data = (mxDouble *)mxMalloc(actualSize * sizeof(mxDouble));\n"
             functionWrapper += "\tfor(int i=0; i<actualSize; ++i){\n"
             functionWrapper += "\t\tresult_data[i] = (mxDouble)data[i];\n"
             functionWrapper += "\t}\n"
@@ -3108,7 +3107,7 @@ class HelicsHeaderParser (object):
             functionWrapper += "\tint actualSize = 0;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(ipt, data, maxLength, &actualSize, &err);\n\n"
-            functionWrapper += "\tmxComplexDouble *result_data = (mxComplexDouble *)malloc((actualSize/2)*sizeof(mxComplexDouble));\n"
+            functionWrapper += "\tmxComplexDouble *result_data = (mxComplexDouble *)mxMalloc((actualSize/2)*sizeof(mxComplexDouble));\n"
             functionWrapper += "\tfor(int i=0; i<(actualSize/2); ++i){\n"
             functionWrapper += "\t\tresult_data[i].real = data[2*(i)];\n"
             functionWrapper += "\t\tresult_data[i].imag = data[2*(i) + 1];\n"
