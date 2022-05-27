@@ -9,7 +9,7 @@ This should download the requried HELICS binary files and compile the platform s
 
 ``` matlab
 >> mex -setup
-``` 
+```
 
 inside matlab prior to running the script.  
 
