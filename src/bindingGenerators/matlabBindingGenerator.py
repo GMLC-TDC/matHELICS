@@ -206,7 +206,7 @@ class MatlabBindingGenerator(object):
                     varFile.write("\tend\n")
                     varFile.write("\tv = vInitialized;\n")
                     varFile.write("end\n")
-            elif isinstance(varValue, float) or isinstance(varValue, int):
+            elif isinstance(varValue, float):
                 with open(f"matlabBindings/+helics/{varSpelling}.m", "w") as varFile:
                     if varComment != None:
                         varFile.write("%{\n")
@@ -216,6 +216,19 @@ class MatlabBindingGenerator(object):
                     varFile.write("\tpersistent vInitialized;\n")
                     varFile.write("\tif isempty(vInitialized)\n")
                     varFile.write(f"\t\tvInitialized = {varValue};\n")
+                    varFile.write("\tend\n")
+                    varFile.write("\tv = vInitialized;\n")
+                    varFile.write("end\n")
+            elif isinstance(varValue, int):
+                with open(f"matlabBindings/+helics/{varSpelling}.m", "w") as varFile:
+                    if varComment != None:
+                        varFile.write("%{\n")
+                        varFile.write(f"{varComment}\n")
+                        varFile.write("%}\n")
+                    varFile.write(f"function v = {varSpelling}()\n")
+                    varFile.write("\tpersistent vInitialized;\n")
+                    varFile.write("\tif isempty(vInitialized)\n")
+                    varFile.write(f"\t\tvInitialized = int32({varValue});\n")
                     varFile.write("\tend\n")
                     varFile.write("\tv = vInitialized;\n")
                     varFile.write("end\n")
@@ -468,23 +481,23 @@ class MatlabBindingGenerator(object):
                 "Double": returnDoubleTomxArray(),
                 "Int": returnIntTomxArray(),
                 "Void_*": returnVoidPtrTomxArray(),
-                "HelicsBool": returnIntTomxArray(),
+                "HelicsBool": returnEnumTomxArray(),
                 "HelicsBroker": returnVoidPtrTomxArray(),
                 "HelicsCore": returnVoidPtrTomxArray(),
                 "HelicsDataBuffer": returnVoidPtrTomxArray(),
                 "HelicsEndpoint": returnVoidPtrTomxArray(),
                 "HelicsFederate": returnVoidPtrTomxArray(),
                 "HelicsFederateInfo": returnVoidPtrTomxArray(),
-                "HelicsFederateState": returnIntTomxArray(),
+                "HelicsFederateState": returnEnumTomxArray(),
                 "HelicsFilter": returnVoidPtrTomxArray(),
                 "HelicsInput": returnVoidPtrTomxArray(),
-                "HelicsIterationResult": returnIntTomxArray(),
+                "HelicsIterationResult": returnEnumTomxArray(),
                 "HelicsMessage": returnVoidPtrTomxArray(),
                 "HelicsPublication": returnVoidPtrTomxArray(),
                 "HelicsQuery": returnVoidPtrTomxArray(),
                 "HelicsTime": returnDoubleTomxArray(),
                 "HelicsTranslator": returnVoidPtrTomxArray(),
-                "int32_t": returnIntTomxArray(),
+                "int32_t": returnEnumTomxArray(),
                 "int64_t": returnIntTomxArray(),
             }
             retStr = ""           
@@ -656,6 +669,12 @@ class MatlabBindingGenerator(object):
         def returnIntTomxArray() -> str:
             retStr = "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);\n"
             retStr += "\t*((int64_t*)mxGetData(_out)) = (int64_t)result;\n\n"
+            return retStr
+        
+        
+        def returnEnumTomxArray() -> str:
+            retStr = "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);\n"
+            retStr += "\t*((int32_t*)mxGetData(_out)) = (int32_t)result;\n\n"
             return retStr
         
         
@@ -1148,7 +1167,7 @@ class MatlabBindingGenerator(object):
             functionWrapper += f"\tHelicsIterationRequest iterate = (HelicsIterationRequest)(mxGetScalar(argv[2]));\n\n"
             functionWrapper += initializeArgHelicsIterationResultPtr("outIteration")
             functionWrapper += initializeArgHelicsErrorPtr("err")
-            functionWrapper += f"\tHelicsTime result = {functionName}(fed, requestTime, iterate, outIteration, &err);\n\n"
+            functionWrapper += f"\tHelicsTime result = {functionName}(fed, requestTime, iterate, &outIteration, &err);\n\n"
             functionWrapper += returnDoubleTomxArray()
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
@@ -1191,15 +1210,15 @@ class MatlabBindingGenerator(object):
             functionWrapper += initializeArgHelicsClass("HelicsFederate", "fed", 0)
             functionWrapper += initializeArgHelicsIterationResultPtr("outIteration")
             functionWrapper += initializeArgHelicsErrorPtr("err")
-            functionWrapper += f"\tHelicsTime result = {functionName}(fed, outIteration, &err);\n\n"
+            functionWrapper += f"\tHelicsTime result = {functionName}(fed, &outIteration, &err);\n\n"
             functionWrapper += returnDoubleTomxArray()
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
             functionWrapper += "\t}\n\n"
             functionWrapper += "\tif(--resc>=0){\n"
-            functionWrapper += "\t\tmxArray *_out1 = mxCreateNumericMatrix(1,1,mxINT64_CLASS,mxREAL);\n"
-            functionWrapper += "\t\t*((int64_t*)mxGetData(_out1)) = (int64_t)outIteration;\n"
+            functionWrapper += "\t\tmxArray *_out1 = mxCreateNumericMatrix(1,1,mxINT32_CLASS,mxREAL);\n"
+            functionWrapper += "\t\t*((int32_t*)mxGetData(_out1)) = (int32_t)outIteration;\n"
             functionWrapper += "\t\t*resv++ = _out1;\n"
             functionWrapper += "\t}\n\n"            
             functionWrapper += f'{argHelicsErrorPtrPostFunctionCall("err")}\n'
@@ -1329,11 +1348,10 @@ class MatlabBindingGenerator(object):
             functionWrapper += "\tdouble values[2];\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(ipt, &(values[0]), &(values[1]), &err);\n\n"
-            functionWrapper += "\tmxComplexDouble complex_result;\n"
-            functionWrapper += "\tcomplex_result.real = values[0];\n"
-            functionWrapper += "\tcomplex_result.imag = values[1];\n"
             functionWrapper += "\tmxArray *_out = mxCreateDoubleMatrix(1,1,mxCOMPLEX);\n"
-            functionWrapper += "\tint status = mxSetComplexDoubles(_out, &complex_result);\n\n"
+            functionWrapper += "\tmxComplexDouble *complex_result = mxGetComplexDoubles(_out);\n"
+            functionWrapper += "\tcomplex_result->real = values[0];\n"
+            functionWrapper += "\tcomplex_result->imag = values[1];\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -1383,10 +1401,10 @@ class MatlabBindingGenerator(object):
             functionWrapper += "\tdouble val = 0;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(ipt, outputString, maxStringLen, &actualLength, &val, &err);\n\n"
-            functionWrapper += "\tmwSize dims[2] = {1, actualLength};\n"
+            functionWrapper += "\tmwSize dims[2] = {1, actualLength-1};\n"
             functionWrapper += "\tmxArray *_out = mxCreateCharArray(2, dims);\n"
             functionWrapper += "\tmxChar *out_data = (mxChar *)mxGetData(_out);\n"
-            functionWrapper += "\tfor(int i=0; i<actualLength; ++i){\n"
+            functionWrapper += "\tfor(int i=0; i<(actualLength-1); ++i){\n"
             functionWrapper += "\t\tout_data[i] = outputString[i];\n"
             functionWrapper += "\t}\n\n"
             functionWrapper += "\tif(_out){\n"
@@ -1439,10 +1457,10 @@ class MatlabBindingGenerator(object):
             functionWrapper += "\tint actualLength = 0;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(ipt, outputString, maxStringLen, &actualLength, &err);\n\n"
-            functionWrapper += "\tmwSize dims[2] = {1, actualLength};\n"
+            functionWrapper += "\tmwSize dims[2] = {1, actualLength - 1};\n"
             functionWrapper += "\tmxArray *_out = mxCreateCharArray(2, dims);\n"
             functionWrapper += "\tmxChar *out_data = (mxChar *)mxGetData(_out);\n"
-            functionWrapper += "\tfor(int i=0; i<actualLength; ++i){\n"
+            functionWrapper += "\tfor(int i=0; i<(actualLength-1); ++i){\n"
             functionWrapper += "\t\tout_data[i] = outputString[i];\n"
             functionWrapper += "\t}\n\n"
             functionWrapper += "\tif(_out){\n"
@@ -1491,7 +1509,7 @@ class MatlabBindingGenerator(object):
             functionWrapper += "\tint actualSize = 0;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(ipt, data, maxLength, &actualSize, &err);\n\n"
-            functionWrapper += "\tmxDouble *result_data = (mxDouble *)malloc(actualSize * sizeof(mxDouble));\n"
+            functionWrapper += "\tmxDouble *result_data = (mxDouble *)mxMalloc(actualSize * sizeof(mxDouble));\n"
             functionWrapper += "\tfor(int i=0; i<actualSize; ++i){\n"
             functionWrapper += "\t\tresult_data[i] = (mxDouble)data[i];\n"
             functionWrapper += "\t}\n"
@@ -1542,7 +1560,7 @@ class MatlabBindingGenerator(object):
             functionWrapper += "\tint actualSize = 0;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(ipt, data, maxLength, &actualSize, &err);\n\n"
-            functionWrapper += "\tmxComplexDouble *result_data = (mxComplexDouble *)malloc((actualSize/2)*sizeof(mxComplexDouble));\n"
+            functionWrapper += "\tmxComplexDouble *result_data = (mxComplexDouble *)mxMalloc((actualSize/2)*sizeof(mxComplexDouble));\n"
             functionWrapper += "\tfor(int i=0; i<(actualSize/2); ++i){\n"
             functionWrapper += "\t\tresult_data[i].real = data[2*(i)];\n"
             functionWrapper += "\t\tresult_data[i].imag = data[2*(i) + 1];\n"
@@ -1637,7 +1655,6 @@ class MatlabBindingGenerator(object):
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
             functionWrapper += "\t}\n\n"
-            functionWrapper += f'{argCharPostFunctionCall("value")}\n\n'
             functionWrapper += f'{argHelicsErrorPtrPostFunctionCall("err")}\n'
             functionWrapper += "}\n\n\n"
             functionMainElements = f"\tcase {cursorIdx}:\n"
@@ -2926,13 +2943,12 @@ class MatlabBindingGenerator(object):
             boilerPlateStr = "\tdefault:\n"
             boilerPlateStr += "\t\tmexErrMsgIdAndTxt(\"helics:mexFunction\",\"An unknown function id was encountered. Call the mex function with a valid function id.\");\n"
             boilerPlateStr += "\t}\n}\n\n"
-            return boilerPlateStr
-        
+            return boilerPlateStr        
         
         if not os.path.exists("matlabBindings/+helics"):
             os.makedirs("matlabBindings/+helics")
-            shutil.copy2("extra_m_codes/helicsInputSetDefault.m", "matlabBindings/+helics")
-            shutil.copy2("extra_m_codes/helicsPublicationPublish.m", "matlabBindings/+helics")
+            #shutil.copy2("extra_m_codes/helicsInputSetDefault.m", "matlabBindings/+helics")
+            #shutil.copy2("extra_m_codes/helicsPublicationPublish.m", "matlabBindings/+helics")
         helicsMexStr = ""
         helicsMexWrapperFunctions = []
         helicsMexMainFunctionElements = []
