@@ -6399,8 +6399,6 @@ void _wrap_helicsInputSetDefaultComplex(int resc, mxArray *resv[], int argc, con
 		*resv++ = _out;
 	}
 
-	free(value);
-
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
 	}

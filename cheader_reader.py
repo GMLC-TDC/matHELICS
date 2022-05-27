@@ -3203,7 +3203,6 @@ class HelicsHeaderParser (object):
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
             functionWrapper += "\t}\n\n"
-            functionWrapper += f'{argCharPostFunctionCall("value")}\n\n'
             functionWrapper += f'{argHelicsErrorPtrPostFunctionCall("err")}\n'
             functionWrapper += "}\n\n\n"
             functionMainElements = f"\tcase {cursorIdx}:\n"
