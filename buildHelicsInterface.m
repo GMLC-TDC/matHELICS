@@ -1,5 +1,5 @@
 
-HelicsVersion='3.2.0';
+HelicsVersion='3.2.1';
 % set up platform specific names and locations
 if ismac
     basePath=['Helics-',HelicsVersion,'-macOS-universal2'];
