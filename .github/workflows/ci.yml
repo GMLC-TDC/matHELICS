@@ -15,21 +15,19 @@ jobs:
       matrix:
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
-  steps:
-    - name: Check out repository
-      uses: actions/checkout@v3
-    - name: Install latest HELICS release
-      uses: gmlc-tdc/helics-action/install@main
-    - name: Set up MATLAB
-      uses: matlab-actions/setup-matlab@v1.1.1
-    - name: Set up MEX
-      uses: matlab-actions/run-command@v1
-      with:
-        command: 
-          mex -setup
-    - name: Build matHELICS
-      uses: matlab-actions/run-command@v1
-      with:
-        command:
-          buildHelicsInterface 
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - name: Install latest HELICS release
+        uses: gmlc-tdc/helics-action/install@main
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v1.1.1
+      - name: Set up MEX
+        uses: matlab-actions/run-command@v1
+        with:
+          command: mex -setup
+      - name: Build matHELICS
+        uses: matlab-actions/run-command@v1
+        with:
+          command: buildHelicsInterface 
       #mex('-lhelics','-R2018a',['-I./',basePath,'/include/'],['-L./',basePath,'/lib'],['-L./',basePath,'/bin'],'helicsMex.cpp')
