@@ -15,7 +15,7 @@ if ismac
     mex('-lhelics','-R2018a',['-I./',basePath,'/include/'],['-L./',basePath,'/lib'],'helicsMex.cpp')
 elseif isunix
     basePath=['Helics-',HelicsVersion,'-Linux-x86_64'];
-    baseFile=['Helics-shared-',HelicsVersion,'Linux-x86_64.tar.gz'];
+    baseFile=['Helics-shared-',HelicsVersion,'-Linux-x86_64.tar.gz'];
     % download the helics library if needed
     if (~exist(fullfile(basePath,'include/helics/helics.h'),'file'))
         if (~exist('helicsTar.tar.gz','file'))
