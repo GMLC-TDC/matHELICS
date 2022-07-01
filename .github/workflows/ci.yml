@@ -31,3 +31,6 @@ jobs:
         with:
           command: buildHelicsInterface 
       #mex('-lhelics','-R2018a',['-I./',basePath,'/include/'],['-L./',basePath,'/lib'],['-L./',basePath,'/bin'],'helicsMex.cpp')
+      # If tests are using MATLAB Unit Testing framework, there is an action that can be run; otherwise run a matlab command
+      #- name: Run MATLAB Unit Tests
+      #  uses: matlab-actions/run-tests@v1
