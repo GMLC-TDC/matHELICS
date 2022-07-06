@@ -1,0 +1,36 @@
+name: Test matHELICS
+
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+  #schedule:
+  #  - cron: "35 10 * * 1,3,5 # running early in the morning (UTC)
+
+jobs:
+  ci-test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - name: Install latest HELICS release
+        uses: gmlc-tdc/helics-action/install@main
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v1.1.1
+      - name: Set up MEX
+        uses: matlab-actions/run-command@v1
+        with:
+          command: mex -setup
+      - name: Build matHELICS
+        uses: matlab-actions/run-command@v1
+        with:
+          command: buildHelicsInterface 
+      #mex('-lhelics','-R2018a',['-I./',basePath,'/include/'],['-L./',basePath,'/lib'],['-L./',basePath,'/bin'],'helicsMex.cpp')
+      # If tests are using MATLAB Unit Testing framework, there is an action that can be run; otherwise run a matlab command
+      #- name: Run MATLAB Unit Tests
+      #  uses: matlab-actions/run-tests@v1
