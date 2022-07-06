@@ -258,7 +258,7 @@ class MatlabBindingGenerator(object):
                 "helicsInputSetDefaultComplex",
                 "helicsInputSetDefaultVector",
                 "helicsInputSetDefaultComplexVector",
-                "helicsIntToBytes",
+                "helicsIntegerToBytes",
                 "helicsMessageAppendData",
                 "helicsMessageGetBytes",
                 "helicsMessageSetData",
@@ -278,15 +278,27 @@ class MatlabBindingGenerator(object):
                 "helicsFederateSetStateChangeCallback",
                 "helicsFederateSetTimeRequestEntryCallback",
                 "helicsFederateSetTimeRequestReturnCallback",
+                "helicsTranslatorSetCustomCallback",
                 "helicsStringToBytes",
-                "helicsBoolToBytes",
+                "helicsRawStringToBytes",
+                "helicsBooleanToBytes",
                 "helicsCharToBytes",
                 "helicsTimeToBytes",
                 "helicsComplexToBytes",
+                "helicsComplexObjectToBytes",
                 "helicsVectorToBytes",
+                "helicsNamedPointToBytes",
+                "helicsComplexVectorToBytes",
+                "helicsDataBufferToString",
+                "helicsDataBufferToRawString",
+                "helicsDataBufferToComplex",
+                "helicsDataBufferToComplexObject",
+                "helicsDataBufferToVector",
+                "helicsDataBufferToComplexVector",
+                "helicsDataBufferToNamedPoint",
                 "helicsCloseLibrary"
             ]
-            functionsToIgnore = ["helicsErrorInitialize", "helicsErrorClear"]
+            functionsToIgnore = ["helicsErrorInitialize", "helicsErrorClear", "helicsComplexObjectToBytes"]
             functionName = functionDict.get("spelling")
             if functionName in modifiedMatlabFunctionList:
                 return createModifiedMatlabFunction(functionDict, cursorIdx)
@@ -745,14 +757,26 @@ class MatlabBindingGenerator(object):
                 "helicsFederateSetStateChangeCallback": helicsFederateSetStateChangeCallbackMatlabWrapper,
                 "helicsFederateSetTimeRequestEntryCallback": helicsFederateSetTimeRequestEntryCallbackMatlabWrapper,
                 "helicsFederateSetTimeRequestReturnCallback": helicsFederateSetTimeRequestReturnCallbackMatlabWrapper,
-                "helicsIntToBytes": helicsIntToBytesMatlabWrapper,
+                "helicsIntegerToBytes": helicsIntToBytesMatlabWrapper,
                 "helicsDoubleToBytes": helicsDoubleToBytesMatlabWrapper,
                 "helicsStringToBytes": helicsStringToBytesMatlabWrapper,
-                "helicsBoolToBytes": helicsBoolToBytesMatlabWrapper,
+                "helicsRawStringToBytes": helicsRawStringToBytesMatlabWrapper,
+                "helicsBooleanToBytes": helicsBoolToBytesMatlabWrapper,
                 "helicsCharToBytes": helicsCharToBytesMatlabWrapper,
                 "helicsTimeToBytes": helicsTimeToBytesMatlabWrapper,
                 "helicsComplexToBytes": helicsComplexToBytesMatlabWrapper,
+                "helicsComplexObjectToBytes": helicsComplexObjectToBytesMatlabWrapper,
                 "helicsVectorToBytes": helicsVectorToBytesMatlabWrapper,
+                "helicsNamedPointToBytes": helicsNamedPointToBytesMatlabWrapper,
+                "helicsComplexVectorToBytes": helicsComplexVectorToBytesMatlabWrapper,
+                "helicsDataBufferToString": helicsDataBufferToStringMatlabWrapper,
+                "helicsDataBufferToRawString": helicsDataBufferToRawStringMatlabWrapper,
+                "helicsDataBufferToComplex": helicsDataBufferToComplexMatlabWrapper,
+                "helicsDataBufferToComplexObject": helicsDataBufferToComplexObjectMatlabWrapper,
+                "helicsDataBufferToVector": helicsDataBufferToVectorMatlabWrapper,
+                "helicsDataBufferToComplexVector": helicsDataBufferToComplexVectorMatlabWrapper,
+                "helicsDataBufferToNamedPoint": helicsDataBufferToNamedPointMatlabWrapper,
+                "helicsTranslatorSetCustomCallback": helicsTranslatorSetCustomCallbackMatlabWrapper,
                 "helicsCloseLibrary": helicsCloseLibraryMatlabWrapper
             }
             functionComment, functionWrapper, functionMainElement = modifiedPythonFunctionList[functionDict.get("spelling","")](functionDict, cursorIdx)
@@ -2070,7 +2094,7 @@ class MatlabBindingGenerator(object):
             if arg0.get("spelling","") != "buffer" or arg0.get("type", "") != "HelicsQueryBuffer":
                 raise RuntimeError("the function signature for helicsQueryBufferFill has changed!")
             arg1 = functionDict.get("arguments", {}).get(1, {})
-            if arg1.get("spelling","") != "str" or arg1.get("pointer_type", "") != "Char_S_*":
+            if arg1.get("spelling","") != "queryResult" or arg1.get("pointer_type", "") != "Char_S_*":
                 raise RuntimeError("the function signature for helicsQueryBufferFill has changed!")
             arg2 = functionDict.get("arguments", {}).get(2, {})
             if arg2.get("spelling","") != "strSize" or arg2.get("type", "") != "Int":
@@ -2083,14 +2107,14 @@ class MatlabBindingGenerator(object):
             functionComment += "\tSet the data for a query callback.\n\n"
             functionComment += "\t@details There are many queries that HELICS understands directly, but it is occasionally useful to have a federate be able to respond to specific queries with answers specific to a federate.\n\n"
             functionComment += "\t@param buffer The buffer received in a helicsQueryCallback.\n"
-            functionComment += "\t@param string The string with the data to fill the buffer with.\n"
+            functionComment += "\t@param queryResult The string with the data to fill the buffer with.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsQueryBuffer", "buffer", 0)
-            functionWrapper += initializeArgChar("str", 1)
+            functionWrapper += initializeArgChar("queryResult", 1)
             functionWrapper += "\tint strSize = strLength - 1;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
-            functionWrapper += f"\t{functionName}(buffer, str, strSize, &err);\n\n"
+            functionWrapper += f"\t{functionName}(buffer, queryResult, strSize, &err);\n\n"
             functionWrapper += "\tmxArray *_out = (mxArray *)0;\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
@@ -2615,17 +2639,92 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
+        def helicsTranslatorSetCustomCallbackMatlabWrapper(functionDict: dict(), cursorIdx: int):
+            #check to see if function signiture changed
+            argNum = len(functionDict.get("arguments", {}).keys())
+            if argNum != 5:
+                raise RuntimeError("the function signature for helicsTranslatorSetCustomCallback has changed!")
+            arg0 = functionDict.get("arguments", {}).get(0, {})
+            if arg0.get("spelling","") != "translator" or arg0.get("type", "") != "HelicsTranslator":
+                raise RuntimeError("the function signature for helicsFederateSetTimeRequestReturnCallback has changed!")
+            arg1 = functionDict.get("arguments", {}).get(1, {})
+            if arg1.get("spelling","") != "toMessageCall" or arg1.get("pointer_type", "") != "FunctionProto_*":
+                raise RuntimeError("the function signature for helicsTranslatorSetCustomCallback has changed!")
+            arg2 = functionDict.get("arguments", {}).get(2, {})
+            if arg2.get("spelling","") != "toValueCall" or arg2.get("pointer_type", "") != "FunctionProto_*":
+                raise RuntimeError("the function signature for helicsTranslatorSetCustomCallback has changed!")
+            arg3 = functionDict.get("arguments", {}).get(3, {})
+            if arg3.get("spelling","") != "userdata" or arg3.get("pointer_type", "") != "Void_*":
+                raise RuntimeError("the function signature for helicsTranslatorSetCustomCallback has changed!")
+            arg4 = functionDict.get("arguments", {}).get(4, {})
+            if arg4.get("spelling","") != "err" or arg4.get("pointer_type", "") != "HelicsError_*":
+                raise RuntimeError("the function signature for helicsTranslatorSetCustomCallback has changed!")
+            functionName = functionDict.get("spelling","")
+            functionComment = "%{\n"
+            functionComment += "\tSet a general callback for a custom Translator.n\n"
+            functionComment += "\t@details Add a pair of custom callbacks for running a translator operation in the C shared library.\n"
+            functionComment += "\t@param translator The translator object to set the callbacks for.\n"
+            functionComment += "\t@param toMessageCall A callback with the signature void(HelicsDataBuffer, HelicsMessage).\n"
+            functionComment += "\t@param toValueCall A callback with the signature void(HelicsMessage, HelicsDataBuffer).\n"
+            functionComment += "%}\n"
+            functionWrapper = "void matlabToMessageCallCallback(HelicsDataBuffer value, HelicsMessage message, void *userData){\n"
+            functionWrapper += "\tmxArray *lhs;\n"
+            functionWrapper += "\tmxArray *rhs[3];\n"
+            functionWrapper += "\trhs[0] = reinterpret_cast<mxArray **>(userData)[0];\n"
+            functionWrapper += "\trhs[1] = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
+            functionWrapper += "\t*((uint64_t*)mxGetData(rhs[1])) = (uint64_t)value;\n\n"
+            functionWrapper += "\trhs[2] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);\n"
+            functionWrapper += "\t*((int64_t*)mxGetData(rhs[2])) =  (int64_t)message;\n"
+            functionWrapper += '\tint status = mexCallMATLAB(0,&lhs,3,rhs,"feval");\n'
+            functionWrapper += "\tmxDestroyArray(lhs);\n"
+            functionWrapper += "\tmxDestroyArray(rhs[1]);\n"
+            functionWrapper += "\tmxDestroyArray(rhs[2]);\n"
+            functionWrapper += "}\n\n"
+            functionWrapper = "void matlabToValueCallCallback(HelicsMessage message, HelicsDataBuffer value, void *userData){\n"
+            functionWrapper += "\tmxArray *lhs;\n"
+            functionWrapper += "\tmxArray *rhs[3];\n"
+            functionWrapper += "\trhs[0] = reinterpret_cast<mxArray **>(userData)[1];\n"
+            functionWrapper += "\trhs[1] = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
+            functionWrapper += "\t*((uint64_t*)mxGetData(rhs[1])) = (uint64_t)message;\n\n"
+            functionWrapper += "\trhs[2] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);\n"
+            functionWrapper += "\t*((int64_t*)mxGetData(rhs[2])) =  (int64_t)value;\n"
+            functionWrapper += '\tint status = mexCallMATLAB(0,&lhs,3,rhs,"feval");\n'
+            functionWrapper += "\tmxDestroyArray(lhs);\n"
+            functionWrapper += "\tmxDestroyArray(rhs[1]);\n"
+            functionWrapper += "\tmxDestroyArray(rhs[2]);\n"
+            functionWrapper += "}\n\n"
+            functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
+            functionWrapper += initializeArgHelicsClass("HelicsTranslator", "translator", 0)
+            functionWrapper += "\tmxArray *callbacks[2];\n"
+            functionWrapper += "\tcallbacks[0] = argv[1];\n"
+            functionWrapper += "\tcallbacks[1] = argv[2];\n"
+            functionWrapper += "\tvoid *userData = callbacks;\n"
+            functionWrapper += initializeArgHelicsErrorPtr("err")
+            functionWrapper += f"\t{functionName}(translator, &matlabToMessageCallCallback, &matlabToValueCallCallback, userData, &err);\n\n"
+            functionWrapper += "\tmxArray *_out = (mxArray *)0;\n"
+            functionWrapper += "\tif(_out){\n"
+            functionWrapper += "\t\t--resc;\n"
+            functionWrapper += "\t\t*resv++ = _out;\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += f'{argHelicsErrorPtrPostFunctionCall("err")}\n'
+            functionWrapper += "}\n\n\n"
+            functionMainElements = f"\tcase {cursorIdx}:\n"
+            functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
+            functionMainElements += f"\t\tbreak;\n"
+            return functionComment, functionWrapper, functionMainElements
+        
+        
         def helicsIntToBytesMatlabWrapper(functionDict: dict(), cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 2:
-                raise RuntimeError("the function signature for helicsIntToBytes has changed!")
+                raise RuntimeError("the function signature for helicsIntegerToBytes has changed!")
             arg0 = functionDict.get("arguments", {}).get(0, {})
             if arg0.get("spelling","") != "value" or arg0.get("type", "") != "int64_t":
-                raise RuntimeError("the function signature for helicsIntToBytes has changed!")
+                raise RuntimeError("the function signature for helicsIntegerToBytes has changed!")
             arg1 = functionDict.get("arguments", {}).get(1, {})
             if arg1.get("spelling","") != "data" or arg1.get("type", "") != "HelicsDataBuffer":
-                raise RuntimeError("the function signature for helicsIntToBytes has changed!")
+                raise RuntimeError("the function signature for helicsIntegerToBytes has changed!")
             functionName = functionDict.get("spelling","")
             functionComment = "%{\n"
             functionComment += "\tconvert an int to serialized bytes.\n\n"
@@ -2689,7 +2788,7 @@ class MatlabBindingGenerator(object):
             if argNum != 2:
                 raise RuntimeError("the function signature for helicsStringToBytes has changed!")
             arg0 = functionDict.get("arguments", {}).get(0, {})
-            if arg0.get("spelling","") != "str" or arg0.get("pointer_type", "") != "Char_S_*":
+            if arg0.get("spelling","") != "value" or arg0.get("pointer_type", "") != "Char_S_*":
                 raise RuntimeError("the function signature for helicsStringToBytes has changed!")
             arg1 = functionDict.get("arguments", {}).get(1, {})
             if arg1.get("spelling","") != "data" or arg1.get("type", "") != "HelicsDataBuffer":
@@ -2701,9 +2800,46 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@return HelicsDataBuffer.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
+            functionWrapper += initializeArgChar('value',0)
+            functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(static_cast<int32_t>(strLength));\n\n"
+            functionWrapper += f"\tint32_t result = {functionName}(value, data);\n\n"
+            functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
+            functionWrapper += "\t*((uint64_t*)mxGetData(_out)) = (uint64_t)data;\n\n"
+            functionWrapper += "\tif(_out){\n"
+            functionWrapper += "\t\t--resc;\n"
+            functionWrapper += "\t\t*resv++ = _out;\n"
+            functionWrapper += "\t}\n"
+            functionWrapper += "}\n\n\n"
+            functionMainElements = f"\tcase {cursorIdx}:\n"
+            functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
+            functionMainElements += f"\t\tbreak;\n"
+            return functionComment, functionWrapper, functionMainElements
+        
+        
+        def helicsRawStringToBytesMatlabWrapper(functionDict: dict(), cursorIdx: int):
+            #check to see if function signiture changed
+            argNum = len(functionDict.get("arguments", {}).keys())
+            if argNum != 3:
+                raise RuntimeError("the function signature for helicsRawStringToBytes has changed!")
+            arg0 = functionDict.get("arguments", {}).get(0, {})
+            if arg0.get("spelling","") != "str" or arg0.get("pointer_type", "") != "Char_S_*":
+                raise RuntimeError("the function signature for helicsRawStringToBytes has changed!")
+            arg1 = functionDict.get("arguments", {}).get(1, {})
+            if arg1.get("spelling","") != "stringSize" or arg1.get("type", "") != "Int":
+                raise RuntimeError("the function signature for helicsRawStringToBytes has changed!")
+            arg2 = functionDict.get("arguments", {}).get(2, {})
+            if arg2.get("spelling","") != "data" or arg2.get("type", "") != "HelicsDataBuffer":
+                raise RuntimeError("the function signature for helicsRawStringToBytes has changed!")
+            functionName = functionDict.get("spelling","")
+            functionComment = "%{\n"
+            functionComment += "\tconvert a raw string to serialized bytes.\n\n"
+            functionComment += "\t@param str The string.\n"
+            functionComment += "\t@return HelicsDataBuffer.\n"
+            functionComment += "%}\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgChar('str',0)
             functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(static_cast<int32_t>(strLength));\n\n"
-            functionWrapper += f"\tint32_t result = {functionName}(str, data);\n\n"
+            functionWrapper += f"\tint32_t result = {functionName}(str, (int)strLength, data);\n\n"
             functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
             functionWrapper += "\t*((uint64_t*)mxGetData(_out)) = (uint64_t)data;\n\n"
             functionWrapper += "\tif(_out){\n"
@@ -2721,13 +2857,13 @@ class MatlabBindingGenerator(object):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 2:
-                raise RuntimeError("the function signature for helicsBoolToBytes has changed!")
+                raise RuntimeError("the function signature for helicsBooleanToBytes has changed!")
             arg0 = functionDict.get("arguments", {}).get(0, {})
             if arg0.get("spelling","") != "value" or arg0.get("type", "") != "HelicsBool":
-                raise RuntimeError("the function signature for helicsBoolToBytes has changed!")
+                raise RuntimeError("the function signature for helicsBooleanToBytes has changed!")
             arg1 = functionDict.get("arguments", {}).get(1, {})
             if arg1.get("spelling","") != "data" or arg1.get("type", "") != "HelicsDataBuffer":
-                raise RuntimeError("the function signature for helicsBoolToBytes has changed!")
+                raise RuntimeError("the function signature for helicsBooleanToBytes has changed!")
             functionName = functionDict.get("spelling","")
             functionComment = "%{\n"
             functionComment += "\tconvert a HelicsBool to serialized bytes.\n\n"
@@ -2856,6 +2992,41 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
+        def helicsComplexObjectToBytesMatlabWrapper(functionDict: dict(), cursorIdx: int):
+            #check to see if function signiture changed
+            argNum = len(functionDict.get("arguments", {}).keys())
+            if argNum != 2:
+                raise RuntimeError("the function signature for helicsComplexObjectToBytes has changed!")
+            arg0 = functionDict.get("arguments", {}).get(0, {})
+            if arg0.get("spelling","") != "value" or arg0.get("type", "") != "HelicsComplex":
+                raise RuntimeError("the function signature for helicsComplexObjectToBytes has changed!")
+            arg1 = functionDict.get("arguments", {}).get(1, {})
+            if arg1.get("spelling","") != "data" or arg1.get("type", "") != "HelicsDataBuffer":
+                raise RuntimeError("the function signature for helicsComplexObjectToBytes has changed!")
+            functionName = functionDict.get("spelling","")
+            functionComment = "%{\n"
+            functionComment += "\tconvert a complex to serialized bytes.\n\n"
+            functionComment += "\t@param value The complex value.\n"
+            functionComment += "\t@return HelicsDataBuffer.\n"
+            functionComment += "%}\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
+            functionWrapper += "\tmxComplexDouble *value = mxGetComplexDoubles(argv[1]);\n\n"
+            functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(sizeof(HelicsComplex));\n\n"
+            functionWrapper += "\tHelicsComplex vObj = {.real = value->real, .imag = value->imag};\n\n"
+            functionWrapper += f"\tint32_t result = {functionName}(vObj, data);\n\n"
+            functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
+            functionWrapper += "\t*((uint64_t*)mxGetData(_out)) = (uint64_t)data;\n\n"
+            functionWrapper += "\tif(_out){\n"
+            functionWrapper += "\t\t--resc;\n"
+            functionWrapper += "\t\t*resv++ = _out;\n"
+            functionWrapper += "\t}\n"
+            functionWrapper += "}\n\n\n"
+            functionMainElements = f"\tcase {cursorIdx}:\n"
+            functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
+            functionMainElements += f"\t\tbreak;\n"
+            return functionComment, functionWrapper, functionMainElements
+        
+        
         def helicsVectorToBytesMatlabWrapper(functionDict: dict(), cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
@@ -2893,6 +3064,403 @@ class MatlabBindingGenerator(object):
             functionMainElements += f"\t\tbreak;\n"
             return functionComment, functionWrapper, functionMainElements
         
+        
+        def helicsNamedPointToBytesMatlabWrapper(functionDict: dict(), cursorIdx: int):
+            #check to see if function signiture changed
+            argNum = len(functionDict.get("arguments", {}).keys())
+            if argNum != 3:
+                raise RuntimeError("the function signature for helicsNamedPointToBytes has changed!")
+            arg0 = functionDict.get("arguments", {}).get(0, {})
+            if arg0.get("spelling","") != "name" or arg0.get("pointer_type", "") != "Char_S_*":
+                raise RuntimeError("the function signature for helicsNamedPointToBytes has changed!")
+            arg1 = functionDict.get("arguments", {}).get(1, {})
+            if arg1.get("spelling","") != "value" or arg1.get("type", "") != "Double":
+                raise RuntimeError("the function signature for helicsNamedPointToBytes has changed!")
+            arg2 = functionDict.get("arguments", {}).get(2, {})
+            if arg2.get("spelling","") != "data" or arg2.get("type", "") != "HelicsDataBuffer":
+                raise RuntimeError("the function signature for helicsNamedPointToBytes has changed!")
+            functionName = functionDict.get("spelling","")
+            functionComment = "%{\n"
+            functionComment += "\tconvert a named point to serialized bytes.\n\n"
+            functionComment += "\t@param name The name of the named point.\n"
+            functionComment += "\t@param value The double value of the named point.\n"
+            functionComment += "\t@return HelicsDataBuffer.\n"
+            functionComment += "%}\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
+            functionWrapper += initializeArgChar('name',0)
+            functionWrapper += initializeArgDouble('value',1)
+            functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(sizeof(double));\n\n"
+            functionWrapper += f"\tint32_t result = {functionName}(name, value, data);\n\n"
+            functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
+            functionWrapper += "\t*((uint64_t*)mxGetData(_out)) = (uint64_t)data;\n\n"
+            functionWrapper += "\tif(_out){\n"
+            functionWrapper += "\t\t--resc;\n"
+            functionWrapper += "\t\t*resv++ = _out;\n"
+            functionWrapper += "\t}\n"
+            functionWrapper += "}\n\n\n"
+            functionMainElements = f"\tcase {cursorIdx}:\n"
+            functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
+            functionMainElements += f"\t\tbreak;\n"
+            return functionComment, functionWrapper, functionMainElements
+        
+        
+        def helicsComplexVectorToBytesMatlabWrapper(functionDict: dict(), cursorIdx: int):
+            #check to see if function signiture changed
+            argNum = len(functionDict.get("arguments", {}).keys())
+            if argNum != 3:
+                raise RuntimeError("the function signature for helicsComplexVectorToBytesMatlabWrapper has changed!")
+            arg0 = functionDict.get("arguments", {}).get(0, {})
+            if arg0.get("spelling","") != "value" or arg0.get("pointer_type", "") != "Double_*":
+                raise RuntimeError("the function signature for helicsComplexVectorToBytesMatlabWrapper has changed!")
+            arg1 = functionDict.get("arguments", {}).get(1, {})
+            if arg1.get("spelling","") != "dataSize" or arg1.get("type", "") != "Int":
+                raise RuntimeError("the function signature for helicsComplexVectorToBytesMatlabWrapper has changed!")
+            arg2 = functionDict.get("arguments", {}).get(2, {})
+            if arg2.get("spelling","") != "data" or arg2.get("type", "") != "HelicsDataBuffer":
+                raise RuntimeError("the function signature for helicsComplexVectorToBytesMatlabWrapper has changed!")
+            functionName = functionDict.get("spelling","")
+            functionComment = "%{\n"
+            functionComment += "\tconvert a complex vector to serialized bytes.\n\n"
+            functionComment += "\t@param value The vector of complex values.\n"
+            functionComment += "\t@return HelicsDataBuffer.\n"
+            functionComment += "%}\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
+            functionWrapper += "\tint dataSize =  (int)mxGetN(argv[0])*2;\n\n"
+            functionWrapper += "\tdouble *value = (double *)malloc(dataSize * sizeof(double));\n"
+            functionWrapper += "\tmxComplexDouble *vals = mxGetComplexDoubles(argv[0]);\n"
+            functionWrapper += "\tfor(int i=0; i<dataSize/2; ++i){\n"
+            functionWrapper += "\t\value[2*i] = vals[i].real;\n"
+            functionWrapper += "\t\value[2*i + 1] = vals[i].imag;\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(dataSize*sizeof(double));\n\n"
+            functionWrapper += f"\tint32_t result = {functionName}((const double *)value, dataSize, data);\n\n"
+            functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
+            functionWrapper += "\t*((uint64_t*)mxGetData(_out)) = (uint64_t)data;\n\n"
+            functionWrapper += "\tif(_out){\n"
+            functionWrapper += "\t\t--resc;\n"
+            functionWrapper += "\t\t*resv++ = _out;\n"
+            functionWrapper += "\t}\n"
+            functionWrapper += "}\n\n\n"
+            functionMainElements = f"\tcase {cursorIdx}:\n"
+            functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
+            functionMainElements += f"\t\tbreak;\n"
+            return functionComment, functionWrapper, functionMainElements
+        
+        
+        def helicsDataBufferToStringMatlabWrapper(functionDict: dict(), cursorIdx: int):
+            #check to see if function signiture changed
+            argNum = len(functionDict.get("arguments", {}).keys())
+            if argNum != 4:
+                raise RuntimeError("the function signature for helicsDataBufferToString has changed!")
+            arg0 = functionDict.get("arguments", {}).get(0, {})
+            if arg0.get("spelling","") != "data" or arg0.get("type", "") != "HelicsDataBuffer":
+                raise RuntimeError("the function signature for helicsDataBufferToString has changed!")
+            arg1 = functionDict.get("arguments", {}).get(1, {})
+            if arg1.get("spelling","") != "outputString" or arg1.get("pointer_type", "") != "Char_S_*":
+                raise RuntimeError("the function signature for helicsDataBufferToString has changed!")
+            arg2 = functionDict.get("arguments", {}).get(2, {})
+            if arg2.get("spelling","") != "maxStringLen" or arg2.get("type", "") != "Int":
+                raise RuntimeError("the function signature for helicsDataBufferToString has changed!")
+            arg3 = functionDict.get("arguments", {}).get(3, {})
+            if arg3.get("spelling","") != "actualLength" or arg3.get("pointer_type", "") != "Int_*":
+                raise RuntimeError("the function signature for helicsDataBufferToString has changed!")
+            functionName = functionDict.get("spelling","")
+            functionComment = "%{\n"
+            functionComment += "\tGet a string value from a HelicsDataBuffer.\n\n"
+            functionComment += "\t@param data The HelicsDataBuffer to get the string from.\n\n"
+            functionComment += "\t@return the string value.\n"
+            functionComment += "%}\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
+            functionWrapper += initializeArgHelicsClass("HelicsDataBuffer", "data", 0)
+            functionWrapper += "\tint maxStringLen = helicsDataBufferStringSize(data) + 2;\n\n"
+            functionWrapper += "\tchar *outputString = (char *)malloc(maxStringLen);\n\n"
+            functionWrapper += "\tint actualLength = 0;\n\n"
+            functionWrapper += f"\t{functionName}(data, outputString, maxStringLen, &actualLength);\n\n"
+            functionWrapper += "\tmwSize dims[2] = {1, actualLength};\n"
+            functionWrapper += "\tmxArray *_out = mxCreateCharArray(2, dims);\n"
+            functionWrapper += "\tmxChar *out_data = (mxChar *)mxGetData(_out);\n"
+            functionWrapper += "\tfor(int i=0; i<(actualLength); ++i){\n"
+            functionWrapper += "\t\tout_data[i] = outputString[i];\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += "\tif(_out){\n"
+            functionWrapper += "\t\t--resc;\n"
+            functionWrapper += "\t\t*resv++ = _out;\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += f'{argCharPostFunctionCall("outputString")}\n\n'
+            functionWrapper += "}\n\n\n"
+            functionMainElements = f"\tcase {cursorIdx}:\n"
+            functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
+            functionMainElements += f"\t\tbreak;\n"
+            return functionComment, functionWrapper, functionMainElements
+        
+        
+        def helicsDataBufferToRawStringMatlabWrapper(functionDict: dict(), cursorIdx: int):
+            #check to see if function signiture changed
+            argNum = len(functionDict.get("arguments", {}).keys())
+            if argNum != 4:
+                raise RuntimeError("the function signature for helicsDataBufferToRawString has changed!")
+            arg0 = functionDict.get("arguments", {}).get(0, {})
+            if arg0.get("spelling","") != "data" or arg0.get("type", "") != "HelicsDataBuffer":
+                raise RuntimeError("the function signature for helicsDataBufferToRawString has changed!")
+            arg1 = functionDict.get("arguments", {}).get(1, {})
+            if arg1.get("spelling","") != "outputString" or arg1.get("pointer_type", "") != "Char_S_*":
+                raise RuntimeError("the function signature for helicsDataBufferToRawString has changed!")
+            arg2 = functionDict.get("arguments", {}).get(2, {})
+            if arg2.get("spelling","") != "maxStringLen" or arg2.get("type", "") != "Int":
+                raise RuntimeError("the function signature for helicsDataBufferToRawString has changed!")
+            arg3 = functionDict.get("arguments", {}).get(3, {})
+            if arg3.get("spelling","") != "actualLength" or arg3.get("pointer_type", "") != "Int_*":
+                raise RuntimeError("the function signature for helicsDataBufferToRawString has changed!")
+            functionName = functionDict.get("spelling","")
+            functionComment = "%{\n"
+            functionComment += "\tGet a raw string value from a HelicsDataBuffer.\n\n"
+            functionComment += "\t@param data The HelicsDataBuffer to get the raw string from.\n\n"
+            functionComment += "\t@return the raw string value.\n"
+            functionComment += "%}\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
+            functionWrapper += initializeArgHelicsClass("HelicsDataBuffer", "data", 0)
+            functionWrapper += "\tint maxStringLen = helicsDataBufferStringSize(data) + 2;\n\n"
+            functionWrapper += "\tchar *outputString = (char *)malloc(maxStringLen);\n\n"
+            functionWrapper += "\tint actualLength = 0;\n\n"
+            functionWrapper += f"\t{functionName}(data, outputString, maxStringLen, &actualLength);\n\n"
+            functionWrapper += "\tmwSize dims[2] = {1, actualLength - 1};\n"
+            functionWrapper += "\tmxArray *_out = mxCreateCharArray(2, dims);\n"
+            functionWrapper += "\tmxChar *out_data = (mxChar *)mxGetData(_out);\n"
+            functionWrapper += "\tfor(int i=0; i<(actualLength - 1); ++i){\n"
+            functionWrapper += "\t\tout_data[i] = outputString[i];\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += "\tif(_out){\n"
+            functionWrapper += "\t\t--resc;\n"
+            functionWrapper += "\t\t*resv++ = _out;\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += f'{argCharPostFunctionCall("outputString")}\n\n'
+            functionWrapper += "}\n\n\n"
+            functionMainElements = f"\tcase {cursorIdx}:\n"
+            functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
+            functionMainElements += f"\t\tbreak;\n"
+            return functionComment, functionWrapper, functionMainElements
+        
+        
+        def helicsDataBufferToComplexMatlabWrapper(functionDict: dict(), cursorIdx: int):
+             #check to see if function signiture changed
+            argNum = len(functionDict.get("arguments", {}).keys())
+            if argNum != 3:
+                raise RuntimeError("the function signature for helicsDataBufferToComplex has changed!")
+            arg0 = functionDict.get("arguments", {}).get(0, {})
+            if arg0.get("spelling","") != "data" or arg0.get("type", "") != "HelicsDataBuffer":
+                raise RuntimeError("the function signature for helicsDataBufferToComplex has changed!")
+            arg1 = functionDict.get("arguments", {}).get(1, {})
+            if arg1.get("spelling","") != "real" or arg1.get("pointer_type", "") != "Double_*":
+                raise RuntimeError("the function signature for helicsDataBufferToComplex has changed!")
+            arg2 = functionDict.get("arguments", {}).get(2, {})
+            if arg2.get("spelling","") != "imag" or arg2.get("pointer_type", "") != "Double_*":
+                raise RuntimeError("the function signature for helicsDataBufferToComplex has changed!")
+            functionName = functionDict.get("spelling","")
+            functionComment = "%{\n"
+            functionComment += "\tGet a complex value from an input object.\n\n"
+            functionComment += "\t@param ipt The input to get the data for.\n\n"
+            functionComment += "\t@return  A complex number.\n"
+            functionComment += "%}\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
+            functionWrapper += initializeArgHelicsClass("HelicsDataBuffer", "data", 0)
+            functionWrapper += "\tdouble values[2];\n\n"
+            functionWrapper += f"\t{functionName}(data, &(values[0]), &(values[1]);\n\n"
+            functionWrapper += "\tmxArray *_out = mxCreateDoubleMatrix(1,1,mxCOMPLEX);\n"
+            functionWrapper += "\tmxComplexDouble *complex_result = mxGetComplexDoubles(_out);\n"
+            functionWrapper += "\tcomplex_result->real = values[0];\n"
+            functionWrapper += "\tcomplex_result->imag = values[1];\n"
+            functionWrapper += "\tif(_out){\n"
+            functionWrapper += "\t\t--resc;\n"
+            functionWrapper += "\t\t*resv++ = _out;\n"
+            functionWrapper += "\t}\n"
+            functionWrapper += "}\n\n\n"
+            functionMainElements = f"\tcase {cursorIdx}:\n"
+            functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
+            functionMainElements += f"\t\tbreak;\n"
+            return functionComment, functionWrapper, functionMainElements
+        
+        
+        def helicsDataBufferToComplexObjectMatlabWrapper(functionDict: dict(), cursorIdx: int):
+            #check to see if function signiture changed
+            argNum = len(functionDict.get("arguments", {}).keys())
+            if argNum != 1:
+                raise RuntimeError("the function signature for helicsDataBufferToComplexObject has changed!")
+            arg0 = functionDict.get("arguments", {}).get(0, {})
+            if arg0.get("spelling","") != "data" or arg0.get("type", "") != "HelicsDataBuffer":
+                raise RuntimeError("the function signature for helicsDataBufferToComplexObject has changed!")
+            functionName = functionDict.get("spelling","")
+            functionComment = "%{\n"
+            functionComment += "\tGet a complex value from an HelicsDataBuffer.\n\n"
+            functionComment += "\t@param data The HelicsDataBuffer to get the data for.\n\n"
+            functionComment += "\t@return  A complex number.\n"
+            functionComment += "%}\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
+            functionWrapper += initializeArgHelicsClass("HelicsDataBuffer", "data", 0)
+            functionWrapper += f"\tHelicsComplex result = {functionName}(data);\n\n"
+            functionWrapper += "\tmxComplexDouble complex_result;\n"
+            functionWrapper += "\tcomplex_result.real = result.real;\n"
+            functionWrapper += "\tcomplex_result.imag = result.imag;\n"
+            functionWrapper += "\tmxArray *_out = mxCreateDoubleMatrix(1,1,mxCOMPLEX);\n"
+            functionWrapper += "\tint status = mxSetComplexDoubles(_out, &complex_result);\n\n"
+            functionWrapper += "\tif(_out){\n"
+            functionWrapper += "\t\t--resc;\n"
+            functionWrapper += "\t\t*resv++ = _out;\n"
+            functionWrapper += "\t}\n"
+            functionWrapper += "}\n\n\n"
+            functionMainElements = f"\tcase {cursorIdx}:\n"
+            functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
+            functionMainElements += f"\t\tbreak;\n"
+            return functionComment, functionWrapper, functionMainElements
+        
+        
+        def helicsDataBufferToVectorMatlabWrapper(functionDict: dict(), cursorIdx: int):
+            #check to see if function signiture changed
+            argNum = len(functionDict.get("arguments", {}).keys())
+            if argNum != 4:
+                raise RuntimeError("the function signature for helicsDataBufferToVector has changed!")
+            arg0 = functionDict.get("arguments", {}).get(0, {})
+            if arg0.get("spelling","") != "data" or arg0.get("type", "") != "HelicsDataBuffer":
+                raise RuntimeError("the function signature for helicsDataBufferToVector has changed!")
+            arg1 = functionDict.get("arguments", {}).get(1, {})
+            if arg1.get("spelling","") != "values" or arg1.get("type", "") != "IncompleteArray":
+                raise RuntimeError("the function signature for helicsDataBufferToVector has changed!")
+            arg2 = functionDict.get("arguments", {}).get(2, {})
+            if arg2.get("spelling","") != "maxlen" or arg2.get("type", "") != "Int":
+                raise RuntimeError("the function signature for helicsDataBufferToVector has changed!")
+            arg3 = functionDict.get("arguments", {}).get(3, {})
+            if arg3.get("spelling","") != "actualSize" or arg3.get("pointer_type", "") != "Int_*":
+                raise RuntimeError("the function signature for helicsDataBufferToVector has changed!")
+            functionName = functionDict.get("spelling","")
+            functionComment = "%{\n"
+            functionComment += "\tGet a vector from a HelicsDataBuffer.\n\n"
+            functionComment += "\t@param data The HelicsDataBuffer to get the vector for.\n\n"
+            functionComment += "\t@return  a list of floating point values.\n"
+            functionComment += "%}\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
+            functionWrapper += initializeArgHelicsClass("HelicsDataBuffer", "data", 0)
+            functionWrapper += "\tint maxLen = helicsDataBufferVectorSize(data);\n\n"
+            functionWrapper += "\tdouble *values = (double *)malloc(maxLen * sizeof(double));\n\n"
+            functionWrapper += "\tint actualSize = 0;\n\n"
+            functionWrapper += f"\t{functionName}(data, values, maxLen, &actualSize);\n\n"
+            functionWrapper += "\tmxDouble *result_data = (mxDouble *)mxMalloc(actualSize * sizeof(mxDouble));\n"
+            functionWrapper += "\tfor(int i=0; i<actualSize; ++i){\n"
+            functionWrapper += "\t\tresult_data[i] = (mxDouble)data[i];\n"
+            functionWrapper += "\t}\n"
+            functionWrapper += "\tmxArray *_out = mxCreateDoubleMatrix(actualSize, 1, mxREAL);\n"
+            functionWrapper += "\tint status = mxSetDoubles(_out, &(result_data[0]));\n\n"
+            functionWrapper += "\tif(_out){\n"
+            functionWrapper += "\t\t--resc;\n"
+            functionWrapper += "\t\t*resv++ = _out;\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += "}\n\n\n"
+            functionMainElements = f"\tcase {cursorIdx}:\n"
+            functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
+            functionMainElements += f"\t\tbreak;\n"
+            return functionComment, functionWrapper, functionMainElements
+        
+        
+        def helicsDataBufferToComplexVectorMatlabWrapper(functionDict: dict(), cursorIdx: int):
+            #check to see if function signiture changed
+            argNum = len(functionDict.get("arguments", {}).keys())
+            if argNum != 4:
+                raise RuntimeError("the function signature for helicsDataBufferToComplexVector has changed!")
+            arg0 = functionDict.get("arguments", {}).get(0, {})
+            if arg0.get("spelling","") != "data" or arg0.get("type", "") != "HelicsDataBuffer":
+                raise RuntimeError("the function signature for helicsDataBufferToComplexVector has changed!")
+            arg1 = functionDict.get("arguments", {}).get(1, {})
+            if arg1.get("spelling","") != "values" or arg1.get("type", "") != "IncompleteArray":
+                raise RuntimeError("the function signature for helicsDataBufferToComplexVector has changed!")
+            arg2 = functionDict.get("arguments", {}).get(2, {})
+            if arg2.get("spelling","") != "maxlen" or arg2.get("type", "") != "Int":
+                raise RuntimeError("the function signature for helicsDataBufferToComplexVector has changed!")
+            arg3 = functionDict.get("arguments", {}).get(3, {})
+            if arg3.get("spelling","") != "actualSize" or arg3.get("pointer_type", "") != "Int_*":
+                raise RuntimeError("the function signature for helicsDataBufferToComplexVector has changed!")
+            functionName = functionDict.get("spelling","")
+            functionComment = "%{\n"
+            functionComment += "\tGet a compelx vector from a HelicsDataBuffer.\n\n"
+            functionComment += "\t@param data The HelicsDataBuffer to get the vector for.\n\n"
+            functionComment += "\t@return a list of complex values.\n"
+            functionComment += "%}\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
+            functionWrapper += initializeArgHelicsClass("HelicsDataBuffer", "data", 0)
+            functionWrapper += "\tint maxLen = helicsDataBufferVectorSize(data);\n\n"
+            functionWrapper += "\tdouble *values = (double *)malloc(maxLen * sizeof(double));\n\n"
+            functionWrapper += "\tint actualSize = 0;\n\n"
+            functionWrapper += f"\t{functionName}(data, values, maxLen, &actualSize);\n\n"
+            functionWrapper += "\tmxComplexDouble *result_data = (mxComplexDouble *)mxMalloc((actualSize/2)*sizeof(mxComplexDouble));\n"
+            functionWrapper += "\tfor(int i=0; i<(actualSize/2); ++i){\n"
+            functionWrapper += "\t\tresult_data[i].real = data[2*(i)];\n"
+            functionWrapper += "\t\tresult_data[i].imag = data[2*(i) + 1];\n"
+            functionWrapper += "\t}\n"
+            functionWrapper += "\tmxArray *_out = mxCreateDoubleMatrix(actualSize/2, 1, mxCOMPLEX);\n"
+            functionWrapper += "\tint status = mxSetComplexDoubles(_out, &(result_data[0]));\n\n"
+            functionWrapper += "\tif(_out){\n"
+            functionWrapper += "\t\t--resc;\n"
+            functionWrapper += "\t\t*resv++ = _out;\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += "}\n\n\n"
+            functionMainElements = f"\tcase {cursorIdx}:\n"
+            functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
+            functionMainElements += f"\t\tbreak;\n"
+            return functionComment, functionWrapper, functionMainElements
+        
+        
+        def helicsDataBufferToNamedPointMatlabWrapper(functionDict: dict(), cursorIdx: int):
+            #check to see if function signiture changed
+            argNum = len(functionDict.get("arguments", {}).keys())
+            if argNum != 5:
+                raise RuntimeError("the function signature for helicsDataBufferToNamedPoint has changed!")
+            arg0 = functionDict.get("arguments", {}).get(0, {})
+            if arg0.get("spelling","") != "data" or arg0.get("type", "") != "HelicsDataBuffer":
+                raise RuntimeError("the function signature for helicsDataBufferToNamedPoint has changed!")
+            arg1 = functionDict.get("arguments", {}).get(1, {})
+            if arg1.get("spelling","") != "outputString" or arg1.get("pointer_type", "") != "Char_S_*":
+                raise RuntimeError("the function signature for helicsDataBufferToNamedPoint has changed!")
+            arg2 = functionDict.get("arguments", {}).get(2, {})
+            if arg2.get("spelling","") != "maxStringLength" or arg2.get("type", "") != "Int":
+                raise RuntimeError("the function signature for helicsDataBufferToNamedPoint has changed!")
+            arg3 = functionDict.get("arguments", {}).get(3, {})
+            if arg3.get("spelling","") != "actualLength" or arg3.get("pointer_type", "") != "Int_*":
+                raise RuntimeError("the function signature for helicsDataBufferToNamedPoint has changed!")
+            arg4 = functionDict.get("arguments", {}).get(4, {})
+            if arg4.get("spelling","") != "val" or arg4.get("pointer_type", "") != "Double_*":
+                raise RuntimeError("the function signature for helicsDataBufferToNamedPoint has changed!")
+            functionName = functionDict.get("spelling","")
+            functionComment = "%{\n"
+            functionComment += "\tGet a named point from a subscription.\n\n"
+            functionComment += "\t@param ipt The input to get the result for.\n\n"
+            functionComment += "\t@return a string and a double value for the named point\n"
+            functionComment += "%}\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
+            functionWrapper += initializeArgHelicsClass("HelicsDataBuffer", "data", 0)
+            functionWrapper += "\tint maxStringLen = helicsInputGetStringSize(data) + 2;\n\n"
+            functionWrapper += "\tchar *outputString = (char *)malloc(maxStringLen);\n\n"
+            functionWrapper += "\tint actualLength = 0;\n\n"
+            functionWrapper += "\tdouble val = 0;\n\n"
+            functionWrapper += f"\t{functionName}(data, outputString, maxStringLen, &actualLength, &val);\n\n"
+            functionWrapper += "\tmwSize dims[2] = {1, actualLength-1};\n"
+            functionWrapper += "\tmxArray *_out = mxCreateCharArray(2, dims);\n"
+            functionWrapper += "\tmxChar *out_data = (mxChar *)mxGetData(_out);\n"
+            functionWrapper += "\tfor(int i=0; i<(actualLength-1); ++i){\n"
+            functionWrapper += "\t\tout_data[i] = outputString[i];\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += "\tif(_out){\n"
+            functionWrapper += "\t\t--resc;\n"
+            functionWrapper += "\t\t*resv++ = _out;\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += "\tif(--resc>=0){\n"
+            functionWrapper += "\t\tmxArray *_out1 = mxCreateDoubleScalar(val);\n"
+            functionWrapper += "\t\t*resv++ = _out1;\n"
+            functionWrapper += "\t}\n\n" 
+            functionWrapper += f'{argCharPostFunctionCall("outputString")}\n'
+            functionWrapper += "}\n\n\n"
+            functionMainElements = f"\tcase {cursorIdx}:\n"
+            functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
+            functionMainElements += f"\t\tbreak;\n"
+            return functionComment, functionWrapper, functionMainElements
+        
+        
         def helicsCloseLibraryMatlabWrapper(functionDict: dict(), cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
@@ -2917,6 +3485,7 @@ class MatlabBindingGenerator(object):
             functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
             functionMainElements += f"\t\tbreak;\n"
             return functionComment, functionWrapper, functionMainElements
+        
         
         def createMexMain() -> str:
             mexMainStr = "void mexFunction(int resc, mxArray *resv[], int argc, const mxArray *argv[]) {\n"
