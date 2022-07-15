@@ -2,7 +2,7 @@
 	Publish a string.
 
 	@param pub The publication to publish for.
-	@param str The string to publish.
+	@param val The null terminated string to publish.
 
 	@param[in,out] err A pointer to an error object for catching errors.
 

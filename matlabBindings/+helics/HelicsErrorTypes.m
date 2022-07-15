@@ -6,7 +6,6 @@ Attributes:
 	HELICS_ERROR_EXTERNAL_TYPE: value:-203	an unknown non-helics error was produced
 	HELICS_ERROR_OTHER: value:-101	the function produced a helics error of some other type
 	HELICS_USER_EXCEPTION: value:-29	user code generated exception
-	HELICS_ERROR_USER_ABORT: value:-27	user system abort
 	HELICS_ERROR_INSUFFICIENT_SPACE: value:-18	insufficient space is available to store requested data
 	HELICS_ERROR_EXECUTION_FAILURE: value:-14	the function execution has failed
 	HELICS_ERROR_INVALID_FUNCTION_CALL: value:-10	the call made was invalid in the present state of the calling object
@@ -19,6 +18,8 @@ Attributes:
 	HELICS_ERROR_CONNECTION_FAILURE: value:-2	the operation to connect has failed
 	HELICS_ERROR_REGISTRATION_FAILURE: value:-1	registration has failed
 	HELICS_OK: value:0	the function executed successfully
+	HELICS_ERROR_USER_ABORT: value:130	user system abort to match typical SIGINT value
+	HELICS_ERROR_TERMINATED: value:143	force termination to match typical SIGKILL value
 %}
 classdef HelicsErrorTypes
 	properties (Constant)
@@ -26,7 +27,6 @@ classdef HelicsErrorTypes
 		HELICS_ERROR_EXTERNAL_TYPE = int32(-203);
 		HELICS_ERROR_OTHER = int32(-101);
 		HELICS_USER_EXCEPTION = int32(-29);
-		HELICS_ERROR_USER_ABORT = int32(-27);
 		HELICS_ERROR_INSUFFICIENT_SPACE = int32(-18);
 		HELICS_ERROR_EXECUTION_FAILURE = int32(-14);
 		HELICS_ERROR_INVALID_FUNCTION_CALL = int32(-10);
@@ -39,5 +39,7 @@ classdef HelicsErrorTypes
 		HELICS_ERROR_CONNECTION_FAILURE = int32(-2);
 		HELICS_ERROR_REGISTRATION_FAILURE = int32(-1);
 		HELICS_OK = int32(0);
+		HELICS_ERROR_USER_ABORT = int32(130);
+		HELICS_ERROR_TERMINATED = int32(143);
 	end
 end
