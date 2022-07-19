@@ -163,7 +163,7 @@ class HelicsHeaderParser (object):
             Function that parses the HELICS C header files
             @param helicsHeaders: A list of the HELICS C header files to parse
         """
-        ignoredMacros = ["HELICS_C_API_H_", "HELICS_EXPORT", "HELICS__DEPRECATED"]
+        ignoredMacros = ["HELICS_C_API_H_", "HELICS_EXPORT", "HELICS_DEPRECATED"]
         idx = cidx.Index.create()
         cursorNum = 0
         for headerFile in helicsHeaders:
