@@ -4,6 +4,7 @@ Battelle Memorial Institute; Lawrence Livermore National Security, LLC; Alliance
 the top-level NOTICE for additional details. All rights reserved.
 SPDX-License-Identifier: BSD-3-Clause
 '''
+import glob
 import json
 import logging
 import os
@@ -602,7 +603,8 @@ class MatlabBindingGenerator(object):
         
         
         def initializeArgHelicsEnum(helicsEnum: str, argName: str, position: int) -> str:
-            retStr = f"\t{helicsEnum} {argName} = ({helicsEnum})(mxGetScalar(argv[{position}]));\n\n"
+            retStr = f"\tint {argName}Int = static_cast<int>(mxGetScalar(argv[{position}]));\n"
+            retStr += f"\t{helicsEnum} {argName} = static_cast<{helicsEnum}>({argName}Int);\n\n"
             return retStr
         
         
@@ -1188,7 +1190,7 @@ class MatlabBindingGenerator(object):
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsFederate", "fed", 0)
             functionWrapper += initializeArgHelicsTime("requestTime", 1)
-            functionWrapper += f"\tHelicsIterationRequest iterate = (HelicsIterationRequest)(mxGetScalar(argv[2]));\n\n"
+            functionWrapper += initializeArgHelicsEnum("HelicsIterationRequest", "iterate", 2)
             functionWrapper += initializeArgHelicsIterationResultPtr("outIteration")
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\tHelicsTime result = {functionName}(fed, requestTime, iterate, &outIteration, &err);\n\n"
@@ -2112,7 +2114,7 @@ class MatlabBindingGenerator(object):
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsQueryBuffer", "buffer", 0)
             functionWrapper += initializeArgChar("queryResult", 1)
-            functionWrapper += "\tint strSize = strLength - 1;\n\n"
+            functionWrapper += "\tint strSize = queryResultLength - 1;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(buffer, queryResult, strSize, &err);\n\n"
             functionWrapper += "\tmxArray *_out = (mxArray *)0;\n"
@@ -3344,7 +3346,7 @@ class MatlabBindingGenerator(object):
             functionWrapper += f"\t{functionName}(data, values, maxLen, &actualSize);\n\n"
             functionWrapper += "\tmxDouble *result_data = (mxDouble *)mxMalloc(actualSize * sizeof(mxDouble));\n"
             functionWrapper += "\tfor(int i=0; i<actualSize; ++i){\n"
-            functionWrapper += "\t\tresult_data[i] = (mxDouble)data[i];\n"
+            functionWrapper += "\t\tresult_data[i] = (mxDouble)values[i];\n"
             functionWrapper += "\t}\n"
             functionWrapper += "\tmxArray *_out = mxCreateDoubleMatrix(actualSize, 1, mxREAL);\n"
             functionWrapper += "\tint status = mxSetDoubles(_out, &(result_data[0]));\n\n"
@@ -3390,8 +3392,8 @@ class MatlabBindingGenerator(object):
             functionWrapper += f"\t{functionName}(data, values, maxLen, &actualSize);\n\n"
             functionWrapper += "\tmxComplexDouble *result_data = (mxComplexDouble *)mxMalloc((actualSize/2)*sizeof(mxComplexDouble));\n"
             functionWrapper += "\tfor(int i=0; i<(actualSize/2); ++i){\n"
-            functionWrapper += "\t\tresult_data[i].real = data[2*(i)];\n"
-            functionWrapper += "\t\tresult_data[i].imag = data[2*(i) + 1];\n"
+            functionWrapper += "\t\tresult_data[i].real = values[2*(i)];\n"
+            functionWrapper += "\t\tresult_data[i].imag = values[2*(i) + 1];\n"
             functionWrapper += "\t}\n"
             functionWrapper += "\tmxArray *_out = mxCreateDoubleMatrix(actualSize/2, 1, mxCOMPLEX);\n"
             functionWrapper += "\tint status = mxSetComplexDoubles(_out, &(result_data[0]));\n\n"
@@ -3513,11 +3515,16 @@ class MatlabBindingGenerator(object):
             boilerPlateStr += "\t\tmexErrMsgIdAndTxt(\"helics:mexFunction\",\"An unknown function id was encountered. Call the mex function with a valid function id.\");\n"
             boilerPlateStr += "\t}\n}\n\n"
             return boilerPlateStr        
-        
         if not os.path.exists("matlabBindings/+helics"):
             os.makedirs("matlabBindings/+helics")
-            #shutil.copy2("extra_m_codes/helicsInputSetDefault.m", "matlabBindings/+helics")
-            #shutil.copy2("extra_m_codes/helicsPublicationPublish.m", "matlabBindings/+helics")
+            shutil.copy2("extra_m_codes/helicsInputSetDefault.m", "matlabBindings/+helics")
+            shutil.copy2("extra_m_codes/helicsPublicationPublish.m", "matlabBindings/+helics")
+        else:
+            helicsMFiles = glob.glob("matlabBindings/+helics/*")
+            for f in helicsMFiles:
+                os.remove(f)
+            shutil.copy2("extra_m_codes/helicsInputSetDefault.m", "matlabBindings/+helics")
+            shutil.copy2("extra_m_codes/helicsPublicationPublish.m", "matlabBindings/+helics")
         helicsMexStr = ""
         helicsMexWrapperFunctions = []
         helicsMexMainFunctionElements = []
@@ -3546,6 +3553,6 @@ class MatlabBindingGenerator(object):
         for element in helicsMexMainFunctionElements:
             helicsMexStr += element
         helicsMexStr += closeBoilerPlate()
-        with open(f"matlabBindings/helicsMex.cpp", "w") as helicsMexFile:
+        with open(f"helicsMex.cpp", "w") as helicsMexFile:
             helicsMexFile.write(helicsMexStr)
         matlabBindingGeneratorLogger.info("MATLAB HELICS API successfully created!")

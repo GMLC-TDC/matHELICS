@@ -1106,7 +1106,7 @@ void _wrap_helicsDataBufferToVector(int resc, mxArray *resv[], int argc, const m
 
 	mxDouble *result_data = (mxDouble *)mxMalloc(actualSize * sizeof(mxDouble));
 	for(int i=0; i<actualSize; ++i){
-		result_data[i] = (mxDouble)data[i];
+		result_data[i] = (mxDouble)values[i];
 	}
 	mxArray *_out = mxCreateDoubleMatrix(actualSize, 1, mxREAL);
 	int status = mxSetDoubles(_out, &(result_data[0]));
@@ -1132,8 +1132,8 @@ void _wrap_helicsDataBufferToComplexVector(int resc, mxArray *resv[], int argc, 
 
 	mxComplexDouble *result_data = (mxComplexDouble *)mxMalloc((actualSize/2)*sizeof(mxComplexDouble));
 	for(int i=0; i<(actualSize/2); ++i){
-		result_data[i].real = data[2*(i)];
-		result_data[i].imag = data[2*(i) + 1];
+		result_data[i].real = values[2*(i)];
+		result_data[i].imag = values[2*(i) + 1];
 	}
 	mxArray *_out = mxCreateDoubleMatrix(actualSize/2, 1, mxCOMPLEX);
 	int status = mxSetComplexDoubles(_out, &(result_data[0]));
@@ -3594,7 +3594,8 @@ void _wrap_helicsFederateEnterExecutingModeComplete(int resc, mxArray *resv[], i
 void _wrap_helicsFederateEnterExecutingModeIterative(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
 	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
 
-	HelicsIterationRequest iterate = (HelicsIterationRequest)(mxGetScalar(argv[1]));
+	int iterateInt = static_cast<int>(mxGetScalar(argv[1]));
+	HelicsIterationRequest iterate = static_cast<HelicsIterationRequest>(iterateInt);
 
 	HelicsError err = helicsErrorInitialize();
 
@@ -3621,7 +3622,8 @@ void _wrap_helicsFederateEnterExecutingModeIterative(int resc, mxArray *resv[], 
 void _wrap_helicsFederateEnterExecutingModeIterativeAsync(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
 	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
 
-	HelicsIterationRequest iterate = (HelicsIterationRequest)(mxGetScalar(argv[1]));
+	int iterateInt = static_cast<int>(mxGetScalar(argv[1]));
+	HelicsIterationRequest iterate = static_cast<HelicsIterationRequest>(iterateInt);
 
 	HelicsError err = helicsErrorInitialize();
 
@@ -3792,7 +3794,8 @@ void _wrap_helicsFederateRequestTimeIterative(int resc, mxArray *resv[], int arg
 
 	HelicsTime requestTime = (HelicsTime)(mxGetScalar(argv[1]));
 
-	HelicsIterationRequest iterate = (HelicsIterationRequest)(mxGetScalar(argv[2]));
+	int iterateInt = static_cast<int>(mxGetScalar(argv[2]));
+	HelicsIterationRequest iterate = static_cast<HelicsIterationRequest>(iterateInt);
 
 	HelicsIterationResult outIteration = HELICS_ITERATION_RESULT_ERROR;
 
@@ -3872,7 +3875,8 @@ void _wrap_helicsFederateRequestTimeIterativeAsync(int resc, mxArray *resv[], in
 
 	HelicsTime requestTime = (HelicsTime)(mxGetScalar(argv[1]));
 
-	HelicsIterationRequest iterate = (HelicsIterationRequest)(mxGetScalar(argv[2]));
+	int iterateInt = static_cast<int>(mxGetScalar(argv[2]));
+	HelicsIterationRequest iterate = static_cast<HelicsIterationRequest>(iterateInt);
 
 	HelicsError err = helicsErrorInitialize();
 
@@ -5383,7 +5387,8 @@ void _wrap_helicsFederateRegisterPublication(int resc, mxArray *resv[], int argc
 	key = (char *)malloc(keyLength);
 	keyStatus = mxGetString(argv[1], key, keyLength);
 
-	HelicsDataTypes type = (HelicsDataTypes)(mxGetScalar(argv[2]));
+	int typeInt = static_cast<int>(mxGetScalar(argv[2]));
+	HelicsDataTypes type = static_cast<HelicsDataTypes>(typeInt);
 
 	char *units;
 	size_t unitsLength;
@@ -5478,7 +5483,8 @@ void _wrap_helicsFederateRegisterGlobalPublication(int resc, mxArray *resv[], in
 	key = (char *)malloc(keyLength);
 	keyStatus = mxGetString(argv[1], key, keyLength);
 
-	HelicsDataTypes type = (HelicsDataTypes)(mxGetScalar(argv[2]));
+	int typeInt = static_cast<int>(mxGetScalar(argv[2]));
+	HelicsDataTypes type = static_cast<HelicsDataTypes>(typeInt);
 
 	char *units;
 	size_t unitsLength;
@@ -5573,7 +5579,8 @@ void _wrap_helicsFederateRegisterInput(int resc, mxArray *resv[], int argc, cons
 	key = (char *)malloc(keyLength);
 	keyStatus = mxGetString(argv[1], key, keyLength);
 
-	HelicsDataTypes type = (HelicsDataTypes)(mxGetScalar(argv[2]));
+	int typeInt = static_cast<int>(mxGetScalar(argv[2]));
+	HelicsDataTypes type = static_cast<HelicsDataTypes>(typeInt);
 
 	char *units;
 	size_t unitsLength;
@@ -5668,7 +5675,8 @@ void _wrap_helicsFederateRegisterGlobalInput(int resc, mxArray *resv[], int argc
 	key = (char *)malloc(keyLength);
 	keyStatus = mxGetString(argv[1], key, keyLength);
 
-	HelicsDataTypes type = (HelicsDataTypes)(mxGetScalar(argv[2]));
+	int typeInt = static_cast<int>(mxGetScalar(argv[2]));
+	HelicsDataTypes type = static_cast<HelicsDataTypes>(typeInt);
 
 	char *units;
 	size_t unitsLength;
@@ -9432,7 +9440,8 @@ void _wrap_helicsMessageClear(int resc, mxArray *resv[], int argc, const mxArray
 void _wrap_helicsFederateRegisterFilter(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
 	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
 
-	HelicsFilterTypes type = (HelicsFilterTypes)(mxGetScalar(argv[1]));
+	int typeInt = static_cast<int>(mxGetScalar(argv[1]));
+	HelicsFilterTypes type = static_cast<HelicsFilterTypes>(typeInt);
 
 	char *name;
 	size_t nameLength;
@@ -9468,7 +9477,8 @@ void _wrap_helicsFederateRegisterFilter(int resc, mxArray *resv[], int argc, con
 void _wrap_helicsFederateRegisterGlobalFilter(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
 	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
 
-	HelicsFilterTypes type = (HelicsFilterTypes)(mxGetScalar(argv[1]));
+	int typeInt = static_cast<int>(mxGetScalar(argv[1]));
+	HelicsFilterTypes type = static_cast<HelicsFilterTypes>(typeInt);
 
 	char *name;
 	size_t nameLength;
@@ -9568,7 +9578,8 @@ void _wrap_helicsFederateRegisterGlobalCloningFilter(int resc, mxArray *resv[], 
 void _wrap_helicsCoreRegisterFilter(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
 	HelicsCore core = *(HelicsCore*)(mxGetData(argv[0]));
 
-	HelicsFilterTypes type = (HelicsFilterTypes)(mxGetScalar(argv[1]));
+	int typeInt = static_cast<int>(mxGetScalar(argv[1]));
+	HelicsFilterTypes type = static_cast<HelicsFilterTypes>(typeInt);
 
 	char *name;
 	size_t nameLength;
@@ -10138,7 +10149,8 @@ void _wrap_helicsFilterGetOption(int resc, mxArray *resv[], int argc, const mxAr
 void _wrap_helicsFederateRegisterTranslator(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
 	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
 
-	HelicsTranslatorTypes type = (HelicsTranslatorTypes)(mxGetScalar(argv[1]));
+	int typeInt = static_cast<int>(mxGetScalar(argv[1]));
+	HelicsTranslatorTypes type = static_cast<HelicsTranslatorTypes>(typeInt);
 
 	char *name;
 	size_t nameLength;
@@ -10174,7 +10186,8 @@ void _wrap_helicsFederateRegisterTranslator(int resc, mxArray *resv[], int argc,
 void _wrap_helicsFederateRegisterGlobalTranslator(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
 	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
 
-	HelicsTranslatorTypes type = (HelicsTranslatorTypes)(mxGetScalar(argv[1]));
+	int typeInt = static_cast<int>(mxGetScalar(argv[1]));
+	HelicsTranslatorTypes type = static_cast<HelicsTranslatorTypes>(typeInt);
 
 	char *name;
 	size_t nameLength;
@@ -10210,7 +10223,8 @@ void _wrap_helicsFederateRegisterGlobalTranslator(int resc, mxArray *resv[], int
 void _wrap_helicsCoreRegisterTranslator(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
 	HelicsCore core = *(HelicsCore*)(mxGetData(argv[0]));
 
-	HelicsTranslatorTypes type = (HelicsTranslatorTypes)(mxGetScalar(argv[1]));
+	int typeInt = static_cast<int>(mxGetScalar(argv[1]));
+	HelicsTranslatorTypes type = static_cast<HelicsTranslatorTypes>(typeInt);
 
 	char *name;
 	size_t nameLength;
@@ -11120,7 +11134,7 @@ void _wrap_helicsQueryBufferFill(int resc, mxArray *resv[], int argc, const mxAr
 	queryResult = (char *)malloc(queryResultLength);
 	queryResultStatus = mxGetString(argv[1], queryResult, queryResultLength);
 
-	int strSize = strLength - 1;
+	int strSize = queryResultLength - 1;
 
 	HelicsError err = helicsErrorInitialize();
 
