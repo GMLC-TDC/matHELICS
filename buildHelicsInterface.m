@@ -13,6 +13,7 @@ targetTarFile=fullfile(targetPath,['helicsTar',HelicsVersion,'.tar.gz']);
 if ismac
     basePath=fullfile(targetPath,['Helics-',HelicsVersion,'-macOS-universal2']);
     baseFile=['Helics-shared-',HelicsVersion,'-macOS-universal2.tar.gz'];
+    targetFile=fullfile(basePath,'lib',['libhelics.',HelicsVersion','.dylib']);
     % download the helics library if needed
     if (~exist(fullfile(basePath,'include/helics/helics.h'),'file'))
         if (~exist(targetTarFile,'file'))
@@ -20,11 +21,12 @@ if ismac
         end
         system(['tar xf ',targetTarFile,' -C ',targetPath]);
     end
-     %actually build the mex file
+    %actually build the mex file
     mex('-lhelics','-R2018a',['-I',basePath,'/include/'],['-L',basePath,'/lib'],['LDFLAGS=$LDFLAGS -Wl,-rpath,',basePath,'/lib'],fullfile(inputPath,'helicsMex.cpp'),'-outdir',targetPath)
 elseif isunix
     basePath=fullfile(targetPath,['Helics-',HelicsVersion,'-Linux-x86_64']);
     baseFile=['Helics-shared-',HelicsVersion,'-Linux-x86_64.tar.gz'];
+    targetFile=fullfile(basePath,'lib64',['libhelics.so.',HelicsVersion']);
     % download the helics library if needed
     if (~exist(fullfile(basePath,'include/helics/helics.h'),'file'))
         if (~exist(targetTarFile,'file'))
@@ -32,7 +34,7 @@ elseif isunix
         end
         system(['tar xf ',targetTarFile,' -C ',targetPath]);
     end
-     %actually build the mex file
+    %actually build the mex file
     mex('-lhelics','-R2018a',['-I',basePath,'/include/'],['-L',basePath,'/lib'],['LDFLAGS=$LDFLAGS -Wl,-rpath,',basePath,'/lib'],fullfile(inputPath,'helicsMex.cpp'),'-outdir',targetPath)
 elseif ispc
     if isequal(computer,'PCWIN64')
@@ -68,6 +70,31 @@ end
 copyfile(fullfile(inputPath,'matlabBindings','+helics'),fullfile(targetPath,'+helics'));
 copyfile(fullfile(inputPath,'extra_m_codes'),fullfile(targetPath,'+helics'));
 
+%% generate a startup script to load the library
+if (~ispc)
+    fid=fopen(fullfile(targetPath,'helicsStartup.m'),'w');
+    fprintf(fid,'function helicsStartup(libraryName,headerName)\n');
+    fprintf(fid,'%% function to load the helics library prior to execution\n');
+    fprintf(fid,'if (nargin==0)\n');
+    fprintf(fid,'\tlibraryName=''%s'';\n',targetFile);
+    fprintf(fid,'end\n\n');
+    fprintf(fid,'');
+
+    fprintf(fid,'if (nargin<2)\n');
+    fprintf(fid,'\theaderName=''%s'';\n',fullfile(targetPath,'include','helics.h'));
+    fprintf(fid,'end\n\n');
+    fprintf(fid,'');
+
+    fprintf(fid,'if (~isempty(libraryName))\n');
+    fprintf(fid,'\t[~,name]=fileparts(libraryName);\n');
+    fprintf(fid,'\tif ~libisloaded(name)\n');
+    fprintf(fid,'\t\tloadlibrary(libraryName,headerName);\n');
+    fprintf(fid,'\tend\n');
+    fprintf(fid,'else\n');
+    fprintf(fid,'\tdisp(''Unable to find library for HELICS'')\n');
+    fprintf(fid,'end\n');
+    fclose(fid);
+end
 
 
 
