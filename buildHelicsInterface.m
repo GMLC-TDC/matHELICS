@@ -13,7 +13,7 @@ targetTarFile=fullfile(targetPath,['helicsTar',HelicsVersion,'.tar.gz']);
 if ismac
     basePath=fullfile(targetPath,['Helics-',HelicsVersion,'-macOS-universal2']);
     baseFile=['Helics-shared-',HelicsVersion,'-macOS-universal2.tar.gz'];
-    targetFile=fullfile(basePath,'lib',['libhelics.',HelicsVersion,'.dylib']);
+    targetFile=fullfile(basePath,'lib','libhelics.dylib');
     % download the helics library if needed
     if (~exist(fullfile(basePath,'include/helics/helics.h'),'file'))
         if (~exist(targetTarFile,'file'))
@@ -26,7 +26,7 @@ if ismac
 elseif isunix
     basePath=fullfile(targetPath,['Helics-',HelicsVersion,'-Linux-x86_64']);
     baseFile=['Helics-shared-',HelicsVersion,'-Linux-x86_64.tar.gz'];
-    targetFile=fullfile(basePath,'lib64',['libhelics.so.',HelicsVersion]);
+    targetFile=fullfile(basePath,'lib64','libhelics.so');
     % download the helics library if needed
     if (~exist(fullfile(basePath,'include/helics/helics.h'),'file'))
         if (~exist(targetTarFile,'file'))
@@ -66,9 +66,11 @@ else
     error('Platform not supported');
 end
 
-%% now build the interface directory
+%% now build the interface directory and copy files
 copyfile(fullfile(inputPath,'matlabBindings','+helics'),fullfile(targetPath,'+helics'));
 copyfile(fullfile(inputPath,'extra_m_codes'),fullfile(targetPath,'+helics'));
+% copy the include directory with the C headers
+copyfile(fullfile(basePath,'/include'),fullfile(targetPath,'include'));
 
 %% generate a startup script to load the library
 
@@ -86,9 +88,8 @@ copyfile(fullfile(inputPath,'extra_m_codes'),fullfile(targetPath,'+helics'));
     fprintf(fid,'');
 
     fprintf(fid,'if (~isempty(libraryName))\n');
-    fprintf(fid,'\t[~,name]=fileparts(libraryName);\n');
-    fprintf(fid,'\tif ~libisloaded(name)\n');
-    fprintf(fid,'\t\tloadlibrary(libraryName,headerName);\n');
+    fprintf(fid,'\tif ~libisloaded(''libHelics'')\n');
+    fprintf(fid,'\t\tloadlibrary(libraryName,headerName,''ALIAS'',''libHelics'');\n');
     fprintf(fid,'\tend\n');
     fprintf(fid,'else\n');
     fprintf(fid,'\tdisp(''Unable to find library for HELICS'')\n');
