@@ -69,7 +69,8 @@ end
 %% now build the interface directory and copy files
 copyfile(fullfile(inputPath,'matlabBindings','+helics'),fullfile(targetPath,'+helics'));
 copyfile(fullfile(inputPath,'extra_m_codes'),fullfile(targetPath,'+helics'));
-copyfile(fullfile(basePath,'/include/helics.h'),fullfile(targetPath,'include','helics.h'));
+% copy the include directory with the C headers
+copyfile(fullfile(basePath,'/include'),fullfile(targetPath,'include'));
 
 %% generate a startup script to load the library
 

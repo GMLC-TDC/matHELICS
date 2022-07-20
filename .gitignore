@@ -101,3 +101,5 @@ Helics-*
 *.asv
 *.tar.gz
 helicsMex.*
+helicsStartup.m
+
