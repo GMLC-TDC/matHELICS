@@ -13,7 +13,7 @@ targetTarFile=fullfile(targetPath,['helicsTar',HelicsVersion,'.tar.gz']);
 if ismac
     basePath=fullfile(targetPath,['Helics-',HelicsVersion,'-macOS-universal2']);
     baseFile=['Helics-shared-',HelicsVersion,'-macOS-universal2.tar.gz'];
-    targetFile=fullfile(basePath,'lib',['libhelics.',HelicsVersion,'.dylib']);
+    targetFile=fullfile(basePath,'lib','libhelics.dylib');
     % download the helics library if needed
     if (~exist(fullfile(basePath,'include/helics/helics.h'),'file'))
         if (~exist(targetTarFile,'file'))
@@ -26,7 +26,7 @@ if ismac
 elseif isunix
     basePath=fullfile(targetPath,['Helics-',HelicsVersion,'-Linux-x86_64']);
     baseFile=['Helics-shared-',HelicsVersion,'-Linux-x86_64.tar.gz'];
-    targetFile=fullfile(basePath,'lib64',['libhelics.so.',HelicsVersion]);
+    targetFile=fullfile(basePath,'lib64','libhelics.so');
     % download the helics library if needed
     if (~exist(fullfile(basePath,'include/helics/helics.h'),'file'))
         if (~exist(targetTarFile,'file'))

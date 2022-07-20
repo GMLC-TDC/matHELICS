@@ -30,7 +30,7 @@ jobs:
         uses: matlab-actions/run-command@v1
         with:
           command: buildHelicsInterface 
-      - name: Build matHELICS
+      - name: run startup
         uses: matlab-actions/run-command@v1
         with:
           command: helicsStartup
