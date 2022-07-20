@@ -83,7 +83,7 @@ copyfile(fullfile(basePath,'/include'),fullfile(targetPath,'include'));
     fprintf(fid,'');
 
     fprintf(fid,'if (nargin<2)\n');
-    fprintf(fid,'\theaderName=''%s'';\n',fullfile(targetPath,'include','helics','helics.h'));
+    fprintf(fid,'\theaderName=''%s'';\n',fullfile(targetPath,'include','helics','helics_api.h'));
     fprintf(fid,'end\n\n');
     fprintf(fid,'');
 

@@ -1,0 +1,4 @@
+helicsStartup
+runtests valueFedTests
+runtests messageFedTests
+runtests messageFilterTests
