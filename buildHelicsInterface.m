@@ -66,9 +66,10 @@ else
     error('Platform not supported');
 end
 
-%% now build the interface directory
+%% now build the interface directory and copy files
 copyfile(fullfile(inputPath,'matlabBindings','+helics'),fullfile(targetPath,'+helics'));
 copyfile(fullfile(inputPath,'extra_m_codes'),fullfile(targetPath,'+helics'));
+copyfile(fullfile(basePath,'/include/helics.h'),fullfile(targetPath,'include','helics.h'));
 
 %% generate a startup script to load the library
 
@@ -86,9 +87,8 @@ copyfile(fullfile(inputPath,'extra_m_codes'),fullfile(targetPath,'+helics'));
     fprintf(fid,'');
 
     fprintf(fid,'if (~isempty(libraryName))\n');
-    fprintf(fid,'\t[~,name]=fileparts(libraryName);\n');
-    fprintf(fid,'\tif ~libisloaded(name)\n');
-    fprintf(fid,'\t\tloadlibrary(libraryName,headerName);\n');
+    fprintf(fid,'\tif ~libisloaded(''libHelics'')\n');
+    fprintf(fid,'\t\tloadlibrary(libraryName,headerName,''ALIAS'',''libHelics'');\n');
     fprintf(fid,'\tend\n');
     fprintf(fid,'else\n');
     fprintf(fid,'\tdisp(''Unable to find library for HELICS'')\n');
