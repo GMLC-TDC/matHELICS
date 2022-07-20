@@ -158,11 +158,7 @@ class MatlabBindingGenerator(object):
                         macroFile.write(f"{macroComment}\n")
                         macroFile.write("%}\n")
                     macroFile.write(f"function v = {macroSpelling}()\n")
-                    macroFile.write("\tpersistent vInitialized;\n")
-                    macroFile.write("\tif isempty(vInitialized)\n")
-                    macroFile.write(f"\t\tvInitialized = helicsMex('{macroSpelling}');\n")
-                    macroFile.write("\tend\n")
-                    macroFile.write("\tv = vInitialized;\n")
+                    macroFile.write(f"\tv = helicsMex('{macroSpelling}');\n")
                     macroFile.write("end\n")
                 macroWrapperStr += f"void _wrap_{macroSpelling}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
                 macroWrapperStr += "\tmxArray *_out = mxCreateNumericMatrix(1,1,mxINT64_CLASS,mxREAL);\n"
@@ -180,11 +176,7 @@ class MatlabBindingGenerator(object):
                         macroFile.write(f"{macroComment}\n")
                         macroFile.write("%}\n")
                     macroFile.write(f"function v = {macroSpelling}()\n")
-                    macroFile.write("\tpersistent vInitialized;\n")
-                    macroFile.write("\tif isempty(vInitialized)\n")
-                    macroFile.write(f"\t\tvInitialized = {macroValue};\n")
-                    macroFile.write("\tend\n")
-                    macroFile.write("\tv = vInitialized;\n")
+                    macroFile.write(f"\tv = {macroValue};\n")
                     macroFile.write("end\n")
             return macroWrapperStr, macroMainFunctionElementStr, macroMapTuple
         
@@ -201,11 +193,7 @@ class MatlabBindingGenerator(object):
                         varFile.write(f"{varComment}\n")
                         varFile.write("%}\n")
                     varFile.write(f"function v = {varSpelling}()\n")
-                    varFile.write("\tpersistent vInitialized;\n")
-                    varFile.write("\tif isempty(vInitialized)\n")
-                    varFile.write(f"\t\tvInitialized = {varValue}();\n")
-                    varFile.write("\tend\n")
-                    varFile.write("\tv = vInitialized;\n")
+                    varFile.write(f"\tv = {varValue}();\n")
                     varFile.write("end\n")
             elif isinstance(varValue, float):
                 with open(f"matlabBindings/+helics/{varSpelling}.m", "w") as varFile:
@@ -214,11 +202,7 @@ class MatlabBindingGenerator(object):
                         varFile.write(f"{varComment}\n")
                         varFile.write("%}\n")
                     varFile.write(f"function v = {varSpelling}()\n")
-                    varFile.write("\tpersistent vInitialized;\n")
-                    varFile.write("\tif isempty(vInitialized)\n")
-                    varFile.write(f"\t\tvInitialized = {varValue};\n")
-                    varFile.write("\tend\n")
-                    varFile.write("\tv = vInitialized;\n")
+                    varFile.write(f"\tv = {varValue};\n")
                     varFile.write("end\n")
             elif isinstance(varValue, int):
                 with open(f"matlabBindings/+helics/{varSpelling}.m", "w") as varFile:
@@ -227,11 +211,7 @@ class MatlabBindingGenerator(object):
                         varFile.write(f"{varComment}\n")
                         varFile.write("%}\n")
                     varFile.write(f"function v = {varSpelling}()\n")
-                    varFile.write("\tpersistent vInitialized;\n")
-                    varFile.write("\tif isempty(vInitialized)\n")
-                    varFile.write(f"\t\tvInitialized = int32({varValue});\n")
-                    varFile.write("\tend\n")
-                    varFile.write("\tv = vInitialized;\n")
+                    varFile.write(f"\tv = int32({varValue});\n")
                     varFile.write("end\n")
         
         
@@ -1289,7 +1269,7 @@ class MatlabBindingGenerator(object):
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(ipt, data, maxDataLen, &actualSize, &err);\n\n"
             functionWrapper += "\tmxChar *dataChar = (mxChar *)data;\n"
-            functionWrapper += "\tmwSize dims[2] = {1, actualSize};\n"
+            functionWrapper += "\tmwSize dims[2] = {1, static_cast<mwSize>(actualSize)};\n"
             functionWrapper += "\tmxArray *_out = mxCreateCharArray(2, dims);\n"
             functionWrapper += "\tmxChar *out_data = (mxChar *)mxGetData(_out);\n"
             functionWrapper += "\tfor(int i=0; i<actualSize; ++i){\n"
@@ -1427,7 +1407,7 @@ class MatlabBindingGenerator(object):
             functionWrapper += "\tdouble val = 0;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(ipt, outputString, maxStringLen, &actualLength, &val, &err);\n\n"
-            functionWrapper += "\tmwSize dims[2] = {1, actualLength-1};\n"
+            functionWrapper += "\tmwSize dims[2] = {1, static_cast<mwSize>(actualLength)-1};\n"
             functionWrapper += "\tmxArray *_out = mxCreateCharArray(2, dims);\n"
             functionWrapper += "\tmxChar *out_data = (mxChar *)mxGetData(_out);\n"
             functionWrapper += "\tfor(int i=0; i<(actualLength-1); ++i){\n"
@@ -1483,7 +1463,7 @@ class MatlabBindingGenerator(object):
             functionWrapper += "\tint actualLength = 0;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(ipt, outputString, maxStringLen, &actualLength, &err);\n\n"
-            functionWrapper += "\tmwSize dims[2] = {1, actualLength - 1};\n"
+            functionWrapper += "\tmwSize dims[2] = {1, static_cast<mwSize>(actualLength) - 1};\n"
             functionWrapper += "\tmxArray *_out = mxCreateCharArray(2, dims);\n"
             functionWrapper += "\tmxChar *out_data = (mxChar *)mxGetData(_out);\n"
             functionWrapper += "\tfor(int i=0; i<(actualLength-1); ++i){\n"
@@ -1631,7 +1611,7 @@ class MatlabBindingGenerator(object):
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0)
             functionWrapper += initializeArgChar("data", 1)
-            functionWrapper += "\tint inputDataLength = dataLength - 1;\n\n"
+            functionWrapper += "\tint inputDataLength = static_cast<int>(dataLength) - 1;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(ipt, (void *)data, inputDataLength, &err);\n\n"
             functionWrapper += "\tmxArray *_out = (mxArray *)0;\n"
@@ -1804,7 +1784,7 @@ class MatlabBindingGenerator(object):
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsMessage", "message", 0)
             functionWrapper += initializeArgChar("data", 1)
-            functionWrapper += "\tint inputDataLength = dataLength - 1;\n\n"
+            functionWrapper += "\tint inputDataLength = static_cast<int>(dataLength) - 1;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(message, (void *)data, inputDataLength, &err);\n\n"
             functionWrapper += "\tmxArray *_out = (mxArray *)0;\n"
@@ -1898,7 +1878,7 @@ class MatlabBindingGenerator(object):
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsMessage", "message", 0)
             functionWrapper += initializeArgChar("data", 1)
-            functionWrapper += "\tint inputDataLength = dataLength - 1;\n\n"
+            functionWrapper += "\tint inputDataLength = static_cast<int>(dataLength) - 1;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(message, (void *)data, inputDataLength, &err);\n\n"
             functionWrapper += "\tmxArray *_out = (mxArray *)0;\n\n"
@@ -1940,7 +1920,7 @@ class MatlabBindingGenerator(object):
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsPublication", "pub", 0)
             functionWrapper += initializeArgChar("data", 1)
-            functionWrapper += "\tint inputDataLength = dataLength - 1;\n\n"
+            functionWrapper += "\tint inputDataLength = static_cast<int>(dataLength) - 1;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(pub, (void *)data, inputDataLength, &err);\n\n"
             functionWrapper += "\tmxArray *_out = (mxArray *)0;\n\n"
@@ -2114,7 +2094,7 @@ class MatlabBindingGenerator(object):
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += initializeArgHelicsClass("HelicsQueryBuffer", "buffer", 0)
             functionWrapper += initializeArgChar("queryResult", 1)
-            functionWrapper += "\tint strSize = queryResultLength - 1;\n\n"
+            functionWrapper += "\tint strSize = static_cast<int>(queryResultLength) - 1;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(buffer, queryResult, strSize, &err);\n\n"
             functionWrapper += "\tmxArray *_out = (mxArray *)0;\n"
@@ -2386,7 +2366,7 @@ class MatlabBindingGenerator(object):
             functionWrapper = "void matlabFederateQueryCallback(const char* query, int querySize, HelicsQueryBuffer buffer, void *userData){\n"
             functionWrapper += "\tmxArray *lhs;\n"
             functionWrapper += "\tmxArray *rhs[4];\n"
-            functionWrapper += "\tmwSize dims[2] = {1, querySize};\n"
+            functionWrapper += "\tmwSize dims[2] = {1, static_cast<mwSize>(querySize)};\n"
             functionWrapper += "\trhs[0] = reinterpret_cast<mxArray *>(userData);\n"
             functionWrapper += "\trhs[1] = mxCreateCharArray(2, dims);\n"
             functionWrapper += "\tmxChar *pQuery = (mxChar *)mxGetData(rhs[1]);\n"
@@ -3178,7 +3158,7 @@ class MatlabBindingGenerator(object):
             functionWrapper += "\tchar *outputString = (char *)malloc(maxStringLen);\n\n"
             functionWrapper += "\tint actualLength = 0;\n\n"
             functionWrapper += f"\t{functionName}(data, outputString, maxStringLen, &actualLength);\n\n"
-            functionWrapper += "\tmwSize dims[2] = {1, actualLength};\n"
+            functionWrapper += "\tmwSize dims[2] = {1, static_cast<mwSize>(actualLength)};\n"
             functionWrapper += "\tmxArray *_out = mxCreateCharArray(2, dims);\n"
             functionWrapper += "\tmxChar *out_data = (mxChar *)mxGetData(_out);\n"
             functionWrapper += "\tfor(int i=0; i<(actualLength); ++i){\n"
@@ -3225,7 +3205,7 @@ class MatlabBindingGenerator(object):
             functionWrapper += "\tchar *outputString = (char *)malloc(maxStringLen);\n\n"
             functionWrapper += "\tint actualLength = 0;\n\n"
             functionWrapper += f"\t{functionName}(data, outputString, maxStringLen, &actualLength);\n\n"
-            functionWrapper += "\tmwSize dims[2] = {1, actualLength - 1};\n"
+            functionWrapper += "\tmwSize dims[2] = {1, static_cast<mwSize>(actualLength) - 1};\n"
             functionWrapper += "\tmxArray *_out = mxCreateCharArray(2, dims);\n"
             functionWrapper += "\tmxChar *out_data = (mxChar *)mxGetData(_out);\n"
             functionWrapper += "\tfor(int i=0; i<(actualLength - 1); ++i){\n"
@@ -3441,7 +3421,7 @@ class MatlabBindingGenerator(object):
             functionWrapper += "\tint actualLength = 0;\n\n"
             functionWrapper += "\tdouble val = 0;\n\n"
             functionWrapper += f"\t{functionName}(data, outputString, maxStringLen, &actualLength, &val);\n\n"
-            functionWrapper += "\tmwSize dims[2] = {1, actualLength-1};\n"
+            functionWrapper += "\tmwSize dims[2] = {1, static_cast<mwSize>(actualLength)-1};\n"
             functionWrapper += "\tmxArray *_out = mxCreateCharArray(2, dims);\n"
             functionWrapper += "\tmxChar *out_data = (mxChar *)mxGetData(_out);\n"
             functionWrapper += "\tfor(int i=0; i<(actualLength-1); ++i){\n"
@@ -3517,14 +3497,14 @@ class MatlabBindingGenerator(object):
             return boilerPlateStr        
         if not os.path.exists("matlabBindings/+helics"):
             os.makedirs("matlabBindings/+helics")
-            shutil.copy2("extra_m_codes/helicsInputSetDefault.m", "matlabBindings/+helics")
-            shutil.copy2("extra_m_codes/helicsPublicationPublish.m", "matlabBindings/+helics")
+            #shutil.copy2("extra_m_codes/helicsInputSetDefault.m", "matlabBindings/+helics")
+            #shutil.copy2("extra_m_codes/helicsPublicationPublish.m", "matlabBindings/+helics")
         else:
             helicsMFiles = glob.glob("matlabBindings/+helics/*")
             for f in helicsMFiles:
                 os.remove(f)
-            shutil.copy2("extra_m_codes/helicsInputSetDefault.m", "matlabBindings/+helics")
-            shutil.copy2("extra_m_codes/helicsPublicationPublish.m", "matlabBindings/+helics")
+            #shutil.copy2("extra_m_codes/helicsInputSetDefault.m", "matlabBindings/+helics")
+            #shutil.copy2("extra_m_codes/helicsPublicationPublish.m", "matlabBindings/+helics")
         helicsMexStr = ""
         helicsMexWrapperFunctions = []
         helicsMexMainFunctionElements = []

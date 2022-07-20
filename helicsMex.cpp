@@ -979,7 +979,7 @@ void _wrap_helicsDataBufferToString(int resc, mxArray *resv[], int argc, const m
 
 	helicsDataBufferToString(data, outputString, maxStringLen, &actualLength);
 
-	mwSize dims[2] = {1, actualLength};
+	mwSize dims[2] = {1, static_cast<mwSize>(actualLength)};
 	mxArray *_out = mxCreateCharArray(2, dims);
 	mxChar *out_data = (mxChar *)mxGetData(_out);
 	for(int i=0; i<(actualLength); ++i){
@@ -1007,7 +1007,7 @@ void _wrap_helicsDataBufferToRawString(int resc, mxArray *resv[], int argc, cons
 
 	helicsDataBufferToRawString(data, outputString, maxStringLen, &actualLength);
 
-	mwSize dims[2] = {1, actualLength - 1};
+	mwSize dims[2] = {1, static_cast<mwSize>(actualLength) - 1};
 	mxArray *_out = mxCreateCharArray(2, dims);
 	mxChar *out_data = (mxChar *)mxGetData(_out);
 	for(int i=0; i<(actualLength - 1); ++i){
@@ -1159,7 +1159,7 @@ void _wrap_helicsDataBufferToNamedPoint(int resc, mxArray *resv[], int argc, con
 
 	helicsDataBufferToNamedPoint(data, outputString, maxStringLen, &actualLength, &val);
 
-	mwSize dims[2] = {1, actualLength-1};
+	mwSize dims[2] = {1, static_cast<mwSize>(actualLength)-1};
 	mxArray *_out = mxCreateCharArray(2, dims);
 	mxChar *out_data = (mxChar *)mxGetData(_out);
 	for(int i=0; i<(actualLength-1); ++i){
@@ -6016,7 +6016,7 @@ void _wrap_helicsPublicationPublishBytes(int resc, mxArray *resv[], int argc, co
 	data = (char *)malloc(dataLength);
 	dataStatus = mxGetString(argv[1], data, dataLength);
 
-	int inputDataLength = dataLength - 1;
+	int inputDataLength = static_cast<int>(dataLength) - 1;
 
 	HelicsError err = helicsErrorInitialize();
 
@@ -6420,7 +6420,7 @@ void _wrap_helicsInputGetBytes(int resc, mxArray *resv[], int argc, const mxArra
 	helicsInputGetBytes(ipt, data, maxDataLen, &actualSize, &err);
 
 	mxChar *dataChar = (mxChar *)data;
-	mwSize dims[2] = {1, actualSize};
+	mwSize dims[2] = {1, static_cast<mwSize>(actualSize)};
 	mxArray *_out = mxCreateCharArray(2, dims);
 	mxChar *out_data = (mxChar *)mxGetData(_out);
 	for(int i=0; i<actualSize; ++i){
@@ -6470,7 +6470,7 @@ void _wrap_helicsInputGetString(int resc, mxArray *resv[], int argc, const mxArr
 
 	helicsInputGetString(ipt, outputString, maxStringLen, &actualLength, &err);
 
-	mwSize dims[2] = {1, actualLength - 1};
+	mwSize dims[2] = {1, static_cast<mwSize>(actualLength) - 1};
 	mxArray *_out = mxCreateCharArray(2, dims);
 	mxChar *out_data = (mxChar *)mxGetData(_out);
 	for(int i=0; i<(actualLength-1); ++i){
@@ -6745,7 +6745,7 @@ void _wrap_helicsInputGetNamedPoint(int resc, mxArray *resv[], int argc, const m
 
 	helicsInputGetNamedPoint(ipt, outputString, maxStringLen, &actualLength, &val, &err);
 
-	mwSize dims[2] = {1, actualLength-1};
+	mwSize dims[2] = {1, static_cast<mwSize>(actualLength)-1};
 	mxArray *_out = mxCreateCharArray(2, dims);
 	mxChar *out_data = (mxChar *)mxGetData(_out);
 	for(int i=0; i<(actualLength-1); ++i){
@@ -6780,7 +6780,7 @@ void _wrap_helicsInputSetDefaultBytes(int resc, mxArray *resv[], int argc, const
 	data = (char *)malloc(dataLength);
 	dataStatus = mxGetString(argv[1], data, dataLength);
 
-	int inputDataLength = dataLength - 1;
+	int inputDataLength = static_cast<int>(dataLength) - 1;
 
 	HelicsError err = helicsErrorInitialize();
 
@@ -9303,7 +9303,7 @@ void _wrap_helicsMessageSetData(int resc, mxArray *resv[], int argc, const mxArr
 	data = (char *)malloc(dataLength);
 	dataStatus = mxGetString(argv[1], data, dataLength);
 
-	int inputDataLength = dataLength - 1;
+	int inputDataLength = static_cast<int>(dataLength) - 1;
 
 	HelicsError err = helicsErrorInitialize();
 
@@ -9332,7 +9332,7 @@ void _wrap_helicsMessageAppendData(int resc, mxArray *resv[], int argc, const mx
 	data = (char *)malloc(dataLength);
 	dataStatus = mxGetString(argv[1], data, dataLength);
 
-	int inputDataLength = dataLength - 1;
+	int inputDataLength = static_cast<int>(dataLength) - 1;
 
 	HelicsError err = helicsErrorInitialize();
 
@@ -10952,7 +10952,7 @@ void _wrap_helicsTranslatorSetCustomCallback(int resc, mxArray *resv[], int argc
 void matlabFederateQueryCallback(const char* query, int querySize, HelicsQueryBuffer buffer, void *userData){
 	mxArray *lhs;
 	mxArray *rhs[4];
-	mwSize dims[2] = {1, querySize};
+	mwSize dims[2] = {1, static_cast<mwSize>(querySize)};
 	rhs[0] = reinterpret_cast<mxArray *>(userData);
 	rhs[1] = mxCreateCharArray(2, dims);
 	mxChar *pQuery = (mxChar *)mxGetData(rhs[1]);
@@ -11134,7 +11134,7 @@ void _wrap_helicsQueryBufferFill(int resc, mxArray *resv[], int argc, const mxAr
 	queryResult = (char *)malloc(queryResultLength);
 	queryResultStatus = mxGetString(argv[1], queryResult, queryResultLength);
 
-	int strSize = queryResultLength - 1;
+	int strSize = static_cast<int>(queryResultLength) - 1;
 
 	HelicsError err = helicsErrorInitialize();
 
