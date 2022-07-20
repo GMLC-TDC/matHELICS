@@ -71,7 +71,7 @@ copyfile(fullfile(inputPath,'matlabBindings','+helics'),fullfile(targetPath,'+he
 copyfile(fullfile(inputPath,'extra_m_codes'),fullfile(targetPath,'+helics'));
 
 %% generate a startup script to load the library
-if (~ispc)
+
     fid=fopen(fullfile(targetPath,'helicsStartup.m'),'w');
     fprintf(fid,'function helicsStartup(libraryName,headerName)\n');
     fprintf(fid,'%% function to load the helics library prior to execution\n');
@@ -94,7 +94,7 @@ if (~ispc)
     fprintf(fid,'\tdisp(''Unable to find library for HELICS'')\n');
     fprintf(fid,'end\n');
     fclose(fid);
-end
+
 
 
 
