@@ -88,6 +88,7 @@ tags
 [Ll]ib64
 [Ll]ocal
 [Ss]cripts
+\+helics
 pyvenv.cfg
 .venv
 pip-selfcheck.json
