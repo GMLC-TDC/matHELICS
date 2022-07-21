@@ -39,11 +39,12 @@ class MatlabBindingGenerator(object):
     '''
 
 
-    def __init__(self, headerFiles: List[str]):
+    def __init__(self, rootDir: str, headerFiles: List[str]):
         '''
         Constructor
         '''
         self.__helicsParser = clangParser.HelicsHeaderParser(headerFiles)
+        self.__rootDir = os.path.abspath(rootDir)
         
         
     def generateSource(self):
@@ -123,7 +124,7 @@ class MatlabBindingGenerator(object):
             matlabBindingGeneratorLogger.debug(f"creating MATLAB enum definition for:\n{json.dumps(enumDict,indent=4,sort_keys=True)}")
             enumSpelling = enumDict.get('spelling','')
             enumComment = enumDict.get('brief_comment','')
-            with open(f"matlabBindings/+helics/{enumSpelling}.m","w") as enumMFile:
+            with open(os.path.join(self.__rootDir, f"matlabBindings/+helics/{enumSpelling}.m"),"w") as enumMFile:
                 enumMFile.write("%{\n"+f"{enumComment}\n\nAttributes:")
                 docStrBody = ""
                 enumStrBody = ""
@@ -152,7 +153,7 @@ class MatlabBindingGenerator(object):
             macroMainFunctionElementStr = ""
             macroMapTuple = None
             if isinstance(macroValue, str):
-                with open(f"matlabBindings/+helics/{macroSpelling}.m", "w") as macroFile:
+                with open(os.path.join(self.__rootDir, f"matlabBindings/+helics/{macroSpelling}.m"), "w") as macroFile:
                     if macroComment != None:
                         macroFile.write("%{\n")
                         macroFile.write(f"{macroComment}\n")
@@ -170,7 +171,7 @@ class MatlabBindingGenerator(object):
                 macroMainFunctionElementStr += f"\t\tbreak;\n"
                 macroMapTuple = (macroSpelling, cursorIdx)
             elif isinstance(macroValue, float) or isinstance(macroValue, int):
-                with open(f"matlabBindings/+helics/{macroSpelling}.m", "w") as macroFile:
+                with open(os.path.join(self.__rootDir, f"matlabBindings/+helics/{macroSpelling}.m"), "w") as macroFile:
                     if macroComment != None:
                         macroFile.write("%{\n")
                         macroFile.write(f"{macroComment}\n")
@@ -187,7 +188,7 @@ class MatlabBindingGenerator(object):
             varComment = varDict.get("brief_comment","")
             varValue = varDict.get("value")
             if isinstance(varValue, str):
-                with open(f"matlabBindings/+helics/{varSpelling}.m", "w") as varFile:
+                with open(os.path.join(self.__rootDir, f"matlabBindings/+helics/{varSpelling}.m"), "w") as varFile:
                     if varComment != None:
                         varFile.write("%{\n")
                         varFile.write(f"{varComment}\n")
@@ -196,7 +197,7 @@ class MatlabBindingGenerator(object):
                     varFile.write(f"\tv = {varValue}();\n")
                     varFile.write("end\n")
             elif isinstance(varValue, float):
-                with open(f"matlabBindings/+helics/{varSpelling}.m", "w") as varFile:
+                with open(os.path.join(self.__rootDir, f"matlabBindings/+helics/{varSpelling}.m"), "w") as varFile:
                     if varComment != None:
                         varFile.write("%{\n")
                         varFile.write(f"{varComment}\n")
@@ -205,7 +206,7 @@ class MatlabBindingGenerator(object):
                     varFile.write(f"\tv = {varValue};\n")
                     varFile.write("end\n")
             elif isinstance(varValue, int):
-                with open(f"matlabBindings/+helics/{varSpelling}.m", "w") as varFile:
+                with open(os.path.join(self.__rootDir, f"matlabBindings/+helics/{varSpelling}.m"), "w") as varFile:
                     if varComment != None:
                         varFile.write("%{\n")
                         varFile.write(f"{varComment}\n")
@@ -299,7 +300,7 @@ class MatlabBindingGenerator(object):
                         functionComment = funComPart[0] + funComPart1[2] + '\n%}\n'
                 else:
                     functionComment = functionComment + '%}\n'
-                with open(f"matlabBindings/+helics/{functionName}.m", "w") as functionMFile:
+                with open(os.path.join(self.__rootDir, f"matlabBindings/+helics/{functionName}.m"), "w") as functionMFile:
                     functionMFile.write(functionComment)
                     functionMFile.write(f"function varargout = {functionName}(varargin)\n")
                     functionMFile.write("\t[varargout{1:nargout}] = helicsMex(" + f"'{functionName}', varargin" + "{:});\n")
@@ -763,7 +764,7 @@ class MatlabBindingGenerator(object):
             }
             functionComment, functionWrapper, functionMainElement = modifiedPythonFunctionList[functionDict.get("spelling","")](functionDict, cursorIdx)
             
-            with open(f'matlabBindings/+helics/{functionDict.get("spelling","")}.m', "w") as functionMFile:
+            with open(os.path.join(self.__rootDir, f'matlabBindings/+helics/{functionDict.get("spelling","")}.m'), "w") as functionMFile:
                 functionMFile.write(functionComment)
                 functionMFile.write(f'function varargout = {functionDict.get("spelling","")}(varargin)\n')
                 functionMFile.write("\t[varargout{1:nargout}] = helicsMex(" + f'\'{functionDict.get("spelling","")}\', varargin' + "{:});\n")
@@ -3494,17 +3495,23 @@ class MatlabBindingGenerator(object):
             boilerPlateStr = "\tdefault:\n"
             boilerPlateStr += "\t\tmexErrMsgIdAndTxt(\"helics:mexFunction\",\"An unknown function id was encountered. Call the mex function with a valid function id.\");\n"
             boilerPlateStr += "\t}\n}\n\n"
-            return boilerPlateStr        
-        if not os.path.exists("matlabBindings/+helics"):
-            os.makedirs("matlabBindings/+helics")
-            #shutil.copy2("extra_m_codes/helicsInputSetDefault.m", "matlabBindings/+helics")
-            #shutil.copy2("extra_m_codes/helicsPublicationPublish.m", "matlabBindings/+helics")
+            return boilerPlateStr 
+        filePath = os.path.dirname(__file__)   
+        if not os.path.exists(os.path.join(self.__rootDir, "matlabBindings/+helics")):
+            os.makedirs(os.path.join(self.__rootDir, "matlabBindings/+helics"))
+            try:
+                shutil.copy2(os.path.join(filePath, "extra_m_codes/helicsInputSetDefault.m"), os.path.join(self.__rootDir, "matlabBindings/+helics"))
+                shutil.copy2(os.path.join(filePath, "extra_m_codes/helicsPublicationPublish.m"), os.path.join(self.__rootDir, "matlabBindings/+helics"))
+            except:
+                matlabBindingGeneratorLogger.warning("couldn't copy extra_m_codes.")
         else:
-            helicsMFiles = glob.glob("matlabBindings/+helics/*")
-            for f in helicsMFiles:
-                os.remove(f)
-            #shutil.copy2("extra_m_codes/helicsInputSetDefault.m", "matlabBindings/+helics")
-            #shutil.copy2("extra_m_codes/helicsPublicationPublish.m", "matlabBindings/+helics")
+            shutil.rmtree(os.path.join(self.__rootDir, 'matlabBindings'))
+            os.makedirs(os.path.join(self.__rootDir, "matlabBindings/+helics"))
+            try:
+                shutil.copy2(os.path.join(filePath, "extra_m_codes/helicsInputSetDefault.m"), os.path.join(self.__rootDir, "matlabBindings/+helics"))
+                shutil.copy2(os.path.join(filePath, "extra_m_codes/helicsPublicationPublish.m"), os.path.join(self.__rootDir, "matlabBindings/+helics"))
+            except:
+                matlabBindingGeneratorLogger.warning("couldn't copy extra_m_codes.")
         helicsMexStr = ""
         helicsMexWrapperFunctions = []
         helicsMexMainFunctionElements = []
