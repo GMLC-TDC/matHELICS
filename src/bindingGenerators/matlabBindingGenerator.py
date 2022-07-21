@@ -3505,8 +3505,11 @@ class MatlabBindingGenerator(object):
             except:
                 matlabBindingGeneratorLogger.warning("couldn't copy extra_m_codes.")
         else:
-            shutil.rmtree(os.path.join(self.__rootDir, 'matlabBindings'))
-            os.makedirs(os.path.join(self.__rootDir, "matlabBindings/+helics"))
+            try:
+                shutil.rmtree(os.path.join(self.__rootDir, 'matlabBindings'))
+                os.makedirs(os.path.join(self.__rootDir, "matlabBindings/+helics"))
+            except:
+                matlabBindingGeneratorLogger.warning("couldn't delete the old bindings files.")
             try:
                 shutil.copy2(os.path.join(filePath, "extra_m_codes/helicsInputSetDefault.m"), os.path.join(self.__rootDir, "matlabBindings/+helics"))
                 shutil.copy2(os.path.join(filePath, "extra_m_codes/helicsPublicationPublish.m"), os.path.join(self.__rootDir, "matlabBindings/+helics"))
@@ -3540,6 +3543,6 @@ class MatlabBindingGenerator(object):
         for element in helicsMexMainFunctionElements:
             helicsMexStr += element
         helicsMexStr += closeBoilerPlate()
-        with open(f"helicsMex.cpp", "w") as helicsMexFile:
+        with open(os.path.join(self.__rootDir, "helicsMex.cpp"), "w") as helicsMexFile:
             helicsMexFile.write(helicsMexStr)
         matlabBindingGeneratorLogger.info("MATLAB HELICS API successfully created!")
