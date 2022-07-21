@@ -83,13 +83,13 @@ copyfile(fullfile(basePath,'/include'),fullfile(targetPath,'include'));
     fprintf(fid,'');
 
     fprintf(fid,'if (nargin<2)\n');
-    fprintf(fid,'\theaderName=''%s'';\n',fullfile(targetPath,'include','helics.h'));
+    fprintf(fid,'\theaderName=''%s'';\n',fullfile(targetPath,'include','helics','helics_api.h'));
     fprintf(fid,'end\n\n');
     fprintf(fid,'');
 
     fprintf(fid,'if (~isempty(libraryName))\n');
     fprintf(fid,'\tif ~libisloaded(''libHelics'')\n');
-    fprintf(fid,'\t\tloadlibrary(libraryName,headerName,''ALIAS'',''libHelics'');\n');
+    fprintf(fid,'\t\tloadlibrary(libraryName,headerName);\n');
     fprintf(fid,'\tend\n');
     fprintf(fid,'else\n');
     fprintf(fid,'\tdisp(''Unable to find library for HELICS'')\n');
