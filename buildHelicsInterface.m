@@ -70,7 +70,7 @@ end
 copyfile(fullfile(inputPath,'matlabBindings','+helics'),fullfile(targetPath,'+helics'));
 copyfile(fullfile(inputPath,'extra_m_codes'),fullfile(targetPath,'+helics'));
 % copy the include directory with the C headers
-makedir(fullfile(targetPath,'include'));
+mkdir(fullfile(targetPath,'include'));
 copyfile(fullfile(inputPath,'helics_minimal.h'),fullfile(targetPath,'include','helics_minimal.h'));
 
 %% generate a startup script to load the library
