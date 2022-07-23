@@ -31,7 +31,7 @@ if ismac
         system(['tar xf ',targetTarFile,' -C ',targetPath]);
     end
     %actually build the mex file
-    mex('-lhelics','-R2018a',['-I',basePath,'/include/'],['-L',basePath,'/lib'],['LDFLAGS=$LDFLAGS -Wl,-rpath,$ORIGIN/bin,-rpath,',basePath,'/lib'],fullfile(inputPath,'helicsMex.cpp'),'-outdir',targetPath)
+    mex('-lhelics','-R2018a',['-I',basePath,'/include/'],['-L',basePath,'/lib'],['LDFLAGS=$LDFLAGS -Wl,-rpath,$ORIGIN/lib64,-rpath,$ORIGIN/lib,-rpath,',basePath,'/lib',',-rpath,',basePath,'/lib64'],fullfile(inputPath,'helicsMex.cpp'),'-outdir',targetPath)
 elseif isunix
     basePath=fullfile(targetPath,['Helics-',HelicsVersion,'-Linux-x86_64']);
     baseFile=['Helics-shared-',HelicsVersion,'-Linux-x86_64.tar.gz'];
@@ -44,7 +44,7 @@ elseif isunix
         system(['tar xf ',targetTarFile,' -C ',targetPath]);
     end
     %actually build the mex file
-    mex('-lhelics','-R2018a',['-I',basePath,'/include/'],['-L',basePath,'/lib'],['LDFLAGS=$LDFLAGS -Wl,-rpath,$ORIGIN/bin,-rpath,',basePath,'/lib'],fullfile(inputPath,'helicsMex.cpp'),'-outdir',targetPath)
+    mex('-lhelics','-R2018a',['-I',basePath,'/include/'],['-L',basePath,'/lib'],['-L',basePath,'/lib64'],['LDFLAGS=$LDFLAGS -Wl,-rpath,$ORIGIN/lib64,-rpath,$ORIGIN/lib,-rpath,',basePath,'/lib',',-rpath,',basePath,'/lib64'],fullfile(inputPath,'helicsMex.cpp'),'-outdir',targetPath)
 elseif ispc
     if isequal(computer,'PCWIN64')
         basePath=fullfile(targetPath,['Helics-',HelicsVersion,'-win64']);
@@ -83,7 +83,8 @@ copyfile(fullfile(inputPath,'extra_m_codes'),fullfile(targetPath,'+helics'));
 mkdir(fullfile(targetPath,'include'));
 copyfile(fullfile(inputPath,'helics_minimal.h'),fullfile(targetPath,'include','helics_minimal.h'));
 if (ismac || isunix)
-    system(['cp ',fullfile(basePath,'bin'),' ',fullfile(targetPath,'bin')]);
+    system(['cp ',fullfile(basePath,'lib'),' ',fullfile(targetPath,'lib')]);
+    system(['cp ',fullfile(basePath,'lib64'),' ',fullfile(targetPath,'lib64')]);
 else
     copyfile(fullfile(basePath,'bin'),fullfile(targetPath,'bin'));
 end
