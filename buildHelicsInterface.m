@@ -31,7 +31,7 @@ if ismac
         system(['tar xf ',targetTarFile,' -C ',targetPath]);
     end
     %actually build the mex file
-    mex('-lhelics','-R2018a',['-I',basePath,'/include/'],['-L',basePath,'/lib'],['LDFLAGS=$LDFLAGS -Wl,-rpath,$ORIGIN/lib64,-rpath,$ORIGIN/lib,-rpath,',basePath,'/lib',',-rpath,',basePath,'/lib64'],fullfile(inputPath,'helicsMex.cpp'),'-outdir',targetPath)
+    mex('-lhelics','-R2018a',['-I',basePath,'/include/'],['-L',basePath,'/lib'],['LDFLAGS=$LDFLAGS -Wl,-rpath,$ORIGIN/lib,-rpath,',basePath,'/lib',',-rpath,',basePath,'/lib64'],fullfile(inputPath,'helicsMex.cpp'),'-outdir',targetPath)
 elseif isunix
     basePath=fullfile(targetPath,['Helics-',HelicsVersion,'-Linux-x86_64']);
     baseFile=['Helics-shared-',HelicsVersion,'-Linux-x86_64.tar.gz'];
@@ -44,7 +44,7 @@ elseif isunix
         system(['tar xf ',targetTarFile,' -C ',targetPath]);
     end
     %actually build the mex file
-    mex('-lhelics','-R2018a',['-I',basePath,'/include/'],['-L',basePath,'/lib'],['-L',basePath,'/lib64'],['LDFLAGS=$LDFLAGS -Wl,-rpath,$ORIGIN/lib64,-rpath,$ORIGIN/lib,-rpath,',basePath,'/lib',',-rpath,',basePath,'/lib64'],fullfile(inputPath,'helicsMex.cpp'),'-outdir',targetPath)
+    mex('-lhelics','-R2018a',['-I',basePath,'/include/'],['-L',basePath,'/lib'],['-L',basePath,'/lib64'],['LDFLAGS=$LDFLAGS -Wl,-rpath,$ORIGIN/lib,-rpath,',basePath,'/lib',',-rpath,',basePath,'/lib64'],fullfile(inputPath,'helicsMex.cpp'),'-outdir',targetPath)
 elseif ispc
     if isequal(computer,'PCWIN64')
         basePath=fullfile(targetPath,['Helics-',HelicsVersion,'-win64']);
@@ -84,7 +84,7 @@ mkdir(fullfile(targetPath,'include'));
 copyfile(fullfile(inputPath,'helics_minimal.h'),fullfile(targetPath,'include','helics_minimal.h'));
 if (ismac || isunix)
     system(['cp ',fullfile(basePath,'lib'),' ',fullfile(targetPath,'lib')]);
-    system(['cp ',fullfile(basePath,'lib64'),' ',fullfile(targetPath,'lib64')]);
+    system(['cp ',fullfile(basePath,'lib64'),' ',fullfile(targetPath,'lib')]);
 else
     copyfile(fullfile(basePath,'bin'),fullfile(targetPath,'bin'));
 end
@@ -95,12 +95,18 @@ end
     fprintf(fid,'function helicsStartup(libraryName,headerName)\n');
     fprintf(fid,'%% function to load the helics library prior to execution\n');
     fprintf(fid,'if (nargin==0)\n');
-    fprintf(fid,'\tlibraryName=''%s'';\n',targetFile);
+    if (ispc)
+        fprintf(fid,'\tlibraryName=''%s'';\n',targetFile);
+    else
+    [~,tname,ext]=fileparts(targetFile);
+    fprintf(fid,'\tcpath=fileparts(mfilename(''fullpath''));\n');
+    fprintf(fid,'\tlibraryName=fullfile(cpath,''lib'',''%s%s'');\n',tname,ext);
+    end
     fprintf(fid,'end\n\n');
     fprintf(fid,'');
 
     fprintf(fid,'if (nargin<2)\n');
-    fprintf(fid,'\theaderName=''%s'';\n',fullfile(targetPath,'include','helics_minimal.h'));
+    fprintf(fid,'\theaderName=fullfile(cpath,''include'',''helics_minimal.h'');');
     fprintf(fid,'end\n\n');
     fprintf(fid,'');
 
