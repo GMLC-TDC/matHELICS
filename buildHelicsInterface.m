@@ -82,7 +82,11 @@ copyfile(fullfile(inputPath,'extra_m_codes'),fullfile(targetPath,'+helics'));
 % copy the include directory with the C headers
 mkdir(fullfile(targetPath,'include'));
 copyfile(fullfile(inputPath,'helics_minimal.h'),fullfile(targetPath,'include','helics_minimal.h'));
-copyfile(fullfile(basePath,'bin'),fullfile(targetPath,'bin'));
+if (ismac || isunix)
+    system(['cp ',fullfile(basePath,'bin'),' ',fullfile(targetPath,'bin')]);
+else
+    copyfile(fullfile(basePath,'bin'),fullfile(targetPath,'bin'));
+end
 
 %% generate a startup script to load the library
 

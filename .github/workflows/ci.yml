@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest,macos-latest,ubuntu-latest]
+        os: [windows-2019,macos-11,ubuntu-20.04]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out repository
@@ -32,17 +32,18 @@ jobs:
       - name: Build matHELICS
         uses: matlab-actions/run-command@v1
         with:
-          command: buildHelicsInterface 
+          command: buildHelicsInterface('helics',true)
+      - name: store package
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.os }}-matHELICS
+          path: matHELICS.*
       - name: run startup
         uses: matlab-actions/run-command@v1
         with:
-          command: helicsStartup
+          command: addpath('helics'), helicsStartup
       - name: run tests
         uses: matlab-actions/run-command@v1
         with:
-          command: addpath('tests'),addpath(pwd),runAllTests
-      - name: store mex file
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ matrix.os }}-mex
-          path: helicsMex.mex*
+          command: addpath('tests'),addpath('helics'),runAllTests
+
