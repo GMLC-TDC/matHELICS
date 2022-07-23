@@ -1,10 +1,19 @@
 
-function buildHelicsInterface(targetPath)
+function buildHelicsInterface(targetPath,makePackage)
 if (nargin==0)
     targetPath=fileparts(mfilename('fullpath'));
 end
+if (nargin<2)
+    makePackage=false;
+end
 if (~exist(targetPath,'dir'))
-    makedir(targetPath);
+    mkdir(targetPath);
+end
+if (makePackage)
+    if (isequal(targetPath,fileparts(mfilename('fullpath'))))
+        warning('cannot makePackage if target location is the same as the file origin');
+        makePackage=false;
+    end
 end
 inputPath=fileparts(mfilename('fullpath'));
 HelicsVersion='3.2.1';
@@ -22,7 +31,7 @@ if ismac
         system(['tar xf ',targetTarFile,' -C ',targetPath]);
     end
     %actually build the mex file
-    mex('-lhelics','-R2018a',['-I',basePath,'/include/'],['-L',basePath,'/lib'],['LDFLAGS=$LDFLAGS -Wl,-rpath,',basePath,'/lib'],fullfile(inputPath,'helicsMex.cpp'),'-outdir',targetPath)
+    mex('-lhelics','-R2018a',['-I',basePath,'/include/'],['-L',basePath,'/lib'],['LDFLAGS=$LDFLAGS -Wl,-rpath,$ORIGIN/bin,-rpath,',basePath,'/lib'],fullfile(inputPath,'helicsMex.cpp'),'-outdir',targetPath)
 elseif isunix
     basePath=fullfile(targetPath,['Helics-',HelicsVersion,'-Linux-x86_64']);
     baseFile=['Helics-shared-',HelicsVersion,'-Linux-x86_64.tar.gz'];
@@ -35,7 +44,7 @@ elseif isunix
         system(['tar xf ',targetTarFile,' -C ',targetPath]);
     end
     %actually build the mex file
-    mex('-lhelics','-R2018a',['-I',basePath,'/include/'],['-L',basePath,'/lib'],['LDFLAGS=$LDFLAGS -Wl,-rpath,',basePath,'/lib'],fullfile(inputPath,'helicsMex.cpp'),'-outdir',targetPath)
+    mex('-lhelics','-R2018a',['-I',basePath,'/include/'],['-L',basePath,'/lib'],['LDFLAGS=$LDFLAGS -Wl,-rpath,$ORIGIN/bin,-rpath,',basePath,'/lib'],fullfile(inputPath,'helicsMex.cpp'),'-outdir',targetPath)
 elseif ispc
     if isequal(computer,'PCWIN64')
         basePath=fullfile(targetPath,['Helics-',HelicsVersion,'-win64']);
@@ -60,6 +69,7 @@ elseif ispc
     if ispc
         if (~exist(fullfile(targetPath,targetFile),'file'))
             copyfile(fullfile(basePath,'bin',targetFile),fullfile(targetPath,targetFile));
+            copyfile(fullfile(basePath,'bin','*.dll'),targetPath);
         end
     end
 else
@@ -72,6 +82,7 @@ copyfile(fullfile(inputPath,'extra_m_codes'),fullfile(targetPath,'+helics'));
 % copy the include directory with the C headers
 mkdir(fullfile(targetPath,'include'));
 copyfile(fullfile(inputPath,'helics_minimal.h'),fullfile(targetPath,'include','helics_minimal.h'));
+copyfile(fullfile(basePath,'bin'),fullfile(targetPath,'bin'));
 
 %% generate a startup script to load the library
 
@@ -97,7 +108,17 @@ copyfile(fullfile(inputPath,'helics_minimal.h'),fullfile(targetPath,'include','h
     fprintf(fid,'end\n');
     fclose(fid);
 
-
+if (makePackage)
+    rmdir(basePath,'s');
+    delete(targetTarFile);
+    if ismac || isunix
+        system(['tar czvf matHELICS.tar.gz ',fullfile(targetPath,'*')]);
+    elseif ispc
+        zip('matHELICS','*',targetPath);
+    else
+        warning('unrecognized platform for making package');
+    end
+end
 
 
 
