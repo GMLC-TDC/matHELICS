@@ -82,9 +82,10 @@ copyfile(fullfile(inputPath,'extra_m_codes'),fullfile(targetPath,'+helics'));
 % copy the include directory with the C headers
 mkdir(fullfile(targetPath,'include'));
 copyfile(fullfile(inputPath,'helics_minimal.h'),fullfile(targetPath,'include','helics_minimal.h'));
-if (ismac || isunix)
-    system(['cp ',fullfile(basePath,'lib'),' ',fullfile(targetPath,'lib')]);
-    system(['cp ',fullfile(basePath,'lib64'),' ',fullfile(targetPath,'lib')]);
+if (ismac)
+    [status, result]=system(['cp -R ',fullfile(basePath,'lib'),' ',fullfile(targetPath,'lib')])
+elseif (isunix)
+    [status, result]=system(['cp -R ',fullfile(basePath,'lib64'),' ',fullfile(targetPath,'lib')])
 else
     copyfile(fullfile(basePath,'bin'),fullfile(targetPath,'bin'));
 end
@@ -95,12 +96,12 @@ end
     fprintf(fid,'function helicsStartup(libraryName,headerName)\n');
     fprintf(fid,'%% function to load the helics library prior to execution\n');
     fprintf(fid,'if (nargin==0)\n');
+    fprintf(fid,'\tcpath=fileparts(mfilename(''fullpath''));\n');
     if (ispc)
         fprintf(fid,'\tlibraryName=''%s'';\n',targetFile);
     else
-    [~,tname,ext]=fileparts(targetFile);
-    fprintf(fid,'\tcpath=fileparts(mfilename(''fullpath''));\n');
-    fprintf(fid,'\tlibraryName=fullfile(cpath,''lib'',''%s%s'');\n',tname,ext);
+       [~,tname,ext]=fileparts(targetFile);
+       fprintf(fid,'\tlibraryName=fullfile(cpath,''lib'',''%s%s'');\n',tname,ext);
     end
     fprintf(fid,'end\n\n');
     fprintf(fid,'');
