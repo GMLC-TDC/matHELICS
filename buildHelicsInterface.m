@@ -1,10 +1,31 @@
-
 function buildHelicsInterface(targetPath,makePackage)
+% buildHelicsInterface(targetPath,makePackage) will generate the files
+% necessary for the Matlab HELICS interface.  It will download additional
+% files from github if needed.  
+% buildHelicsInterface() will generate the package files in the current
+% directory
+% buildHelicsInterface(targetPath) will create the package files in the
+% specified targetPath directory
+% buildHelicsInterface('') is equivalent to buildHelicsInterface()
+% buildHelicsInterface(targetPath,makePackage) will if makePackage is set
+% to true generate a zip/tar.gz file with all the files that can be copied
+% and extracted on a similar system.  
+%
+% To make the helics library accessible anywhere on the matlab path the
+% targetPath folder should be added to the matlab path.  (NOTE: it should
+% not be added with subfolders as all required matlab code is in the main
+% folder or in the +helics folder which matlab will recognize as a
+% package).
+% 
+% this file requires matlab 2018a or higher.  
 if (nargin==0)
     targetPath=fileparts(mfilename('fullpath'));
 end
 if (nargin<2)
     makePackage=false;
+end
+if (isempty(targetPath))
+    targetPath=fileparts(mfilename('fullpath'));
 end
 if (~exist(targetPath,'dir'))
     mkdir(targetPath);
@@ -83,9 +104,15 @@ copyfile(fullfile(inputPath,'extra_m_codes'),fullfile(targetPath,'+helics'));
 mkdir(fullfile(targetPath,'include'));
 copyfile(fullfile(inputPath,'helics_minimal.h'),fullfile(targetPath,'include','helics_minimal.h'));
 if (ismac)
-    [status, result]=system(['cp -R ',fullfile(basePath,'lib'),' ',fullfile(targetPath,'lib')])
+    [status, result]=system(['cp -R ',fullfile(basePath,'lib'),' ',fullfile(targetPath,'lib')]);
+    if (status~=0)
+        disp(result);
+    end
 elseif (isunix)
-    [status, result]=system(['cp -R ',fullfile(basePath,'lib64'),' ',fullfile(targetPath,'lib')])
+    [status, result]=system(['cp -R ',fullfile(basePath,'lib64'),' ',fullfile(targetPath,'lib')]);
+     if (status~=0)
+        disp(result);
+    end
 else
     copyfile(fullfile(basePath,'bin'),fullfile(targetPath,'bin'));
 end
@@ -107,7 +134,7 @@ end
     fprintf(fid,'');
 
     fprintf(fid,'if (nargin<2)\n');
-    fprintf(fid,'\theaderName=fullfile(cpath,''include'',''helics_minimal.h'');');
+    fprintf(fid,'\theaderName=fullfile(cpath,''include'',''helics_minimal.h'');\n');
     fprintf(fid,'end\n\n');
     fprintf(fid,'');
 
@@ -124,7 +151,7 @@ if (makePackage)
     rmdir(basePath,'s');
     delete(targetTarFile);
     if ismac || isunix
-        system(['tar czvf matHELICS.tar.gz ',fullfile(targetPath,'*')]);
+        system(['tar czf matHELICS.tar.gz ',fullfile(targetPath,'*')]);
     elseif ispc
         zip('matHELICS','*',targetPath);
     else
