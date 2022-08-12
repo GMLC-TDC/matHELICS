@@ -12,8 +12,9 @@ on:
 jobs:
   ci-test:
     strategy:
+      fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [windows-2019,macos-11,ubuntu-20.04]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out repository
@@ -22,6 +23,8 @@ jobs:
         uses: gmlc-tdc/helics-action/install@main
       - name: Set up MATLAB
         uses: matlab-actions/setup-matlab@v1.1.1
+        with:
+          release: R2021a
       - name: Set up MEX
         uses: matlab-actions/run-command@v1
         with:
@@ -29,16 +32,18 @@ jobs:
       - name: Build matHELICS
         uses: matlab-actions/run-command@v1
         with:
-          command: buildHelicsInterface 
+          command: buildHelicsInterface('helics',true)
+      - name: store package
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.os }}-matHELICS
+          path: matHELICS.*
       - name: run startup
         uses: matlab-actions/run-command@v1
         with:
-          command: helicsStartup
+          command: addpath('helics'), helicsStartup
       - name: run tests
         uses: matlab-actions/run-command@v1
         with:
-          command: addpath('tests'),runAllTests
-      #mex('-lhelics','-R2018a',['-I./',basePath,'/include/'],['-L./',basePath,'/lib'],['-L./',basePath,'/bin'],'helicsMex.cpp')
-      # If tests are using MATLAB Unit Testing framework, there is an action that can be run; otherwise run a matlab command
-      #- name: Run MATLAB Unit Tests
-      #  uses: matlab-actions/run-tests@v1
+          command: addpath('tests'),addpath('helics'),runAllTests
+

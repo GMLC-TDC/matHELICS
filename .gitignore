@@ -102,4 +102,5 @@ Helics-*
 *.tar.gz
 helicsMex.*
 helicsStartup.m
+matHelics.*
 
