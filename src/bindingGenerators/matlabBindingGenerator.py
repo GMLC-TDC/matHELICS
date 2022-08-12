@@ -526,7 +526,7 @@ class MatlabBindingGenerator(object):
                 "Double": returnDoubleTomxArray(),
                 "Int": returnIntTomxArray(),
                 "Void_*": returnVoidPtrTomxArray(),
-                "HelicsBool": returnHelicsBoolTomxArray(),
+                "HelicsBool": returnEnumTomxArray(),
                 "HelicsBroker": returnVoidPtrTomxArray(),
                 "HelicsCore": returnVoidPtrTomxArray(),
                 "HelicsDataBuffer": returnVoidPtrTomxArray(),
@@ -600,96 +600,85 @@ class MatlabBindingGenerator(object):
         
         
         def initializeArgChar(argName: str, position: int, functionName: str, argIsOptional: bool = False) -> str:
-            retStr = f"\tchar *{argName} = nullptr;\n"
-            retStr += f"\tsize_t {argName}Length = 0;\n"
-            retStr += f"\tint {argName}Status = 0;\n"
+            retStr = ""
             if not argIsOptional:
-                retStr += f"\tif(mxIsChar(argv[{position}])){{\n"
-                retStr += f"\t\t{argName}Length = mxGetN(argv[{position}]) + 1;\n"
-                retStr += f"\t\t{argName} = (char *)malloc({argName}Length);\n"
-                retStr += f"\t\t{argName}Status = mxGetString(argv[{position}], {argName}, {argName}Length);\n"
-                retStr += "\t}else{\n"
+                retStr += f"\tif(!mxIsChar(argv[{position}])){{\n"
                 retStr += "\t\tmexUnlock();\n"
                 retStr += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument {position+1} must be a string.\");\n"
-                retStr += "\t}\n\n"
+                retStr += "\t}\n"
             else:
                 retStr += f"\tif(argc > {position}){{\n"
-                retStr += f"\t\tif(mxIsChar(argv[{position}])){{\n"
-                retStr += f"\t\t\t{argName}Length = mxGetN(argv[{position}]) + 1;\n"
-                retStr += f"\t\t\t{argName} = (char *)malloc({argName}Length);\n"
-                retStr += f"\t\t\t{argName}Status = mxGetString(argv[{position}], {argName}, {argName}Length);\n"
-                retStr += "\t\t}else{\n"
+                retStr += f"\t\tif(!mxIsChar(argv[{position}])){{\n"
                 retStr += "\t\t\tmexUnlock();\n"
                 retStr += f"\t\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument {position+1} must be a string.\");\n"
                 retStr += "\t\t}\n"
-                retStr += "\t}\n\n"
+                retStr += "\t}\n"
+            retStr += f"\tchar *{argName} = nullptr;\n"
+            retStr += f"\tsize_t {argName}Length = 0;\n"
+            retStr += f"\tint {argName}Status = 0;\n"
+            retStr += f"\tif(argc > {position}){{\n"
+            retStr += f"\t\t{argName}Length = mxGetN(argv[{position}]) + 1;\n"
+            retStr += f"\t\t{argName} = (char *)malloc({argName}Length);\n"
+            retStr += f"\t\t{argName}Status = mxGetString(argv[{position}], {argName}, {argName}Length);\n\n"
+            retStr += "\t}\n"
             return retStr
         
         
         def initializeArgDouble(argName: str, position: int, functionName: str) -> str:
-            retStr = f"\tdouble {argName};\n"
-            retStr += f"\tif(mxIsNumeric(argv[{position}])){{\n"
-            retStr += f"\t\t{argName} = mxGetScalar(argv[{position}]);\n"
-            retStr += "\t}else{\n"
+            retStr = f"\tif(!mxIsNumeric(argv[{position}])){{\n"
             retStr += "\t\tmexUnlock();\n"
             retStr += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument {position+1} must be of type double.\");\n"
-            retStr += "\t}\n\n"
+            retStr += "\t}\n"
+            retStr += f"\tdouble {argName} = mxGetScalar(argv[{position}]);\n\n"
             return retStr
         
         
         def initializeArgInt(argName: str, position: int, functionName: str) -> str:
-            retStr = f"\tint {argName};\n"
-            retStr += f"\tif(mxIsNumeric(argv[{position}])){{\n"
-            retStr += f"\t\t{argName} = (int)(mxGetScalar(argv[{position}]));\n"
-            retStr += "\t}else{\n"
+            retStr = f"\tif(!mxIsNumeric(argv[{position}])){{\n"
             retStr += "\t\tmexUnlock();\n"
             retStr += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument {position+1} must be of type integer.\");\n"
-            retStr += "\t}\n\n"
+            retStr += "\t}\n"
+            retStr += f"\t\tint {argName} = (int)(mxGetScalar(argv[{position}]));\n\n"
+            
             return retStr
         
         
         def initializeArgVoidPtr(argName: str, position: int, functionName: str) -> str:
-            retStr = f"\tvoid *{argName} = nullptr;\n"
-            retStr += f"\tif(mxGetClassID(argv[{position}]) == mxUINT64_CLASS){{\n"
-            retStr += f"\t\t{argName} = mxGetData(argv[{position}]);\n"
-            retStr += "\t}else{\n"
+            retStr = f"\tif(mxGetClassID(argv[{position}]) != mxUINT64_CLASS){{\n"
             retStr += "\t\tmexUnlock();\n"
             retStr += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument {position+1} must be of type uint64.\");\n"
-            retStr += "\t}\n\n"
+            retStr += "\t}\n"
+            retStr += f"\t\tvoid *{argName} = mxGetData(argv[{position}]);\n\n"
+            
             return retStr
         
         
         def initializeArgHelicsBool(argName: str, position: int, functionName: str) -> str:
-            retStr = f"\tHelicsBool {argName} = HELICS_FALSE;\n"
-            retStr += f"\tif(mxIsLogical(argv[{position}])){{\n"
-            retStr += f"\t\t{argName} = (HelicsBool)(mxGetScalar(argv[{position}]));\n"
-            retStr += "\t}else{\n"
+            retStr = f"\tif(!mxIsLogical(argv[{position}])){{\n"
             retStr += "\t\tmexUnlock();\n"
             retStr += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument {position+1} must be of type logical.\");\n"
-            retStr += "\t}\n\n"
+            retStr += "\t}\n"
+            retStr += f"\tHelicsBool {argName} = (HelicsBool)(mxGetScalar(argv[{position}]));\n\n"
+            
             return retStr
         
         
         def initializeArgHelicsClass(helicsClass: str, argName: str, position: int, functionName: str) -> str:
-            retStr = f"\t{helicsClass} {argName};\n"
-            retStr += f"\tif(mxGetClassID(argv[{position}]) == mxUINT64_CLASS){{\n"
-            retStr += f"\t\t{argName} = *({helicsClass}*)(mxGetData(argv[{position}]));\n"
-            retStr += "\t}else{\n"
+            retStr = f"\tif(mxGetClassID(argv[{position}]) != mxUINT64_CLASS){{\n"
             retStr += "\t\tmexUnlock();\n"
             retStr += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument {position+1} must be of type uint64.\");\n"
-            retStr += "\t}\n\n"
+            retStr += "\t}\n"
+            retStr += f"\t{helicsClass} {argName} = *({helicsClass}*)(mxGetData(argv[{position}]));\n\n"
             return retStr
         
         
         def initializeArgHelicsEnum(helicsEnum: str, argName: str, position: int, functionName: str) -> str:
-            retStr = f"\t{helicsEnum} {argName};\n"
-            retStr += f"\tif(mxIsNumeric(argv[{position}])){{\n"
-            retStr += f"\t\tint {argName}Int = static_cast<int>(mxGetScalar(argv[{position}]));\n"
-            retStr += f"\t\t{argName} = static_cast<{helicsEnum}>({argName}Int);\n"
-            retStr += "\t}else{\n"
+            retStr = f"\tif(!mxIsNumeric(argv[{position}])){{\n"
             retStr += "\t\tmexUnlock();\n"
             retStr += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument {position+1} must be of type int32.\");\n"
-            retStr += "\t}\n\n"
+            retStr += "\t}\n"
+            retStr += f"\tint {argName}Int = static_cast<int>(mxGetScalar(argv[{position}]));\n"
+            retStr += f"\t{helicsEnum} {argName} = static_cast<{helicsEnum}>({argName}Int);\n\n"
             return retStr
         
         
@@ -699,35 +688,30 @@ class MatlabBindingGenerator(object):
         
         
         def initializeArgHelicsTime(argName: str, position: int, functionName: str) -> str:
-            retStr = f"\tHelicsTime {argName};\n"
-            retStr += f"\tif(mxIsNumeric(argv[{position}])){{\n"
-            retStr += f"\t\t{argName} = (HelicsTime)(mxGetScalar(argv[{position}]));\n"
-            retStr += "\t}else{\n"
+            retStr = f"\tif(!mxIsNumeric(argv[{position}])){{\n"
             retStr += "\t\tmexUnlock();\n"
             retStr += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument {position+1} must be of type double.\");\n"
-            retStr += "\t}\n\n"
+            retStr += "\t}\n"
+            retStr += f"\tHelicsTime {argName} = (HelicsTime)(mxGetScalar(argv[{position}]));\n\n"
             return retStr
         
         
         def initializeArgInt32_t(argName: str, position: int, functionName: str) -> str:
-            retStr = f"\tint32_t {argName};\n"
-            retStr += f"\tif(mxGetClassID(argv[{position}]) == mxINT32_CLASS){{\n"
-            retStr += f"\t\t{argName} = *((int32_t *)mxGetData(argv[{position}]));\n"
-            retStr += "\t}else{\n"
+            retStr = f"\tif(mxGetClassID(argv[{position}]) != mxINT32_CLASS){{\n"
             retStr += "\t\tmexUnlock();\n"
             retStr += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument {position+1} must be of type int32.\");\n"
-            retStr += "\t}\n\n"
+            retStr += "\t}\n"
+            retStr += f"\tint32_t {argName} = *((int32_t *)mxGetData(argv[{position}]));\n\n"
             return retStr
         
         
         def initializeArgInt64_t(argName: str, position: int, functionName: str) -> str:
-            retStr = f"\tint64_t {argName};\n"
-            retStr += f"\tif(mxGetClassID(argv[{position}]) == mxINT64_CLASS){{\n"
-            retStr += f"\t\t{argName} = *((int64_t *)mxGetData(argv[{position}]));\n"
-            retStr += "\t}else{\n"
+            retStr = f"\tif(mxGetClassID(argv[{position}]) != mxINT64_CLASS){{\n"
             retStr += "\t\tmexUnlock();\n"
             retStr += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument {position+1} must be of type int64.\");\n"
-            retStr += "\t}\n\n"
+            retStr += "\t}\n"
+            retStr += f"\tint64_t {argName} = *((int64_t *)mxGetData(argv[{position}]));\n\n"
+            
             return retStr
         
         
@@ -785,29 +769,29 @@ class MatlabBindingGenerator(object):
         
         def returnIntTomxArray() -> str:
             retStr = "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);\n"
-            retStr += "\t*(mxGetInt64s(_out)) = static_cast<mxInt64>(result);"
+            retStr += "\t*((int64_t*)mxGetData(_out)) = (int64_t)result;"
             return retStr
         
         
         def returnEnumTomxArray() -> str:
             retStr = "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);\n"
-            retStr += "\t*(mxGetInt32s(_out)) = static_cast<mxInt32>(result);"
+            retStr += "\t*((int32_t*)mxGetData(_out)) = (uint32_t)result;"
             return retStr
         
         
-        def returnHelicsBoolTomxArray() -> str:
-            retStr = "\tmxArray *_out = mxCreateLogicalMatrix(1, 1);\n"
-            retStr += "\tif(result == HELICS_TRUE){\n"
-            retStr += "\t\t*(mxGetInt32s(_out)) = true;\n"
-            retStr += "\t}else{\n"
-            retStr += "\t\t*(mxGetInt32s(_out)) = false;\n"
-            retStr += "\t}"
-            return retStr
+#        def returnHelicsBoolTomxArray() -> str:
+#            retStr = "\tmxArray *_out = mxCreateLogicalMatrix(1, 1);\n"
+#            retStr += "\tif(result == HELICS_TRUE){\n"
+#            retStr += "\t\t*(mxGetInt32s(_out)) = true;\n"
+#           retStr += "\t}else{\n"
+#           retStr += "\t\t*(mxGetInt32s(_out)) = false;\n"
+#           retStr += "\t}"
+#            return retStr
         
         
         def returnVoidPtrTomxArray() -> str:
             retStr = "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
-            retStr += "\t*(mxGetUint64s(_out)) = reinterpret_cast<mxUint64>(result);"
+            retStr += "\t*((uint64_t*)mxGetData(_out)) = (uint64_t)result;"
             return retStr
         
         
@@ -824,7 +808,7 @@ class MatlabBindingGenerator(object):
         
         def HelicsIterationResultPtrPostFunctionCall(argName: str) -> str:
             retStr = f"\tmxArray *{argName}Mx = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);\n"
-            retStr += f"\t*(mxGetInt32s({argName}Mx)) = static_cast<mxInt32>({argName});\n"
+            retStr += f"\t*((int32_t*)mxGetData({argName}Mx)) = (int32_t){argName};\n"
             retStr += "\tif(--resc >= 0) {\n"
             retStr += f"\t\t*resv++ = *{argName}Mx;\n"
             retStr += "\t}"
