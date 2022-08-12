@@ -654,9 +654,9 @@ class MatlabBindingGenerator(object):
         
         
         def initializeArgHelicsBool(argName: str, position: int, functionName: str) -> str:
-            retStr = f"\tif(!mxIsLogical(argv[{position}])){{\n"
+            retStr = f"\tif(!mxIsNumeric(argv[{position}])){{\n"
             retStr += "\t\tmexUnlock();\n"
-            retStr += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument {position+1} must be of type logical.\");\n"
+            retStr += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument {position+1} must be a 0 or 1.\");\n"
             retStr += "\t}\n"
             retStr += f"\tHelicsBool {argName} = (HelicsBool)(mxGetScalar(argv[{position}]));\n\n"
             
@@ -779,14 +779,15 @@ class MatlabBindingGenerator(object):
             return retStr
         
         
-#        def returnHelicsBoolTomxArray() -> str:
-#            retStr = "\tmxArray *_out = mxCreateLogicalMatrix(1, 1);\n"
-#            retStr += "\tif(result == HELICS_TRUE){\n"
-#            retStr += "\t\t*(mxGetInt32s(_out)) = true;\n"
-#           retStr += "\t}else{\n"
-#           retStr += "\t\t*(mxGetInt32s(_out)) = false;\n"
-#           retStr += "\t}"
-#            return retStr
+        def returnHelicsBoolTomxArray() -> str:
+            retStr = "\tmxArray *_out = mxCreateLogicalMatrix(1, 1);\n"
+            retStr += "\tmxLogical *rv = mxGetLogicals(_out);\n"
+            retStr += "\tif(result == HELICS_TRUE){\n"
+            retStr += "\t\trv[0] = true;\n"
+            retStr += "\t}else{\n"
+            retStr += "\t\trv[0] = false;\n"
+            retStr += "\t}"
+            return retStr
         
         
         def returnVoidPtrTomxArray() -> str:

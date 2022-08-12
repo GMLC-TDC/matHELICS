@@ -804,9 +804,9 @@ void _wrap_helicsRawStringToBytes(int resc, mxArray *resv[], int argc, const mxA
 
 
 void _wrap_helicsBooleanToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	if(!mxIsLogical(argv[0])){
+	if(!mxIsNumeric(argv[0])){
 		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsBooleanToBytes:TypeError","Argument 1 must be of type logical.");
+		mexErrMsgIdAndTxt("MATLAB:helicsBooleanToBytes:TypeError","Argument 1 must be a 0 or 1.");
 	}
 	HelicsBool value = (HelicsBool)(mxGetScalar(argv[0]));
 
@@ -4043,9 +4043,9 @@ void _wrap_helicsFederateInfoSetFlagOption(int resc, mxArray *resv[], int argc, 
 	}
 		int flag = (int)(mxGetScalar(argv[1]));
 
-	if(!mxIsLogical(argv[2])){
+	if(!mxIsNumeric(argv[2])){
 		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetFlagOption:TypeError","Argument 3 must be of type logical.");
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetFlagOption:TypeError","Argument 3 must be a 0 or 1.");
 	}
 	HelicsBool value = (HelicsBool)(mxGetScalar(argv[2]));
 
@@ -5307,9 +5307,9 @@ void _wrap_helicsFederateSetFlagOption(int resc, mxArray *resv[], int argc, cons
 	}
 		int flag = (int)(mxGetScalar(argv[1]));
 
-	if(!mxIsLogical(argv[2])){
+	if(!mxIsNumeric(argv[2])){
 		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetFlagOption:TypeError","Argument 3 must be of type logical.");
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetFlagOption:TypeError","Argument 3 must be a 0 or 1.");
 	}
 	HelicsBool flagValue = (HelicsBool)(mxGetScalar(argv[2]));
 
@@ -8279,9 +8279,9 @@ void _wrap_helicsPublicationPublishBoolean(int resc, mxArray *resv[], int argc, 
 	}
 	HelicsPublication pub = *(HelicsPublication*)(mxGetData(argv[0]));
 
-	if(!mxIsLogical(argv[1])){
+	if(!mxIsNumeric(argv[1])){
 		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishBoolean:TypeError","Argument 2 must be of type logical.");
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishBoolean:TypeError","Argument 2 must be a 0 or 1.");
 	}
 	HelicsBool val = (HelicsBool)(mxGetScalar(argv[1]));
 
@@ -9260,9 +9260,9 @@ void _wrap_helicsInputSetDefaultBoolean(int resc, mxArray *resv[], int argc, con
 	}
 	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
 
-	if(!mxIsLogical(argv[1])){
+	if(!mxIsNumeric(argv[1])){
 		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultBoolean:TypeError","Argument 2 must be of type logical.");
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultBoolean:TypeError","Argument 2 must be a 0 or 1.");
 	}
 	HelicsBool val = (HelicsBool)(mxGetScalar(argv[1]));
 
@@ -12610,9 +12610,9 @@ void _wrap_helicsMessageSetFlagOption(int resc, mxArray *resv[], int argc, const
 	}
 		int flag = (int)(mxGetScalar(argv[1]));
 
-	if(!mxIsLogical(argv[2])){
+	if(!mxIsNumeric(argv[2])){
 		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetFlagOption:TypeError","Argument 3 must be of type logical.");
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetFlagOption:TypeError","Argument 3 must be a 0 or 1.");
 	}
 	HelicsBool flagValue = (HelicsBool)(mxGetScalar(argv[2]));
 
