@@ -7,9 +7,9 @@ Helics-*
 *.dll
 *.dylib
 *.so
-*.asv
 *.tar.gz
 *.log
+
 
 # Eclipse.gitignore from https://github.com/github/gitignore/blob/main/Global/Eclipse.gitignore
 .metadata
@@ -73,6 +73,7 @@ local.properties
 # Typically, this file would be tracked if it contains build/dependency configurations:
 .project
 
+
 # Vim.gitignore from https://github.com/github/gitignore/blob/main/Global/Vim.gitignore
 # Swap
 [._]*.s[a-v][a-z]
@@ -93,6 +94,40 @@ Sessionx.vim
 tags
 # Persistent undo
 [._]*.un~
+
+
+# MATLAB.gitignore from https://github.com/github/gitignore/blob/main/Global/MATLAB.gitignore
+# Windows default autosave extension
+*.asv
+
+# OSX / *nix default autosave extension
+*.m~
+
+# Compiled MEX binaries (all platforms)
+*.mex*
+
+# Packaged app and toolbox files
+*.mlappinstall
+*.mltbx
+
+# Generated helpsearch folders
+helpsearch*/
+
+# Simulink code generation folders
+slprj/
+sccprj/
+
+# Matlab code generation folders
+codegen/
+
+# Simulink autosave extension
+*.autosave
+
+# Simulink cache files
+*.slxc
+
+# Octave session info
+octave-workspace
 
 
 # VirtualEnv.gitignore from https://github.com/github/gitignore/blob/main/Global/VirtualEnv.gitignore
