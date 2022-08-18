@@ -1,3 +1,17 @@
+# matHELICS specific
+\+helics
+helicsMex.*
+helicsStartup.m
+matHelics.*
+Helics-*
+*.dll
+*.dylib
+*.so
+*.asv
+*.tar.gz
+*.log
+
+# Eclipse.gitignore from https://github.com/github/gitignore/blob/main/Global/Eclipse.gitignore
 .metadata
 bin/
 tmp/
@@ -59,6 +73,7 @@ local.properties
 # Typically, this file would be tracked if it contains build/dependency configurations:
 .project
 
+# Vim.gitignore from https://github.com/github/gitignore/blob/main/Global/Vim.gitignore
 # Swap
 [._]*.s[a-v][a-z]
 !*.svg  # comment out if you don't need vector files
@@ -79,6 +94,8 @@ tags
 # Persistent undo
 [._]*.un~
 
+
+# VirtualEnv.gitignore from https://github.com/github/gitignore/blob/main/Global/VirtualEnv.gitignore
 # Virtualenv
 # http://iamzed.com/2009/05/07/a-primer-on-virtualenv/
 .Python
@@ -88,19 +105,8 @@ tags
 [Ll]ib64
 [Ll]ocal
 [Ss]cripts
-\+helics
 pyvenv.cfg
 .venv
 pip-selfcheck.json
 venv*
-*.log
-Helics-*
-*.dll
-*.dylib
-*.so
-*.asv
-*.tar.gz
-helicsMex.*
-helicsStartup.m
-matHelics.*
 
