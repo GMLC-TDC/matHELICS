@@ -43,10 +43,6 @@ function  helicsPublicationPublish(varargin)
        case {'int64'}
            helicsPublicationPublishInteger(varargin{:});
        case {'logical'}
-           if (pubdata)
-               helicsPublicationPublishBoolean(varargin{1},int32(1));
-           else
-               helicsPublicationPublishBoolean(varargin{1},int32(0));
-           end
+               helicsPublicationPublishBoolean(varargin{1},pubdata);
    end
 end
