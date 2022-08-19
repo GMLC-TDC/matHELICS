@@ -89,6 +89,7 @@ class HelicsHeaderParser (object):
             for arg in node.get_arguments():
                 cursorInfoDict["arguments"][argNum] = self._cursorInfo(arg)
                 argNum += 1
+            cursorInfoDict["argument_count"] = argNum
             HelicsHeaderParser._types["functions"][cursorInfoDict.get("spelling","")] = cursorInfoDict["arguments"]
         if node.kind == cidx.CursorKind.PARM_DECL:
             if node.type.kind == cidx.TypeKind.TYPEDEF:

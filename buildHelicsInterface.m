@@ -101,7 +101,9 @@ end
 copyfile(fullfile(inputPath,'matlabBindings','+helics'),fullfile(targetPath,'+helics'));
 copyfile(fullfile(inputPath,'extra_m_codes'),fullfile(targetPath,'+helics'));
 % copy the include directory with the C headers
-mkdir(fullfile(targetPath,'include'));
+if (~exist(fullfile(targetPath,'include'),'dir'))
+    mkdir(fullfile(targetPath,'include'));
+end
 copyfile(fullfile(inputPath,'helics_minimal.h'),fullfile(targetPath,'include','helics_minimal.h'));
 if (ismac)
     [status, result]=system(['cp -R ',fullfile(basePath,'lib'),' ',fullfile(targetPath,'lib')]);

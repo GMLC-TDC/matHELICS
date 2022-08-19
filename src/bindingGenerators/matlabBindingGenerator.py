@@ -14,6 +14,7 @@ from typing import List
 import clang.cindex as cidx
 
 from . import clangParser
+from pickle import FALSE
 
 
 matlabBindingGeneratorLogger = logging.getLogger(__name__)
@@ -66,6 +67,7 @@ class MatlabBindingGenerator(object):
             boilerPlateStr += "#include <unordered_map>\n\n"
             boilerPlateStr += "static int mexFunctionCalled = 0;\n\n"
             boilerPlateStr += "static void throwHelicsMatlabError(HelicsError *err) {\n"
+            boilerPlateStr += "\tmexUnlock();\n"
             boilerPlateStr += "\tswitch (err->error_code)\n"
             boilerPlateStr += "\t{\n"
             boilerPlateStr += "\tcase HELICS_OK:\n"
@@ -162,6 +164,10 @@ class MatlabBindingGenerator(object):
                     macroFile.write(f"\tv = helicsMex('{macroSpelling}');\n")
                     macroFile.write("end\n")
                 macroWrapperStr += f"void _wrap_{macroSpelling}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
+                macroWrapperStr += "\tif(argc != 0){\n"
+                macroWrapperStr += "\t\tmexUnlock();\n"
+                macroWrapperStr += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{macroSpelling}:rhs\",\"This function doesn't take arguments.\");\n"
+                macroWrapperStr += "\t}\n"
                 macroWrapperStr += "\tmxArray *_out = mxCreateNumericMatrix(1,1,mxINT64_CLASS,mxREAL);\n"
                 macroWrapperStr += f"\t*((int64_t*)mxGetData(_out)) = (int64_t){macroSpelling};\n"
                 macroWrapperStr += "\tresv[0] = _out;\n"
@@ -183,37 +189,46 @@ class MatlabBindingGenerator(object):
         
         
         def createVar(varDict: dict(), cursorIdx: int):
-            matlabBindingGeneratorLogger.debug(f"creating MATLAB var definition for:\n{json.dumps(varDict,indent=4,sort_keys=True)}")
+            varsToIgnore = ["cHelicsBigNumber"]
             varSpelling = varDict.get("spelling","")
             varComment = varDict.get("brief_comment","")
+            varType = varDict.get("type","")
             varValue = varDict.get("value")
-            if isinstance(varValue, str):
-                with open(os.path.join(self.__rootDir, f"matlabBindings/+helics/{varSpelling}.m"), "w") as varFile:
-                    if varComment != None:
-                        varFile.write("%{\n")
-                        varFile.write(f"{varComment}\n")
-                        varFile.write("%}\n")
-                    varFile.write(f"function v = {varSpelling}()\n")
-                    varFile.write(f"\tv = {varValue}();\n")
-                    varFile.write("end\n")
-            elif isinstance(varValue, float):
-                with open(os.path.join(self.__rootDir, f"matlabBindings/+helics/{varSpelling}.m"), "w") as varFile:
-                    if varComment != None:
-                        varFile.write("%{\n")
-                        varFile.write(f"{varComment}\n")
-                        varFile.write("%}\n")
-                    varFile.write(f"function v = {varSpelling}()\n")
-                    varFile.write(f"\tv = {varValue};\n")
-                    varFile.write("end\n")
-            elif isinstance(varValue, int):
-                with open(os.path.join(self.__rootDir, f"matlabBindings/+helics/{varSpelling}.m"), "w") as varFile:
-                    if varComment != None:
-                        varFile.write("%{\n")
-                        varFile.write(f"{varComment}\n")
-                        varFile.write("%}\n")
-                    varFile.write(f"function v = {varSpelling}()\n")
-                    varFile.write(f"\tv = int32({varValue});\n")
-                    varFile.write("end\n")
+            if varSpelling not in varsToIgnore:
+                matlabBindingGeneratorLogger.debug(f"creating MATLAB var definition for:\n{json.dumps(varDict,indent=4,sort_keys=True)}")
+                if isinstance(varValue, str):
+                    with open(os.path.join(self.__rootDir, f"matlabBindings/+helics/{varSpelling}.m"), "w") as varFile:
+                        if varComment != None:
+                            varFile.write("%{\n")
+                            varFile.write(f"{varComment}\n")
+                            varFile.write("%}\n")
+                        varFile.write(f"function v = {varSpelling}()\n")
+                        varFile.write(f"\tv = {varValue}();\n")
+                        varFile.write("end\n")
+                elif isinstance(varValue, float):
+                    with open(os.path.join(self.__rootDir, f"matlabBindings/+helics/{varSpelling}.m"), "w") as varFile:
+                        if varComment != None:
+                            varFile.write("%{\n")
+                            varFile.write(f"{varComment}\n")
+                            varFile.write("%}\n")
+                        varFile.write(f"function v = {varSpelling}()\n")
+                        varFile.write(f"\tv = {varValue};\n")
+                        varFile.write("end\n")
+                elif isinstance(varValue, int):
+                    with open(os.path.join(self.__rootDir, f"matlabBindings/+helics/{varSpelling}.m"), "w") as varFile:
+                        if varComment != None:
+                            varFile.write("%{\n")
+                            varFile.write(f"{varComment}\n")
+                            varFile.write("%}\n")
+                        varFile.write(f"function v = {varSpelling}()\n")
+                        if varType != "HelicsBool":
+                            varFile.write(f"\tv = int32({varValue});\n")
+                        else:
+                            if varSpelling == "HELICS_TRUE":
+                                varFile.write(f"\tv = true;\n")
+                            elif varSpelling == "HELICS_FALSE":
+                                varFile.write(f"\tv = false;\n")
+                        varFile.write("end\n")
         
         
         def createFunction(functionDict: dict(), cursorIdx: int):
@@ -311,71 +326,114 @@ class MatlabBindingGenerator(object):
                 functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
                 functionMainElements += f"\t\tbreak;\n"
                 functionWrapperStr += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
+                lastArgPos, isLastArgOptional = isLastArgumentOptional(functionDict)
+                functionWrapperStr += getNumberOfArgumentsCheckStr(functionDict,isLastArgOptional)
                 for a in functionDict.get("arguments",{}).keys():
-                    functionWrapperStr += getArgInitializationStr(functionDict.get("arguments",{}).get(a,{}), int(a))
+                    if a == lastArgPos:
+                        functionWrapperStr += getArgInitializationStr(functionDict.get("arguments",{}).get(a,{}), int(a), functionName, isLastArgOptional)
+                    else:
+                        functionWrapperStr += getArgInitializationStr(functionDict.get("arguments",{}).get(a,{}), int(a), functionName)
                 if functionDict.get("result_type","") != "Void":
                     functionWrapperStr += f"{getFunctionReturnInitializationStr(functionDict)} = {functionName}("
                     for a in functionDict.get("arguments",{}).keys():
                         functionWrapperStr += getArgFunctionCallStr(functionDict.get("arguments",{}).get(a,{}), int(a))
                     functionWrapperStr += ");\n\n"
                     functionWrapperStr += getFunctionReturnConversionStr(functionDict)
-                    functionWrapperStr += "\tif(_out){\n"
+                    functionWrapperStr += "\n\n\tif(_out){\n"
                     functionWrapperStr += "\t\t--resc;\n"
                     functionWrapperStr += "\t\t*resv++ = _out;\n"
                     functionWrapperStr += "\t}"
                     for a in functionDict.get("arguments",{}).keys():
-                        functionWrapperStr += "\n\n"
-                        functionWrapperStr += getArgFunctionCleanUpStr(functionDict.get("arguments",{}).get(a,{}))
+                        argCleanupStr = getArgFunctionCleanUpStr(functionDict.get("arguments",{}).get(a,{}))
+                        if len(argCleanupStr) > 0:
+                            functionWrapperStr += "\n\n"
+                            functionWrapperStr += argCleanupStr
                     functionWrapperStr += "\n}\n\n\n"
                 else:
                     functionWrapperStr += f"\t{functionName}("
                     for a in functionDict.get("arguments",{}).keys():
                         functionWrapperStr += getArgFunctionCallStr(functionDict.get("arguments",{}).get(a,{}), int(a))
                     functionWrapperStr += ");\n\n"
-                    functionWrapperStr += "\tmxArray *_out = (mxArray *)0;\n\n"
+                    functionWrapperStr += "\tmxArray *_out = nullptr;\n\n"
                     functionWrapperStr += "\tif(_out){\n"
                     functionWrapperStr += "\t\t--resc;\n"
                     functionWrapperStr += "\t\t*resv++ = _out;\n"
                     functionWrapperStr += "\t}"
                     for a in functionDict.get("arguments",{}).keys():
-                        functionWrapperStr += "\n\n"
-                        functionWrapperStr += getArgFunctionCleanUpStr(functionDict.get("arguments",{}).get(a,{}))
+                        argCleanupStr = getArgFunctionCleanUpStr(functionDict.get("arguments",{}).get(a,{}))
+                        if len(argCleanupStr) > 0:
+                            functionWrapperStr += "\n\n"
+                            functionWrapperStr += argCleanupStr
                     functionWrapperStr += "\n}\n\n\n"                        
                 return functionWrapperStr, functionMainElements, (functionName, cursorIdx)
             else:
                 return "","", None
 
+
+        def isLastArgumentOptional(functionDict: dict()) -> tuple():
+            lastArgPos = 0
+            isLastArgOptional = False
+            argCount = functionDict.get("argument_count", 0)
+            if argCount > 0:
+                #check to see if final argument is a const char *. If so this will be treated as an optional argument.
+                lastArgPos = argCount - 1
+                lastArg = functionDict.get("arguments",{}).get(lastArgPos)
+                lastArgType = lastArg.get("pointer_type")
+                if lastArgType == "Char_S_*":
+                    isLastArgOptional = True
+            return lastArgPos, isLastArgOptional
         
-        def getArgInitializationStr(argDict: dict(), argPos: int) -> str:
+        
+        def getNumberOfArgumentsCheckStr(functionDict: dict(), lastArgOptional=False) -> str:
+            argCheckStr = ""
+            argCount = functionDict.get("argument_count", 0)
+            for a in functionDict.get("arguments",{}).keys():
+                if functionDict.get("arguments",{}).get(a,{}).get("pointer_type","") == "HelicsError_*":
+                    argCount -= 1
+            functionName = functionDict.get("spelling","")
+            if lastArgOptional:
+                argCheckStr += f"\tif(argc < {argCount - 1} || argc > {argCount}){{\n"
+                argCheckStr += "\t\tmexUnlock();\n"
+                argCheckStr += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires at least {argCount - 1} arguments and at most {argCount} arguments.\");\n"
+                argCheckStr += "\t}\n\n"
+            else:
+                argCheckStr += f"\tif(argc != {argCount}){{\n"
+                argCheckStr += "\t\tmexUnlock();\n"
+                argCheckStr += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires {argCount} arguments.\");\n"
+                argCheckStr += "\t}\n\n"
+            return argCheckStr
+        
+        
+        def getArgInitializationStr(argDict: dict(), argPos: int, functionName: str, isArgOptional: bool = False) -> str:
             argInitTextMap = {
-                "Char_S": initializeArgChar(argDict.get("spelling",""), argPos),
-                "Char_S_*": initializeArgChar(argDict.get("spelling",""), argPos),
-                "Double": initializeArgDouble(argDict.get("spelling",""), argPos),
-                "Int": initializeArgInt(argDict.get("spelling",""), argPos),
-                "Void_*": initializeArgVoidPtr(argDict.get("spelling",""), argPos),
-                "HelicsBool": initializeArgHelicsBool(argDict.get("spelling",""), argPos),
-                "HelicsBroker": initializeArgHelicsClass("HelicsBroker", argDict.get("spelling",""), argPos),
-                "HelicsCore": initializeArgHelicsClass("HelicsCore", argDict.get("spelling",""), argPos),
-                "HelicsDataBuffer": initializeArgHelicsClass("HelicsDataBuffer", argDict.get("spelling",""), argPos),
-                "HelicsDataTypes": initializeArgHelicsEnum("HelicsDataTypes", argDict.get("spelling",""), argPos),
-                "HelicsEndpoint": initializeArgHelicsClass("HelicsEndpoint", argDict.get("spelling",""), argPos),
+                "Char_S": initializeArgChar(argDict.get("spelling",""), argPos, functionName),
+                "Char_S_*": initializeArgChar(argDict.get("spelling",""), argPos, functionName, isArgOptional),
+                "Double": initializeArgDouble(argDict.get("spelling",""), argPos, functionName),
+                "Int": initializeArgInt(argDict.get("spelling",""), argPos, functionName),
+                "Void_*": initializeArgVoidPtr(argDict.get("spelling",""), argPos, functionName),
+                "HelicsBool": initializeArgHelicsBool(argDict.get("spelling",""), argPos, functionName),
+                "HelicsBroker": initializeArgHelicsClass("HelicsBroker", argDict.get("spelling",""), argPos, functionName),
+                "HelicsCore": initializeArgHelicsClass("HelicsCore", argDict.get("spelling",""), argPos, functionName),
+                "HelicsDataBuffer": initializeArgHelicsClass("HelicsDataBuffer", argDict.get("spelling",""), argPos, functionName),
+                "HelicsDataTypes": initializeArgHelicsEnum("HelicsDataTypes", argDict.get("spelling",""), argPos, functionName),
+                "HelicsEndpoint": initializeArgHelicsClass("HelicsEndpoint", argDict.get("spelling",""), argPos, functionName),
                 "HelicsError_*": initializeArgHelicsErrorPtr(argDict.get("spelling","")),
-                "HelicsFederate": initializeArgHelicsClass("HelicsFederate", argDict.get("spelling",""), argPos),
-                "HelicsFederateInfo": initializeArgHelicsClass("HelicsFederateInfo", argDict.get("spelling",""), argPos),
-                "HelicsFilter": initializeArgHelicsClass("HelicsFilter", argDict.get("spelling",""), argPos),
-                "HelicsFilterTypes": initializeArgHelicsEnum("HelicsFilterTypes", argDict.get("spelling",""), argPos),
-                "HelicsInput": initializeArgHelicsClass("HelicsInput", argDict.get("spelling",""), argPos),
-                "HelicsIterationRequest": initializeArgHelicsEnum("HelicsIterationRequest", argDict.get("spelling",""), argPos),
+                "HelicsFederate": initializeArgHelicsClass("HelicsFederate", argDict.get("spelling",""), argPos, functionName),
+                "HelicsFederateInfo": initializeArgHelicsClass("HelicsFederateInfo", argDict.get("spelling",""), argPos, functionName),
+                "HelicsFilter": initializeArgHelicsClass("HelicsFilter", argDict.get("spelling",""), argPos, functionName),
+                "HelicsFilterTypes": initializeArgHelicsEnum("HelicsFilterTypes", argDict.get("spelling",""), argPos, functionName),
+                "HelicsInput": initializeArgHelicsClass("HelicsInput", argDict.get("spelling",""), argPos, functionName),
+                "HelicsIterationRequest": initializeArgHelicsEnum("HelicsIterationRequest", argDict.get("spelling",""), argPos, functionName),
                 "HelicsIterationResult_*": initializeArgHelicsIterationResultPtr(argDict.get("spelling","")), 
-                "HelicsMessage": initializeArgHelicsClass("HelicsMessage", argDict.get("spelling",""), argPos),
-                "HelicsPublication": initializeArgHelicsClass("HelicsPublication", argDict.get("spelling",""), argPos),
-                "HelicsQuery": initializeArgHelicsClass("HelicsQuery", argDict.get("spelling",""), argPos),
-                "HelicsQueryBuffer": initializeArgHelicsClass("HelicsQueryBuffer", argDict.get("spelling",""), argPos),
-                "HelicsTime": initializeArgHelicsTime(argDict.get("spelling",""), argPos),
-                "HelicsTranslator": initializeArgHelicsClass("HelicsTranslator", argDict.get("spelling",""), argPos),
-                "HelicsTranslatorTypes": initializeArgHelicsEnum("HelicsTranslatorTypes", argDict.get("spelling",""), argPos),
-                "int32_t": initializeArgInt32_t(argDict.get("spelling",""), argPos),
-                "int64_t": initializeArgInt64_t(argDict.get("spelling",""), argPos)
+                "HelicsMessage": initializeArgHelicsClass("HelicsMessage", argDict.get("spelling",""), argPos, functionName),
+                "HelicsPublication": initializeArgHelicsClass("HelicsPublication", argDict.get("spelling",""), argPos, functionName),
+                "HelicsQuery": initializeArgHelicsClass("HelicsQuery", argDict.get("spelling",""), argPos, functionName),
+                "HelicsQueryBuffer": initializeArgHelicsClass("HelicsQueryBuffer", argDict.get("spelling",""), argPos, functionName),
+                "HelicsTime": initializeArgHelicsTime(argDict.get("spelling",""), argPos, functionName),
+                "HelicsTranslator": initializeArgHelicsClass("HelicsTranslator", argDict.get("spelling",""), argPos, functionName),
+                "HelicsTranslatorTypes": initializeArgHelicsEnum("HelicsTranslatorTypes", argDict.get("spelling",""), argPos, functionName),
+                "int32_t": initializeArgInt32_t(argDict.get("spelling",""), argPos, functionName),
+                "int64_t": initializeArgInt64_t(argDict.get("spelling",""), argPos, functionName)
             }
             argType = argDict.get("double_pointer_type")
             if argType == None:
@@ -475,7 +533,7 @@ class MatlabBindingGenerator(object):
                 "Double": returnDoubleTomxArray(),
                 "Int": returnIntTomxArray(),
                 "Void_*": returnVoidPtrTomxArray(),
-                "HelicsBool": returnEnumTomxArray(),
+                "HelicsBool": returnHelicsBoolTomxArray(),
                 "HelicsBroker": returnVoidPtrTomxArray(),
                 "HelicsCore": returnVoidPtrTomxArray(),
                 "HelicsDataBuffer": returnVoidPtrTomxArray(),
@@ -548,43 +606,87 @@ class MatlabBindingGenerator(object):
             return argCleanUpText 
         
         
-        def initializeArgChar(argName: str, position: int) -> str:
-            retStr = f"\tchar *{argName};\n"
-            retStr += f"\tsize_t {argName}Length;\n"
-            retStr += f"\tint {argName}Status;\n"
-            retStr += f"\t{argName}Length = mxGetN(argv[{position}]) + 1;\n"
-            retStr += f"\t{argName} = (char *)malloc({argName}Length);\n"
-            retStr += f"\t{argName}Status = mxGetString(argv[{position}], {argName}, {argName}Length);\n\n"
+        def initializeArgChar(argName: str, position: int, functionName: str, argIsOptional: bool = False) -> str:
+            retStr = ""
+            if not argIsOptional:
+                retStr += f"\tif(!mxIsChar(argv[{position}])){{\n"
+                retStr += "\t\tmexUnlock();\n"
+                retStr += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument {position+1} must be a string.\");\n"
+                retStr += "\t}\n"
+            else:
+                retStr += f"\tif(argc > {position}){{\n"
+                retStr += f"\t\tif(!mxIsChar(argv[{position}])){{\n"
+                retStr += "\t\t\tmexUnlock();\n"
+                retStr += f"\t\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument {position+1} must be a string.\");\n"
+                retStr += "\t\t}\n"
+                retStr += "\t}\n"
+            retStr += f"\tchar *{argName} = nullptr;\n"
+            retStr += f"\tsize_t {argName}Length = 0;\n"
+            retStr += f"\tint {argName}Status = 0;\n"
+            retStr += f"\tif(argc > {position}){{\n"
+            retStr += f"\t\t{argName}Length = mxGetN(argv[{position}]) + 1;\n"
+            retStr += f"\t\t{argName} = static_cast<char *>(malloc({argName}Length));\n"
+            retStr += f"\t\t{argName}Status = mxGetString(argv[{position}], {argName}, {argName}Length);\n\n"
+            retStr += "\t}\n"
             return retStr
         
         
-        def initializeArgDouble(argName: str, position: int) -> str:
-            retStr = f"\tdouble {argName} = mxGetScalar(argv[{position}]);\n\n"
+        def initializeArgDouble(argName: str, position: int, functionName: str) -> str:
+            retStr = f"\tif(!mxIsNumeric(argv[{position}])){{\n"
+            retStr += "\t\tmexUnlock();\n"
+            retStr += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument {position+1} must be of type double.\");\n"
+            retStr += "\t}\n"
+            retStr += f"\tdouble {argName} = mxGetScalar(argv[{position}]);\n\n"
             return retStr
         
         
-        def initializeArgInt(argName: str, position: int) -> str:
-            retStr = f"\tint {argName} = (int)(mxGetScalar(argv[{position}]));\n\n"
+        def initializeArgInt(argName: str, position: int, functionName: str) -> str:
+            retStr = f"\tif(!mxIsNumeric(argv[{position}])){{\n"
+            retStr += "\t\tmexUnlock();\n"
+            retStr += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument {position+1} must be of type integer.\");\n"
+            retStr += "\t}\n"
+            retStr += f"\t\tint {argName} = static_cast<int>(mxGetScalar(argv[{position}]));\n\n"
+            
             return retStr
         
         
-        def initializeArgVoidPtr(argName: str, position: int) -> str:
-            retStr = f"\tvoid *{argName} = mxGetData(argv[{position}]);\n\n"
+        def initializeArgVoidPtr(argName: str, position: int, functionName: str) -> str:
+            retStr = f"\tif(mxGetClassID(argv[{position}]) != mxUINT64_CLASS){{\n"
+            retStr += "\t\tmexUnlock();\n"
+            retStr += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument {position+1} must be of type uint64.\");\n"
+            retStr += "\t}\n"
+            retStr += f"\t\tvoid *{argName} = mxGetData(argv[{position}]);\n\n"
             return retStr
         
         
-        def initializeArgHelicsBool(argName: str, position: int) -> str:
-            retStr = f"\tHelicsBool {argName} = (HelicsBool)(mxGetScalar(argv[{position}]));\n\n"
+        def initializeArgHelicsBool(argName: str, position: int, functionName: str) -> str:
+            retStr = f"\tif(!mxIsLogical(argv[{position}])){{\n"
+            retStr += "\t\tmexUnlock();\n"
+            retStr += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument {position+1} must be a 0 or 1.\");\n"
+            retStr += "\t}\n"
+            retStr += f"\tmxLogical *p{argName} = mxGetLogicals(argv[{position}]);\n"
+            retStr += f"\tHelicsBool {argName} = HELICS_FALSE;\n"
+            retStr += f"\tif(p{argName}[0]){{\n"
+            retStr += f"\t\t{argName} = HELICS_TRUE;\n"
+            retStr += "\t}\n\n"
             return retStr
         
         
-        def initializeArgHelicsClass(helicsClass: str, argName: str, position: int) -> str:
-            retStr = f"\t{helicsClass} {argName} = *({helicsClass}*)(mxGetData(argv[{position}]));\n\n"
+        def initializeArgHelicsClass(helicsClass: str, argName: str, position: int, functionName: str) -> str:
+            retStr = f"\tif(mxGetClassID(argv[{position}]) != mxUINT64_CLASS){{\n"
+            retStr += "\t\tmexUnlock();\n"
+            retStr += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument {position+1} must be of type uint64.\");\n"
+            retStr += "\t}\n"
+            retStr += f"\t{helicsClass} {argName} = *(static_cast<{helicsClass}*>(mxGetData(argv[{position}])));\n\n"
             return retStr
         
         
-        def initializeArgHelicsEnum(helicsEnum: str, argName: str, position: int) -> str:
-            retStr = f"\tint {argName}Int = static_cast<int>(mxGetScalar(argv[{position}]));\n"
+        def initializeArgHelicsEnum(helicsEnum: str, argName: str, position: int, functionName: str) -> str:
+            retStr = f"\tif(!mxIsNumeric(argv[{position}])){{\n"
+            retStr += "\t\tmexUnlock();\n"
+            retStr += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument {position+1} must be of type int32.\");\n"
+            retStr += "\t}\n"
+            retStr += f"\tint {argName}Int = static_cast<int>(mxGetScalar(argv[{position}]));\n"
             retStr += f"\t{helicsEnum} {argName} = static_cast<{helicsEnum}>({argName}Int);\n\n"
             return retStr
         
@@ -594,18 +696,33 @@ class MatlabBindingGenerator(object):
             return retStr
         
         
-        def initializeArgHelicsTime(argName: str, position: int) -> str:
-            retStr = f"\tHelicsTime {argName} = (HelicsTime)(mxGetScalar(argv[{position}]));\n\n"
+        def initializeArgHelicsTime(argName: str, position: int, functionName: str) -> str:
+            retStr = f"\tif(!mxIsNumeric(argv[{position}])){{\n"
+            retStr += "\t\tmexUnlock();\n"
+            retStr += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument {position+1} must be of type double.\");\n"
+            retStr += "\t}\n"
+            retStr += f"\tHelicsTime {argName} = (HelicsTime)(mxGetScalar(argv[{position}]));\n\n"
             return retStr
         
         
-        def initializeArgInt32_t(argName: str, position: int) -> str:
-            retStr = f"\tint32_t {argName} = *((int32_t *)mxGetData(argv[{position}]));\n\n"
+        def initializeArgInt32_t(argName: str, position: int, functionName: str) -> str:
+            retStr = f"\tif(mxGetClassID(argv[{position}]) != mxINT32_CLASS){{\n"
+            retStr += "\t\tmexUnlock();\n"
+            retStr += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument {position+1} must be of type int32.\");\n"
+            retStr += "\t}\n"
+            retStr += f"mxInt32 *p{argName} = mxGetInt32s(argv[{position}]);\n"
+            retStr += f"\tint32_t {argName} = static_cast<int32_t>(p{argName}[0]);\n\n"
             return retStr
         
         
-        def initializeArgInt64_t(argName: str, position: int) -> str:
-            retStr = f"\tint64_t {argName} = *((int64_t *)mxGetData(argv[{position}]));\n\n"
+        def initializeArgInt64_t(argName: str, position: int, functionName: str) -> str:
+            retStr = f"\tif(mxGetClassID(argv[{position}]) != mxINT64_CLASS){{\n"
+            retStr += "\t\tmexUnlock();\n"
+            retStr += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument {position+1} must be of type int64.\");\n"
+            retStr += "\t}\n"
+            retStr += f"mxInt64 *p{argName} = mxGetInt64s(argv[{position}]);\n"
+            retStr += f"\tint64_t {argName} = static_cast<int64_t>(p{argName}[0]);\n\n"
+            
             return retStr
         
         
@@ -624,9 +741,9 @@ class MatlabBindingGenerator(object):
         
         def argCharPtrFunctionCall(argName: str, position: int) -> str:
             if position == 0:
-                retStr = f"(char const *){argName}"
+                retStr = f"static_cast<const char *>({argName})"
             else:
-                retStr = f", (char const *){argName}"
+                retStr = f", static_cast<const char *>({argName})"
             return retStr
         
         
@@ -647,35 +764,49 @@ class MatlabBindingGenerator(object):
         
         
         def returnCharTomxArray() -> str:
-            retStr = "\tmxArray *_out = mxCreateString((const char *)(&result));\n\n"
+            retStr = "\tmxArray *_out = mxCreateString((const char *)(&result));"
             return retStr
         
         
         def returnCharPtrTomxArray() -> str:
-            retStr = "\tmxArray *_out = mxCreateString(result);\n\n"
+            retStr = "\tmxArray *_out = mxCreateString(result);"
             return retStr
         
         
         def returnDoubleTomxArray() -> str:
-            retStr = "\tmxArray *_out = mxCreateDoubleScalar(result);\n\n"
+            retStr = "\tmxArray *_out = mxCreateDoubleScalar(result);"
             return retStr
         
         
         def returnIntTomxArray() -> str:
             retStr = "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);\n"
-            retStr += "\t*((int64_t*)mxGetData(_out)) = (int64_t)result;\n\n"
+            retStr += "\tmxInt64 *rv = mxGetInt64s(_out);\n"
+            retStr += "\trv[0] = static_cast<mxInt64>(result);"
             return retStr
         
         
         def returnEnumTomxArray() -> str:
             retStr = "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);\n"
-            retStr += "\t*((int32_t*)mxGetData(_out)) = (int32_t)result;\n\n"
+            retStr += "\tmxInt32 *rv = mxGetInt32s(_out);\n"
+            retStr += "\trv[0] = static_cast<mxInt32>(result);"
+            return retStr
+        
+        
+        def returnHelicsBoolTomxArray() -> str:
+            retStr = "\tmxArray *_out = mxCreateLogicalMatrix(1, 1);\n"
+            retStr += "\tmxLogical *rv = mxGetLogicals(_out);\n"
+            retStr += "\tif(result == HELICS_TRUE){\n"
+            retStr += "\t\trv[0] = true;\n"
+            retStr += "\t}else{\n"
+            retStr += "\t\trv[0] = false;\n"
+            retStr += "\t}"
             return retStr
         
         
         def returnVoidPtrTomxArray() -> str:
             retStr = "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
-            retStr += "\t*((uint64_t*)mxGetData(_out)) = (uint64_t)result;\n\n"
+            retStr += "\tmxUint64 *rv = mxGetUint64s(_out);\n"
+            retStr += "\trv[0] = reinterpret_cast<mxUint64>(result);"
             return retStr
         
         
@@ -692,7 +823,8 @@ class MatlabBindingGenerator(object):
         
         def HelicsIterationResultPtrPostFunctionCall(argName: str) -> str:
             retStr = f"\tmxArray *{argName}Mx = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);\n"
-            retStr += f"\t*((int32_t*)mxGetData({argName}Mx)) = (int32_t){argName};\n"
+            retStr += f"\tmxInt32 *{argName}Ptr = mxGetInt32s({argName}Mx);\n"
+            retStr += f"\t{argName}Ptr[0] = static_cast<mxInt32>({argName});\n"
             retStr += "\tif(--resc >= 0) {\n"
             retStr += f"\t\t*resv++ = *{argName}Mx;\n"
             retStr += "\t}"
@@ -801,17 +933,25 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@return A HelicsCore object.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgChar("type", 0)
-            functionWrapper += initializeArgChar("name", 1)
+            functionWrapper += f"\tif(argc != 3){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 3 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgChar("type", 0, functionName)
+            functionWrapper += initializeArgChar("name", 1, functionName)
             functionWrapper += "\tint arg2 = 0;\n"
             functionWrapper += "\tchar **arg3;\n"
             functionWrapper += "\tint ii;\n"
+            functionWrapper += f"\tif(!mxIsCell(argv[2])){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument 3 must be a cell array of strings.\");\n"
+            functionWrapper += "\t}\n"
             functionWrapper += "\targ2 = static_cast<int>(mxGetNumberOfElements(argv[2]));\n"
-            functionWrapper += "\targ3 = (char **)malloc((arg2)*sizeof(char *));\n"
+            functionWrapper += "\targ3 = static_cast<char **>(malloc((arg2)*sizeof(char *)));\n"
             functionWrapper += "\tfor (ii=0;ii<arg2;ii++){\n"
             functionWrapper += "\t\tmxArray *cellElement=mxGetCell(argv[2], ii);\n"
             functionWrapper += "\t\tsize_t len = mxGetN(cellElement) + 1;\n"
-            functionWrapper += "\t\targ3[ii] = (char *)malloc(static_cast<int>(len));\n"
+            functionWrapper += "\t\targ3[ii] = static_cast<char *>(malloc(static_cast<int>(len)));\n"
             functionWrapper += "\t\tint flag = mxGetString(cellElement, arg3[ii], static_cast<int>(len));\n"
             functionWrapper += "\t}\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
@@ -861,17 +1001,25 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@return A HelicsBroker object.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgChar("type", 0)
-            functionWrapper += initializeArgChar("name", 1)
+            functionWrapper += f"\tif(argc != 3){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 3 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgChar("type", 0, functionName)
+            functionWrapper += initializeArgChar("name", 1, functionName)
+            functionWrapper += f"\tif(!mxIsCell(argv[2])){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument 3 must be a cell array of strings.\");\n"
+            functionWrapper += "\t}\n"
             functionWrapper += "\tint arg2 = 0;\n"
             functionWrapper += "\tchar **arg3;\n"
             functionWrapper += "\tint ii;\n"
             functionWrapper += "\targ2 = static_cast<int>(mxGetNumberOfElements(argv[2]));\n"
-            functionWrapper += "\targ3 = (char **)malloc((arg2)*sizeof(char *));\n"
+            functionWrapper += "\targ3 = static_cast<char **>(malloc((arg2)*sizeof(char *)));\n"
             functionWrapper += "\tfor (ii=0;ii<arg2;ii++){\n"
             functionWrapper += "\t\tmxArray *cellElement=mxGetCell(argv[2], ii);\n"
             functionWrapper += "\t\tsize_t len = mxGetN(cellElement) + 1;\n"
-            functionWrapper += "\t\targ3[ii] = (char *)malloc(static_cast<int>(len));\n"
+            functionWrapper += "\t\targ3[ii] = static_cast<char *>(malloc(static_cast<int>(len)));\n"
             functionWrapper += "\t\tint flag = mxGetString(cellElement, arg3[ii], static_cast<int>(len));\n"
             functionWrapper += "\t}\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
@@ -916,21 +1064,29 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@param arguments A list of strings from the command line.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsFederateInfo", "fi", 0)
+            functionWrapper += f"\tif(argc != 2){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 2 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsFederateInfo", "fi", 0, functionName)
+            functionWrapper += f"\tif(!mxIsCell(argv[1])){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument 2 must be of cell array of strings.\");\n"
+            functionWrapper += "\t}\n"
             functionWrapper += "\tint arg1 = 0;\n"
             functionWrapper += "\tchar **arg2;\n"
             functionWrapper += "\tint ii;\n"
             functionWrapper += "\targ1 = static_cast<int>(mxGetNumberOfElements(argv[1]));\n"
-            functionWrapper += "\targ2 = (char **)malloc((arg1)*sizeof(char *));\n"
+            functionWrapper += "\targ2 = static_cast<char **>(malloc((arg1)*sizeof(char *)));\n"
             functionWrapper += "\tfor (ii=0;ii<arg1;ii++){\n"
             functionWrapper += "\t\tmxArray *cellElement=mxGetCell(argv[1], ii);\n"
             functionWrapper += "\t\tsize_t len = mxGetN(cellElement) + 1;\n"
-            functionWrapper += "\t\targ2[ii] = (char *)malloc(static_cast<int>(len));\n"
+            functionWrapper += "\t\targ2[ii] = static_cast<char *>(malloc(static_cast<int>(len)));\n"
             functionWrapper += "\t\tint flag = mxGetString(cellElement, arg2[ii], static_cast<int>(len));\n"
             functionWrapper += "\t}\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(fi, arg1, arg2, &err);\n\n"
-            functionWrapper += "\tmxArray *_out = (mxArray *)0;\n"
+            functionWrapper += "\tmxArray *_out = nullptr;\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -968,12 +1124,16 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@param data The data to send.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsEndpoint", "endpoint", 0)
-            functionWrapper += initializeArgChar("data", 1)
+            functionWrapper += f"\tif(argc != 2){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 2 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsEndpoint", "endpoint", 0, functionName)
+            functionWrapper += initializeArgChar("data", 1, functionName)
             functionWrapper += "\tint inputDataLength = (int)(dataLength - 1);\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(endpoint, (void *)data, inputDataLength, &err);\n\n"
-            functionWrapper += "\tmxArray *_out = (mxArray *)0;\n"
+            functionWrapper += "\tmxArray *_out = nullptr;\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -1015,13 +1175,17 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@param time The time to send the message at.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsEndpoint", "endpoint", 0)
-            functionWrapper += initializeArgChar("data", 1)
+            functionWrapper += f"\tif(argc != 3){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 3 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsEndpoint", "endpoint", 0, functionName)
+            functionWrapper += initializeArgChar("data", 1, functionName)
             functionWrapper += "\tint inputDataLength = (int)(dataLength - 1);\n\n"
-            functionWrapper += initializeArgHelicsTime("time", 2)
+            functionWrapper += initializeArgHelicsTime("time", 2, functionName)
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(endpoint, (void *)data, inputDataLength, time, &err);\n\n"
-            functionWrapper += "\tmxArray *_out = (mxArray *)0;\n"
+            functionWrapper += "\tmxArray *_out = nullptr;\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -1063,13 +1227,17 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@param dst The destination to send the message to.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsEndpoint", "endpoint", 0)
-            functionWrapper += initializeArgChar("data", 1)
+            functionWrapper += f"\tif(argc != 3){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 3 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsEndpoint", "endpoint", 0, functionName)
+            functionWrapper += initializeArgChar("data", 1, functionName)
             functionWrapper += "\tint inputDataLength = (int)(dataLength - 1);\n\n"
-            functionWrapper += initializeArgChar("dst", 2)
+            functionWrapper += initializeArgChar("dst", 2, functionName)
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(endpoint, (void *)data, inputDataLength, dst, &err);\n\n"
-            functionWrapper += "\tmxArray *_out = (mxArray *)0;\n"
+            functionWrapper += "\tmxArray *_out = nullptr;\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -1116,14 +1284,18 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@param time The time to send the message at.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsEndpoint", "endpoint", 0)
-            functionWrapper += initializeArgChar("data", 1)
+            functionWrapper += f"\tif(argc != 4){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 4 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsEndpoint", "endpoint", 0, functionName)
+            functionWrapper += initializeArgChar("data", 1, functionName)
             functionWrapper += "\tint inputDataLength = (int)(dataLength - 1);\n\n"
-            functionWrapper += initializeArgChar("dst", 2)
-            functionWrapper += initializeArgHelicsTime("time", 3)
+            functionWrapper += initializeArgChar("dst", 2, functionName)
+            functionWrapper += initializeArgHelicsTime("time", 3, functionName)
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(endpoint, (void *)data, inputDataLength, dst, time, &err);\n\n"
-            functionWrapper += "\tmxArray *_out = (mxArray *)0;\n"
+            functionWrapper += "\tmxArray *_out = nullptr;\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -1169,9 +1341,13 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@return granted time and HelicsIterationResult.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsFederate", "fed", 0)
-            functionWrapper += initializeArgHelicsTime("requestTime", 1)
-            functionWrapper += initializeArgHelicsEnum("HelicsIterationRequest", "iterate", 2)
+            functionWrapper += f"\tif(argc != 3){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 3 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsFederate", "fed", 0, functionName)
+            functionWrapper += initializeArgHelicsTime("requestTime", 1, functionName)
+            functionWrapper += initializeArgHelicsEnum("HelicsIterationRequest", "iterate", 2, functionName)
             functionWrapper += initializeArgHelicsIterationResultPtr("outIteration")
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\tHelicsTime result = {functionName}(fed, requestTime, iterate, &outIteration, &err);\n\n"
@@ -1182,7 +1358,8 @@ class MatlabBindingGenerator(object):
             functionWrapper += "\t}\n\n"
             functionWrapper += "\tif(--resc>=0){\n"
             functionWrapper += "\t\tmxArray *_out1 = mxCreateNumericMatrix(1,1,mxINT32_CLASS,mxREAL);\n"
-            functionWrapper += "\t\t*((int32_t*)mxGetData(_out1)) = (int32_t)outIteration;\n"
+            functionWrapper += "\t\tmxInt32 *rv = mxGetInt32s(_out1);\n"
+            functionWrapper += "\t\trv[0] = static_cast<mxInt32>(outIteration);\n"
             functionWrapper += "\t\t*resv++ = _out1;\n"
             functionWrapper += "\t}\n\n"            
             functionWrapper += f'{argHelicsErrorPtrPostFunctionCall("err")}\n'
@@ -1214,7 +1391,11 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@return tuple of HelicsTime and HelicsIterationResult.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsFederate", "fed", 0)
+            functionWrapper += f"\tif(argc != 1){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsFederate", "fed", 0, functionName)
             functionWrapper += initializeArgHelicsIterationResultPtr("outIteration")
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\tHelicsTime result = {functionName}(fed, &outIteration, &err);\n\n"
@@ -1225,7 +1406,8 @@ class MatlabBindingGenerator(object):
             functionWrapper += "\t}\n\n"
             functionWrapper += "\tif(--resc>=0){\n"
             functionWrapper += "\t\tmxArray *_out1 = mxCreateNumericMatrix(1,1,mxINT32_CLASS,mxREAL);\n"
-            functionWrapper += "\t\t*((int32_t*)mxGetData(_out1)) = (int32_t)outIteration;\n"
+            functionWrapper += "\t\tmxInt32 *rv = mxGetInt32s(_out1);\n"
+            functionWrapper += "\t\trv[0] = static_cast<mxInt32>(outIteration);\n"
             functionWrapper += "\t\t*resv++ = _out1;\n"
             functionWrapper += "\t}\n\n"            
             functionWrapper += f'{argHelicsErrorPtrPostFunctionCall("err")}\n'
@@ -1263,16 +1445,20 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@return  raw Bytes of the value, the value is uninterpreted raw bytes.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0)
+            functionWrapper += f"\tif(argc != 1){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0, functionName)
             functionWrapper += "\tint maxDataLen = helicsInputGetByteCount(ipt) + 2;\n\n"
             functionWrapper += "\tvoid *data = malloc(maxDataLen);\n\n"
             functionWrapper += "\tint actualSize = 0;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(ipt, data, maxDataLen, &actualSize, &err);\n\n"
-            functionWrapper += "\tmxChar *dataChar = (mxChar *)data;\n"
+            functionWrapper += "\tmxChar *dataChar = static_cast<mxChar *>(data);\n"
             functionWrapper += "\tmwSize dims[2] = {1, static_cast<mwSize>(actualSize)};\n"
             functionWrapper += "\tmxArray *_out = mxCreateCharArray(2, dims);\n"
-            functionWrapper += "\tmxChar *out_data = (mxChar *)mxGetData(_out);\n"
+            functionWrapper += "\tmxChar *out_data = static_cast<mxChar *>(mxGetData(_out));\n"
             functionWrapper += "\tfor(int i=0; i<actualSize; ++i){\n"
             functionWrapper += "\t\tout_data[i] = dataChar[i];\n"
             functionWrapper += "\t}\n\n"
@@ -1307,7 +1493,11 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@return  A complex number.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0)
+            functionWrapper += f"\tif(argc != 1){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0, functionName)
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\tHelicsComplex result = {functionName}(ipt, &err);\n\n"
             functionWrapper += "\tmxComplexDouble complex_result;\n"
@@ -1328,7 +1518,7 @@ class MatlabBindingGenerator(object):
         
         
         def helicsInputGetComplexMatlabWrapper(functionDict: dict(), cursorIdx: int):
-             #check to see if function signiture changed
+            #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
                 raise RuntimeError("the function signature for helicsInputGetComplex has changed!")
@@ -1351,7 +1541,11 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@return  A complex number.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0)
+            functionWrapper += f"\tif(argc != 1){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0, functionName)
             functionWrapper += "\tdouble values[2];\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(ipt, &(values[0]), &(values[1]), &err);\n\n"
@@ -1401,16 +1595,20 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@return a string and a double value for the named point\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0)
+            functionWrapper += f"\tif(argc != 1){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0, functionName)
             functionWrapper += "\tint maxStringLen = helicsInputGetStringSize(ipt) + 2;\n\n"
-            functionWrapper += "\tchar *outputString = (char *)malloc(maxStringLen);\n\n"
+            functionWrapper += "\tchar *outputString = static_cast<char *>(malloc(maxStringLen));\n\n"
             functionWrapper += "\tint actualLength = 0;\n\n"
             functionWrapper += "\tdouble val = 0;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(ipt, outputString, maxStringLen, &actualLength, &val, &err);\n\n"
             functionWrapper += "\tmwSize dims[2] = {1, static_cast<mwSize>(actualLength)-1};\n"
             functionWrapper += "\tmxArray *_out = mxCreateCharArray(2, dims);\n"
-            functionWrapper += "\tmxChar *out_data = (mxChar *)mxGetData(_out);\n"
+            functionWrapper += "\tmxChar *out_data = static_cast<mxChar *>(mxGetData(_out));\n"
             functionWrapper += "\tfor(int i=0; i<(actualLength-1); ++i){\n"
             functionWrapper += "\t\tout_data[i] = outputString[i];\n"
             functionWrapper += "\t}\n\n"
@@ -1458,15 +1656,19 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@return the string value.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0)
+            functionWrapper += f"\tif(argc != 1){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0, functionName)
             functionWrapper += "\tint maxStringLen = helicsInputGetStringSize(ipt) + 2;\n\n"
-            functionWrapper += "\tchar *outputString = (char *)malloc(maxStringLen);\n\n"
+            functionWrapper += "\tchar *outputString = static_cast<char *>(malloc(maxStringLen));\n\n"
             functionWrapper += "\tint actualLength = 0;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(ipt, outputString, maxStringLen, &actualLength, &err);\n\n"
             functionWrapper += "\tmwSize dims[2] = {1, static_cast<mwSize>(actualLength) - 1};\n"
             functionWrapper += "\tmxArray *_out = mxCreateCharArray(2, dims);\n"
-            functionWrapper += "\tmxChar *out_data = (mxChar *)mxGetData(_out);\n"
+            functionWrapper += "\tmxChar *out_data = static_cast<mxChar *>(mxGetData(_out));\n"
             functionWrapper += "\tfor(int i=0; i<(actualLength-1); ++i){\n"
             functionWrapper += "\t\tout_data[i] = outputString[i];\n"
             functionWrapper += "\t}\n\n"
@@ -1510,15 +1712,19 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@return  a list of floating point values.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0)
+            functionWrapper += f"\tif(argc != 1){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0, functionName)
             functionWrapper += "\tint maxLength = helicsInputGetVectorSize(ipt);\n\n"
-            functionWrapper += "\tdouble *data = (double *)malloc(maxLength * sizeof(double));\n\n"
+            functionWrapper += "\tdouble *data = static_cast<double *>(malloc(maxLength * sizeof(double)));\n\n"
             functionWrapper += "\tint actualSize = 0;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(ipt, data, maxLength, &actualSize, &err);\n\n"
-            functionWrapper += "\tmxDouble *result_data = (mxDouble *)mxMalloc(actualSize * sizeof(mxDouble));\n"
+            functionWrapper += "\tmxDouble *result_data = static_cast<mxDouble *>(mxMalloc(actualSize * sizeof(mxDouble)));\n"
             functionWrapper += "\tfor(int i=0; i<actualSize; ++i){\n"
-            functionWrapper += "\t\tresult_data[i] = (mxDouble)data[i];\n"
+            functionWrapper += "\t\tresult_data[i] = static_cast<mxDouble>(data[i]);\n"
             functionWrapper += "\t}\n"
             functionWrapper += "\tmxArray *_out = mxCreateDoubleMatrix(actualSize, 1, mxREAL);\n"
             functionWrapper += "\tint status = mxSetDoubles(_out, &(result_data[0]));\n\n"
@@ -1561,13 +1767,17 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@return a list of complex values.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0)
+            functionWrapper += f"\tif(argc != 1){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0, functionName)
             functionWrapper += "\tint maxLength = helicsInputGetVectorSize(ipt);\n\n"
-            functionWrapper += "\tdouble *data = (double *)malloc(maxLength * sizeof(double));\n\n"
+            functionWrapper += "\tdouble *data = static_cast<double *>(malloc(maxLength * sizeof(double)));\n\n"
             functionWrapper += "\tint actualSize = 0;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(ipt, data, maxLength, &actualSize, &err);\n\n"
-            functionWrapper += "\tmxComplexDouble *result_data = (mxComplexDouble *)mxMalloc((actualSize/2)*sizeof(mxComplexDouble));\n"
+            functionWrapper += "\tmxComplexDouble *result_data = static_cast<mxComplexDouble *>(mxMalloc((actualSize/2)*sizeof(mxComplexDouble)));\n"
             functionWrapper += "\tfor(int i=0; i<(actualSize/2); ++i){\n"
             functionWrapper += "\t\tresult_data[i].real = data[2*(i)];\n"
             functionWrapper += "\t\tresult_data[i].imag = data[2*(i) + 1];\n"
@@ -1610,12 +1820,16 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@param raw data to use for the default.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0)
-            functionWrapper += initializeArgChar("data", 1)
+            functionWrapper += f"\tif(argc != 2){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 2 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0, functionName)
+            functionWrapper += initializeArgChar("data", 1, functionName)
             functionWrapper += "\tint inputDataLength = static_cast<int>(dataLength) - 1;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
-            functionWrapper += f"\t{functionName}(ipt, (void *)data, inputDataLength, &err);\n\n"
-            functionWrapper += "\tmxArray *_out = (mxArray *)0;\n"
+            functionWrapper += f"\t{functionName}(ipt, static_cast<void *>(data), inputDataLength, &err);\n\n"
+            functionWrapper += "\tmxArray *_out = nullptr;\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -1653,11 +1867,19 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@param value The default complex value.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0)
+            functionWrapper += f"\tif(argc != 2){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 2 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0, functionName)
+            functionWrapper += f"\tif(!mxIsComplex(argv[1])){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument 2 must be of type complex.\");\n"
+            functionWrapper += "\t}\n"
             functionWrapper += "\tmxComplexDouble *value = mxGetComplexDoubles(argv[1]);\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
-            functionWrapper += f"\t{functionName}(ipt, (double)value->real, (double)value->imag, &err);\n\n"
-            functionWrapper += "\tmxArray *_out = (mxArray *)0;\n"
+            functionWrapper += f"\t{functionName}(ipt, static_cast<double>(value->real), static_cast<double>(value->imag), &err);\n\n"
+            functionWrapper += "\tmxArray *_out = nullptr;\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -1694,12 +1916,20 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@param vectorInput The default list of floating point values.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0)
-            functionWrapper += "\tint vectorLength =  (int)mxGetNumberOfElements(argv[1]);\n\n"
-            functionWrapper += "\tdouble *vectorInput =  (double *)mxGetDoubles(argv[1]);\n\n"
+            functionWrapper += f"\tif(argc != 2){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 2 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0, functionName)
+            functionWrapper += f"\tif(!mxIsNumeric(argv[1])){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument 2 must be an array of doubles.\");\n"
+            functionWrapper += "\t}\n"
+            functionWrapper += "\tint vectorLength =  static_cast<int>(mxGetNumberOfElements(argv[1]));\n\n"
+            functionWrapper += "\tdouble *vectorInput =  static_cast<double *>(mxGetDoubles(argv[1]));\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
-            functionWrapper += f"\t{functionName}(ipt, (const double *)vectorInput, vectorLength, &err);\n\n"
-            functionWrapper += "\tmxArray *_out = (mxArray *)0;\n"
+            functionWrapper += f"\t{functionName}(ipt, static_cast<const double *>(vectorInput), vectorLength, &err);\n\n"
+            functionWrapper += "\tmxArray *_out = nullptr;\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -1736,17 +1966,25 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@param vectorInput The default list of complex values.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0)
-            functionWrapper += "\tint vectorLength =  (int)mxGetN(argv[1])*2;\n\n"
-            functionWrapper += "\tdouble *vectorInput = (double *)malloc(vectorLength * sizeof(double));\n"
+            functionWrapper += f"\tif(argc != 2){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 2 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsInput", "ipt", 0, functionName)
+            functionWrapper += f"\tif(!mxIsComplex(argv[1])){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument 2 must be of an array of type complex.\");\n"
+            functionWrapper += "\t}\n"
+            functionWrapper += "\tint vectorLength =  static_cast<int>(mxGetN(argv[1])*2);\n\n"
+            functionWrapper += "\tdouble *vectorInput = static_cast<double *>(malloc(vectorLength * sizeof(double)));\n"
             functionWrapper += "\tmxComplexDouble *vals = mxGetComplexDoubles(argv[1]);\n"
             functionWrapper += "\tfor(int i=0; i<vectorLength/2; ++i){\n"
             functionWrapper += "\t\tvectorInput[2*i] = vals[i].real;\n"
             functionWrapper += "\t\tvectorInput[2*i + 1] = vals[i].imag;\n"
             functionWrapper += "\t}\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
-            functionWrapper += f"\t{functionName}(ipt, (const double *)vectorInput, vectorLength, &err);\n\n"
-            functionWrapper += "\tmxArray *_out = (mxArray *)0;\n"
+            functionWrapper += f"\t{functionName}(ipt, static_cast<const double *>(vectorInput), vectorLength, &err);\n\n"
+            functionWrapper += "\tmxArray *_out = nullptr;\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -1783,12 +2021,16 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@param data A string containing the message data to append.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsMessage", "message", 0)
-            functionWrapper += initializeArgChar("data", 1)
+            functionWrapper += f"\tif(argc != 2){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 2 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsMessage", "message", 0, functionName)
+            functionWrapper += initializeArgChar("data", 1, functionName)
             functionWrapper += "\tint inputDataLength = static_cast<int>(dataLength) - 1;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
-            functionWrapper += f"\t{functionName}(message, (void *)data, inputDataLength, &err);\n\n"
-            functionWrapper += "\tmxArray *_out = (mxArray *)0;\n"
+            functionWrapper += f"\t{functionName}(message, static_cast<void *>(data), inputDataLength, &err);\n\n"
+            functionWrapper += "\tmxArray *_out = nullptr;\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -1828,15 +2070,19 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@return Raw string data.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsMessage", "message", 0)
+            functionWrapper += f"\tif(argc != 1){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsMessage", "message", 0, functionName)
             functionWrapper += "\tint maxMessageLength = helicsMessageGetByteCount(message) + 2;\n\n"
-            functionWrapper += "\tchar *data = (char *)malloc(maxMessageLength);\n\n"
+            functionWrapper += "\tchar *data = static_cast<char *>(malloc(maxMessageLength));\n\n"
             functionWrapper += "\tint actualSize = 0;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
-            functionWrapper += f"\t{functionName}(message, (void *)data, maxMessageLength, &actualSize, &err);\n\n"
-            functionWrapper += "\tmwSize dims[2] = {1,(mwSize)actualSize};\n"
+            functionWrapper += f"\t{functionName}(message, static_cast<void *>(data), maxMessageLength, &actualSize, &err);\n\n"
+            functionWrapper += "\tmwSize dims[2] = {1,static_cast<mwSize>(actualSize)};\n"
             functionWrapper += "\tmxArray *_out = mxCreateCharArray(2,dims);\n"
-            functionWrapper += "\tmxChar *out_data = (mxChar *)mxGetData(_out);\n"
+            functionWrapper += "\tmxChar *out_data = static_cast<mxChar*>(mxGetData(_out));\n"
             functionWrapper += "\tfor(int i=0; i<actualSize; ++i){\n"
             functionWrapper += "\t\tout_data[i] = data[i];\n"
             functionWrapper += "\t}\n\n"
@@ -1877,12 +2123,16 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@param data A string containing the message data.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsMessage", "message", 0)
-            functionWrapper += initializeArgChar("data", 1)
+            functionWrapper += f"\tif(argc != 2){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 2 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsMessage", "message", 0, functionName)
+            functionWrapper += initializeArgChar("data", 1, functionName)
             functionWrapper += "\tint inputDataLength = static_cast<int>(dataLength) - 1;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
-            functionWrapper += f"\t{functionName}(message, (void *)data, inputDataLength, &err);\n\n"
-            functionWrapper += "\tmxArray *_out = (mxArray *)0;\n\n"
+            functionWrapper += f"\t{functionName}(message, static_cast<void *>(data), inputDataLength, &err);\n\n"
+            functionWrapper += "\tmxArray *_out = nullptr;\n\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -1919,12 +2169,16 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@param data the raw byte data to publish.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsPublication", "pub", 0)
-            functionWrapper += initializeArgChar("data", 1)
+            functionWrapper += f"\tif(argc != 2){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 2 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsPublication", "pub", 0, functionName)
+            functionWrapper += initializeArgChar("data", 1, functionName)
             functionWrapper += "\tint inputDataLength = static_cast<int>(dataLength) - 1;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
-            functionWrapper += f"\t{functionName}(pub, (void *)data, inputDataLength, &err);\n\n"
-            functionWrapper += "\tmxArray *_out = (mxArray *)0;\n\n"
+            functionWrapper += f"\t{functionName}(pub, static_cast<void *>(data), inputDataLength, &err);\n\n"
+            functionWrapper += "\tmxArray *_out = nullptr;\n\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -1961,12 +2215,20 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@param value The complex number.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsPublication", "pub", 0)
+            functionWrapper += f"\tif(argc != 2){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 2 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsPublication", "pub", 0, functionName)
+            functionWrapper += f"\tif(!mxIsComplex(argv[1])){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument 2 must be of type complex.\");\n"
+            functionWrapper += "\t}\n"
             functionWrapper += "\tmxComplexDouble *complexValue = mxGetComplexDoubles(argv[1]);\n"
             functionWrapper += "\tdouble value[2] = {complexValue[0].real, complexValue[0].imag};\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(pub, value[0], value[1], &err);\n\n"
-            functionWrapper += "\tmxArray *_out = (mxArray *)0;\n\n"
+            functionWrapper += "\tmxArray *_out = nullptr;\n\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -2003,12 +2265,20 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@param vectorInput The list of floating point values.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsPublication", "pub", 0)
-            functionWrapper += "\tint vectorLength =  (int)mxGetNumberOfElements(argv[1]);\n\n"
-            functionWrapper += "\tdouble *vectorInput =  (double *)mxGetDoubles(argv[1]);\n\n"
+            functionWrapper += f"\tif(argc != 2){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 2 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsPublication", "pub", 0, functionName)
+            functionWrapper += f"\tif(!mxIsNumeric(argv[1])){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument 2 must be an array of type double.\");\n"
+            functionWrapper += "\t}\n"
+            functionWrapper += "\tint vectorLength =  static_cast<int>(mxGetNumberOfElements(argv[1]));\n\n"
+            functionWrapper += "\tdouble *vectorInput =  static_cast<double *>(mxGetDoubles(argv[1]));\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
-            functionWrapper += f"\t{functionName}(pub, (const double *)vectorInput, vectorLength, &err);\n\n"
-            functionWrapper += "\tmxArray *_out = (mxArray *)0;\n"
+            functionWrapper += f"\t{functionName}(pub, static_cast<const double *>(vectorInput), vectorLength, &err);\n\n"
+            functionWrapper += "\tmxArray *_out = nullptr;\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -2045,17 +2315,25 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@param vectorInput The list of complex values.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsPublication", "pub", 0)
-            functionWrapper += "\tint vectorLength =  (int)mxGetN(argv[1])*2;\n\n"
-            functionWrapper += "\tdouble *vectorInput = (double *)malloc(vectorLength * sizeof(double));\n"
+            functionWrapper += f"\tif(argc != 2){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 2 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsPublication", "pub", 0, functionName)
+            functionWrapper += f"\tif(!mxIsComplex(argv[1])){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument 2 must be an array of type complex.\");\n"
+            functionWrapper += "\t}\n"
+            functionWrapper += "\tint vectorLength =  static_cast<int>(mxGetN(argv[1])*2);\n\n"
+            functionWrapper += "\tdouble *vectorInput = static_cast<double *>(malloc(vectorLength * sizeof(double)));\n"
             functionWrapper += "\tmxComplexDouble *vals = mxGetComplexDoubles(argv[1]);\n"
             functionWrapper += "\tfor(int i=0; i<vectorLength/2; ++i){\n"
             functionWrapper += "\t\tvectorInput[2*i] = vals[i].real;\n"
             functionWrapper += "\t\tvectorInput[2*i + 1] = vals[i].imag;\n"
             functionWrapper += "\t}\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
-            functionWrapper += f"\t{functionName}(pub, (const double *)vectorInput, vectorLength, &err);\n\n"
-            functionWrapper += "\tmxArray *_out = (mxArray *)0;\n"
+            functionWrapper += f"\t{functionName}(pub, static_cast<const double *>(vectorInput), vectorLength, &err);\n\n"
+            functionWrapper += "\tmxArray *_out = nullptr;\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -2093,12 +2371,16 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@param queryResult The string with the data to fill the buffer with.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsQueryBuffer", "buffer", 0)
-            functionWrapper += initializeArgChar("queryResult", 1)
+            functionWrapper += f"\tif(argc != 2){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 2 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsQueryBuffer", "buffer", 0, functionName)
+            functionWrapper += initializeArgChar("queryResult", 1, functionName)
             functionWrapper += "\tint strSize = static_cast<int>(queryResultLength) - 1;\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(buffer, queryResult, strSize, &err);\n\n"
-            functionWrapper += "\tmxArray *_out = (mxArray *)0;\n"
+            functionWrapper += "\tmxArray *_out = nullptr;\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -2148,7 +2430,8 @@ class MatlabBindingGenerator(object):
             functionWrapper += "\tmxArray *rhs[4];\n"
             functionWrapper += "\trhs[0] = reinterpret_cast<mxArray *>(userData);\n"
             functionWrapper += "\trhs[1] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((int64_t*)mxGetData(rhs[1])) = (int64_t)loglevel;\n"
+            functionWrapper += "\tmxInt64 *rhs1Ptr = mxGetInt64s(rhs[1]);\n"
+            functionWrapper += "\trhs1Ptr[0] = static_cast<mxInt64>(loglevel);\n"
             functionWrapper += "\trhs[2] = mxCreateString(identifier);\n"
             functionWrapper += "\trhs[3] = mxCreateString(message);\n"
             functionWrapper += '\tint status = mexCallMATLAB(0,&lhs,4,rhs,"feval");\n'
@@ -2158,11 +2441,15 @@ class MatlabBindingGenerator(object):
             functionWrapper += "\tmxDestroyArray(rhs[3]);\n"
             functionWrapper += "}\n\n"
             functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsBroker", "broker", 0)
+            functionWrapper += f"\tif(argc != 2){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 2 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsBroker", "broker", 0, functionName)
             functionWrapper += "\tvoid *userData = mxGetData(argv[1]);\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(broker, &matlabBrokerLoggingCallback, userData, &err);\n\n"
-            functionWrapper += "\tmxArray *_out = (mxArray *)0;\n"
+            functionWrapper += "\tmxArray *_out = nullptr;\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -2204,7 +2491,8 @@ class MatlabBindingGenerator(object):
             functionWrapper += "\tmxArray *rhs[4];\n"
             functionWrapper += "\trhs[0] = reinterpret_cast<mxArray *>(userData);\n"
             functionWrapper += "\trhs[1] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((int64_t*)mxGetData(rhs[1])) = (int64_t)loglevel;\n"
+            functionWrapper += "\tmxInt64 *rhs1Ptr = mxGetInt64s(rhs[1]);\n"
+            functionWrapper += "\trhs1Ptr[0] = static_cast<mxInt64>(loglevel);\n"
             functionWrapper += "\trhs[2] = mxCreateString(identifier);\n"
             functionWrapper += "\trhs[3] = mxCreateString(message);\n"
             functionWrapper += '\tint status = mexCallMATLAB(0,&lhs,4,rhs,"feval");\n'
@@ -2214,11 +2502,15 @@ class MatlabBindingGenerator(object):
             functionWrapper += "\tmxDestroyArray(rhs[3]);\n"
             functionWrapper += "}\n\n"
             functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsCore", "core", 0)
+            functionWrapper += f"\tif(argc != 2){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 2 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsCore", "core", 0, functionName)
             functionWrapper += "\tvoid *userData = mxGetData(argv[1]);\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(core, &matlabCoreLoggingCallback, userData, &err);\n\n"
-            functionWrapper += "\tmxArray *_out = (mxArray *)0;\n"
+            functionWrapper += "\tmxArray *_out = nullptr;\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -2260,7 +2552,8 @@ class MatlabBindingGenerator(object):
             functionWrapper += "\tmxArray *rhs[4];\n"
             functionWrapper += "\trhs[0] = reinterpret_cast<mxArray *>(userData);\n"
             functionWrapper += "\trhs[1] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((int64_t*)mxGetData(rhs[1])) = (int64_t)loglevel;\n"
+            functionWrapper += "\tmxInt64 *rhs1Ptr = mxGetInt64s(rhs[1]);\n"
+            functionWrapper += "\trhs1Ptr[0] = static_cast<mxInt64>(loglevel);\n"
             functionWrapper += "\trhs[2] = mxCreateString(identifier);\n"
             functionWrapper += "\trhs[3] = mxCreateString(message);\n"
             functionWrapper += '\tint status = mexCallMATLAB(0,&lhs,4,rhs,"feval");\n'
@@ -2270,11 +2563,15 @@ class MatlabBindingGenerator(object):
             functionWrapper += "\tmxDestroyArray(rhs[3]);\n"
             functionWrapper += "}\n\n"
             functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsFederate", "fed", 0)
+            functionWrapper += f"\tif(argc != 2){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 2 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsFederate", "fed", 0, functionName)
             functionWrapper += "\tvoid *userData = mxGetData(argv[1]);\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(fed, &matlabFederateLoggingCallback, userData, &err);\n\n"
-            functionWrapper += "\tmxArray *_out = (mxArray *)0;\n"
+            functionWrapper += "\tmxArray *_out = nullptr;\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -2316,18 +2613,23 @@ class MatlabBindingGenerator(object):
             functionWrapper += "\tmxArray *rhs[2];\n"
             functionWrapper += "\trhs[0] = reinterpret_cast<mxArray *>(userData);\n"
             functionWrapper += "\trhs[1] = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((uint64_t*)mxGetData(rhs[1])) = (uint64_t)message;\n"
+            functionWrapper += "\tmxUint64 *rhs1Ptr = mxGetUint64s(rhs[1]);\n"
+            functionWrapper += "\trhs1Ptr[0] = reinterpret_cast<mxUint64>(message);\n"
             functionWrapper += '\tint status = mexCallMATLAB(1,lhs,2,rhs,"feval");\n'
-            functionWrapper += "\tHelicsMessage rv = (HelicsMessage)(mxGetData(lhs[0]));\n"
+            functionWrapper += "\tHelicsMessage rv = static_cast<HelicsMessage>(mxGetData(lhs[0]));\n"
             functionWrapper += "\tmxDestroyArray(rhs[1]);\n"
             functionWrapper += "\treturn rv;\n"
             functionWrapper += "}\n\n"
             functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsFilter", "filter", 0)
+            functionWrapper += f"\tif(argc != 2){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 2 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsFilter", "filter", 0, functionName)
             functionWrapper += "\tvoid *userData = mxGetData(argv[1]);\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(filter, &matlabFilterCustomCallback, userData, &err);\n\n"
-            functionWrapper += "\tmxArray *_out = (mxArray *)0;\n"
+            functionWrapper += "\tmxArray *_out = nullptr;\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -2370,25 +2672,31 @@ class MatlabBindingGenerator(object):
             functionWrapper += "\tmwSize dims[2] = {1, static_cast<mwSize>(querySize)};\n"
             functionWrapper += "\trhs[0] = reinterpret_cast<mxArray *>(userData);\n"
             functionWrapper += "\trhs[1] = mxCreateCharArray(2, dims);\n"
-            functionWrapper += "\tmxChar *pQuery = (mxChar *)mxGetData(rhs[1]);\n"
+            functionWrapper += "\tmxChar *pQuery = static_cast<mxChar *>(mxGetData(rhs[1]));\n"
             functionWrapper += "\tfor(int i=0; i<querySize; ++i){\n"
             functionWrapper += "\t\tpQuery[i] = query[i];\n"
             functionWrapper += "\t}\n"
             functionWrapper += "\trhs[2] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((int64_t*)mxGetData(rhs[2])) = (int64_t)querySize;\n"
+            functionWrapper += "\tmxInt64 *rhs2Ptr = mxGetInt64s(rhs[2]);\n"
+            functionWrapper += "\trhs2Ptr[0] = static_cast<mxInt64>(querySize);\n"
             functionWrapper += "\trhs[3] = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((uint64_t*)mxGetData(rhs[3])) = (uint64_t)buffer;\n"
+            functionWrapper += "\tmxUint64 *rhs3Ptr = mxGetUint64s(rhs[3]);\n"
+            functionWrapper += "\trhs3Ptr[0] = reinterpret_cast<mxUint64>(buffer);\n"
             functionWrapper += '\tint status = mexCallMATLAB(0,&lhs,4,rhs,"feval");\n'
             functionWrapper += "\tmxDestroyArray(rhs[1]);\n"
             functionWrapper += "\tmxDestroyArray(rhs[2]);\n"
             functionWrapper += "\tmxDestroyArray(rhs[3]);\n"
             functionWrapper += "}\n\n"
             functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsFilter", "filter", 0)
+            functionWrapper += f"\tif(argc != 2){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 2 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsFilter", "filter", 0, functionName)
             functionWrapper += "\tvoid *userData = mxGetData(argv[1]);\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(filter, &matlabFederateQueryCallback, userData, &err);\n\n"
-            functionWrapper += "\tmxArray *_out = (mxArray *)0;\n"
+            functionWrapper += "\tmxArray *_out = nullptr;\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -2429,20 +2737,28 @@ class MatlabBindingGenerator(object):
             functionWrapper += "\tmxArray *lhs;\n"
             functionWrapper += "\tmxArray *rhs[3];\n"
             functionWrapper += "\trhs[0] = reinterpret_cast<mxArray *>(userData);\n"
-            functionWrapper += "\trhs[1] = mxCreateDoubleScalar((double)newTime);\n"
-            functionWrapper += "\trhs[2] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((int64_t*)mxGetData(rhs[2])) =  (int64_t)iterating;\n"
+            functionWrapper += "\trhs[1] = mxCreateDoubleScalar(static_cast<double>(newTime));\n"
+            functionWrapper += "\trhs[2] = mxCreateLogicalMatrix(1, 1);\n"
+            functionWrapper += "\tmxLogical *rhs2Ptr = mxGetLogicals(rhs[2]);\n"
+            functionWrapper += "\trhs2Ptr[0] = false;\n"
+            functionWrapper += "\tif(iterating == HELICS_TRUE){\n"
+            functionWrapper += "\t\trhs2Ptr[0] = true;\n"
+            functionWrapper += "\t}\n"
             functionWrapper += '\tint status = mexCallMATLAB(0,&lhs,3,rhs,"feval");\n'
             functionWrapper += "\tmxDestroyArray(lhs);\n"
             functionWrapper += "\tmxDestroyArray(rhs[1]);\n"
             functionWrapper += "\tmxDestroyArray(rhs[2]);\n"
             functionWrapper += "}\n\n"
             functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsFederate", "fed", 0)
+            functionWrapper += f"\tif(argc != 2){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 2 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsFederate", "fed", 0, functionName)
             functionWrapper += "\tvoid *userData = mxGetData(argv[1]);\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(fed, &matlabFederateTimeUpdateCallback, userData, &err);\n\n"
-            functionWrapper += "\tmxArray *_out = (mxArray *)0;\n"
+            functionWrapper += "\tmxArray *_out = nullptr;\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -2483,21 +2799,27 @@ class MatlabBindingGenerator(object):
             functionWrapper += "\tmxArray *lhs;\n"
             functionWrapper += "\tmxArray *rhs[3];\n"
             functionWrapper += "\trhs[0] = reinterpret_cast<mxArray *>(userData);\n"
-            functionWrapper += "\trhs[1] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((int64_t*)mxGetData(rhs[2])) =  (int64_t)newState;\n"
-            functionWrapper += "\trhs[2] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((int64_t*)mxGetData(rhs[2])) =  (int64_t)oldState;\n"
+            functionWrapper += "\trhs[1] = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);\n"
+            functionWrapper += "\tmxInt32 *rhs1Ptr = mxGetInt32s(rhs[1]);\n"
+            functionWrapper += "\trhs1Ptr[0] = static_cast<mxInt32>(newState);\n"
+            functionWrapper += "\trhs[2] = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);\n"
+            functionWrapper += "\tmxInt32 *rhs2Ptr = mxGetInt32s(rhs[2]);\n"
+            functionWrapper += "\trhs2Ptr[0] = static_cast<mxInt32>(oldState);\n"
             functionWrapper += '\tint status = mexCallMATLAB(0,&lhs,3,rhs,"feval");\n'
             functionWrapper += "\tmxDestroyArray(lhs);\n"
             functionWrapper += "\tmxDestroyArray(rhs[1]);\n"
             functionWrapper += "\tmxDestroyArray(rhs[2]);\n"
             functionWrapper += "}\n\n"
             functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsFederate", "fed", 0)
+            functionWrapper += f"\tif(argc != 2){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 2 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsFederate", "fed", 0, functionName)
             functionWrapper += "\tvoid *userData = mxGetData(argv[1]);\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(fed, &matlabFederateSetStateChangeCallback, userData, &err);\n\n"
-            functionWrapper += "\tmxArray *_out = (mxArray *)0;\n"
+            functionWrapper += "\tmxArray *_out = nullptr;\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -2541,8 +2863,12 @@ class MatlabBindingGenerator(object):
             functionWrapper += "\trhs[0] = reinterpret_cast<mxArray *>(userData);\n"
             functionWrapper += "\trhs[1] = mxCreateDoubleScalar(currentTime);\n"
             functionWrapper += "\trhs[2] = mxCreateDoubleScalar(requestTime);\n"
-            functionWrapper += "\trhs[3] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((int64_t*)mxGetData(rhs[2])) =  (int64_t)iterating;\n"
+            functionWrapper += "\trhs[3] = mxCreateLogicalMatrix(1, 1);\n"
+            functionWrapper += "\tmxLogical *rhs3Ptr = mxGetLogicals(rhs[3]);\n"
+            functionWrapper += "\trhs3Ptr[0] = false;\n"
+            functionWrapper += "\tif(iterating == HELICS_TRUE){\n"
+            functionWrapper += "\t\trhs3Ptr[0] = true;\n"
+            functionWrapper += "\t}\n"
             functionWrapper += '\tint status = mexCallMATLAB(0,&lhs,4,rhs,"feval");\n'
             functionWrapper += "\tmxDestroyArray(lhs);\n"
             functionWrapper += "\tmxDestroyArray(rhs[1]);\n"
@@ -2550,11 +2876,15 @@ class MatlabBindingGenerator(object):
             functionWrapper += "\tmxDestroyArray(rhs[3]);\n"
             functionWrapper += "}\n\n"
             functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsFederate", "fed", 0)
+            functionWrapper += f"\tif(argc != 2){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 2 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsFederate", "fed", 0, functionName)
             functionWrapper += "\tvoid *userData = mxGetData(argv[1]);\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(fed, &matlabFederateSetTimeRequestEntryCallback, userData, &err);\n\n"
-            functionWrapper += "\tmxArray *_out = (mxArray *)0;\n"
+            functionWrapper += "\tmxArray *_out = nullptr;\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -2597,19 +2927,27 @@ class MatlabBindingGenerator(object):
             functionWrapper += "\tmxArray *rhs[3];\n"
             functionWrapper += "\trhs[0] = reinterpret_cast<mxArray *>(userData);\n"
             functionWrapper += "\trhs[1] = mxCreateDoubleScalar(newTime);\n"
-            functionWrapper += "\trhs[2] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((int64_t*)mxGetData(rhs[2])) =  (int64_t)iterating;\n"
+            functionWrapper += "\trhs[2] = mxCreateLogicalMatrix(1, 1);\n"
+            functionWrapper += "\tmxLogical *rhs2Ptr = mxGetLogicals(rhs[2]);\n"
+            functionWrapper += "\trhs2Ptr[0] = false;\n"
+            functionWrapper += "\tif(iterating == HELICS_TRUE){\n"
+            functionWrapper += "\t\trhs2Ptr[0] = true;\n"
+            functionWrapper += "\t}\n"
             functionWrapper += '\tint status = mexCallMATLAB(0,&lhs,3,rhs,"feval");\n'
             functionWrapper += "\tmxDestroyArray(lhs);\n"
             functionWrapper += "\tmxDestroyArray(rhs[1]);\n"
             functionWrapper += "\tmxDestroyArray(rhs[2]);\n"
             functionWrapper += "}\n\n"
             functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsFederate", "fed", 0)
+            functionWrapper += f"\tif(argc != 2){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 2 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsFederate", "fed", 0, functionName)
             functionWrapper += "\tvoid *userData = mxGetData(argv[1]);\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(fed, &matlabFederateSetTimeRequestReturnCallback, userData, &err);\n\n"
-            functionWrapper += "\tmxArray *_out = (mxArray *)0;\n"
+            functionWrapper += "\tmxArray *_out = nullptr;\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -2655,9 +2993,11 @@ class MatlabBindingGenerator(object):
             functionWrapper += "\tmxArray *rhs[3];\n"
             functionWrapper += "\trhs[0] = static_cast<mxArray **>(userData)[0];\n"
             functionWrapper += "\trhs[1] = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((uint64_t*)mxGetData(rhs[1])) = (uint64_t)value;\n\n"
-            functionWrapper += "\trhs[2] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((int64_t*)mxGetData(rhs[2])) =  (int64_t)message;\n"
+            functionWrapper += "\tmxUint64 *rhs1Ptr = mxGetUint64s(rhs[1]);\n"
+            functionWrapper += "\trhs1Ptr[0] = reinterpret_cast<mxUint64>(value);\n"
+            functionWrapper += "\trhs[2] = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
+            functionWrapper += "\tmxUint64 *rhs2Ptr = mxGetUint64s(rhs[1]);\n"
+            functionWrapper += "\trhs2Ptr[0] = reinterpret_cast<mxUint64>(message);\n"
             functionWrapper += '\tint status = mexCallMATLAB(0,&lhs,3,rhs,"feval");\n'
             functionWrapper += "\tmxDestroyArray(lhs);\n"
             functionWrapper += "\tmxDestroyArray(rhs[1]);\n"
@@ -2668,23 +3008,29 @@ class MatlabBindingGenerator(object):
             functionWrapper += "\tmxArray *rhs[3];\n"
             functionWrapper += "\trhs[0] = static_cast<mxArray **>(userData)[1];\n"
             functionWrapper += "\trhs[1] = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((uint64_t*)mxGetData(rhs[1])) = (uint64_t)message;\n\n"
-            functionWrapper += "\trhs[2] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((int64_t*)mxGetData(rhs[2])) =  (int64_t)value;\n"
+            functionWrapper += "\tmxUint64 *rhs1Ptr = mxGetUint64s(rhs[1]);\n"
+            functionWrapper += "\trhs1Ptr[0] = reinterpret_cast<mxUint64>(message);\n"
+            functionWrapper += "\trhs[2] = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
+            functionWrapper += "\tmxUint64 *rhs2Ptr = mxGetUint64s(rhs[1]);\n"
+            functionWrapper += "\trhs2Ptr[0] = reinterpret_cast<mxUint64>(value);\n"
             functionWrapper += '\tint status = mexCallMATLAB(0,&lhs,3,rhs,"feval");\n'
             functionWrapper += "\tmxDestroyArray(lhs);\n"
             functionWrapper += "\tmxDestroyArray(rhs[1]);\n"
             functionWrapper += "\tmxDestroyArray(rhs[2]);\n"
             functionWrapper += "}\n\n"
             functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsTranslator", "translator", 0)
+            functionWrapper += f"\tif(argc != 3){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 3 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsTranslator", "translator", 0, functionName)
             functionWrapper += "\tmxArray *callbacks[2];\n"
             functionWrapper += "\tcallbacks[0] = const_cast<mxArray *>(argv[1]);\n"
             functionWrapper += "\tcallbacks[1] = const_cast<mxArray *>(argv[2]);\n"
             functionWrapper += "\tvoid *userData = reinterpret_cast<void *>(callbacks);\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
             functionWrapper += f"\t{functionName}(translator, &matlabToMessageCallCallback, &matlabToValueCallCallback, userData, &err);\n\n"
-            functionWrapper += "\tmxArray *_out = (mxArray *)0;\n"
+            functionWrapper += "\tmxArray *_out = nullptr;\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -2715,11 +3061,16 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@return HelicsDataBuffer.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgInt64_t('value',0)
+            functionWrapper += f"\tif(argc != 1){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgInt64_t('value',0, functionName)
             functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(sizeof(int));\n\n"
             functionWrapper += f"\tint32_t result = {functionName}(value, data);\n\n"
             functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((uint64_t*)mxGetData(_out)) = (uint64_t)data;\n\n"
+            functionWrapper += "\tmxUint64 *rv = mxGetUint64s(_out);\n"
+            functionWrapper += "\trv[0] = reinterpret_cast<mxUint64>(data);\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -2749,11 +3100,16 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@return HelicsDataBuffer.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgDouble('value',0)
+            functionWrapper += f"\tif(argc != 1){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgDouble('value',0, functionName)
             functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(sizeof(double));\n\n"
             functionWrapper += f"\tint32_t result = {functionName}(value, data);\n\n"
             functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((uint64_t*)mxGetData(_out)) = (uint64_t)data;\n\n"
+            functionWrapper += "\tmxUint64 *rv = mxGetUint64s(_out);\n"
+            functionWrapper += "\trv[0] = reinterpret_cast<mxUint64>(data);\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -2783,11 +3139,16 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@return HelicsDataBuffer.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgChar('value',0)
+            functionWrapper += f"\tif(argc != 1){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgChar('value',0, functionName)
             functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(static_cast<int32_t>(valueLength));\n\n"
             functionWrapper += f"\tint32_t result = {functionName}(value, data);\n\n"
             functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((uint64_t*)mxGetData(_out)) = (uint64_t)data;\n\n"
+            functionWrapper += "\tmxUint64 *rv = mxGetUint64s(_out);\n"
+            functionWrapper += "\trv[0] = reinterpret_cast<mxUint64>(data);\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -2820,11 +3181,16 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@return HelicsDataBuffer.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgChar('str',0)
+            functionWrapper += f"\tif(argc != 1){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgChar('str',0, functionName)
             functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(static_cast<int32_t>(strLength));\n\n"
             functionWrapper += f"\tint32_t result = {functionName}(str, (int)strLength, data);\n\n"
             functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((uint64_t*)mxGetData(_out)) = (uint64_t)data;\n\n"
+            functionWrapper += "\tmxUint64 *rv = mxGetUint64s(_out);\n"
+            functionWrapper += "\trv[0] = reinterpret_cast<mxUint64>(data);\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -2854,11 +3220,16 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@return HelicsDataBuffer.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsBool('value',0)
+            functionWrapper += f"\tif(argc != 1){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsBool('value',0, functionName)
             functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(sizeof(HelicsBool));\n\n"
             functionWrapper += f"\tint32_t result = {functionName}(value, data);\n\n"
             functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((uint64_t*)mxGetData(_out)) = (uint64_t)data;\n\n"
+            functionWrapper += "\tmxUint64 *rv = mxGetUint64s(_out);\n"
+            functionWrapper += "\trv[0] = reinterpret_cast<mxUint64>(data);\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -2888,11 +3259,16 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@return HelicsDataBuffer.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgChar('value',0)
+            functionWrapper += f"\tif(argc != 1){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgChar('value',0, functionName)
             functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(sizeof(char));\n\n"
             functionWrapper += f"\tint32_t result = {functionName}(*value, data);\n\n"
             functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((uint64_t*)mxGetData(_out)) = (uint64_t)data;\n\n"
+            functionWrapper += "\tmxUint64 *rv = mxGetUint64s(_out);\n"
+            functionWrapper += "\trv[0] = reinterpret_cast<mxUint64>(data);\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -2922,11 +3298,16 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@return HelicsDataBuffer.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsTime('value',0)
+            functionWrapper += f"\tif(argc != 1){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsTime('value',0, functionName)
             functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(sizeof(HelicsTime));\n\n"
             functionWrapper += f"\tint32_t result = {functionName}(value, data);\n\n"
             functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((uint64_t*)mxGetData(_out)) = (uint64_t)data;\n\n"
+            functionWrapper += "\tmxUint64 *rv = mxGetUint64s(_out);\n"
+            functionWrapper += "\trv[0] = reinterpret_cast<mxUint64>(data);\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -2959,11 +3340,20 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@return HelicsDataBuffer.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += "\tmxComplexDouble *value = mxGetComplexDoubles(argv[1]);\n\n"
+            functionWrapper += f"\tif(argc != 1){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += f"\tif(!mxIsComplex(argv[0])){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument 1 must be of type complex.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += "\tmxComplexDouble *value = mxGetComplexDoubles(argv[0]);\n\n"
             functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(2*sizeof(double));\n\n"
             functionWrapper += f"\tint32_t result = {functionName}(value->real, value->imag, data);\n\n"
             functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((uint64_t*)mxGetData(_out)) = (uint64_t)data;\n\n"
+            functionWrapper += "\tmxUint64 *rv = mxGetUint64s(_out);\n"
+            functionWrapper += "\trv[0] = reinterpret_cast<mxUint64>(data);\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -2993,12 +3383,21 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@return HelicsDataBuffer.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += "\tmxComplexDouble *value = mxGetComplexDoubles(argv[1]);\n\n"
+            functionWrapper += f"\tif(argc != 1){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += f"\tif(!mxIsComplex(argv[0])){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument 1 must be of type complex.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += "\tmxComplexDouble *value = mxGetComplexDoubles(argv[0]);\n\n"
             functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(sizeof(HelicsComplex));\n\n"
             functionWrapper += "\tHelicsComplex vObj = {value->real, value->imag};\n\n"
             functionWrapper += f"\tint32_t result = {functionName}(vObj, data);\n\n"
             functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((uint64_t*)mxGetData(_out)) = (uint64_t)data;\n\n"
+            functionWrapper += "\tmxUint64 *rv = mxGetUint64s(_out);\n"
+            functionWrapper += "\trv[0] = reinterpret_cast<mxUint64>(data);\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -3031,12 +3430,21 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@return HelicsDataBuffer.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += "\tint dataSize =  (int)mxGetNumberOfElements(argv[0]);\n\n"
-            functionWrapper += "\tdouble *value =  (double *)mxGetDoubles(argv[0]);\n\n"
+            functionWrapper += f"\tif(argc != 1){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += f"\tif(!mxIsNumeric(argv[0])){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument 1 must be an array of doubles.\");\n"
+            functionWrapper += "\t}\n"
+            functionWrapper += "\tint dataSize =  static_cast<int>(mxGetNumberOfElements(argv[0]));\n\n"
+            functionWrapper += "\tdouble *value =  static_cast<double *>(mxGetDoubles(argv[0]));\n\n"
             functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(dataSize*sizeof(double));\n\n"
-            functionWrapper += f"\tint32_t result = {functionName}((const double *)value, dataSize, data);\n\n"
+            functionWrapper += f"\tint32_t result = {functionName}(static_cast<const double *>(value), dataSize, data);\n\n"
             functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((uint64_t*)mxGetData(_out)) = (uint64_t)data;\n\n"
+            functionWrapper += "\tmxUint64 *rv = mxGetUint64s(_out);\n"
+            functionWrapper += "\trv[0] = reinterpret_cast<mxUint64>(data);\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -3070,12 +3478,17 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@return HelicsDataBuffer.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgChar('name',0)
-            functionWrapper += initializeArgDouble('value',1)
+            functionWrapper += f"\tif(argc != 2){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 2 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgChar('name',0, functionName)
+            functionWrapper += initializeArgDouble('value',1, functionName)
             functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(sizeof(double));\n\n"
             functionWrapper += f"\tint32_t result = {functionName}(name, value, data);\n\n"
             functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((uint64_t*)mxGetData(_out)) = (uint64_t)data;\n\n"
+            functionWrapper += "\tmxUint64 *rv = mxGetUint64s(_out);\n"
+            functionWrapper += "\trv[0] = reinterpret_cast<mxUint64>(data);\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -3108,17 +3521,26 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@return HelicsDataBuffer.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += "\tint dataSize =  (int)mxGetN(argv[0])*2;\n\n"
-            functionWrapper += "\tdouble *value = (double *)malloc(dataSize * sizeof(double));\n"
+            functionWrapper += f"\tif(argc != 1){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += f"\tif(!mxIsComplex(argv[1])){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument 1 must be of an array of type complex.\");\n"
+            functionWrapper += "\t}\n"
+            functionWrapper += "\tint dataSize =  static_cast<int>(mxGetN(argv[0])*2);\n\n"
+            functionWrapper += "\tdouble *value = static_cast<double *>(malloc(dataSize * sizeof(double)));\n"
             functionWrapper += "\tmxComplexDouble *vals = mxGetComplexDoubles(argv[0]);\n"
             functionWrapper += "\tfor(int i=0; i<dataSize/2; ++i){\n"
             functionWrapper += "\t\tvalue[2*i] = vals[i].real;\n"
             functionWrapper += "\t\tvalue[2*i + 1] = vals[i].imag;\n"
             functionWrapper += "\t}\n\n"
             functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(dataSize*sizeof(double));\n\n"
-            functionWrapper += f"\tint32_t result = {functionName}((const double *)value, dataSize, data);\n\n"
+            functionWrapper += f"\tint32_t result = {functionName}(static_cast<const double *>(value), dataSize, data);\n\n"
             functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\t*((uint64_t*)mxGetData(_out)) = (uint64_t)data;\n\n"
+            functionWrapper += "\tmxUint64 *rv = mxGetUint64s(_out);\n"
+            functionWrapper += "\trv[0] = reinterpret_cast<mxUint64>(data);\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -3154,14 +3576,18 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@return the string value.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsDataBuffer", "data", 0)
+            functionWrapper += f"\tif(argc != 1){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsDataBuffer", "data", 0, functionName)
             functionWrapper += "\tint maxStringLen = helicsDataBufferStringSize(data) + 2;\n\n"
-            functionWrapper += "\tchar *outputString = (char *)malloc(maxStringLen);\n\n"
+            functionWrapper += "\tchar *outputString = static_cast<char *>(malloc(maxStringLen));\n\n"
             functionWrapper += "\tint actualLength = 0;\n\n"
             functionWrapper += f"\t{functionName}(data, outputString, maxStringLen, &actualLength);\n\n"
             functionWrapper += "\tmwSize dims[2] = {1, static_cast<mwSize>(actualLength)};\n"
             functionWrapper += "\tmxArray *_out = mxCreateCharArray(2, dims);\n"
-            functionWrapper += "\tmxChar *out_data = (mxChar *)mxGetData(_out);\n"
+            functionWrapper += "\tmxChar *out_data = static_cast<mxChar *>(mxGetData(_out));\n"
             functionWrapper += "\tfor(int i=0; i<(actualLength); ++i){\n"
             functionWrapper += "\t\tout_data[i] = outputString[i];\n"
             functionWrapper += "\t}\n\n"
@@ -3201,14 +3627,18 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@return the raw string value.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsDataBuffer", "data", 0)
+            functionWrapper += f"\tif(argc != 1){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsDataBuffer", "data", 0, functionName)
             functionWrapper += "\tint maxStringLen = helicsDataBufferStringSize(data) + 2;\n\n"
-            functionWrapper += "\tchar *outputString = (char *)malloc(maxStringLen);\n\n"
+            functionWrapper += "\tchar *outputString = static_cast<char *>(malloc(maxStringLen));\n\n"
             functionWrapper += "\tint actualLength = 0;\n\n"
             functionWrapper += f"\t{functionName}(data, outputString, maxStringLen, &actualLength);\n\n"
             functionWrapper += "\tmwSize dims[2] = {1, static_cast<mwSize>(actualLength) - 1};\n"
             functionWrapper += "\tmxArray *_out = mxCreateCharArray(2, dims);\n"
-            functionWrapper += "\tmxChar *out_data = (mxChar *)mxGetData(_out);\n"
+            functionWrapper += "\tmxChar *out_data = static_cast<mxChar *>(mxGetData(_out));\n"
             functionWrapper += "\tfor(int i=0; i<(actualLength - 1); ++i){\n"
             functionWrapper += "\t\tout_data[i] = outputString[i];\n"
             functionWrapper += "\t}\n\n"
@@ -3245,7 +3675,11 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@return  A complex number.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsDataBuffer", "data", 0)
+            functionWrapper += f"\tif(argc != 1){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsDataBuffer", "data", 0, functionName)
             functionWrapper += "\tdouble values[2];\n\n"
             functionWrapper += f"\t{functionName}(data, &(values[0]), &(values[1]));\n\n"
             functionWrapper += "\tmxArray *_out = mxCreateDoubleMatrix(1,1,mxCOMPLEX);\n"
@@ -3278,7 +3712,11 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@return  A complex number.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsDataBuffer", "data", 0)
+            functionWrapper += f"\tif(argc != 1){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsDataBuffer", "data", 0, functionName)
             functionWrapper += f"\tHelicsComplex result = {functionName}(data);\n\n"
             functionWrapper += "\tmxComplexDouble complex_result;\n"
             functionWrapper += "\tcomplex_result.real = result.real;\n"
@@ -3320,14 +3758,18 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@return  a list of floating point values.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsDataBuffer", "data", 0)
+            functionWrapper += f"\tif(argc != 1){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsDataBuffer", "data", 0, functionName)
             functionWrapper += "\tint maxLen = helicsDataBufferVectorSize(data);\n\n"
-            functionWrapper += "\tdouble *values = (double *)malloc(maxLen * sizeof(double));\n\n"
+            functionWrapper += "\tdouble *values = static_cast<double *>(malloc(maxLen * sizeof(double)));\n\n"
             functionWrapper += "\tint actualSize = 0;\n\n"
             functionWrapper += f"\t{functionName}(data, values, maxLen, &actualSize);\n\n"
-            functionWrapper += "\tmxDouble *result_data = (mxDouble *)mxMalloc(actualSize * sizeof(mxDouble));\n"
+            functionWrapper += "\tmxDouble *result_data = static_cast<mxDouble *>(mxMalloc(actualSize * sizeof(mxDouble)));\n"
             functionWrapper += "\tfor(int i=0; i<actualSize; ++i){\n"
-            functionWrapper += "\t\tresult_data[i] = (mxDouble)values[i];\n"
+            functionWrapper += "\t\tresult_data[i] = static_cast<mxDouble>(values[i]);\n"
             functionWrapper += "\t}\n"
             functionWrapper += "\tmxArray *_out = mxCreateDoubleMatrix(actualSize, 1, mxREAL);\n"
             functionWrapper += "\tint status = mxSetDoubles(_out, &(result_data[0]));\n\n"
@@ -3366,12 +3808,16 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@return a list of complex values.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsDataBuffer", "data", 0)
+            functionWrapper += f"\tif(argc != 1){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsDataBuffer", "data", 0, functionName)
             functionWrapper += "\tint maxLen = helicsDataBufferVectorSize(data);\n\n"
-            functionWrapper += "\tdouble *values = (double *)malloc(maxLen * sizeof(double));\n\n"
+            functionWrapper += "\tdouble *values = static_cast<double *>(malloc(maxLen * sizeof(double)));\n\n"
             functionWrapper += "\tint actualSize = 0;\n\n"
             functionWrapper += f"\t{functionName}(data, values, maxLen, &actualSize);\n\n"
-            functionWrapper += "\tmxComplexDouble *result_data = (mxComplexDouble *)mxMalloc((actualSize/2)*sizeof(mxComplexDouble));\n"
+            functionWrapper += "\tmxComplexDouble *result_data = static_cast<mxComplexDouble *>(mxMalloc((actualSize/2)*sizeof(mxComplexDouble)));\n"
             functionWrapper += "\tfor(int i=0; i<(actualSize/2); ++i){\n"
             functionWrapper += "\t\tresult_data[i].real = values[2*(i)];\n"
             functionWrapper += "\t\tresult_data[i].imag = values[2*(i) + 1];\n"
@@ -3416,15 +3862,19 @@ class MatlabBindingGenerator(object):
             functionComment += "\t@return a string and a double value for the named point\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += initializeArgHelicsClass("HelicsDataBuffer", "data", 0)
+            functionWrapper += f"\tif(argc != 1){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsDataBuffer", "data", 0, functionName)
             functionWrapper += "\tint maxStringLen = helicsInputGetStringSize(data) + 2;\n\n"
-            functionWrapper += "\tchar *outputString = (char *)malloc(maxStringLen);\n\n"
+            functionWrapper += "\tchar *outputString = static_cast<char *>(malloc(maxStringLen));\n\n"
             functionWrapper += "\tint actualLength = 0;\n\n"
             functionWrapper += "\tdouble val = 0;\n\n"
             functionWrapper += f"\t{functionName}(data, outputString, maxStringLen, &actualLength, &val);\n\n"
             functionWrapper += "\tmwSize dims[2] = {1, static_cast<mwSize>(actualLength)-1};\n"
             functionWrapper += "\tmxArray *_out = mxCreateCharArray(2, dims);\n"
-            functionWrapper += "\tmxChar *out_data = (mxChar *)mxGetData(_out);\n"
+            functionWrapper += "\tmxChar *out_data = static_cast<mxChar *>(mxGetData(_out));\n"
             functionWrapper += "\tfor(int i=0; i<(actualLength-1); ++i){\n"
             functionWrapper += "\t\tout_data[i] = outputString[i];\n"
             functionWrapper += "\t}\n\n"
@@ -3456,8 +3906,12 @@ class MatlabBindingGenerator(object):
             functionComment += "\tIf possible this should be the last call before exiting.\n"
             functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
+            functionWrapper += f"\tif(argc != 0){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 0 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
             functionWrapper += f"\t{functionName}();\n\n"
-            functionWrapper += "\tmxArray *_out = (mxArray *)0;\n"
+            functionWrapper += "\tmxArray *_out = nullptr;\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"

@@ -43,10 +43,6 @@ function  helicsInputSetDefault(varargin)
        case {'int64'}
            helicsInputSetDefaultInteger(varargin{:});
        case {'logical'}
-           if (pubdata)
-               helicsInputSetDefaultBoolean(varargin{1},int32(1));
-           else
-               helicsInputSetDefaultBoolean(varargin{1},int32(0));
-           end
+               helicsInputSetDefaultBoolean(varargin{1},pubdata);
    end
 end

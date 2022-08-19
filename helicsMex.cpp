@@ -7,6 +7,7 @@
 static int mexFunctionCalled = 0;
 
 static void throwHelicsMatlabError(HelicsError *err) {
+	mexUnlock();
 	switch (err->error_code)
 	{
 	case HELICS_OK:
@@ -462,185 +463,286 @@ static const std::unordered_map<std::string,int> wrapperFunctionMap{
 };
 
 void _wrap_HELICS_DATA_TYPE_CHAR(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	if(argc != 0){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:HELICS_DATA_TYPE_CHAR:rhs","This function doesn't take arguments.");
+	}
 	mxArray *_out = mxCreateNumericMatrix(1,1,mxINT64_CLASS,mxREAL);
 	*((int64_t*)mxGetData(_out)) = (int64_t)HELICS_DATA_TYPE_CHAR;
 	resv[0] = _out;
 }
 
 void _wrap_helicsCreateDataBuffer(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	int32_t initialCapacity = *((int32_t *)mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateDataBuffer:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxINT32_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateDataBuffer:TypeError","Argument 1 must be of type int32.");
+	}
+mxInt32 *pinitialCapacity = mxGetInt32s(argv[0]);
+	int32_t initialCapacity = static_cast<int32_t>(pinitialCapacity[0]);
 
 	HelicsDataBuffer result = helicsCreateDataBuffer(initialCapacity);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsDataBufferIsValid(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsDataBuffer data = *(HelicsDataBuffer*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferIsValid:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferIsValid:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[0])));
 
 	HelicsBool result = helicsDataBufferIsValid(data);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-	*((int32_t*)mxGetData(_out)) = (int32_t)result;
+	mxArray *_out = mxCreateLogicalMatrix(1, 1);
+	mxLogical *rv = mxGetLogicals(_out);
+	if(result == HELICS_TRUE){
+		rv[0] = true;
+	}else{
+		rv[0] = false;
+	}
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsWrapDataInBuffer(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	void *data = mxGetData(argv[0]);
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsWrapDataInBuffer:rhs","This function requires 3 arguments.");
+	}
 
-	int dataSize = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsWrapDataInBuffer:TypeError","Argument 1 must be of type uint64.");
+	}
+		void *data = mxGetData(argv[0]);
 
-	int dataCapacity = (int)(mxGetScalar(argv[2]));
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsWrapDataInBuffer:TypeError","Argument 2 must be of type integer.");
+	}
+		int dataSize = static_cast<int>(mxGetScalar(argv[1]));
+
+	if(!mxIsNumeric(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsWrapDataInBuffer:TypeError","Argument 3 must be of type integer.");
+	}
+		int dataCapacity = static_cast<int>(mxGetScalar(argv[2]));
 
 	HelicsDataBuffer result = helicsWrapDataInBuffer(data, dataSize, dataCapacity);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
-
-
 }
 
 
 void _wrap_helicsDataBufferFree(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsDataBuffer data = *(HelicsDataBuffer*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFree:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFree:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[0])));
 
 	helicsDataBufferFree(data);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsDataBufferSize(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsDataBuffer data = *(HelicsDataBuffer*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferSize:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferSize:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[0])));
 
 	int32_t result = helicsDataBufferSize(data);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-	*((int32_t*)mxGetData(_out)) = (int32_t)result;
+	mxInt32 *rv = mxGetInt32s(_out);
+	rv[0] = static_cast<mxInt32>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsDataBufferCapacity(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsDataBuffer data = *(HelicsDataBuffer*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferCapacity:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferCapacity:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[0])));
 
 	int32_t result = helicsDataBufferCapacity(data);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-	*((int32_t*)mxGetData(_out)) = (int32_t)result;
+	mxInt32 *rv = mxGetInt32s(_out);
+	rv[0] = static_cast<mxInt32>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsDataBufferData(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsDataBuffer data = *(HelicsDataBuffer*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferData:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferData:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[0])));
 
 	void *result = helicsDataBufferData(data);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsDataBufferReserve(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsDataBuffer data = *(HelicsDataBuffer*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferReserve:rhs","This function requires 2 arguments.");
+	}
 
-	int32_t newCapacity = *((int32_t *)mxGetData(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferReserve:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[0])));
+
+	if(mxGetClassID(argv[1]) != mxINT32_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferReserve:TypeError","Argument 2 must be of type int32.");
+	}
+mxInt32 *pnewCapacity = mxGetInt32s(argv[1]);
+	int32_t newCapacity = static_cast<int32_t>(pnewCapacity[0]);
 
 	HelicsBool result = helicsDataBufferReserve(data, newCapacity);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-	*((int32_t*)mxGetData(_out)) = (int32_t)result;
+	mxArray *_out = mxCreateLogicalMatrix(1, 1);
+	mxLogical *rv = mxGetLogicals(_out);
+	if(result == HELICS_TRUE){
+		rv[0] = true;
+	}else{
+		rv[0] = false;
+	}
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 }
 
 
 void _wrap_helicsDataBufferClone(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsDataBuffer data = *(HelicsDataBuffer*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferClone:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferClone:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[0])));
 
 	HelicsDataBuffer result = helicsDataBufferClone(data);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsIntegerToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	int64_t value = *((int64_t *)mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsIntegerToBytes:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsIntegerToBytes:TypeError","Argument 1 must be of type int64.");
+	}
+mxInt64 *pvalue = mxGetInt64s(argv[0]);
+	int64_t value = static_cast<int64_t>(pvalue[0]);
 
 	HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(int));
 
 	int32_t result = helicsIntegerToBytes(value, data);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)data;
-
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(data);
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -649,6 +751,15 @@ void _wrap_helicsIntegerToBytes(int resc, mxArray *resv[], int argc, const mxArr
 
 
 void _wrap_helicsDoubleToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDoubleToBytes:rhs","This function requires 1 arguments.");
+	}
+
+	if(!mxIsNumeric(argv[0])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDoubleToBytes:TypeError","Argument 1 must be of type double.");
+	}
 	double value = mxGetScalar(argv[0]);
 
 	HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(double));
@@ -656,8 +767,8 @@ void _wrap_helicsDoubleToBytes(int resc, mxArray *resv[], int argc, const mxArra
 	int32_t result = helicsDoubleToBytes(value, data);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)data;
-
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(data);
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -666,20 +777,31 @@ void _wrap_helicsDoubleToBytes(int resc, mxArray *resv[], int argc, const mxArra
 
 
 void _wrap_helicsStringToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	char *value;
-	size_t valueLength;
-	int valueStatus;
-	valueLength = mxGetN(argv[0]) + 1;
-	value = (char *)malloc(valueLength);
-	valueStatus = mxGetString(argv[0], value, valueLength);
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsStringToBytes:rhs","This function requires 1 arguments.");
+	}
 
+	if(!mxIsChar(argv[0])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsStringToBytes:TypeError","Argument 1 must be a string.");
+	}
+	char *value = nullptr;
+	size_t valueLength = 0;
+	int valueStatus = 0;
+	if(argc > 0){
+		valueLength = mxGetN(argv[0]) + 1;
+		value = static_cast<char *>(malloc(valueLength));
+		valueStatus = mxGetString(argv[0], value, valueLength);
+
+	}
 	HelicsDataBuffer data = helicsCreateDataBuffer(static_cast<int32_t>(valueLength));
 
 	int32_t result = helicsStringToBytes(value, data);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)data;
-
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(data);
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -688,20 +810,31 @@ void _wrap_helicsStringToBytes(int resc, mxArray *resv[], int argc, const mxArra
 
 
 void _wrap_helicsRawStringToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	char *str;
-	size_t strLength;
-	int strStatus;
-	strLength = mxGetN(argv[0]) + 1;
-	str = (char *)malloc(strLength);
-	strStatus = mxGetString(argv[0], str, strLength);
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsRawStringToBytes:rhs","This function requires 1 arguments.");
+	}
 
+	if(!mxIsChar(argv[0])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsRawStringToBytes:TypeError","Argument 1 must be a string.");
+	}
+	char *str = nullptr;
+	size_t strLength = 0;
+	int strStatus = 0;
+	if(argc > 0){
+		strLength = mxGetN(argv[0]) + 1;
+		str = static_cast<char *>(malloc(strLength));
+		strStatus = mxGetString(argv[0], str, strLength);
+
+	}
 	HelicsDataBuffer data = helicsCreateDataBuffer(static_cast<int32_t>(strLength));
 
 	int32_t result = helicsRawStringToBytes(str, (int)strLength, data);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)data;
-
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(data);
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -710,15 +843,28 @@ void _wrap_helicsRawStringToBytes(int resc, mxArray *resv[], int argc, const mxA
 
 
 void _wrap_helicsBooleanToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsBool value = (HelicsBool)(mxGetScalar(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBooleanToBytes:rhs","This function requires 1 arguments.");
+	}
+
+	if(!mxIsLogical(argv[0])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBooleanToBytes:TypeError","Argument 1 must be a 0 or 1.");
+	}
+	mxLogical *pvalue = mxGetLogicals(argv[0]);
+	HelicsBool value = HELICS_FALSE;
+	if(pvalue[0]){
+		value = HELICS_TRUE;
+	}
 
 	HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(HelicsBool));
 
 	int32_t result = helicsBooleanToBytes(value, data);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)data;
-
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(data);
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -727,20 +873,31 @@ void _wrap_helicsBooleanToBytes(int resc, mxArray *resv[], int argc, const mxArr
 
 
 void _wrap_helicsCharToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	char *value;
-	size_t valueLength;
-	int valueStatus;
-	valueLength = mxGetN(argv[0]) + 1;
-	value = (char *)malloc(valueLength);
-	valueStatus = mxGetString(argv[0], value, valueLength);
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCharToBytes:rhs","This function requires 1 arguments.");
+	}
 
+	if(!mxIsChar(argv[0])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCharToBytes:TypeError","Argument 1 must be a string.");
+	}
+	char *value = nullptr;
+	size_t valueLength = 0;
+	int valueStatus = 0;
+	if(argc > 0){
+		valueLength = mxGetN(argv[0]) + 1;
+		value = static_cast<char *>(malloc(valueLength));
+		valueStatus = mxGetString(argv[0], value, valueLength);
+
+	}
 	HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(char));
 
 	int32_t result = helicsCharToBytes(*value, data);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)data;
-
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(data);
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -749,6 +906,15 @@ void _wrap_helicsCharToBytes(int resc, mxArray *resv[], int argc, const mxArray 
 
 
 void _wrap_helicsTimeToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTimeToBytes:rhs","This function requires 1 arguments.");
+	}
+
+	if(!mxIsNumeric(argv[0])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTimeToBytes:TypeError","Argument 1 must be of type double.");
+	}
 	HelicsTime value = (HelicsTime)(mxGetScalar(argv[0]));
 
 	HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(HelicsTime));
@@ -756,8 +922,8 @@ void _wrap_helicsTimeToBytes(int resc, mxArray *resv[], int argc, const mxArray 
 	int32_t result = helicsTimeToBytes(value, data);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)data;
-
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(data);
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -766,15 +932,25 @@ void _wrap_helicsTimeToBytes(int resc, mxArray *resv[], int argc, const mxArray 
 
 
 void _wrap_helicsComplexToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	mxComplexDouble *value = mxGetComplexDoubles(argv[1]);
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsComplexToBytes:rhs","This function requires 1 arguments.");
+	}
+
+	if(!mxIsComplex(argv[0])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsComplexToBytes:TypeError","Argument 1 must be of type complex.");
+	}
+
+	mxComplexDouble *value = mxGetComplexDoubles(argv[0]);
 
 	HelicsDataBuffer data = helicsCreateDataBuffer(2*sizeof(double));
 
 	int32_t result = helicsComplexToBytes(value->real, value->imag, data);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)data;
-
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(data);
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -783,7 +959,17 @@ void _wrap_helicsComplexToBytes(int resc, mxArray *resv[], int argc, const mxArr
 
 
 void _wrap_helicsComplexObjectToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	mxComplexDouble *value = mxGetComplexDoubles(argv[1]);
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsComplexObjectToBytes:rhs","This function requires 1 arguments.");
+	}
+
+	if(!mxIsComplex(argv[0])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsComplexObjectToBytes:TypeError","Argument 1 must be of type complex.");
+	}
+
+	mxComplexDouble *value = mxGetComplexDoubles(argv[0]);
 
 	HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(HelicsComplex));
 
@@ -792,8 +978,8 @@ void _wrap_helicsComplexObjectToBytes(int resc, mxArray *resv[], int argc, const
 	int32_t result = helicsComplexObjectToBytes(vObj, data);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)data;
-
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(data);
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -802,17 +988,26 @@ void _wrap_helicsComplexObjectToBytes(int resc, mxArray *resv[], int argc, const
 
 
 void _wrap_helicsVectorToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	int dataSize =  (int)mxGetNumberOfElements(argv[0]);
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsVectorToBytes:rhs","This function requires 1 arguments.");
+	}
 
-	double *value =  (double *)mxGetDoubles(argv[0]);
+	if(!mxIsNumeric(argv[0])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsVectorToBytes:TypeError","Argument 1 must be an array of doubles.");
+	}
+	int dataSize =  static_cast<int>(mxGetNumberOfElements(argv[0]));
+
+	double *value =  static_cast<double *>(mxGetDoubles(argv[0]));
 
 	HelicsDataBuffer data = helicsCreateDataBuffer(dataSize*sizeof(double));
 
-	int32_t result = helicsVectorToBytes((const double *)value, dataSize, data);
+	int32_t result = helicsVectorToBytes(static_cast<const double *>(value), dataSize, data);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)data;
-
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(data);
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -821,13 +1016,28 @@ void _wrap_helicsVectorToBytes(int resc, mxArray *resv[], int argc, const mxArra
 
 
 void _wrap_helicsNamedPointToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[0]) + 1;
-	name = (char *)malloc(nameLength);
-	nameStatus = mxGetString(argv[0], name, nameLength);
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsNamedPointToBytes:rhs","This function requires 2 arguments.");
+	}
 
+	if(!mxIsChar(argv[0])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsNamedPointToBytes:TypeError","Argument 1 must be a string.");
+	}
+	char *name = nullptr;
+	size_t nameLength = 0;
+	int nameStatus = 0;
+	if(argc > 0){
+		nameLength = mxGetN(argv[0]) + 1;
+		name = static_cast<char *>(malloc(nameLength));
+		nameStatus = mxGetString(argv[0], name, nameLength);
+
+	}
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsNamedPointToBytes:TypeError","Argument 2 must be of type double.");
+	}
 	double value = mxGetScalar(argv[1]);
 
 	HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(double));
@@ -835,8 +1045,8 @@ void _wrap_helicsNamedPointToBytes(int resc, mxArray *resv[], int argc, const mx
 	int32_t result = helicsNamedPointToBytes(name, value, data);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)data;
-
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(data);
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -845,9 +1055,18 @@ void _wrap_helicsNamedPointToBytes(int resc, mxArray *resv[], int argc, const mx
 
 
 void _wrap_helicsComplexVectorToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	int dataSize =  (int)mxGetN(argv[0])*2;
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsComplexVectorToBytes:rhs","This function requires 1 arguments.");
+	}
 
-	double *value = (double *)malloc(dataSize * sizeof(double));
+	if(!mxIsComplex(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsComplexVectorToBytes:TypeError","Argument 1 must be of an array of type complex.");
+	}
+	int dataSize =  static_cast<int>(mxGetN(argv[0])*2);
+
+	double *value = static_cast<double *>(malloc(dataSize * sizeof(double)));
 	mxComplexDouble *vals = mxGetComplexDoubles(argv[0]);
 	for(int i=0; i<dataSize/2; ++i){
 		value[2*i] = vals[i].real;
@@ -856,11 +1075,11 @@ void _wrap_helicsComplexVectorToBytes(int resc, mxArray *resv[], int argc, const
 
 	HelicsDataBuffer data = helicsCreateDataBuffer(dataSize*sizeof(double));
 
-	int32_t result = helicsComplexVectorToBytes((const double *)value, dataSize, data);
+	int32_t result = helicsComplexVectorToBytes(static_cast<const double *>(value), dataSize, data);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)data;
-
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(data);
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -869,41 +1088,66 @@ void _wrap_helicsComplexVectorToBytes(int resc, mxArray *resv[], int argc, const
 
 
 void _wrap_helicsDataBufferType(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsDataBuffer data = *(HelicsDataBuffer*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferType:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferType:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[0])));
 
 	int result = helicsDataBufferType(data);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(_out)) = (int64_t)result;
+	mxInt64 *rv = mxGetInt64s(_out);
+	rv[0] = static_cast<mxInt64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsDataBufferToInteger(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsDataBuffer data = *(HelicsDataBuffer*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferToInteger:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferToInteger:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[0])));
 
 	int64_t result = helicsDataBufferToInteger(data);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(_out)) = (int64_t)result;
+	mxInt64 *rv = mxGetInt64s(_out);
+	rv[0] = static_cast<mxInt64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsDataBufferToDouble(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsDataBuffer data = *(HelicsDataBuffer*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferToDouble:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferToDouble:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[0])));
 
 	double result = helicsDataBufferToDouble(data);
 
@@ -913,30 +1157,49 @@ void _wrap_helicsDataBufferToDouble(int resc, mxArray *resv[], int argc, const m
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsDataBufferToBoolean(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsDataBuffer data = *(HelicsDataBuffer*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferToBoolean:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferToBoolean:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[0])));
 
 	HelicsBool result = helicsDataBufferToBoolean(data);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-	*((int32_t*)mxGetData(_out)) = (int32_t)result;
+	mxArray *_out = mxCreateLogicalMatrix(1, 1);
+	mxLogical *rv = mxGetLogicals(_out);
+	if(result == HELICS_TRUE){
+		rv[0] = true;
+	}else{
+		rv[0] = false;
+	}
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsDataBufferToChar(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsDataBuffer data = *(HelicsDataBuffer*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferToChar:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferToChar:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[0])));
 
 	char result = helicsDataBufferToChar(data);
 
@@ -946,34 +1209,49 @@ void _wrap_helicsDataBufferToChar(int resc, mxArray *resv[], int argc, const mxA
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsDataBufferStringSize(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsDataBuffer data = *(HelicsDataBuffer*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferStringSize:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferStringSize:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[0])));
 
 	int result = helicsDataBufferStringSize(data);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(_out)) = (int64_t)result;
+	mxInt64 *rv = mxGetInt64s(_out);
+	rv[0] = static_cast<mxInt64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsDataBufferToString(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsDataBuffer data = *(HelicsDataBuffer*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferToString:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferToString:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[0])));
 
 	int maxStringLen = helicsDataBufferStringSize(data) + 2;
 
-	char *outputString = (char *)malloc(maxStringLen);
+	char *outputString = static_cast<char *>(malloc(maxStringLen));
 
 	int actualLength = 0;
 
@@ -981,7 +1259,7 @@ void _wrap_helicsDataBufferToString(int resc, mxArray *resv[], int argc, const m
 
 	mwSize dims[2] = {1, static_cast<mwSize>(actualLength)};
 	mxArray *_out = mxCreateCharArray(2, dims);
-	mxChar *out_data = (mxChar *)mxGetData(_out);
+	mxChar *out_data = static_cast<mxChar *>(mxGetData(_out));
 	for(int i=0; i<(actualLength); ++i){
 		out_data[i] = outputString[i];
 	}
@@ -997,11 +1275,20 @@ void _wrap_helicsDataBufferToString(int resc, mxArray *resv[], int argc, const m
 
 
 void _wrap_helicsDataBufferToRawString(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsDataBuffer data = *(HelicsDataBuffer*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferToRawString:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferToRawString:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[0])));
 
 	int maxStringLen = helicsDataBufferStringSize(data) + 2;
 
-	char *outputString = (char *)malloc(maxStringLen);
+	char *outputString = static_cast<char *>(malloc(maxStringLen));
 
 	int actualLength = 0;
 
@@ -1009,7 +1296,7 @@ void _wrap_helicsDataBufferToRawString(int resc, mxArray *resv[], int argc, cons
 
 	mwSize dims[2] = {1, static_cast<mwSize>(actualLength) - 1};
 	mxArray *_out = mxCreateCharArray(2, dims);
-	mxChar *out_data = (mxChar *)mxGetData(_out);
+	mxChar *out_data = static_cast<mxChar *>(mxGetData(_out));
 	for(int i=0; i<(actualLength - 1); ++i){
 		out_data[i] = outputString[i];
 	}
@@ -1025,7 +1312,16 @@ void _wrap_helicsDataBufferToRawString(int resc, mxArray *resv[], int argc, cons
 
 
 void _wrap_helicsDataBufferToTime(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsDataBuffer data = *(HelicsDataBuffer*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferToTime:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferToTime:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[0])));
 
 	HelicsTime result = helicsDataBufferToTime(data);
 
@@ -1035,13 +1331,20 @@ void _wrap_helicsDataBufferToTime(int resc, mxArray *resv[], int argc, const mxA
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsDataBufferToComplexObject(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsDataBuffer data = *(HelicsDataBuffer*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferToComplexObject:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferToComplexObject:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[0])));
 
 	HelicsComplex result = helicsDataBufferToComplexObject(data);
 
@@ -1059,7 +1362,16 @@ void _wrap_helicsDataBufferToComplexObject(int resc, mxArray *resv[], int argc, 
 
 
 void _wrap_helicsDataBufferToComplex(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsDataBuffer data = *(HelicsDataBuffer*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferToComplex:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferToComplex:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[0])));
 
 	double values[2];
 
@@ -1077,36 +1389,53 @@ void _wrap_helicsDataBufferToComplex(int resc, mxArray *resv[], int argc, const 
 
 
 void _wrap_helicsDataBufferVectorSize(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsDataBuffer data = *(HelicsDataBuffer*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferVectorSize:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferVectorSize:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[0])));
 
 	int result = helicsDataBufferVectorSize(data);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(_out)) = (int64_t)result;
+	mxInt64 *rv = mxGetInt64s(_out);
+	rv[0] = static_cast<mxInt64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsDataBufferToVector(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsDataBuffer data = *(HelicsDataBuffer*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferToVector:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferToVector:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[0])));
 
 	int maxLen = helicsDataBufferVectorSize(data);
 
-	double *values = (double *)malloc(maxLen * sizeof(double));
+	double *values = static_cast<double *>(malloc(maxLen * sizeof(double)));
 
 	int actualSize = 0;
 
 	helicsDataBufferToVector(data, values, maxLen, &actualSize);
 
-	mxDouble *result_data = (mxDouble *)mxMalloc(actualSize * sizeof(mxDouble));
+	mxDouble *result_data = static_cast<mxDouble *>(mxMalloc(actualSize * sizeof(mxDouble)));
 	for(int i=0; i<actualSize; ++i){
-		result_data[i] = (mxDouble)values[i];
+		result_data[i] = static_cast<mxDouble>(values[i]);
 	}
 	mxArray *_out = mxCreateDoubleMatrix(actualSize, 1, mxREAL);
 	int status = mxSetDoubles(_out, &(result_data[0]));
@@ -1120,17 +1449,26 @@ void _wrap_helicsDataBufferToVector(int resc, mxArray *resv[], int argc, const m
 
 
 void _wrap_helicsDataBufferToComplexVector(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsDataBuffer data = *(HelicsDataBuffer*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferToComplexVector:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferToComplexVector:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[0])));
 
 	int maxLen = helicsDataBufferVectorSize(data);
 
-	double *values = (double *)malloc(maxLen * sizeof(double));
+	double *values = static_cast<double *>(malloc(maxLen * sizeof(double)));
 
 	int actualSize = 0;
 
 	helicsDataBufferToComplexVector(data, values, maxLen, &actualSize);
 
-	mxComplexDouble *result_data = (mxComplexDouble *)mxMalloc((actualSize/2)*sizeof(mxComplexDouble));
+	mxComplexDouble *result_data = static_cast<mxComplexDouble *>(mxMalloc((actualSize/2)*sizeof(mxComplexDouble)));
 	for(int i=0; i<(actualSize/2); ++i){
 		result_data[i].real = values[2*(i)];
 		result_data[i].imag = values[2*(i) + 1];
@@ -1147,11 +1485,20 @@ void _wrap_helicsDataBufferToComplexVector(int resc, mxArray *resv[], int argc, 
 
 
 void _wrap_helicsDataBufferToNamedPoint(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsDataBuffer data = *(HelicsDataBuffer*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferToNamedPoint:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferToNamedPoint:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[0])));
 
 	int maxStringLen = helicsInputGetStringSize(data) + 2;
 
-	char *outputString = (char *)malloc(maxStringLen);
+	char *outputString = static_cast<char *>(malloc(maxStringLen));
 
 	int actualLength = 0;
 
@@ -1161,7 +1508,7 @@ void _wrap_helicsDataBufferToNamedPoint(int resc, mxArray *resv[], int argc, con
 
 	mwSize dims[2] = {1, static_cast<mwSize>(actualLength)-1};
 	mxArray *_out = mxCreateCharArray(2, dims);
-	mxChar *out_data = (mxChar *)mxGetData(_out);
+	mxChar *out_data = static_cast<mxChar *>(mxGetData(_out));
 	for(int i=0; i<(actualLength-1); ++i){
 		out_data[i] = outputString[i];
 	}
@@ -1181,27 +1528,46 @@ void _wrap_helicsDataBufferToNamedPoint(int resc, mxArray *resv[], int argc, con
 
 
 void _wrap_helicsDataBufferConvertToType(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsDataBuffer data = *(HelicsDataBuffer*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferConvertToType:rhs","This function requires 2 arguments.");
+	}
 
-	int newDataType = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferConvertToType:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferConvertToType:TypeError","Argument 2 must be of type integer.");
+	}
+		int newDataType = static_cast<int>(mxGetScalar(argv[1]));
 
 	HelicsBool result = helicsDataBufferConvertToType(data, newDataType);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-	*((int32_t*)mxGetData(_out)) = (int32_t)result;
+	mxArray *_out = mxCreateLogicalMatrix(1, 1);
+	mxLogical *rv = mxGetLogicals(_out);
+	if(result == HELICS_TRUE){
+		rv[0] = true;
+	}else{
+		rv[0] = false;
+	}
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 }
 
 
 void _wrap_helicsGetVersion(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	if(argc != 0){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsGetVersion:rhs","This function requires 0 arguments.");
+	}
+
 	const char *result = helicsGetVersion();
 
 	mxArray *_out = mxCreateString(result);
@@ -1214,6 +1580,11 @@ void _wrap_helicsGetVersion(int resc, mxArray *resv[], int argc, const mxArray *
 
 
 void _wrap_helicsGetBuildFlags(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	if(argc != 0){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsGetBuildFlags:rhs","This function requires 0 arguments.");
+	}
+
 	const char *result = helicsGetBuildFlags();
 
 	mxArray *_out = mxCreateString(result);
@@ -1226,6 +1597,11 @@ void _wrap_helicsGetBuildFlags(int resc, mxArray *resv[], int argc, const mxArra
 
 
 void _wrap_helicsGetCompilerVersion(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	if(argc != 0){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsGetCompilerVersion:rhs","This function requires 0 arguments.");
+	}
+
 	const char *result = helicsGetCompilerVersion();
 
 	mxArray *_out = mxCreateString(result);
@@ -1238,6 +1614,11 @@ void _wrap_helicsGetCompilerVersion(int resc, mxArray *resv[], int argc, const m
 
 
 void _wrap_helicsGetSystemInfo(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	if(argc != 0){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsGetSystemInfo:rhs","This function requires 0 arguments.");
+	}
+
 	const char *result = helicsGetSystemInfo();
 
 	mxArray *_out = mxCreateString(result);
@@ -1250,9 +1631,14 @@ void _wrap_helicsGetSystemInfo(int resc, mxArray *resv[], int argc, const mxArra
 
 
 void _wrap_helicsLoadSignalHandler(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	if(argc != 0){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsLoadSignalHandler:rhs","This function requires 0 arguments.");
+	}
+
 	helicsLoadSignalHandler();
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
@@ -1262,9 +1648,14 @@ void _wrap_helicsLoadSignalHandler(int resc, mxArray *resv[], int argc, const mx
 
 
 void _wrap_helicsLoadThreadedSignalHandler(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	if(argc != 0){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsLoadThreadedSignalHandler:rhs","This function requires 0 arguments.");
+	}
+
 	helicsLoadThreadedSignalHandler();
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
@@ -1274,9 +1665,14 @@ void _wrap_helicsLoadThreadedSignalHandler(int resc, mxArray *resv[], int argc, 
 
 
 void _wrap_helicsClearSignalHandler(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	if(argc != 0){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsClearSignalHandler:rhs","This function requires 0 arguments.");
+	}
+
 	helicsClearSignalHandler();
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
@@ -1286,42 +1682,75 @@ void _wrap_helicsClearSignalHandler(int resc, mxArray *resv[], int argc, const m
 
 
 void _wrap_helicsAbort(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	int errorCode = (int)(mxGetScalar(argv[0]));
+	if(argc < 1 || argc > 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsAbort:rhs","This function requires at least 1 arguments and at most 2 arguments.");
+	}
 
-	char *errorString;
-	size_t errorStringLength;
-	int errorStringStatus;
-	errorStringLength = mxGetN(argv[1]) + 1;
-	errorString = (char *)malloc(errorStringLength);
-	errorStringStatus = mxGetString(argv[1], errorString, errorStringLength);
+	if(!mxIsNumeric(argv[0])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsAbort:TypeError","Argument 1 must be of type integer.");
+	}
+		int errorCode = static_cast<int>(mxGetScalar(argv[0]));
 
-	helicsAbort(errorCode, (char const *)errorString);
+	if(argc > 1){
+		if(!mxIsChar(argv[1])){
+			mexUnlock();
+			mexErrMsgIdAndTxt("MATLAB:helicsAbort:TypeError","Argument 2 must be a string.");
+		}
+	}
+	char *errorString = nullptr;
+	size_t errorStringLength = 0;
+	int errorStringStatus = 0;
+	if(argc > 1){
+		errorStringLength = mxGetN(argv[1]) + 1;
+		errorString = static_cast<char *>(malloc(errorStringLength));
+		errorStringStatus = mxGetString(argv[1], errorString, errorStringLength);
 
-	mxArray *_out = (mxArray *)0;
+	}
+	helicsAbort(errorCode, static_cast<const char *>(errorString));
+
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
 
-
-
 	free(errorString);
 }
 
 
 void _wrap_helicsIsCoreTypeAvailable(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	char *type;
-	size_t typeLength;
-	int typeStatus;
-	typeLength = mxGetN(argv[0]) + 1;
-	type = (char *)malloc(typeLength);
-	typeStatus = mxGetString(argv[0], type, typeLength);
+	if(argc < 0 || argc > 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsIsCoreTypeAvailable:rhs","This function requires at least 0 arguments and at most 1 arguments.");
+	}
 
-	HelicsBool result = helicsIsCoreTypeAvailable((char const *)type);
+	if(argc > 0){
+		if(!mxIsChar(argv[0])){
+			mexUnlock();
+			mexErrMsgIdAndTxt("MATLAB:helicsIsCoreTypeAvailable:TypeError","Argument 1 must be a string.");
+		}
+	}
+	char *type = nullptr;
+	size_t typeLength = 0;
+	int typeStatus = 0;
+	if(argc > 0){
+		typeLength = mxGetN(argv[0]) + 1;
+		type = static_cast<char *>(malloc(typeLength));
+		typeStatus = mxGetString(argv[0], type, typeLength);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-	*((int32_t*)mxGetData(_out)) = (int32_t)result;
+	}
+	HelicsBool result = helicsIsCoreTypeAvailable(static_cast<const char *>(type));
+
+	mxArray *_out = mxCreateLogicalMatrix(1, 1);
+	mxLogical *rv = mxGetLogicals(_out);
+	if(result == HELICS_TRUE){
+		rv[0] = true;
+	}else{
+		rv[0] = false;
+	}
 
 	if(_out){
 		--resc;
@@ -1333,33 +1762,57 @@ void _wrap_helicsIsCoreTypeAvailable(int resc, mxArray *resv[], int argc, const 
 
 
 void _wrap_helicsCreateCore(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	char *type;
-	size_t typeLength;
-	int typeStatus;
-	typeLength = mxGetN(argv[0]) + 1;
-	type = (char *)malloc(typeLength);
-	typeStatus = mxGetString(argv[0], type, typeLength);
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateCore:rhs","This function requires 3 arguments.");
+	}
 
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[1]) + 1;
-	name = (char *)malloc(nameLength);
-	nameStatus = mxGetString(argv[1], name, nameLength);
+	if(!mxIsChar(argv[0])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateCore:TypeError","Argument 1 must be a string.");
+	}
+	char *type = nullptr;
+	size_t typeLength = 0;
+	int typeStatus = 0;
+	if(argc > 0){
+		typeLength = mxGetN(argv[0]) + 1;
+		type = static_cast<char *>(malloc(typeLength));
+		typeStatus = mxGetString(argv[0], type, typeLength);
 
-	char *initString;
-	size_t initStringLength;
-	int initStringStatus;
-	initStringLength = mxGetN(argv[2]) + 1;
-	initString = (char *)malloc(initStringLength);
-	initStringStatus = mxGetString(argv[2], initString, initStringLength);
+	}
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateCore:TypeError","Argument 2 must be a string.");
+	}
+	char *name = nullptr;
+	size_t nameLength = 0;
+	int nameStatus = 0;
+	if(argc > 1){
+		nameLength = mxGetN(argv[1]) + 1;
+		name = static_cast<char *>(malloc(nameLength));
+		nameStatus = mxGetString(argv[1], name, nameLength);
 
+	}
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateCore:TypeError","Argument 3 must be a string.");
+	}
+	char *initString = nullptr;
+	size_t initStringLength = 0;
+	int initStringStatus = 0;
+	if(argc > 2){
+		initStringLength = mxGetN(argv[2]) + 1;
+		initString = static_cast<char *>(malloc(initStringLength));
+		initStringStatus = mxGetString(argv[2], initString, initStringLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsCore result = helicsCreateCore((char const *)type, (char const *)name, (char const *)initString, &err);
+	HelicsCore result = helicsCreateCore(static_cast<const char *>(type), static_cast<const char *>(name), static_cast<const char *>(initString), &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
@@ -1379,29 +1832,50 @@ void _wrap_helicsCreateCore(int resc, mxArray *resv[], int argc, const mxArray *
 
 
 void _wrap_helicsCreateCoreFromArgs(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	char *type;
-	size_t typeLength;
-	int typeStatus;
-	typeLength = mxGetN(argv[0]) + 1;
-	type = (char *)malloc(typeLength);
-	typeStatus = mxGetString(argv[0], type, typeLength);
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateCoreFromArgs:rhs","This function requires 3 arguments.");
+	}
 
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[1]) + 1;
-	name = (char *)malloc(nameLength);
-	nameStatus = mxGetString(argv[1], name, nameLength);
+	if(!mxIsChar(argv[0])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateCoreFromArgs:TypeError","Argument 1 must be a string.");
+	}
+	char *type = nullptr;
+	size_t typeLength = 0;
+	int typeStatus = 0;
+	if(argc > 0){
+		typeLength = mxGetN(argv[0]) + 1;
+		type = static_cast<char *>(malloc(typeLength));
+		typeStatus = mxGetString(argv[0], type, typeLength);
 
+	}
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateCoreFromArgs:TypeError","Argument 2 must be a string.");
+	}
+	char *name = nullptr;
+	size_t nameLength = 0;
+	int nameStatus = 0;
+	if(argc > 1){
+		nameLength = mxGetN(argv[1]) + 1;
+		name = static_cast<char *>(malloc(nameLength));
+		nameStatus = mxGetString(argv[1], name, nameLength);
+
+	}
 	int arg2 = 0;
 	char **arg3;
 	int ii;
+	if(!mxIsCell(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateCoreFromArgs:TypeError","Argument 3 must be a cell array of strings.");
+	}
 	arg2 = static_cast<int>(mxGetNumberOfElements(argv[2]));
-	arg3 = (char **)malloc((arg2)*sizeof(char *));
+	arg3 = static_cast<char **>(malloc((arg2)*sizeof(char *)));
 	for (ii=0;ii<arg2;ii++){
 		mxArray *cellElement=mxGetCell(argv[2], ii);
 		size_t len = mxGetN(cellElement) + 1;
-		arg3[ii] = (char *)malloc(static_cast<int>(len));
+		arg3[ii] = static_cast<char *>(malloc(static_cast<int>(len)));
 		int flag = mxGetString(cellElement, arg3[ii], static_cast<int>(len));
 	}
 
@@ -1410,9 +1884,8 @@ void _wrap_helicsCreateCoreFromArgs(int resc, mxArray *resv[], int argc, const m
 	HelicsCore result = helicsCreateCoreFromArgs(type, name, arg2, arg3, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
-
-	if(_out){
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
@@ -1430,21 +1903,29 @@ void _wrap_helicsCreateCoreFromArgs(int resc, mxArray *resv[], int argc, const m
 
 
 void _wrap_helicsCoreClone(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsCore core = *(HelicsCore*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreClone:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreClone:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsCore core = *(static_cast<HelicsCore*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
 	HelicsCore result = helicsCoreClone(core, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -1453,50 +1934,86 @@ void _wrap_helicsCoreClone(int resc, mxArray *resv[], int argc, const mxArray *a
 
 
 void _wrap_helicsCoreIsValid(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsCore core = *(HelicsCore*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreIsValid:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreIsValid:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsCore core = *(static_cast<HelicsCore*>(mxGetData(argv[0])));
 
 	HelicsBool result = helicsCoreIsValid(core);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-	*((int32_t*)mxGetData(_out)) = (int32_t)result;
+	mxArray *_out = mxCreateLogicalMatrix(1, 1);
+	mxLogical *rv = mxGetLogicals(_out);
+	if(result == HELICS_TRUE){
+		rv[0] = true;
+	}else{
+		rv[0] = false;
+	}
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsCreateBroker(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	char *type;
-	size_t typeLength;
-	int typeStatus;
-	typeLength = mxGetN(argv[0]) + 1;
-	type = (char *)malloc(typeLength);
-	typeStatus = mxGetString(argv[0], type, typeLength);
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateBroker:rhs","This function requires 3 arguments.");
+	}
 
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[1]) + 1;
-	name = (char *)malloc(nameLength);
-	nameStatus = mxGetString(argv[1], name, nameLength);
+	if(!mxIsChar(argv[0])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateBroker:TypeError","Argument 1 must be a string.");
+	}
+	char *type = nullptr;
+	size_t typeLength = 0;
+	int typeStatus = 0;
+	if(argc > 0){
+		typeLength = mxGetN(argv[0]) + 1;
+		type = static_cast<char *>(malloc(typeLength));
+		typeStatus = mxGetString(argv[0], type, typeLength);
 
-	char *initString;
-	size_t initStringLength;
-	int initStringStatus;
-	initStringLength = mxGetN(argv[2]) + 1;
-	initString = (char *)malloc(initStringLength);
-	initStringStatus = mxGetString(argv[2], initString, initStringLength);
+	}
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateBroker:TypeError","Argument 2 must be a string.");
+	}
+	char *name = nullptr;
+	size_t nameLength = 0;
+	int nameStatus = 0;
+	if(argc > 1){
+		nameLength = mxGetN(argv[1]) + 1;
+		name = static_cast<char *>(malloc(nameLength));
+		nameStatus = mxGetString(argv[1], name, nameLength);
 
+	}
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateBroker:TypeError","Argument 3 must be a string.");
+	}
+	char *initString = nullptr;
+	size_t initStringLength = 0;
+	int initStringStatus = 0;
+	if(argc > 2){
+		initStringLength = mxGetN(argv[2]) + 1;
+		initString = static_cast<char *>(malloc(initStringLength));
+		initStringStatus = mxGetString(argv[2], initString, initStringLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsBroker result = helicsCreateBroker((char const *)type, (char const *)name, (char const *)initString, &err);
+	HelicsBroker result = helicsCreateBroker(static_cast<const char *>(type), static_cast<const char *>(name), static_cast<const char *>(initString), &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
@@ -1516,29 +2033,50 @@ void _wrap_helicsCreateBroker(int resc, mxArray *resv[], int argc, const mxArray
 
 
 void _wrap_helicsCreateBrokerFromArgs(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	char *type;
-	size_t typeLength;
-	int typeStatus;
-	typeLength = mxGetN(argv[0]) + 1;
-	type = (char *)malloc(typeLength);
-	typeStatus = mxGetString(argv[0], type, typeLength);
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateBrokerFromArgs:rhs","This function requires 3 arguments.");
+	}
 
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[1]) + 1;
-	name = (char *)malloc(nameLength);
-	nameStatus = mxGetString(argv[1], name, nameLength);
+	if(!mxIsChar(argv[0])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateBrokerFromArgs:TypeError","Argument 1 must be a string.");
+	}
+	char *type = nullptr;
+	size_t typeLength = 0;
+	int typeStatus = 0;
+	if(argc > 0){
+		typeLength = mxGetN(argv[0]) + 1;
+		type = static_cast<char *>(malloc(typeLength));
+		typeStatus = mxGetString(argv[0], type, typeLength);
 
+	}
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateBrokerFromArgs:TypeError","Argument 2 must be a string.");
+	}
+	char *name = nullptr;
+	size_t nameLength = 0;
+	int nameStatus = 0;
+	if(argc > 1){
+		nameLength = mxGetN(argv[1]) + 1;
+		name = static_cast<char *>(malloc(nameLength));
+		nameStatus = mxGetString(argv[1], name, nameLength);
+
+	}
+	if(!mxIsCell(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateBrokerFromArgs:TypeError","Argument 3 must be a cell array of strings.");
+	}
 	int arg2 = 0;
 	char **arg3;
 	int ii;
 	arg2 = static_cast<int>(mxGetNumberOfElements(argv[2]));
-	arg3 = (char **)malloc((arg2)*sizeof(char *));
+	arg3 = static_cast<char **>(malloc((arg2)*sizeof(char *)));
 	for (ii=0;ii<arg2;ii++){
 		mxArray *cellElement=mxGetCell(argv[2], ii);
 		size_t len = mxGetN(cellElement) + 1;
-		arg3[ii] = (char *)malloc(static_cast<int>(len));
+		arg3[ii] = static_cast<char *>(malloc(static_cast<int>(len)));
 		int flag = mxGetString(cellElement, arg3[ii], static_cast<int>(len));
 	}
 
@@ -1547,9 +2085,8 @@ void _wrap_helicsCreateBrokerFromArgs(int resc, mxArray *resv[], int argc, const
 	HelicsBroker result = helicsCreateBrokerFromArgs(type, name, arg2, arg3, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
-
-	if(_out){
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
@@ -1567,21 +2104,29 @@ void _wrap_helicsCreateBrokerFromArgs(int resc, mxArray *resv[], int argc, const
 
 
 void _wrap_helicsBrokerClone(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsBroker broker = *(HelicsBroker*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerClone:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerClone:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsBroker broker = *(static_cast<HelicsBroker*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
 	HelicsBroker result = helicsBrokerClone(broker, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -1590,68 +2135,111 @@ void _wrap_helicsBrokerClone(int resc, mxArray *resv[], int argc, const mxArray 
 
 
 void _wrap_helicsBrokerIsValid(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsBroker broker = *(HelicsBroker*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerIsValid:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerIsValid:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsBroker broker = *(static_cast<HelicsBroker*>(mxGetData(argv[0])));
 
 	HelicsBool result = helicsBrokerIsValid(broker);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-	*((int32_t*)mxGetData(_out)) = (int32_t)result;
+	mxArray *_out = mxCreateLogicalMatrix(1, 1);
+	mxLogical *rv = mxGetLogicals(_out);
+	if(result == HELICS_TRUE){
+		rv[0] = true;
+	}else{
+		rv[0] = false;
+	}
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsBrokerIsConnected(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsBroker broker = *(HelicsBroker*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerIsConnected:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerIsConnected:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsBroker broker = *(static_cast<HelicsBroker*>(mxGetData(argv[0])));
 
 	HelicsBool result = helicsBrokerIsConnected(broker);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-	*((int32_t*)mxGetData(_out)) = (int32_t)result;
+	mxArray *_out = mxCreateLogicalMatrix(1, 1);
+	mxLogical *rv = mxGetLogicals(_out);
+	if(result == HELICS_TRUE){
+		rv[0] = true;
+	}else{
+		rv[0] = false;
+	}
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsBrokerDataLink(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsBroker broker = *(HelicsBroker*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerDataLink:rhs","This function requires 3 arguments.");
+	}
 
-	char *source;
-	size_t sourceLength;
-	int sourceStatus;
-	sourceLength = mxGetN(argv[1]) + 1;
-	source = (char *)malloc(sourceLength);
-	sourceStatus = mxGetString(argv[1], source, sourceLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerDataLink:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsBroker broker = *(static_cast<HelicsBroker*>(mxGetData(argv[0])));
 
-	char *target;
-	size_t targetLength;
-	int targetStatus;
-	targetLength = mxGetN(argv[2]) + 1;
-	target = (char *)malloc(targetLength);
-	targetStatus = mxGetString(argv[2], target, targetLength);
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerDataLink:TypeError","Argument 2 must be a string.");
+	}
+	char *source = nullptr;
+	size_t sourceLength = 0;
+	int sourceStatus = 0;
+	if(argc > 1){
+		sourceLength = mxGetN(argv[1]) + 1;
+		source = static_cast<char *>(malloc(sourceLength));
+		sourceStatus = mxGetString(argv[1], source, sourceLength);
 
+	}
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerDataLink:TypeError","Argument 3 must be a string.");
+	}
+	char *target = nullptr;
+	size_t targetLength = 0;
+	int targetStatus = 0;
+	if(argc > 2){
+		targetLength = mxGetN(argv[2]) + 1;
+		target = static_cast<char *>(malloc(targetLength));
+		targetStatus = mxGetString(argv[2], target, targetLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsBrokerDataLink(broker, (char const *)source, (char const *)target, &err);
+	helicsBrokerDataLink(broker, static_cast<const char *>(source), static_cast<const char *>(target), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(source);
 
@@ -1664,34 +2252,53 @@ void _wrap_helicsBrokerDataLink(int resc, mxArray *resv[], int argc, const mxArr
 
 
 void _wrap_helicsBrokerAddSourceFilterToEndpoint(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsBroker broker = *(HelicsBroker*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerAddSourceFilterToEndpoint:rhs","This function requires 3 arguments.");
+	}
 
-	char *filter;
-	size_t filterLength;
-	int filterStatus;
-	filterLength = mxGetN(argv[1]) + 1;
-	filter = (char *)malloc(filterLength);
-	filterStatus = mxGetString(argv[1], filter, filterLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerAddSourceFilterToEndpoint:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsBroker broker = *(static_cast<HelicsBroker*>(mxGetData(argv[0])));
 
-	char *endpoint;
-	size_t endpointLength;
-	int endpointStatus;
-	endpointLength = mxGetN(argv[2]) + 1;
-	endpoint = (char *)malloc(endpointLength);
-	endpointStatus = mxGetString(argv[2], endpoint, endpointLength);
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerAddSourceFilterToEndpoint:TypeError","Argument 2 must be a string.");
+	}
+	char *filter = nullptr;
+	size_t filterLength = 0;
+	int filterStatus = 0;
+	if(argc > 1){
+		filterLength = mxGetN(argv[1]) + 1;
+		filter = static_cast<char *>(malloc(filterLength));
+		filterStatus = mxGetString(argv[1], filter, filterLength);
 
+	}
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerAddSourceFilterToEndpoint:TypeError","Argument 3 must be a string.");
+	}
+	char *endpoint = nullptr;
+	size_t endpointLength = 0;
+	int endpointStatus = 0;
+	if(argc > 2){
+		endpointLength = mxGetN(argv[2]) + 1;
+		endpoint = static_cast<char *>(malloc(endpointLength));
+		endpointStatus = mxGetString(argv[2], endpoint, endpointLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsBrokerAddSourceFilterToEndpoint(broker, (char const *)filter, (char const *)endpoint, &err);
+	helicsBrokerAddSourceFilterToEndpoint(broker, static_cast<const char *>(filter), static_cast<const char *>(endpoint), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(filter);
 
@@ -1704,34 +2311,53 @@ void _wrap_helicsBrokerAddSourceFilterToEndpoint(int resc, mxArray *resv[], int 
 
 
 void _wrap_helicsBrokerAddDestinationFilterToEndpoint(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsBroker broker = *(HelicsBroker*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerAddDestinationFilterToEndpoint:rhs","This function requires 3 arguments.");
+	}
 
-	char *filter;
-	size_t filterLength;
-	int filterStatus;
-	filterLength = mxGetN(argv[1]) + 1;
-	filter = (char *)malloc(filterLength);
-	filterStatus = mxGetString(argv[1], filter, filterLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerAddDestinationFilterToEndpoint:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsBroker broker = *(static_cast<HelicsBroker*>(mxGetData(argv[0])));
 
-	char *endpoint;
-	size_t endpointLength;
-	int endpointStatus;
-	endpointLength = mxGetN(argv[2]) + 1;
-	endpoint = (char *)malloc(endpointLength);
-	endpointStatus = mxGetString(argv[2], endpoint, endpointLength);
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerAddDestinationFilterToEndpoint:TypeError","Argument 2 must be a string.");
+	}
+	char *filter = nullptr;
+	size_t filterLength = 0;
+	int filterStatus = 0;
+	if(argc > 1){
+		filterLength = mxGetN(argv[1]) + 1;
+		filter = static_cast<char *>(malloc(filterLength));
+		filterStatus = mxGetString(argv[1], filter, filterLength);
 
+	}
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerAddDestinationFilterToEndpoint:TypeError","Argument 3 must be a string.");
+	}
+	char *endpoint = nullptr;
+	size_t endpointLength = 0;
+	int endpointStatus = 0;
+	if(argc > 2){
+		endpointLength = mxGetN(argv[2]) + 1;
+		endpoint = static_cast<char *>(malloc(endpointLength));
+		endpointStatus = mxGetString(argv[2], endpoint, endpointLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsBrokerAddDestinationFilterToEndpoint(broker, (char const *)filter, (char const *)endpoint, &err);
+	helicsBrokerAddDestinationFilterToEndpoint(broker, static_cast<const char *>(filter), static_cast<const char *>(endpoint), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(filter);
 
@@ -1744,27 +2370,40 @@ void _wrap_helicsBrokerAddDestinationFilterToEndpoint(int resc, mxArray *resv[],
 
 
 void _wrap_helicsBrokerMakeConnections(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsBroker broker = *(HelicsBroker*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerMakeConnections:rhs","This function requires 2 arguments.");
+	}
 
-	char *file;
-	size_t fileLength;
-	int fileStatus;
-	fileLength = mxGetN(argv[1]) + 1;
-	file = (char *)malloc(fileLength);
-	fileStatus = mxGetString(argv[1], file, fileLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerMakeConnections:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsBroker broker = *(static_cast<HelicsBroker*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerMakeConnections:TypeError","Argument 2 must be a string.");
+	}
+	char *file = nullptr;
+	size_t fileLength = 0;
+	int fileStatus = 0;
+	if(argc > 1){
+		fileLength = mxGetN(argv[1]) + 1;
+		file = static_cast<char *>(malloc(fileLength));
+		fileStatus = mxGetString(argv[1], file, fileLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsBrokerMakeConnections(broker, (char const *)file, &err);
+	helicsBrokerMakeConnections(broker, static_cast<const char *>(file), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(file);
 
@@ -1775,25 +2414,39 @@ void _wrap_helicsBrokerMakeConnections(int resc, mxArray *resv[], int argc, cons
 
 
 void _wrap_helicsCoreWaitForDisconnect(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsCore core = *(HelicsCore*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreWaitForDisconnect:rhs","This function requires 2 arguments.");
+	}
 
-	int msToWait = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreWaitForDisconnect:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsCore core = *(static_cast<HelicsCore*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreWaitForDisconnect:TypeError","Argument 2 must be of type integer.");
+	}
+		int msToWait = static_cast<int>(mxGetScalar(argv[1]));
 
 	HelicsError err = helicsErrorInitialize();
 
 	HelicsBool result = helicsCoreWaitForDisconnect(core, msToWait, &err);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-	*((int32_t*)mxGetData(_out)) = (int32_t)result;
+	mxArray *_out = mxCreateLogicalMatrix(1, 1);
+	mxLogical *rv = mxGetLogicals(_out);
+	if(result == HELICS_TRUE){
+		rv[0] = true;
+	}else{
+		rv[0] = false;
+	}
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -1802,25 +2455,39 @@ void _wrap_helicsCoreWaitForDisconnect(int resc, mxArray *resv[], int argc, cons
 
 
 void _wrap_helicsBrokerWaitForDisconnect(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsBroker broker = *(HelicsBroker*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerWaitForDisconnect:rhs","This function requires 2 arguments.");
+	}
 
-	int msToWait = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerWaitForDisconnect:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsBroker broker = *(static_cast<HelicsBroker*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerWaitForDisconnect:TypeError","Argument 2 must be of type integer.");
+	}
+		int msToWait = static_cast<int>(mxGetScalar(argv[1]));
 
 	HelicsError err = helicsErrorInitialize();
 
 	HelicsBool result = helicsBrokerWaitForDisconnect(broker, msToWait, &err);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-	*((int32_t*)mxGetData(_out)) = (int32_t)result;
+	mxArray *_out = mxCreateLogicalMatrix(1, 1);
+	mxLogical *rv = mxGetLogicals(_out);
+	if(result == HELICS_TRUE){
+		rv[0] = true;
+	}else{
+		rv[0] = false;
+	}
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -1829,51 +2496,82 @@ void _wrap_helicsBrokerWaitForDisconnect(int resc, mxArray *resv[], int argc, co
 
 
 void _wrap_helicsCoreIsConnected(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsCore core = *(HelicsCore*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreIsConnected:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreIsConnected:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsCore core = *(static_cast<HelicsCore*>(mxGetData(argv[0])));
 
 	HelicsBool result = helicsCoreIsConnected(core);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-	*((int32_t*)mxGetData(_out)) = (int32_t)result;
+	mxArray *_out = mxCreateLogicalMatrix(1, 1);
+	mxLogical *rv = mxGetLogicals(_out);
+	if(result == HELICS_TRUE){
+		rv[0] = true;
+	}else{
+		rv[0] = false;
+	}
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsCoreDataLink(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsCore core = *(HelicsCore*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreDataLink:rhs","This function requires 3 arguments.");
+	}
 
-	char *source;
-	size_t sourceLength;
-	int sourceStatus;
-	sourceLength = mxGetN(argv[1]) + 1;
-	source = (char *)malloc(sourceLength);
-	sourceStatus = mxGetString(argv[1], source, sourceLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreDataLink:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsCore core = *(static_cast<HelicsCore*>(mxGetData(argv[0])));
 
-	char *target;
-	size_t targetLength;
-	int targetStatus;
-	targetLength = mxGetN(argv[2]) + 1;
-	target = (char *)malloc(targetLength);
-	targetStatus = mxGetString(argv[2], target, targetLength);
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreDataLink:TypeError","Argument 2 must be a string.");
+	}
+	char *source = nullptr;
+	size_t sourceLength = 0;
+	int sourceStatus = 0;
+	if(argc > 1){
+		sourceLength = mxGetN(argv[1]) + 1;
+		source = static_cast<char *>(malloc(sourceLength));
+		sourceStatus = mxGetString(argv[1], source, sourceLength);
 
+	}
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreDataLink:TypeError","Argument 3 must be a string.");
+	}
+	char *target = nullptr;
+	size_t targetLength = 0;
+	int targetStatus = 0;
+	if(argc > 2){
+		targetLength = mxGetN(argv[2]) + 1;
+		target = static_cast<char *>(malloc(targetLength));
+		targetStatus = mxGetString(argv[2], target, targetLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsCoreDataLink(core, (char const *)source, (char const *)target, &err);
+	helicsCoreDataLink(core, static_cast<const char *>(source), static_cast<const char *>(target), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(source);
 
@@ -1886,34 +2584,53 @@ void _wrap_helicsCoreDataLink(int resc, mxArray *resv[], int argc, const mxArray
 
 
 void _wrap_helicsCoreAddSourceFilterToEndpoint(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsCore core = *(HelicsCore*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreAddSourceFilterToEndpoint:rhs","This function requires 3 arguments.");
+	}
 
-	char *filter;
-	size_t filterLength;
-	int filterStatus;
-	filterLength = mxGetN(argv[1]) + 1;
-	filter = (char *)malloc(filterLength);
-	filterStatus = mxGetString(argv[1], filter, filterLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreAddSourceFilterToEndpoint:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsCore core = *(static_cast<HelicsCore*>(mxGetData(argv[0])));
 
-	char *endpoint;
-	size_t endpointLength;
-	int endpointStatus;
-	endpointLength = mxGetN(argv[2]) + 1;
-	endpoint = (char *)malloc(endpointLength);
-	endpointStatus = mxGetString(argv[2], endpoint, endpointLength);
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreAddSourceFilterToEndpoint:TypeError","Argument 2 must be a string.");
+	}
+	char *filter = nullptr;
+	size_t filterLength = 0;
+	int filterStatus = 0;
+	if(argc > 1){
+		filterLength = mxGetN(argv[1]) + 1;
+		filter = static_cast<char *>(malloc(filterLength));
+		filterStatus = mxGetString(argv[1], filter, filterLength);
 
+	}
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreAddSourceFilterToEndpoint:TypeError","Argument 3 must be a string.");
+	}
+	char *endpoint = nullptr;
+	size_t endpointLength = 0;
+	int endpointStatus = 0;
+	if(argc > 2){
+		endpointLength = mxGetN(argv[2]) + 1;
+		endpoint = static_cast<char *>(malloc(endpointLength));
+		endpointStatus = mxGetString(argv[2], endpoint, endpointLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsCoreAddSourceFilterToEndpoint(core, (char const *)filter, (char const *)endpoint, &err);
+	helicsCoreAddSourceFilterToEndpoint(core, static_cast<const char *>(filter), static_cast<const char *>(endpoint), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(filter);
 
@@ -1926,34 +2643,53 @@ void _wrap_helicsCoreAddSourceFilterToEndpoint(int resc, mxArray *resv[], int ar
 
 
 void _wrap_helicsCoreAddDestinationFilterToEndpoint(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsCore core = *(HelicsCore*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreAddDestinationFilterToEndpoint:rhs","This function requires 3 arguments.");
+	}
 
-	char *filter;
-	size_t filterLength;
-	int filterStatus;
-	filterLength = mxGetN(argv[1]) + 1;
-	filter = (char *)malloc(filterLength);
-	filterStatus = mxGetString(argv[1], filter, filterLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreAddDestinationFilterToEndpoint:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsCore core = *(static_cast<HelicsCore*>(mxGetData(argv[0])));
 
-	char *endpoint;
-	size_t endpointLength;
-	int endpointStatus;
-	endpointLength = mxGetN(argv[2]) + 1;
-	endpoint = (char *)malloc(endpointLength);
-	endpointStatus = mxGetString(argv[2], endpoint, endpointLength);
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreAddDestinationFilterToEndpoint:TypeError","Argument 2 must be a string.");
+	}
+	char *filter = nullptr;
+	size_t filterLength = 0;
+	int filterStatus = 0;
+	if(argc > 1){
+		filterLength = mxGetN(argv[1]) + 1;
+		filter = static_cast<char *>(malloc(filterLength));
+		filterStatus = mxGetString(argv[1], filter, filterLength);
 
+	}
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreAddDestinationFilterToEndpoint:TypeError","Argument 3 must be a string.");
+	}
+	char *endpoint = nullptr;
+	size_t endpointLength = 0;
+	int endpointStatus = 0;
+	if(argc > 2){
+		endpointLength = mxGetN(argv[2]) + 1;
+		endpoint = static_cast<char *>(malloc(endpointLength));
+		endpointStatus = mxGetString(argv[2], endpoint, endpointLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsCoreAddDestinationFilterToEndpoint(core, (char const *)filter, (char const *)endpoint, &err);
+	helicsCoreAddDestinationFilterToEndpoint(core, static_cast<const char *>(filter), static_cast<const char *>(endpoint), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(filter);
 
@@ -1966,27 +2702,40 @@ void _wrap_helicsCoreAddDestinationFilterToEndpoint(int resc, mxArray *resv[], i
 
 
 void _wrap_helicsCoreMakeConnections(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsCore core = *(HelicsCore*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreMakeConnections:rhs","This function requires 2 arguments.");
+	}
 
-	char *file;
-	size_t fileLength;
-	int fileStatus;
-	fileLength = mxGetN(argv[1]) + 1;
-	file = (char *)malloc(fileLength);
-	fileStatus = mxGetString(argv[1], file, fileLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreMakeConnections:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsCore core = *(static_cast<HelicsCore*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreMakeConnections:TypeError","Argument 2 must be a string.");
+	}
+	char *file = nullptr;
+	size_t fileLength = 0;
+	int fileStatus = 0;
+	if(argc > 1){
+		fileLength = mxGetN(argv[1]) + 1;
+		file = static_cast<char *>(malloc(fileLength));
+		fileStatus = mxGetString(argv[1], file, fileLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsCoreMakeConnections(core, (char const *)file, &err);
+	helicsCoreMakeConnections(core, static_cast<const char *>(file), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(file);
 
@@ -1997,7 +2746,16 @@ void _wrap_helicsCoreMakeConnections(int resc, mxArray *resv[], int argc, const 
 
 
 void _wrap_helicsBrokerGetIdentifier(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsBroker broker = *(HelicsBroker*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerGetIdentifier:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerGetIdentifier:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsBroker broker = *(static_cast<HelicsBroker*>(mxGetData(argv[0])));
 
 	const char *result = helicsBrokerGetIdentifier(broker);
 
@@ -2007,13 +2765,20 @@ void _wrap_helicsBrokerGetIdentifier(int resc, mxArray *resv[], int argc, const 
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsCoreGetIdentifier(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsCore core = *(HelicsCore*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreGetIdentifier:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreGetIdentifier:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsCore core = *(static_cast<HelicsCore*>(mxGetData(argv[0])));
 
 	const char *result = helicsCoreGetIdentifier(core);
 
@@ -2023,13 +2788,20 @@ void _wrap_helicsCoreGetIdentifier(int resc, mxArray *resv[], int argc, const mx
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsBrokerGetAddress(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsBroker broker = *(HelicsBroker*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerGetAddress:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerGetAddress:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsBroker broker = *(static_cast<HelicsBroker*>(mxGetData(argv[0])));
 
 	const char *result = helicsBrokerGetAddress(broker);
 
@@ -2039,13 +2811,20 @@ void _wrap_helicsBrokerGetAddress(int resc, mxArray *resv[], int argc, const mxA
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsCoreGetAddress(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsCore core = *(HelicsCore*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreGetAddress:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreGetAddress:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsCore core = *(static_cast<HelicsCore*>(mxGetData(argv[0])));
 
 	const char *result = helicsCoreGetAddress(core);
 
@@ -2055,26 +2834,31 @@ void _wrap_helicsCoreGetAddress(int resc, mxArray *resv[], int argc, const mxArr
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsCoreSetReadyToInit(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsCore core = *(HelicsCore*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreSetReadyToInit:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreSetReadyToInit:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsCore core = *(static_cast<HelicsCore*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsCoreSetReadyToInit(core, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -2083,21 +2867,33 @@ void _wrap_helicsCoreSetReadyToInit(int resc, mxArray *resv[], int argc, const m
 
 
 void _wrap_helicsCoreConnect(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsCore core = *(HelicsCore*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreConnect:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreConnect:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsCore core = *(static_cast<HelicsCore*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
 	HelicsBool result = helicsCoreConnect(core, &err);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-	*((int32_t*)mxGetData(_out)) = (int32_t)result;
+	mxArray *_out = mxCreateLogicalMatrix(1, 1);
+	mxLogical *rv = mxGetLogicals(_out);
+	if(result == HELICS_TRUE){
+		rv[0] = true;
+	}else{
+		rv[0] = false;
+	}
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -2106,20 +2902,27 @@ void _wrap_helicsCoreConnect(int resc, mxArray *resv[], int argc, const mxArray 
 
 
 void _wrap_helicsCoreDisconnect(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsCore core = *(HelicsCore*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreDisconnect:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreDisconnect:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsCore core = *(static_cast<HelicsCore*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsCoreDisconnect(core, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -2128,19 +2931,31 @@ void _wrap_helicsCoreDisconnect(int resc, mxArray *resv[], int argc, const mxArr
 
 
 void _wrap_helicsGetFederateByName(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	char *fedName;
-	size_t fedNameLength;
-	int fedNameStatus;
-	fedNameLength = mxGetN(argv[0]) + 1;
-	fedName = (char *)malloc(fedNameLength);
-	fedNameStatus = mxGetString(argv[0], fedName, fedNameLength);
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsGetFederateByName:rhs","This function requires 1 arguments.");
+	}
 
+	if(!mxIsChar(argv[0])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsGetFederateByName:TypeError","Argument 1 must be a string.");
+	}
+	char *fedName = nullptr;
+	size_t fedNameLength = 0;
+	int fedNameStatus = 0;
+	if(argc > 0){
+		fedNameLength = mxGetN(argv[0]) + 1;
+		fedName = static_cast<char *>(malloc(fedNameLength));
+		fedNameStatus = mxGetString(argv[0], fedName, fedNameLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsFederate result = helicsGetFederateByName((char const *)fedName, &err);
+	HelicsFederate result = helicsGetFederateByName(static_cast<const char *>(fedName), &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
@@ -2156,20 +2971,27 @@ void _wrap_helicsGetFederateByName(int resc, mxArray *resv[], int argc, const mx
 
 
 void _wrap_helicsBrokerDisconnect(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsBroker broker = *(HelicsBroker*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerDisconnect:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerDisconnect:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsBroker broker = *(static_cast<HelicsBroker*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsBrokerDisconnect(broker, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -2178,101 +3000,152 @@ void _wrap_helicsBrokerDisconnect(int resc, mxArray *resv[], int argc, const mxA
 
 
 void _wrap_helicsFederateDestroy(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateDestroy:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateDestroy:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	helicsFederateDestroy(fed);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsBrokerDestroy(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsBroker broker = *(HelicsBroker*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerDestroy:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerDestroy:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsBroker broker = *(static_cast<HelicsBroker*>(mxGetData(argv[0])));
 
 	helicsBrokerDestroy(broker);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsCoreDestroy(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsCore core = *(HelicsCore*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreDestroy:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreDestroy:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsCore core = *(static_cast<HelicsCore*>(mxGetData(argv[0])));
 
 	helicsCoreDestroy(core);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsCoreFree(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsCore core = *(HelicsCore*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreFree:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreFree:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsCore core = *(static_cast<HelicsCore*>(mxGetData(argv[0])));
 
 	helicsCoreFree(core);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsBrokerFree(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsBroker broker = *(HelicsBroker*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerFree:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerFree:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsBroker broker = *(static_cast<HelicsBroker*>(mxGetData(argv[0])));
 
 	helicsBrokerFree(broker);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsCreateValueFederate(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	char *fedName;
-	size_t fedNameLength;
-	int fedNameStatus;
-	fedNameLength = mxGetN(argv[0]) + 1;
-	fedName = (char *)malloc(fedNameLength);
-	fedNameStatus = mxGetString(argv[0], fedName, fedNameLength);
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateValueFederate:rhs","This function requires 2 arguments.");
+	}
 
-	HelicsFederateInfo fi = *(HelicsFederateInfo*)(mxGetData(argv[1]));
+	if(!mxIsChar(argv[0])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateValueFederate:TypeError","Argument 1 must be a string.");
+	}
+	char *fedName = nullptr;
+	size_t fedNameLength = 0;
+	int fedNameStatus = 0;
+	if(argc > 0){
+		fedNameLength = mxGetN(argv[0]) + 1;
+		fedName = static_cast<char *>(malloc(fedNameLength));
+		fedNameStatus = mxGetString(argv[0], fedName, fedNameLength);
+
+	}
+	if(mxGetClassID(argv[1]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateValueFederate:TypeError","Argument 2 must be of type uint64.");
+	}
+	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[1])));
 
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsFederate result = helicsCreateValueFederate((char const *)fedName, fi, &err);
+	HelicsFederate result = helicsCreateValueFederate(static_cast<const char *>(fedName), fi, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
@@ -2281,8 +3154,6 @@ void _wrap_helicsCreateValueFederate(int resc, mxArray *resv[], int argc, const 
 
 	free(fedName);
 
-
-
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
 	}
@@ -2290,19 +3161,31 @@ void _wrap_helicsCreateValueFederate(int resc, mxArray *resv[], int argc, const 
 
 
 void _wrap_helicsCreateValueFederateFromConfig(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	char *configFile;
-	size_t configFileLength;
-	int configFileStatus;
-	configFileLength = mxGetN(argv[0]) + 1;
-	configFile = (char *)malloc(configFileLength);
-	configFileStatus = mxGetString(argv[0], configFile, configFileLength);
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateValueFederateFromConfig:rhs","This function requires 1 arguments.");
+	}
 
+	if(!mxIsChar(argv[0])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateValueFederateFromConfig:TypeError","Argument 1 must be a string.");
+	}
+	char *configFile = nullptr;
+	size_t configFileLength = 0;
+	int configFileStatus = 0;
+	if(argc > 0){
+		configFileLength = mxGetN(argv[0]) + 1;
+		configFile = static_cast<char *>(malloc(configFileLength));
+		configFileStatus = mxGetString(argv[0], configFile, configFileLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsFederate result = helicsCreateValueFederateFromConfig((char const *)configFile, &err);
+	HelicsFederate result = helicsCreateValueFederateFromConfig(static_cast<const char *>(configFile), &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
@@ -2318,21 +3201,37 @@ void _wrap_helicsCreateValueFederateFromConfig(int resc, mxArray *resv[], int ar
 
 
 void _wrap_helicsCreateMessageFederate(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	char *fedName;
-	size_t fedNameLength;
-	int fedNameStatus;
-	fedNameLength = mxGetN(argv[0]) + 1;
-	fedName = (char *)malloc(fedNameLength);
-	fedNameStatus = mxGetString(argv[0], fedName, fedNameLength);
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateMessageFederate:rhs","This function requires 2 arguments.");
+	}
 
-	HelicsFederateInfo fi = *(HelicsFederateInfo*)(mxGetData(argv[1]));
+	if(!mxIsChar(argv[0])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateMessageFederate:TypeError","Argument 1 must be a string.");
+	}
+	char *fedName = nullptr;
+	size_t fedNameLength = 0;
+	int fedNameStatus = 0;
+	if(argc > 0){
+		fedNameLength = mxGetN(argv[0]) + 1;
+		fedName = static_cast<char *>(malloc(fedNameLength));
+		fedNameStatus = mxGetString(argv[0], fedName, fedNameLength);
+
+	}
+	if(mxGetClassID(argv[1]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateMessageFederate:TypeError","Argument 2 must be of type uint64.");
+	}
+	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[1])));
 
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsFederate result = helicsCreateMessageFederate((char const *)fedName, fi, &err);
+	HelicsFederate result = helicsCreateMessageFederate(static_cast<const char *>(fedName), fi, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
@@ -2341,8 +3240,6 @@ void _wrap_helicsCreateMessageFederate(int resc, mxArray *resv[], int argc, cons
 
 	free(fedName);
 
-
-
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
 	}
@@ -2350,19 +3247,31 @@ void _wrap_helicsCreateMessageFederate(int resc, mxArray *resv[], int argc, cons
 
 
 void _wrap_helicsCreateMessageFederateFromConfig(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	char *configFile;
-	size_t configFileLength;
-	int configFileStatus;
-	configFileLength = mxGetN(argv[0]) + 1;
-	configFile = (char *)malloc(configFileLength);
-	configFileStatus = mxGetString(argv[0], configFile, configFileLength);
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateMessageFederateFromConfig:rhs","This function requires 1 arguments.");
+	}
 
+	if(!mxIsChar(argv[0])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateMessageFederateFromConfig:TypeError","Argument 1 must be a string.");
+	}
+	char *configFile = nullptr;
+	size_t configFileLength = 0;
+	int configFileStatus = 0;
+	if(argc > 0){
+		configFileLength = mxGetN(argv[0]) + 1;
+		configFile = static_cast<char *>(malloc(configFileLength));
+		configFileStatus = mxGetString(argv[0], configFile, configFileLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsFederate result = helicsCreateMessageFederateFromConfig((char const *)configFile, &err);
+	HelicsFederate result = helicsCreateMessageFederateFromConfig(static_cast<const char *>(configFile), &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
@@ -2378,21 +3287,37 @@ void _wrap_helicsCreateMessageFederateFromConfig(int resc, mxArray *resv[], int 
 
 
 void _wrap_helicsCreateCombinationFederate(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	char *fedName;
-	size_t fedNameLength;
-	int fedNameStatus;
-	fedNameLength = mxGetN(argv[0]) + 1;
-	fedName = (char *)malloc(fedNameLength);
-	fedNameStatus = mxGetString(argv[0], fedName, fedNameLength);
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateCombinationFederate:rhs","This function requires 2 arguments.");
+	}
 
-	HelicsFederateInfo fi = *(HelicsFederateInfo*)(mxGetData(argv[1]));
+	if(!mxIsChar(argv[0])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateCombinationFederate:TypeError","Argument 1 must be a string.");
+	}
+	char *fedName = nullptr;
+	size_t fedNameLength = 0;
+	int fedNameStatus = 0;
+	if(argc > 0){
+		fedNameLength = mxGetN(argv[0]) + 1;
+		fedName = static_cast<char *>(malloc(fedNameLength));
+		fedNameStatus = mxGetString(argv[0], fedName, fedNameLength);
+
+	}
+	if(mxGetClassID(argv[1]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateCombinationFederate:TypeError","Argument 2 must be of type uint64.");
+	}
+	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[1])));
 
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsFederate result = helicsCreateCombinationFederate((char const *)fedName, fi, &err);
+	HelicsFederate result = helicsCreateCombinationFederate(static_cast<const char *>(fedName), fi, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
@@ -2401,8 +3326,6 @@ void _wrap_helicsCreateCombinationFederate(int resc, mxArray *resv[], int argc, 
 
 	free(fedName);
 
-
-
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
 	}
@@ -2410,19 +3333,31 @@ void _wrap_helicsCreateCombinationFederate(int resc, mxArray *resv[], int argc, 
 
 
 void _wrap_helicsCreateCombinationFederateFromConfig(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	char *configFile;
-	size_t configFileLength;
-	int configFileStatus;
-	configFileLength = mxGetN(argv[0]) + 1;
-	configFile = (char *)malloc(configFileLength);
-	configFileStatus = mxGetString(argv[0], configFile, configFileLength);
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateCombinationFederateFromConfig:rhs","This function requires 1 arguments.");
+	}
 
+	if(!mxIsChar(argv[0])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateCombinationFederateFromConfig:TypeError","Argument 1 must be a string.");
+	}
+	char *configFile = nullptr;
+	size_t configFileLength = 0;
+	int configFileStatus = 0;
+	if(argc > 0){
+		configFileLength = mxGetN(argv[0]) + 1;
+		configFile = static_cast<char *>(malloc(configFileLength));
+		configFileStatus = mxGetString(argv[0], configFile, configFileLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsFederate result = helicsCreateCombinationFederateFromConfig((char const *)configFile, &err);
+	HelicsFederate result = helicsCreateCombinationFederateFromConfig(static_cast<const char *>(configFile), &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
@@ -2438,21 +3373,29 @@ void _wrap_helicsCreateCombinationFederateFromConfig(int resc, mxArray *resv[], 
 
 
 void _wrap_helicsFederateClone(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateClone:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateClone:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
 	HelicsFederate result = helicsFederateClone(fed, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -2461,18 +3404,29 @@ void _wrap_helicsFederateClone(int resc, mxArray *resv[], int argc, const mxArra
 
 
 void _wrap_helicsFederateProtect(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	char *fedName;
-	size_t fedNameLength;
-	int fedNameStatus;
-	fedNameLength = mxGetN(argv[0]) + 1;
-	fedName = (char *)malloc(fedNameLength);
-	fedNameStatus = mxGetString(argv[0], fedName, fedNameLength);
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateProtect:rhs","This function requires 1 arguments.");
+	}
 
+	if(!mxIsChar(argv[0])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateProtect:TypeError","Argument 1 must be a string.");
+	}
+	char *fedName = nullptr;
+	size_t fedNameLength = 0;
+	int fedNameStatus = 0;
+	if(argc > 0){
+		fedNameLength = mxGetN(argv[0]) + 1;
+		fedName = static_cast<char *>(malloc(fedNameLength));
+		fedNameStatus = mxGetString(argv[0], fedName, fedNameLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateProtect((char const *)fedName, &err);
+	helicsFederateProtect(static_cast<const char *>(fedName), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
@@ -2488,18 +3442,29 @@ void _wrap_helicsFederateProtect(int resc, mxArray *resv[], int argc, const mxAr
 
 
 void _wrap_helicsFederateUnProtect(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	char *fedName;
-	size_t fedNameLength;
-	int fedNameStatus;
-	fedNameLength = mxGetN(argv[0]) + 1;
-	fedName = (char *)malloc(fedNameLength);
-	fedNameStatus = mxGetString(argv[0], fedName, fedNameLength);
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateUnProtect:rhs","This function requires 1 arguments.");
+	}
 
+	if(!mxIsChar(argv[0])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateUnProtect:TypeError","Argument 1 must be a string.");
+	}
+	char *fedName = nullptr;
+	size_t fedNameLength = 0;
+	int fedNameStatus = 0;
+	if(argc > 0){
+		fedNameLength = mxGetN(argv[0]) + 1;
+		fedName = static_cast<char *>(malloc(fedNameLength));
+		fedNameStatus = mxGetString(argv[0], fedName, fedNameLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateUnProtect((char const *)fedName, &err);
+	helicsFederateUnProtect(static_cast<const char *>(fedName), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
@@ -2515,19 +3480,35 @@ void _wrap_helicsFederateUnProtect(int resc, mxArray *resv[], int argc, const mx
 
 
 void _wrap_helicsFederateIsProtected(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	char *fedName;
-	size_t fedNameLength;
-	int fedNameStatus;
-	fedNameLength = mxGetN(argv[0]) + 1;
-	fedName = (char *)malloc(fedNameLength);
-	fedNameStatus = mxGetString(argv[0], fedName, fedNameLength);
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateIsProtected:rhs","This function requires 1 arguments.");
+	}
 
+	if(!mxIsChar(argv[0])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateIsProtected:TypeError","Argument 1 must be a string.");
+	}
+	char *fedName = nullptr;
+	size_t fedNameLength = 0;
+	int fedNameStatus = 0;
+	if(argc > 0){
+		fedNameLength = mxGetN(argv[0]) + 1;
+		fedName = static_cast<char *>(malloc(fedNameLength));
+		fedNameStatus = mxGetString(argv[0], fedName, fedNameLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsBool result = helicsFederateIsProtected((char const *)fedName, &err);
+	HelicsBool result = helicsFederateIsProtected(static_cast<const char *>(fedName), &err);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-	*((int32_t*)mxGetData(_out)) = (int32_t)result;
+	mxArray *_out = mxCreateLogicalMatrix(1, 1);
+	mxLogical *rv = mxGetLogicals(_out);
+	if(result == HELICS_TRUE){
+		rv[0] = true;
+	}else{
+		rv[0] = false;
+	}
 
 	if(_out){
 		--resc;
@@ -2543,10 +3524,16 @@ void _wrap_helicsFederateIsProtected(int resc, mxArray *resv[], int argc, const 
 
 
 void _wrap_helicsCreateFederateInfo(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	if(argc != 0){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateFederateInfo:rhs","This function requires 0 arguments.");
+	}
+
 	HelicsFederateInfo result = helicsCreateFederateInfo();
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
@@ -2556,21 +3543,29 @@ void _wrap_helicsCreateFederateInfo(int resc, mxArray *resv[], int argc, const m
 
 
 void _wrap_helicsFederateInfoClone(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederateInfo fi = *(HelicsFederateInfo*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoClone:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoClone:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
 	HelicsFederateInfo result = helicsFederateInfoClone(fi, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -2579,17 +3574,30 @@ void _wrap_helicsFederateInfoClone(int resc, mxArray *resv[], int argc, const mx
 
 
 void _wrap_helicsFederateInfoLoadFromArgs(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederateInfo fi = *(HelicsFederateInfo*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoLoadFromArgs:rhs","This function requires 2 arguments.");
+	}
 
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoLoadFromArgs:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
+
+	if(!mxIsCell(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoLoadFromArgs:TypeError","Argument 2 must be of cell array of strings.");
+	}
 	int arg1 = 0;
 	char **arg2;
 	int ii;
 	arg1 = static_cast<int>(mxGetNumberOfElements(argv[1]));
-	arg2 = (char **)malloc((arg1)*sizeof(char *));
+	arg2 = static_cast<char **>(malloc((arg1)*sizeof(char *)));
 	for (ii=0;ii<arg1;ii++){
 		mxArray *cellElement=mxGetCell(argv[1], ii);
 		size_t len = mxGetN(cellElement) + 1;
-		arg2[ii] = (char *)malloc(static_cast<int>(len));
+		arg2[ii] = static_cast<char *>(malloc(static_cast<int>(len)));
 		int flag = mxGetString(cellElement, arg2[ii], static_cast<int>(len));
 	}
 
@@ -2597,7 +3605,7 @@ void _wrap_helicsFederateInfoLoadFromArgs(int resc, mxArray *resv[], int argc, c
 
 	helicsFederateInfoLoadFromArgs(fi, arg1, arg2, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -2612,27 +3620,40 @@ void _wrap_helicsFederateInfoLoadFromArgs(int resc, mxArray *resv[], int argc, c
 
 
 void _wrap_helicsFederateInfoLoadFromString(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederateInfo fi = *(HelicsFederateInfo*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoLoadFromString:rhs","This function requires 2 arguments.");
+	}
 
-	char *args;
-	size_t argsLength;
-	int argsStatus;
-	argsLength = mxGetN(argv[1]) + 1;
-	args = (char *)malloc(argsLength);
-	argsStatus = mxGetString(argv[1], args, argsLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoLoadFromString:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoLoadFromString:TypeError","Argument 2 must be a string.");
+	}
+	char *args = nullptr;
+	size_t argsLength = 0;
+	int argsStatus = 0;
+	if(argc > 1){
+		argsLength = mxGetN(argv[1]) + 1;
+		args = static_cast<char *>(malloc(argsLength));
+		argsStatus = mxGetString(argv[1], args, argsLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateInfoLoadFromString(fi, (char const *)args, &err);
+	helicsFederateInfoLoadFromString(fi, static_cast<const char *>(args), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(args);
 
@@ -2643,60 +3664,92 @@ void _wrap_helicsFederateInfoLoadFromString(int resc, mxArray *resv[], int argc,
 
 
 void _wrap_helicsFederateInfoFree(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederateInfo fi = *(HelicsFederateInfo*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoFree:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoFree:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
 
 	helicsFederateInfoFree(fi);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsFederateIsValid(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateIsValid:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateIsValid:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	HelicsBool result = helicsFederateIsValid(fed);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-	*((int32_t*)mxGetData(_out)) = (int32_t)result;
+	mxArray *_out = mxCreateLogicalMatrix(1, 1);
+	mxLogical *rv = mxGetLogicals(_out);
+	if(result == HELICS_TRUE){
+		rv[0] = true;
+	}else{
+		rv[0] = false;
+	}
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsFederateInfoSetCoreName(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederateInfo fi = *(HelicsFederateInfo*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetCoreName:rhs","This function requires 2 arguments.");
+	}
 
-	char *corename;
-	size_t corenameLength;
-	int corenameStatus;
-	corenameLength = mxGetN(argv[1]) + 1;
-	corename = (char *)malloc(corenameLength);
-	corenameStatus = mxGetString(argv[1], corename, corenameLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetCoreName:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetCoreName:TypeError","Argument 2 must be a string.");
+	}
+	char *corename = nullptr;
+	size_t corenameLength = 0;
+	int corenameStatus = 0;
+	if(argc > 1){
+		corenameLength = mxGetN(argv[1]) + 1;
+		corename = static_cast<char *>(malloc(corenameLength));
+		corenameStatus = mxGetString(argv[1], corename, corenameLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateInfoSetCoreName(fi, (char const *)corename, &err);
+	helicsFederateInfoSetCoreName(fi, static_cast<const char *>(corename), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(corename);
 
@@ -2707,27 +3760,40 @@ void _wrap_helicsFederateInfoSetCoreName(int resc, mxArray *resv[], int argc, co
 
 
 void _wrap_helicsFederateInfoSetCoreInitString(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederateInfo fi = *(HelicsFederateInfo*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetCoreInitString:rhs","This function requires 2 arguments.");
+	}
 
-	char *coreInit;
-	size_t coreInitLength;
-	int coreInitStatus;
-	coreInitLength = mxGetN(argv[1]) + 1;
-	coreInit = (char *)malloc(coreInitLength);
-	coreInitStatus = mxGetString(argv[1], coreInit, coreInitLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetCoreInitString:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetCoreInitString:TypeError","Argument 2 must be a string.");
+	}
+	char *coreInit = nullptr;
+	size_t coreInitLength = 0;
+	int coreInitStatus = 0;
+	if(argc > 1){
+		coreInitLength = mxGetN(argv[1]) + 1;
+		coreInit = static_cast<char *>(malloc(coreInitLength));
+		coreInitStatus = mxGetString(argv[1], coreInit, coreInitLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateInfoSetCoreInitString(fi, (char const *)coreInit, &err);
+	helicsFederateInfoSetCoreInitString(fi, static_cast<const char *>(coreInit), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(coreInit);
 
@@ -2738,27 +3804,40 @@ void _wrap_helicsFederateInfoSetCoreInitString(int resc, mxArray *resv[], int ar
 
 
 void _wrap_helicsFederateInfoSetBrokerInitString(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederateInfo fi = *(HelicsFederateInfo*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetBrokerInitString:rhs","This function requires 2 arguments.");
+	}
 
-	char *brokerInit;
-	size_t brokerInitLength;
-	int brokerInitStatus;
-	brokerInitLength = mxGetN(argv[1]) + 1;
-	brokerInit = (char *)malloc(brokerInitLength);
-	brokerInitStatus = mxGetString(argv[1], brokerInit, brokerInitLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetBrokerInitString:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetBrokerInitString:TypeError","Argument 2 must be a string.");
+	}
+	char *brokerInit = nullptr;
+	size_t brokerInitLength = 0;
+	int brokerInitStatus = 0;
+	if(argc > 1){
+		brokerInitLength = mxGetN(argv[1]) + 1;
+		brokerInit = static_cast<char *>(malloc(brokerInitLength));
+		brokerInitStatus = mxGetString(argv[1], brokerInit, brokerInitLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateInfoSetBrokerInitString(fi, (char const *)brokerInit, &err);
+	helicsFederateInfoSetBrokerInitString(fi, static_cast<const char *>(brokerInit), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(brokerInit);
 
@@ -2769,24 +3848,33 @@ void _wrap_helicsFederateInfoSetBrokerInitString(int resc, mxArray *resv[], int 
 
 
 void _wrap_helicsFederateInfoSetCoreType(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederateInfo fi = *(HelicsFederateInfo*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetCoreType:rhs","This function requires 2 arguments.");
+	}
 
-	int coretype = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetCoreType:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetCoreType:TypeError","Argument 2 must be of type integer.");
+	}
+		int coretype = static_cast<int>(mxGetScalar(argv[1]));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsFederateInfoSetCoreType(fi, coretype, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -2795,27 +3883,40 @@ void _wrap_helicsFederateInfoSetCoreType(int resc, mxArray *resv[], int argc, co
 
 
 void _wrap_helicsFederateInfoSetCoreTypeFromString(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederateInfo fi = *(HelicsFederateInfo*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetCoreTypeFromString:rhs","This function requires 2 arguments.");
+	}
 
-	char *coretype;
-	size_t coretypeLength;
-	int coretypeStatus;
-	coretypeLength = mxGetN(argv[1]) + 1;
-	coretype = (char *)malloc(coretypeLength);
-	coretypeStatus = mxGetString(argv[1], coretype, coretypeLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetCoreTypeFromString:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetCoreTypeFromString:TypeError","Argument 2 must be a string.");
+	}
+	char *coretype = nullptr;
+	size_t coretypeLength = 0;
+	int coretypeStatus = 0;
+	if(argc > 1){
+		coretypeLength = mxGetN(argv[1]) + 1;
+		coretype = static_cast<char *>(malloc(coretypeLength));
+		coretypeStatus = mxGetString(argv[1], coretype, coretypeLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateInfoSetCoreTypeFromString(fi, (char const *)coretype, &err);
+	helicsFederateInfoSetCoreTypeFromString(fi, static_cast<const char *>(coretype), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(coretype);
 
@@ -2826,27 +3927,40 @@ void _wrap_helicsFederateInfoSetCoreTypeFromString(int resc, mxArray *resv[], in
 
 
 void _wrap_helicsFederateInfoSetBroker(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederateInfo fi = *(HelicsFederateInfo*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetBroker:rhs","This function requires 2 arguments.");
+	}
 
-	char *broker;
-	size_t brokerLength;
-	int brokerStatus;
-	brokerLength = mxGetN(argv[1]) + 1;
-	broker = (char *)malloc(brokerLength);
-	brokerStatus = mxGetString(argv[1], broker, brokerLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetBroker:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetBroker:TypeError","Argument 2 must be a string.");
+	}
+	char *broker = nullptr;
+	size_t brokerLength = 0;
+	int brokerStatus = 0;
+	if(argc > 1){
+		brokerLength = mxGetN(argv[1]) + 1;
+		broker = static_cast<char *>(malloc(brokerLength));
+		brokerStatus = mxGetString(argv[1], broker, brokerLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateInfoSetBroker(fi, (char const *)broker, &err);
+	helicsFederateInfoSetBroker(fi, static_cast<const char *>(broker), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(broker);
 
@@ -2857,27 +3971,40 @@ void _wrap_helicsFederateInfoSetBroker(int resc, mxArray *resv[], int argc, cons
 
 
 void _wrap_helicsFederateInfoSetBrokerKey(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederateInfo fi = *(HelicsFederateInfo*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetBrokerKey:rhs","This function requires 2 arguments.");
+	}
 
-	char *brokerkey;
-	size_t brokerkeyLength;
-	int brokerkeyStatus;
-	brokerkeyLength = mxGetN(argv[1]) + 1;
-	brokerkey = (char *)malloc(brokerkeyLength);
-	brokerkeyStatus = mxGetString(argv[1], brokerkey, brokerkeyLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetBrokerKey:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetBrokerKey:TypeError","Argument 2 must be a string.");
+	}
+	char *brokerkey = nullptr;
+	size_t brokerkeyLength = 0;
+	int brokerkeyStatus = 0;
+	if(argc > 1){
+		brokerkeyLength = mxGetN(argv[1]) + 1;
+		brokerkey = static_cast<char *>(malloc(brokerkeyLength));
+		brokerkeyStatus = mxGetString(argv[1], brokerkey, brokerkeyLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateInfoSetBrokerKey(fi, (char const *)brokerkey, &err);
+	helicsFederateInfoSetBrokerKey(fi, static_cast<const char *>(brokerkey), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(brokerkey);
 
@@ -2888,24 +4015,33 @@ void _wrap_helicsFederateInfoSetBrokerKey(int resc, mxArray *resv[], int argc, c
 
 
 void _wrap_helicsFederateInfoSetBrokerPort(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederateInfo fi = *(HelicsFederateInfo*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetBrokerPort:rhs","This function requires 2 arguments.");
+	}
 
-	int brokerPort = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetBrokerPort:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetBrokerPort:TypeError","Argument 2 must be of type integer.");
+	}
+		int brokerPort = static_cast<int>(mxGetScalar(argv[1]));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsFederateInfoSetBrokerPort(fi, brokerPort, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -2914,27 +4050,40 @@ void _wrap_helicsFederateInfoSetBrokerPort(int resc, mxArray *resv[], int argc, 
 
 
 void _wrap_helicsFederateInfoSetLocalPort(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederateInfo fi = *(HelicsFederateInfo*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetLocalPort:rhs","This function requires 2 arguments.");
+	}
 
-	char *localPort;
-	size_t localPortLength;
-	int localPortStatus;
-	localPortLength = mxGetN(argv[1]) + 1;
-	localPort = (char *)malloc(localPortLength);
-	localPortStatus = mxGetString(argv[1], localPort, localPortLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetLocalPort:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetLocalPort:TypeError","Argument 2 must be a string.");
+	}
+	char *localPort = nullptr;
+	size_t localPortLength = 0;
+	int localPortStatus = 0;
+	if(argc > 1){
+		localPortLength = mxGetN(argv[1]) + 1;
+		localPort = static_cast<char *>(malloc(localPortLength));
+		localPortStatus = mxGetString(argv[1], localPort, localPortLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateInfoSetLocalPort(fi, (char const *)localPort, &err);
+	helicsFederateInfoSetLocalPort(fi, static_cast<const char *>(localPort), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(localPort);
 
@@ -2945,17 +4094,31 @@ void _wrap_helicsFederateInfoSetLocalPort(int resc, mxArray *resv[], int argc, c
 
 
 void _wrap_helicsGetPropertyIndex(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	char *val;
-	size_t valLength;
-	int valStatus;
-	valLength = mxGetN(argv[0]) + 1;
-	val = (char *)malloc(valLength);
-	valStatus = mxGetString(argv[0], val, valLength);
+	if(argc < 0 || argc > 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsGetPropertyIndex:rhs","This function requires at least 0 arguments and at most 1 arguments.");
+	}
 
-	int result = helicsGetPropertyIndex((char const *)val);
+	if(argc > 0){
+		if(!mxIsChar(argv[0])){
+			mexUnlock();
+			mexErrMsgIdAndTxt("MATLAB:helicsGetPropertyIndex:TypeError","Argument 1 must be a string.");
+		}
+	}
+	char *val = nullptr;
+	size_t valLength = 0;
+	int valStatus = 0;
+	if(argc > 0){
+		valLength = mxGetN(argv[0]) + 1;
+		val = static_cast<char *>(malloc(valLength));
+		valStatus = mxGetString(argv[0], val, valLength);
+
+	}
+	int result = helicsGetPropertyIndex(static_cast<const char *>(val));
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(_out)) = (int64_t)result;
+	mxInt64 *rv = mxGetInt64s(_out);
+	rv[0] = static_cast<mxInt64>(result);
 
 	if(_out){
 		--resc;
@@ -2967,17 +4130,31 @@ void _wrap_helicsGetPropertyIndex(int resc, mxArray *resv[], int argc, const mxA
 
 
 void _wrap_helicsGetFlagIndex(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	char *val;
-	size_t valLength;
-	int valStatus;
-	valLength = mxGetN(argv[0]) + 1;
-	val = (char *)malloc(valLength);
-	valStatus = mxGetString(argv[0], val, valLength);
+	if(argc < 0 || argc > 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsGetFlagIndex:rhs","This function requires at least 0 arguments and at most 1 arguments.");
+	}
 
-	int result = helicsGetFlagIndex((char const *)val);
+	if(argc > 0){
+		if(!mxIsChar(argv[0])){
+			mexUnlock();
+			mexErrMsgIdAndTxt("MATLAB:helicsGetFlagIndex:TypeError","Argument 1 must be a string.");
+		}
+	}
+	char *val = nullptr;
+	size_t valLength = 0;
+	int valStatus = 0;
+	if(argc > 0){
+		valLength = mxGetN(argv[0]) + 1;
+		val = static_cast<char *>(malloc(valLength));
+		valStatus = mxGetString(argv[0], val, valLength);
+
+	}
+	int result = helicsGetFlagIndex(static_cast<const char *>(val));
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(_out)) = (int64_t)result;
+	mxInt64 *rv = mxGetInt64s(_out);
+	rv[0] = static_cast<mxInt64>(result);
 
 	if(_out){
 		--resc;
@@ -2989,17 +4166,31 @@ void _wrap_helicsGetFlagIndex(int resc, mxArray *resv[], int argc, const mxArray
 
 
 void _wrap_helicsGetOptionIndex(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	char *val;
-	size_t valLength;
-	int valStatus;
-	valLength = mxGetN(argv[0]) + 1;
-	val = (char *)malloc(valLength);
-	valStatus = mxGetString(argv[0], val, valLength);
+	if(argc < 0 || argc > 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsGetOptionIndex:rhs","This function requires at least 0 arguments and at most 1 arguments.");
+	}
 
-	int result = helicsGetOptionIndex((char const *)val);
+	if(argc > 0){
+		if(!mxIsChar(argv[0])){
+			mexUnlock();
+			mexErrMsgIdAndTxt("MATLAB:helicsGetOptionIndex:TypeError","Argument 1 must be a string.");
+		}
+	}
+	char *val = nullptr;
+	size_t valLength = 0;
+	int valStatus = 0;
+	if(argc > 0){
+		valLength = mxGetN(argv[0]) + 1;
+		val = static_cast<char *>(malloc(valLength));
+		valStatus = mxGetString(argv[0], val, valLength);
+
+	}
+	int result = helicsGetOptionIndex(static_cast<const char *>(val));
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(_out)) = (int64_t)result;
+	mxInt64 *rv = mxGetInt64s(_out);
+	rv[0] = static_cast<mxInt64>(result);
 
 	if(_out){
 		--resc;
@@ -3011,17 +4202,31 @@ void _wrap_helicsGetOptionIndex(int resc, mxArray *resv[], int argc, const mxArr
 
 
 void _wrap_helicsGetOptionValue(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	char *val;
-	size_t valLength;
-	int valStatus;
-	valLength = mxGetN(argv[0]) + 1;
-	val = (char *)malloc(valLength);
-	valStatus = mxGetString(argv[0], val, valLength);
+	if(argc < 0 || argc > 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsGetOptionValue:rhs","This function requires at least 0 arguments and at most 1 arguments.");
+	}
 
-	int result = helicsGetOptionValue((char const *)val);
+	if(argc > 0){
+		if(!mxIsChar(argv[0])){
+			mexUnlock();
+			mexErrMsgIdAndTxt("MATLAB:helicsGetOptionValue:TypeError","Argument 1 must be a string.");
+		}
+	}
+	char *val = nullptr;
+	size_t valLength = 0;
+	int valStatus = 0;
+	if(argc > 0){
+		valLength = mxGetN(argv[0]) + 1;
+		val = static_cast<char *>(malloc(valLength));
+		valStatus = mxGetString(argv[0], val, valLength);
+
+	}
+	int result = helicsGetOptionValue(static_cast<const char *>(val));
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(_out)) = (int64_t)result;
+	mxInt64 *rv = mxGetInt64s(_out);
+	rv[0] = static_cast<mxInt64>(result);
 
 	if(_out){
 		--resc;
@@ -3033,17 +4238,31 @@ void _wrap_helicsGetOptionValue(int resc, mxArray *resv[], int argc, const mxArr
 
 
 void _wrap_helicsGetDataType(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	char *val;
-	size_t valLength;
-	int valStatus;
-	valLength = mxGetN(argv[0]) + 1;
-	val = (char *)malloc(valLength);
-	valStatus = mxGetString(argv[0], val, valLength);
+	if(argc < 0 || argc > 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsGetDataType:rhs","This function requires at least 0 arguments and at most 1 arguments.");
+	}
 
-	int result = helicsGetDataType((char const *)val);
+	if(argc > 0){
+		if(!mxIsChar(argv[0])){
+			mexUnlock();
+			mexErrMsgIdAndTxt("MATLAB:helicsGetDataType:TypeError","Argument 1 must be a string.");
+		}
+	}
+	char *val = nullptr;
+	size_t valLength = 0;
+	int valStatus = 0;
+	if(argc > 0){
+		valLength = mxGetN(argv[0]) + 1;
+		val = static_cast<char *>(malloc(valLength));
+		valStatus = mxGetString(argv[0], val, valLength);
+
+	}
+	int result = helicsGetDataType(static_cast<const char *>(val));
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(_out)) = (int64_t)result;
+	mxInt64 *rv = mxGetInt64s(_out);
+	rv[0] = static_cast<mxInt64>(result);
 
 	if(_out){
 		--resc;
@@ -3055,28 +4274,43 @@ void _wrap_helicsGetDataType(int resc, mxArray *resv[], int argc, const mxArray 
 
 
 void _wrap_helicsFederateInfoSetFlagOption(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederateInfo fi = *(HelicsFederateInfo*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetFlagOption:rhs","This function requires 3 arguments.");
+	}
 
-	int flag = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetFlagOption:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
 
-	HelicsBool value = (HelicsBool)(mxGetScalar(argv[2]));
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetFlagOption:TypeError","Argument 2 must be of type integer.");
+	}
+		int flag = static_cast<int>(mxGetScalar(argv[1]));
+
+	if(!mxIsLogical(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetFlagOption:TypeError","Argument 3 must be a 0 or 1.");
+	}
+	mxLogical *pvalue = mxGetLogicals(argv[2]);
+	HelicsBool value = HELICS_FALSE;
+	if(pvalue[0]){
+		value = HELICS_TRUE;
+	}
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsFederateInfoSetFlagOption(fi, flag, value, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -3085,27 +4319,40 @@ void _wrap_helicsFederateInfoSetFlagOption(int resc, mxArray *resv[], int argc, 
 
 
 void _wrap_helicsFederateInfoSetSeparator(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederateInfo fi = *(HelicsFederateInfo*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetSeparator:rhs","This function requires 2 arguments.");
+	}
 
-	char *separator;
-	size_t separatorLength;
-	int separatorStatus;
-	separatorLength = mxGetN(argv[1]) + 1;
-	separator = (char *)malloc(separatorLength);
-	separatorStatus = mxGetString(argv[1], separator, separatorLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetSeparator:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetSeparator:TypeError","Argument 2 must be a string.");
+	}
+	char *separator = nullptr;
+	size_t separatorLength = 0;
+	int separatorStatus = 0;
+	if(argc > 1){
+		separatorLength = mxGetN(argv[1]) + 1;
+		separator = static_cast<char *>(malloc(separatorLength));
+		separatorStatus = mxGetString(argv[1], separator, separatorLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
 	helicsFederateInfoSetSeparator(fi, separator[0], &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(separator);
 
@@ -3116,28 +4363,39 @@ void _wrap_helicsFederateInfoSetSeparator(int resc, mxArray *resv[], int argc, c
 
 
 void _wrap_helicsFederateInfoSetTimeProperty(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederateInfo fi = *(HelicsFederateInfo*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetTimeProperty:rhs","This function requires 3 arguments.");
+	}
 
-	int timeProperty = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetTimeProperty:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
 
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetTimeProperty:TypeError","Argument 2 must be of type integer.");
+	}
+		int timeProperty = static_cast<int>(mxGetScalar(argv[1]));
+
+	if(!mxIsNumeric(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetTimeProperty:TypeError","Argument 3 must be of type double.");
+	}
 	HelicsTime propertyValue = (HelicsTime)(mxGetScalar(argv[2]));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsFederateInfoSetTimeProperty(fi, timeProperty, propertyValue, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -3146,28 +4404,39 @@ void _wrap_helicsFederateInfoSetTimeProperty(int resc, mxArray *resv[], int argc
 
 
 void _wrap_helicsFederateInfoSetIntegerProperty(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederateInfo fi = *(HelicsFederateInfo*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetIntegerProperty:rhs","This function requires 3 arguments.");
+	}
 
-	int intProperty = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetIntegerProperty:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
 
-	int propertyValue = (int)(mxGetScalar(argv[2]));
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetIntegerProperty:TypeError","Argument 2 must be of type integer.");
+	}
+		int intProperty = static_cast<int>(mxGetScalar(argv[1]));
+
+	if(!mxIsNumeric(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetIntegerProperty:TypeError","Argument 3 must be of type integer.");
+	}
+		int propertyValue = static_cast<int>(mxGetScalar(argv[2]));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsFederateInfoSetIntegerProperty(fi, intProperty, propertyValue, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -3176,27 +4445,40 @@ void _wrap_helicsFederateInfoSetIntegerProperty(int resc, mxArray *resv[], int a
 
 
 void _wrap_helicsFederateRegisterInterfaces(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterInterfaces:rhs","This function requires 2 arguments.");
+	}
 
-	char *file;
-	size_t fileLength;
-	int fileStatus;
-	fileLength = mxGetN(argv[1]) + 1;
-	file = (char *)malloc(fileLength);
-	fileStatus = mxGetString(argv[1], file, fileLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterInterfaces:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterInterfaces:TypeError","Argument 2 must be a string.");
+	}
+	char *file = nullptr;
+	size_t fileLength = 0;
+	int fileStatus = 0;
+	if(argc > 1){
+		fileLength = mxGetN(argv[1]) + 1;
+		file = static_cast<char *>(malloc(fileLength));
+		fileStatus = mxGetString(argv[1], file, fileLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateRegisterInterfaces(fed, (char const *)file, &err);
+	helicsFederateRegisterInterfaces(fed, static_cast<const char *>(file), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(file);
 
@@ -3207,31 +4489,46 @@ void _wrap_helicsFederateRegisterInterfaces(int resc, mxArray *resv[], int argc,
 
 
 void _wrap_helicsFederateGlobalError(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGlobalError:rhs","This function requires 3 arguments.");
+	}
 
-	int errorCode = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGlobalError:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
-	char *errorString;
-	size_t errorStringLength;
-	int errorStringStatus;
-	errorStringLength = mxGetN(argv[2]) + 1;
-	errorString = (char *)malloc(errorStringLength);
-	errorStringStatus = mxGetString(argv[2], errorString, errorStringLength);
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGlobalError:TypeError","Argument 2 must be of type integer.");
+	}
+		int errorCode = static_cast<int>(mxGetScalar(argv[1]));
 
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGlobalError:TypeError","Argument 3 must be a string.");
+	}
+	char *errorString = nullptr;
+	size_t errorStringLength = 0;
+	int errorStringStatus = 0;
+	if(argc > 2){
+		errorStringLength = mxGetN(argv[2]) + 1;
+		errorString = static_cast<char *>(malloc(errorStringLength));
+		errorStringStatus = mxGetString(argv[2], errorString, errorStringLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateGlobalError(fed, errorCode, (char const *)errorString, &err);
+	helicsFederateGlobalError(fed, errorCode, static_cast<const char *>(errorString), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	free(errorString);
 
@@ -3242,31 +4539,46 @@ void _wrap_helicsFederateGlobalError(int resc, mxArray *resv[], int argc, const 
 
 
 void _wrap_helicsFederateLocalError(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateLocalError:rhs","This function requires 3 arguments.");
+	}
 
-	int errorCode = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateLocalError:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
-	char *errorString;
-	size_t errorStringLength;
-	int errorStringStatus;
-	errorStringLength = mxGetN(argv[2]) + 1;
-	errorString = (char *)malloc(errorStringLength);
-	errorStringStatus = mxGetString(argv[2], errorString, errorStringLength);
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateLocalError:TypeError","Argument 2 must be of type integer.");
+	}
+		int errorCode = static_cast<int>(mxGetScalar(argv[1]));
 
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateLocalError:TypeError","Argument 3 must be a string.");
+	}
+	char *errorString = nullptr;
+	size_t errorStringLength = 0;
+	int errorStringStatus = 0;
+	if(argc > 2){
+		errorStringLength = mxGetN(argv[2]) + 1;
+		errorString = static_cast<char *>(malloc(errorStringLength));
+		errorStringStatus = mxGetString(argv[2], errorString, errorStringLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateLocalError(fed, errorCode, (char const *)errorString, &err);
+	helicsFederateLocalError(fed, errorCode, static_cast<const char *>(errorString), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	free(errorString);
 
@@ -3277,20 +4589,27 @@ void _wrap_helicsFederateLocalError(int resc, mxArray *resv[], int argc, const m
 
 
 void _wrap_helicsFederateFinalize(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateFinalize:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateFinalize:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsFederateFinalize(fed, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -3299,20 +4618,27 @@ void _wrap_helicsFederateFinalize(int resc, mxArray *resv[], int argc, const mxA
 
 
 void _wrap_helicsFederateFinalizeAsync(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateFinalizeAsync:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateFinalizeAsync:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsFederateFinalizeAsync(fed, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -3321,20 +4647,27 @@ void _wrap_helicsFederateFinalizeAsync(int resc, mxArray *resv[], int argc, cons
 
 
 void _wrap_helicsFederateFinalizeComplete(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateFinalizeComplete:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateFinalizeComplete:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsFederateFinalizeComplete(fed, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -3343,20 +4676,27 @@ void _wrap_helicsFederateFinalizeComplete(int resc, mxArray *resv[], int argc, c
 
 
 void _wrap_helicsFederateDisconnect(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateDisconnect:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateDisconnect:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsFederateDisconnect(fed, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -3365,20 +4705,27 @@ void _wrap_helicsFederateDisconnect(int resc, mxArray *resv[], int argc, const m
 
 
 void _wrap_helicsFederateDisconnectAsync(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateDisconnectAsync:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateDisconnectAsync:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsFederateDisconnectAsync(fed, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -3387,20 +4734,27 @@ void _wrap_helicsFederateDisconnectAsync(int resc, mxArray *resv[], int argc, co
 
 
 void _wrap_helicsFederateDisconnectComplete(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateDisconnectComplete:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateDisconnectComplete:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsFederateDisconnectComplete(fed, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -3409,25 +4763,37 @@ void _wrap_helicsFederateDisconnectComplete(int resc, mxArray *resv[], int argc,
 
 
 void _wrap_helicsFederateFree(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateFree:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateFree:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	helicsFederateFree(fed);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsCloseLibrary(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	if(argc != 0){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCloseLibrary:rhs","This function requires 0 arguments.");
+	}
+
 	helicsCloseLibrary();
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -3437,20 +4803,27 @@ void _wrap_helicsCloseLibrary(int resc, mxArray *resv[], int argc, const mxArray
 
 
 void _wrap_helicsFederateEnterInitializingMode(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateEnterInitializingMode:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateEnterInitializingMode:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsFederateEnterInitializingMode(fed, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -3459,20 +4832,27 @@ void _wrap_helicsFederateEnterInitializingMode(int resc, mxArray *resv[], int ar
 
 
 void _wrap_helicsFederateEnterInitializingModeAsync(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateEnterInitializingModeAsync:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateEnterInitializingModeAsync:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsFederateEnterInitializingModeAsync(fed, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -3481,21 +4861,33 @@ void _wrap_helicsFederateEnterInitializingModeAsync(int resc, mxArray *resv[], i
 
 
 void _wrap_helicsFederateIsAsyncOperationCompleted(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateIsAsyncOperationCompleted:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateIsAsyncOperationCompleted:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
 	HelicsBool result = helicsFederateIsAsyncOperationCompleted(fed, &err);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-	*((int32_t*)mxGetData(_out)) = (int32_t)result;
+	mxArray *_out = mxCreateLogicalMatrix(1, 1);
+	mxLogical *rv = mxGetLogicals(_out);
+	if(result == HELICS_TRUE){
+		rv[0] = true;
+	}else{
+		rv[0] = false;
+	}
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -3504,20 +4896,27 @@ void _wrap_helicsFederateIsAsyncOperationCompleted(int resc, mxArray *resv[], in
 
 
 void _wrap_helicsFederateEnterInitializingModeComplete(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateEnterInitializingModeComplete:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateEnterInitializingModeComplete:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsFederateEnterInitializingModeComplete(fed, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -3526,20 +4925,27 @@ void _wrap_helicsFederateEnterInitializingModeComplete(int resc, mxArray *resv[]
 
 
 void _wrap_helicsFederateEnterExecutingMode(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateEnterExecutingMode:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateEnterExecutingMode:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsFederateEnterExecutingMode(fed, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -3548,20 +4954,27 @@ void _wrap_helicsFederateEnterExecutingMode(int resc, mxArray *resv[], int argc,
 
 
 void _wrap_helicsFederateEnterExecutingModeAsync(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateEnterExecutingModeAsync:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateEnterExecutingModeAsync:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsFederateEnterExecutingModeAsync(fed, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -3570,20 +4983,27 @@ void _wrap_helicsFederateEnterExecutingModeAsync(int resc, mxArray *resv[], int 
 
 
 void _wrap_helicsFederateEnterExecutingModeComplete(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateEnterExecutingModeComplete:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateEnterExecutingModeComplete:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsFederateEnterExecutingModeComplete(fed, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -3592,8 +5012,21 @@ void _wrap_helicsFederateEnterExecutingModeComplete(int resc, mxArray *resv[], i
 
 
 void _wrap_helicsFederateEnterExecutingModeIterative(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateEnterExecutingModeIterative:rhs","This function requires 2 arguments.");
+	}
 
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateEnterExecutingModeIterative:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateEnterExecutingModeIterative:TypeError","Argument 2 must be of type int32.");
+	}
 	int iterateInt = static_cast<int>(mxGetScalar(argv[1]));
 	HelicsIterationRequest iterate = static_cast<HelicsIterationRequest>(iterateInt);
 
@@ -3602,16 +5035,13 @@ void _wrap_helicsFederateEnterExecutingModeIterative(int resc, mxArray *resv[], 
 	HelicsIterationResult result = helicsFederateEnterExecutingModeIterative(fed, iterate, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-	*((int32_t*)mxGetData(_out)) = (int32_t)result;
+	mxInt32 *rv = mxGetInt32s(_out);
+	rv[0] = static_cast<mxInt32>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -3620,8 +5050,21 @@ void _wrap_helicsFederateEnterExecutingModeIterative(int resc, mxArray *resv[], 
 
 
 void _wrap_helicsFederateEnterExecutingModeIterativeAsync(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateEnterExecutingModeIterativeAsync:rhs","This function requires 2 arguments.");
+	}
 
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateEnterExecutingModeIterativeAsync:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateEnterExecutingModeIterativeAsync:TypeError","Argument 2 must be of type int32.");
+	}
 	int iterateInt = static_cast<int>(mxGetScalar(argv[1]));
 	HelicsIterationRequest iterate = static_cast<HelicsIterationRequest>(iterateInt);
 
@@ -3629,16 +5072,12 @@ void _wrap_helicsFederateEnterExecutingModeIterativeAsync(int resc, mxArray *res
 
 	helicsFederateEnterExecutingModeIterativeAsync(fed, iterate, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -3647,21 +5086,29 @@ void _wrap_helicsFederateEnterExecutingModeIterativeAsync(int resc, mxArray *res
 
 
 void _wrap_helicsFederateEnterExecutingModeIterativeComplete(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateEnterExecutingModeIterativeComplete:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateEnterExecutingModeIterativeComplete:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
 	HelicsIterationResult result = helicsFederateEnterExecutingModeIterativeComplete(fed, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-	*((int32_t*)mxGetData(_out)) = (int32_t)result;
+	mxInt32 *rv = mxGetInt32s(_out);
+	rv[0] = static_cast<mxInt32>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -3670,21 +5117,29 @@ void _wrap_helicsFederateEnterExecutingModeIterativeComplete(int resc, mxArray *
 
 
 void _wrap_helicsFederateGetState(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetState:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetState:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
 	HelicsFederateState result = helicsFederateGetState(fed, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-	*((int32_t*)mxGetData(_out)) = (int32_t)result;
+	mxInt32 *rv = mxGetInt32s(_out);
+	rv[0] = static_cast<mxInt32>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -3693,21 +5148,29 @@ void _wrap_helicsFederateGetState(int resc, mxArray *resv[], int argc, const mxA
 
 
 void _wrap_helicsFederateGetCore(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetCore:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetCore:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
 	HelicsCore result = helicsFederateGetCore(fed, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -3716,8 +5179,21 @@ void _wrap_helicsFederateGetCore(int resc, mxArray *resv[], int argc, const mxAr
 
 
 void _wrap_helicsFederateRequestTime(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRequestTime:rhs","This function requires 2 arguments.");
+	}
 
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRequestTime:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRequestTime:TypeError","Argument 2 must be of type double.");
+	}
 	HelicsTime requestTime = (HelicsTime)(mxGetScalar(argv[1]));
 
 	HelicsError err = helicsErrorInitialize();
@@ -3731,10 +5207,6 @@ void _wrap_helicsFederateRequestTime(int resc, mxArray *resv[], int argc, const 
 		*resv++ = _out;
 	}
 
-
-
-
-
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
 	}
@@ -3742,8 +5214,21 @@ void _wrap_helicsFederateRequestTime(int resc, mxArray *resv[], int argc, const 
 
 
 void _wrap_helicsFederateRequestTimeAdvance(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRequestTimeAdvance:rhs","This function requires 2 arguments.");
+	}
 
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRequestTimeAdvance:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRequestTimeAdvance:TypeError","Argument 2 must be of type double.");
+	}
 	HelicsTime timeDelta = (HelicsTime)(mxGetScalar(argv[1]));
 
 	HelicsError err = helicsErrorInitialize();
@@ -3757,10 +5242,6 @@ void _wrap_helicsFederateRequestTimeAdvance(int resc, mxArray *resv[], int argc,
 		*resv++ = _out;
 	}
 
-
-
-
-
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
 	}
@@ -3768,7 +5249,16 @@ void _wrap_helicsFederateRequestTimeAdvance(int resc, mxArray *resv[], int argc,
 
 
 void _wrap_helicsFederateRequestNextStep(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRequestNextStep:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRequestNextStep:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
@@ -3781,8 +5271,6 @@ void _wrap_helicsFederateRequestNextStep(int resc, mxArray *resv[], int argc, co
 		*resv++ = _out;
 	}
 
-
-
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
 	}
@@ -3790,10 +5278,27 @@ void _wrap_helicsFederateRequestNextStep(int resc, mxArray *resv[], int argc, co
 
 
 void _wrap_helicsFederateRequestTimeIterative(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRequestTimeIterative:rhs","This function requires 3 arguments.");
+	}
 
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRequestTimeIterative:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRequestTimeIterative:TypeError","Argument 2 must be of type double.");
+	}
 	HelicsTime requestTime = (HelicsTime)(mxGetScalar(argv[1]));
 
+	if(!mxIsNumeric(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRequestTimeIterative:TypeError","Argument 3 must be of type int32.");
+	}
 	int iterateInt = static_cast<int>(mxGetScalar(argv[2]));
 	HelicsIterationRequest iterate = static_cast<HelicsIterationRequest>(iterateInt);
 
@@ -3803,16 +5308,15 @@ void _wrap_helicsFederateRequestTimeIterative(int resc, mxArray *resv[], int arg
 
 	HelicsTime result = helicsFederateRequestTimeIterative(fed, requestTime, iterate, &outIteration, &err);
 
-	mxArray *_out = mxCreateDoubleScalar(result);
-
-	if(_out){
+	mxArray *_out = mxCreateDoubleScalar(result);	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
 
 	if(--resc>=0){
 		mxArray *_out1 = mxCreateNumericMatrix(1,1,mxINT32_CLASS,mxREAL);
-		*((int32_t*)mxGetData(_out1)) = (int32_t)outIteration;
+		mxInt32 *rv = mxGetInt32s(_out1);
+		rv[0] = static_cast<mxInt32>(outIteration);
 		*resv++ = _out1;
 	}
 
@@ -3823,24 +5327,33 @@ void _wrap_helicsFederateRequestTimeIterative(int resc, mxArray *resv[], int arg
 
 
 void _wrap_helicsFederateRequestTimeAsync(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRequestTimeAsync:rhs","This function requires 2 arguments.");
+	}
 
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRequestTimeAsync:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRequestTimeAsync:TypeError","Argument 2 must be of type double.");
+	}
 	HelicsTime requestTime = (HelicsTime)(mxGetScalar(argv[1]));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsFederateRequestTimeAsync(fed, requestTime, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -3849,7 +5362,16 @@ void _wrap_helicsFederateRequestTimeAsync(int resc, mxArray *resv[], int argc, c
 
 
 void _wrap_helicsFederateRequestTimeComplete(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRequestTimeComplete:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRequestTimeComplete:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
@@ -3862,8 +5384,6 @@ void _wrap_helicsFederateRequestTimeComplete(int resc, mxArray *resv[], int argc
 		*resv++ = _out;
 	}
 
-
-
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
 	}
@@ -3871,10 +5391,27 @@ void _wrap_helicsFederateRequestTimeComplete(int resc, mxArray *resv[], int argc
 
 
 void _wrap_helicsFederateRequestTimeIterativeAsync(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRequestTimeIterativeAsync:rhs","This function requires 3 arguments.");
+	}
 
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRequestTimeIterativeAsync:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRequestTimeIterativeAsync:TypeError","Argument 2 must be of type double.");
+	}
 	HelicsTime requestTime = (HelicsTime)(mxGetScalar(argv[1]));
 
+	if(!mxIsNumeric(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRequestTimeIterativeAsync:TypeError","Argument 3 must be of type int32.");
+	}
 	int iterateInt = static_cast<int>(mxGetScalar(argv[2]));
 	HelicsIterationRequest iterate = static_cast<HelicsIterationRequest>(iterateInt);
 
@@ -3882,18 +5419,12 @@ void _wrap_helicsFederateRequestTimeIterativeAsync(int resc, mxArray *resv[], in
 
 	helicsFederateRequestTimeIterativeAsync(fed, requestTime, iterate, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -3902,7 +5433,16 @@ void _wrap_helicsFederateRequestTimeIterativeAsync(int resc, mxArray *resv[], in
 
 
 void _wrap_helicsFederateRequestTimeIterativeComplete(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRequestTimeIterativeComplete:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRequestTimeIterativeComplete:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	HelicsIterationResult outIteration = HELICS_ITERATION_RESULT_ERROR;
 
@@ -3910,16 +5450,15 @@ void _wrap_helicsFederateRequestTimeIterativeComplete(int resc, mxArray *resv[],
 
 	HelicsTime result = helicsFederateRequestTimeIterativeComplete(fed, &outIteration, &err);
 
-	mxArray *_out = mxCreateDoubleScalar(result);
-
-	if(_out){
+	mxArray *_out = mxCreateDoubleScalar(result);	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
 
 	if(--resc>=0){
 		mxArray *_out1 = mxCreateNumericMatrix(1,1,mxINT32_CLASS,mxREAL);
-		*((int32_t*)mxGetData(_out1)) = (int32_t)outIteration;
+		mxInt32 *rv = mxGetInt32s(_out1);
+		rv[0] = static_cast<mxInt32>(outIteration);
 		*resv++ = _out1;
 	}
 
@@ -3930,24 +5469,33 @@ void _wrap_helicsFederateRequestTimeIterativeComplete(int resc, mxArray *resv[],
 
 
 void _wrap_helicsFederateProcessCommunications(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateProcessCommunications:rhs","This function requires 2 arguments.");
+	}
 
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateProcessCommunications:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateProcessCommunications:TypeError","Argument 2 must be of type double.");
+	}
 	HelicsTime period = (HelicsTime)(mxGetScalar(argv[1]));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsFederateProcessCommunications(fed, period, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -3956,7 +5504,16 @@ void _wrap_helicsFederateProcessCommunications(int resc, mxArray *resv[], int ar
 
 
 void _wrap_helicsFederateGetName(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetName:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetName:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	const char *result = helicsFederateGetName(fed);
 
@@ -3966,34 +5523,43 @@ void _wrap_helicsFederateGetName(int resc, mxArray *resv[], int argc, const mxAr
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsFederateSetTimeProperty(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetTimeProperty:rhs","This function requires 3 arguments.");
+	}
 
-	int timeProperty = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetTimeProperty:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetTimeProperty:TypeError","Argument 2 must be of type integer.");
+	}
+		int timeProperty = static_cast<int>(mxGetScalar(argv[1]));
+
+	if(!mxIsNumeric(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetTimeProperty:TypeError","Argument 3 must be of type double.");
+	}
 	HelicsTime time = (HelicsTime)(mxGetScalar(argv[2]));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsFederateSetTimeProperty(fed, timeProperty, time, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -4002,28 +5568,43 @@ void _wrap_helicsFederateSetTimeProperty(int resc, mxArray *resv[], int argc, co
 
 
 void _wrap_helicsFederateSetFlagOption(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetFlagOption:rhs","This function requires 3 arguments.");
+	}
 
-	int flag = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetFlagOption:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
-	HelicsBool flagValue = (HelicsBool)(mxGetScalar(argv[2]));
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetFlagOption:TypeError","Argument 2 must be of type integer.");
+	}
+		int flag = static_cast<int>(mxGetScalar(argv[1]));
+
+	if(!mxIsLogical(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetFlagOption:TypeError","Argument 3 must be a 0 or 1.");
+	}
+	mxLogical *pflagValue = mxGetLogicals(argv[2]);
+	HelicsBool flagValue = HELICS_FALSE;
+	if(pflagValue[0]){
+		flagValue = HELICS_TRUE;
+	}
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsFederateSetFlagOption(fed, flag, flagValue, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -4032,27 +5613,40 @@ void _wrap_helicsFederateSetFlagOption(int resc, mxArray *resv[], int argc, cons
 
 
 void _wrap_helicsFederateSetSeparator(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetSeparator:rhs","This function requires 2 arguments.");
+	}
 
-	char *separator;
-	size_t separatorLength;
-	int separatorStatus;
-	separatorLength = mxGetN(argv[1]) + 1;
-	separator = (char *)malloc(separatorLength);
-	separatorStatus = mxGetString(argv[1], separator, separatorLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetSeparator:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetSeparator:TypeError","Argument 2 must be a string.");
+	}
+	char *separator = nullptr;
+	size_t separatorLength = 0;
+	int separatorStatus = 0;
+	if(argc > 1){
+		separatorLength = mxGetN(argv[1]) + 1;
+		separator = static_cast<char *>(malloc(separatorLength));
+		separatorStatus = mxGetString(argv[1], separator, separatorLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
 	helicsFederateSetSeparator(fed, separator[0], &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(separator);
 
@@ -4063,28 +5657,39 @@ void _wrap_helicsFederateSetSeparator(int resc, mxArray *resv[], int argc, const
 
 
 void _wrap_helicsFederateSetIntegerProperty(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetIntegerProperty:rhs","This function requires 3 arguments.");
+	}
 
-	int intProperty = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetIntegerProperty:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
-	int propertyVal = (int)(mxGetScalar(argv[2]));
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetIntegerProperty:TypeError","Argument 2 must be of type integer.");
+	}
+		int intProperty = static_cast<int>(mxGetScalar(argv[1]));
+
+	if(!mxIsNumeric(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetIntegerProperty:TypeError","Argument 3 must be of type integer.");
+	}
+		int propertyVal = static_cast<int>(mxGetScalar(argv[2]));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsFederateSetIntegerProperty(fed, intProperty, propertyVal, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -4093,9 +5698,22 @@ void _wrap_helicsFederateSetIntegerProperty(int resc, mxArray *resv[], int argc,
 
 
 void _wrap_helicsFederateGetTimeProperty(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetTimeProperty:rhs","This function requires 2 arguments.");
+	}
 
-	int timeProperty = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetTimeProperty:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetTimeProperty:TypeError","Argument 2 must be of type integer.");
+	}
+		int timeProperty = static_cast<int>(mxGetScalar(argv[1]));
 
 	HelicsError err = helicsErrorInitialize();
 
@@ -4108,10 +5726,6 @@ void _wrap_helicsFederateGetTimeProperty(int resc, mxArray *resv[], int argc, co
 		*resv++ = _out;
 	}
 
-
-
-
-
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
 	}
@@ -4119,25 +5733,39 @@ void _wrap_helicsFederateGetTimeProperty(int resc, mxArray *resv[], int argc, co
 
 
 void _wrap_helicsFederateGetFlagOption(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetFlagOption:rhs","This function requires 2 arguments.");
+	}
 
-	int flag = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetFlagOption:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetFlagOption:TypeError","Argument 2 must be of type integer.");
+	}
+		int flag = static_cast<int>(mxGetScalar(argv[1]));
 
 	HelicsError err = helicsErrorInitialize();
 
 	HelicsBool result = helicsFederateGetFlagOption(fed, flag, &err);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-	*((int32_t*)mxGetData(_out)) = (int32_t)result;
+	mxArray *_out = mxCreateLogicalMatrix(1, 1);
+	mxLogical *rv = mxGetLogicals(_out);
+	if(result == HELICS_TRUE){
+		rv[0] = true;
+	}else{
+		rv[0] = false;
+	}
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -4146,25 +5774,35 @@ void _wrap_helicsFederateGetFlagOption(int resc, mxArray *resv[], int argc, cons
 
 
 void _wrap_helicsFederateGetIntegerProperty(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetIntegerProperty:rhs","This function requires 2 arguments.");
+	}
 
-	int intProperty = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetIntegerProperty:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetIntegerProperty:TypeError","Argument 2 must be of type integer.");
+	}
+		int intProperty = static_cast<int>(mxGetScalar(argv[1]));
 
 	HelicsError err = helicsErrorInitialize();
 
 	int result = helicsFederateGetIntegerProperty(fed, intProperty, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(_out)) = (int64_t)result;
+	mxInt64 *rv = mxGetInt64s(_out);
+	rv[0] = static_cast<mxInt64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -4173,7 +5811,16 @@ void _wrap_helicsFederateGetIntegerProperty(int resc, mxArray *resv[], int argc,
 
 
 void _wrap_helicsFederateGetCurrentTime(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetCurrentTime:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetCurrentTime:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
@@ -4186,8 +5833,6 @@ void _wrap_helicsFederateGetCurrentTime(int resc, mxArray *resv[], int argc, con
 		*resv++ = _out;
 	}
 
-
-
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
 	}
@@ -4195,34 +5840,53 @@ void _wrap_helicsFederateGetCurrentTime(int resc, mxArray *resv[], int argc, con
 
 
 void _wrap_helicsFederateSetGlobal(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetGlobal:rhs","This function requires 3 arguments.");
+	}
 
-	char *valueName;
-	size_t valueNameLength;
-	int valueNameStatus;
-	valueNameLength = mxGetN(argv[1]) + 1;
-	valueName = (char *)malloc(valueNameLength);
-	valueNameStatus = mxGetString(argv[1], valueName, valueNameLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetGlobal:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
-	char *value;
-	size_t valueLength;
-	int valueStatus;
-	valueLength = mxGetN(argv[2]) + 1;
-	value = (char *)malloc(valueLength);
-	valueStatus = mxGetString(argv[2], value, valueLength);
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetGlobal:TypeError","Argument 2 must be a string.");
+	}
+	char *valueName = nullptr;
+	size_t valueNameLength = 0;
+	int valueNameStatus = 0;
+	if(argc > 1){
+		valueNameLength = mxGetN(argv[1]) + 1;
+		valueName = static_cast<char *>(malloc(valueNameLength));
+		valueNameStatus = mxGetString(argv[1], valueName, valueNameLength);
 
+	}
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetGlobal:TypeError","Argument 3 must be a string.");
+	}
+	char *value = nullptr;
+	size_t valueLength = 0;
+	int valueStatus = 0;
+	if(argc > 2){
+		valueLength = mxGetN(argv[2]) + 1;
+		value = static_cast<char *>(malloc(valueLength));
+		valueStatus = mxGetString(argv[2], value, valueLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateSetGlobal(fed, (char const *)valueName, (char const *)value, &err);
+	helicsFederateSetGlobal(fed, static_cast<const char *>(valueName), static_cast<const char *>(value), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(valueName);
 
@@ -4235,34 +5899,53 @@ void _wrap_helicsFederateSetGlobal(int resc, mxArray *resv[], int argc, const mx
 
 
 void _wrap_helicsFederateSetTag(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetTag:rhs","This function requires 3 arguments.");
+	}
 
-	char *tagName;
-	size_t tagNameLength;
-	int tagNameStatus;
-	tagNameLength = mxGetN(argv[1]) + 1;
-	tagName = (char *)malloc(tagNameLength);
-	tagNameStatus = mxGetString(argv[1], tagName, tagNameLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetTag:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
-	char *value;
-	size_t valueLength;
-	int valueStatus;
-	valueLength = mxGetN(argv[2]) + 1;
-	value = (char *)malloc(valueLength);
-	valueStatus = mxGetString(argv[2], value, valueLength);
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetTag:TypeError","Argument 2 must be a string.");
+	}
+	char *tagName = nullptr;
+	size_t tagNameLength = 0;
+	int tagNameStatus = 0;
+	if(argc > 1){
+		tagNameLength = mxGetN(argv[1]) + 1;
+		tagName = static_cast<char *>(malloc(tagNameLength));
+		tagNameStatus = mxGetString(argv[1], tagName, tagNameLength);
 
+	}
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetTag:TypeError","Argument 3 must be a string.");
+	}
+	char *value = nullptr;
+	size_t valueLength = 0;
+	int valueStatus = 0;
+	if(argc > 2){
+		valueLength = mxGetN(argv[2]) + 1;
+		value = static_cast<char *>(malloc(valueLength));
+		valueStatus = mxGetString(argv[2], value, valueLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateSetTag(fed, (char const *)tagName, (char const *)value, &err);
+	helicsFederateSetTag(fed, static_cast<const char *>(tagName), static_cast<const char *>(value), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(tagName);
 
@@ -4275,18 +5958,33 @@ void _wrap_helicsFederateSetTag(int resc, mxArray *resv[], int argc, const mxArr
 
 
 void _wrap_helicsFederateGetTag(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetTag:rhs","This function requires 2 arguments.");
+	}
 
-	char *tagName;
-	size_t tagNameLength;
-	int tagNameStatus;
-	tagNameLength = mxGetN(argv[1]) + 1;
-	tagName = (char *)malloc(tagNameLength);
-	tagNameStatus = mxGetString(argv[1], tagName, tagNameLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetTag:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetTag:TypeError","Argument 2 must be a string.");
+	}
+	char *tagName = nullptr;
+	size_t tagNameLength = 0;
+	int tagNameStatus = 0;
+	if(argc > 1){
+		tagNameLength = mxGetN(argv[1]) + 1;
+		tagName = static_cast<char *>(malloc(tagNameLength));
+		tagNameStatus = mxGetString(argv[1], tagName, tagNameLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	const char *result = helicsFederateGetTag(fed, (char const *)tagName, &err);
+	const char *result = helicsFederateGetTag(fed, static_cast<const char *>(tagName), &err);
 
 	mxArray *_out = mxCreateString(result);
 
@@ -4294,8 +5992,6 @@ void _wrap_helicsFederateGetTag(int resc, mxArray *resv[], int argc, const mxArr
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(tagName);
 
@@ -4306,27 +6002,40 @@ void _wrap_helicsFederateGetTag(int resc, mxArray *resv[], int argc, const mxArr
 
 
 void _wrap_helicsFederateAddDependency(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateAddDependency:rhs","This function requires 2 arguments.");
+	}
 
-	char *fedName;
-	size_t fedNameLength;
-	int fedNameStatus;
-	fedNameLength = mxGetN(argv[1]) + 1;
-	fedName = (char *)malloc(fedNameLength);
-	fedNameStatus = mxGetString(argv[1], fedName, fedNameLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateAddDependency:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateAddDependency:TypeError","Argument 2 must be a string.");
+	}
+	char *fedName = nullptr;
+	size_t fedNameLength = 0;
+	int fedNameStatus = 0;
+	if(argc > 1){
+		fedNameLength = mxGetN(argv[1]) + 1;
+		fedName = static_cast<char *>(malloc(fedNameLength));
+		fedNameStatus = mxGetString(argv[1], fedName, fedNameLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateAddDependency(fed, (char const *)fedName, &err);
+	helicsFederateAddDependency(fed, static_cast<const char *>(fedName), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(fedName);
 
@@ -4337,27 +6046,40 @@ void _wrap_helicsFederateAddDependency(int resc, mxArray *resv[], int argc, cons
 
 
 void _wrap_helicsFederateSetLogFile(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetLogFile:rhs","This function requires 2 arguments.");
+	}
 
-	char *logFile;
-	size_t logFileLength;
-	int logFileStatus;
-	logFileLength = mxGetN(argv[1]) + 1;
-	logFile = (char *)malloc(logFileLength);
-	logFileStatus = mxGetString(argv[1], logFile, logFileLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetLogFile:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetLogFile:TypeError","Argument 2 must be a string.");
+	}
+	char *logFile = nullptr;
+	size_t logFileLength = 0;
+	int logFileStatus = 0;
+	if(argc > 1){
+		logFileLength = mxGetN(argv[1]) + 1;
+		logFile = static_cast<char *>(malloc(logFileLength));
+		logFileStatus = mxGetString(argv[1], logFile, logFileLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateSetLogFile(fed, (char const *)logFile, &err);
+	helicsFederateSetLogFile(fed, static_cast<const char *>(logFile), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(logFile);
 
@@ -4368,27 +6090,40 @@ void _wrap_helicsFederateSetLogFile(int resc, mxArray *resv[], int argc, const m
 
 
 void _wrap_helicsFederateLogErrorMessage(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateLogErrorMessage:rhs","This function requires 2 arguments.");
+	}
 
-	char *logmessage;
-	size_t logmessageLength;
-	int logmessageStatus;
-	logmessageLength = mxGetN(argv[1]) + 1;
-	logmessage = (char *)malloc(logmessageLength);
-	logmessageStatus = mxGetString(argv[1], logmessage, logmessageLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateLogErrorMessage:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateLogErrorMessage:TypeError","Argument 2 must be a string.");
+	}
+	char *logmessage = nullptr;
+	size_t logmessageLength = 0;
+	int logmessageStatus = 0;
+	if(argc > 1){
+		logmessageLength = mxGetN(argv[1]) + 1;
+		logmessage = static_cast<char *>(malloc(logmessageLength));
+		logmessageStatus = mxGetString(argv[1], logmessage, logmessageLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateLogErrorMessage(fed, (char const *)logmessage, &err);
+	helicsFederateLogErrorMessage(fed, static_cast<const char *>(logmessage), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(logmessage);
 
@@ -4399,27 +6134,40 @@ void _wrap_helicsFederateLogErrorMessage(int resc, mxArray *resv[], int argc, co
 
 
 void _wrap_helicsFederateLogWarningMessage(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateLogWarningMessage:rhs","This function requires 2 arguments.");
+	}
 
-	char *logmessage;
-	size_t logmessageLength;
-	int logmessageStatus;
-	logmessageLength = mxGetN(argv[1]) + 1;
-	logmessage = (char *)malloc(logmessageLength);
-	logmessageStatus = mxGetString(argv[1], logmessage, logmessageLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateLogWarningMessage:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateLogWarningMessage:TypeError","Argument 2 must be a string.");
+	}
+	char *logmessage = nullptr;
+	size_t logmessageLength = 0;
+	int logmessageStatus = 0;
+	if(argc > 1){
+		logmessageLength = mxGetN(argv[1]) + 1;
+		logmessage = static_cast<char *>(malloc(logmessageLength));
+		logmessageStatus = mxGetString(argv[1], logmessage, logmessageLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateLogWarningMessage(fed, (char const *)logmessage, &err);
+	helicsFederateLogWarningMessage(fed, static_cast<const char *>(logmessage), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(logmessage);
 
@@ -4430,27 +6178,40 @@ void _wrap_helicsFederateLogWarningMessage(int resc, mxArray *resv[], int argc, 
 
 
 void _wrap_helicsFederateLogInfoMessage(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateLogInfoMessage:rhs","This function requires 2 arguments.");
+	}
 
-	char *logmessage;
-	size_t logmessageLength;
-	int logmessageStatus;
-	logmessageLength = mxGetN(argv[1]) + 1;
-	logmessage = (char *)malloc(logmessageLength);
-	logmessageStatus = mxGetString(argv[1], logmessage, logmessageLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateLogInfoMessage:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateLogInfoMessage:TypeError","Argument 2 must be a string.");
+	}
+	char *logmessage = nullptr;
+	size_t logmessageLength = 0;
+	int logmessageStatus = 0;
+	if(argc > 1){
+		logmessageLength = mxGetN(argv[1]) + 1;
+		logmessage = static_cast<char *>(malloc(logmessageLength));
+		logmessageStatus = mxGetString(argv[1], logmessage, logmessageLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateLogInfoMessage(fed, (char const *)logmessage, &err);
+	helicsFederateLogInfoMessage(fed, static_cast<const char *>(logmessage), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(logmessage);
 
@@ -4461,27 +6222,40 @@ void _wrap_helicsFederateLogInfoMessage(int resc, mxArray *resv[], int argc, con
 
 
 void _wrap_helicsFederateLogDebugMessage(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateLogDebugMessage:rhs","This function requires 2 arguments.");
+	}
 
-	char *logmessage;
-	size_t logmessageLength;
-	int logmessageStatus;
-	logmessageLength = mxGetN(argv[1]) + 1;
-	logmessage = (char *)malloc(logmessageLength);
-	logmessageStatus = mxGetString(argv[1], logmessage, logmessageLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateLogDebugMessage:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateLogDebugMessage:TypeError","Argument 2 must be a string.");
+	}
+	char *logmessage = nullptr;
+	size_t logmessageLength = 0;
+	int logmessageStatus = 0;
+	if(argc > 1){
+		logmessageLength = mxGetN(argv[1]) + 1;
+		logmessage = static_cast<char *>(malloc(logmessageLength));
+		logmessageStatus = mxGetString(argv[1], logmessage, logmessageLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateLogDebugMessage(fed, (char const *)logmessage, &err);
+	helicsFederateLogDebugMessage(fed, static_cast<const char *>(logmessage), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(logmessage);
 
@@ -4492,31 +6266,46 @@ void _wrap_helicsFederateLogDebugMessage(int resc, mxArray *resv[], int argc, co
 
 
 void _wrap_helicsFederateLogLevelMessage(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateLogLevelMessage:rhs","This function requires 3 arguments.");
+	}
 
-	int loglevel = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateLogLevelMessage:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
-	char *logmessage;
-	size_t logmessageLength;
-	int logmessageStatus;
-	logmessageLength = mxGetN(argv[2]) + 1;
-	logmessage = (char *)malloc(logmessageLength);
-	logmessageStatus = mxGetString(argv[2], logmessage, logmessageLength);
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateLogLevelMessage:TypeError","Argument 2 must be of type integer.");
+	}
+		int loglevel = static_cast<int>(mxGetScalar(argv[1]));
 
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateLogLevelMessage:TypeError","Argument 3 must be a string.");
+	}
+	char *logmessage = nullptr;
+	size_t logmessageLength = 0;
+	int logmessageStatus = 0;
+	if(argc > 2){
+		logmessageLength = mxGetN(argv[2]) + 1;
+		logmessage = static_cast<char *>(malloc(logmessageLength));
+		logmessageStatus = mxGetString(argv[2], logmessage, logmessageLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateLogLevelMessage(fed, loglevel, (char const *)logmessage, &err);
+	helicsFederateLogLevelMessage(fed, loglevel, static_cast<const char *>(logmessage), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	free(logmessage);
 
@@ -4527,34 +6316,53 @@ void _wrap_helicsFederateLogLevelMessage(int resc, mxArray *resv[], int argc, co
 
 
 void _wrap_helicsFederateSendCommand(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSendCommand:rhs","This function requires 3 arguments.");
+	}
 
-	char *target;
-	size_t targetLength;
-	int targetStatus;
-	targetLength = mxGetN(argv[1]) + 1;
-	target = (char *)malloc(targetLength);
-	targetStatus = mxGetString(argv[1], target, targetLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSendCommand:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
-	char *command;
-	size_t commandLength;
-	int commandStatus;
-	commandLength = mxGetN(argv[2]) + 1;
-	command = (char *)malloc(commandLength);
-	commandStatus = mxGetString(argv[2], command, commandLength);
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSendCommand:TypeError","Argument 2 must be a string.");
+	}
+	char *target = nullptr;
+	size_t targetLength = 0;
+	int targetStatus = 0;
+	if(argc > 1){
+		targetLength = mxGetN(argv[1]) + 1;
+		target = static_cast<char *>(malloc(targetLength));
+		targetStatus = mxGetString(argv[1], target, targetLength);
 
+	}
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSendCommand:TypeError","Argument 3 must be a string.");
+	}
+	char *command = nullptr;
+	size_t commandLength = 0;
+	int commandStatus = 0;
+	if(argc > 2){
+		commandLength = mxGetN(argv[2]) + 1;
+		command = static_cast<char *>(malloc(commandLength));
+		commandStatus = mxGetString(argv[2], command, commandLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateSendCommand(fed, (char const *)target, (char const *)command, &err);
+	helicsFederateSendCommand(fed, static_cast<const char *>(target), static_cast<const char *>(command), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(target);
 
@@ -4567,7 +6375,16 @@ void _wrap_helicsFederateSendCommand(int resc, mxArray *resv[], int argc, const 
 
 
 void _wrap_helicsFederateGetCommand(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetCommand:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetCommand:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
@@ -4580,8 +6397,6 @@ void _wrap_helicsFederateGetCommand(int resc, mxArray *resv[], int argc, const m
 		*resv++ = _out;
 	}
 
-
-
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
 	}
@@ -4589,7 +6404,16 @@ void _wrap_helicsFederateGetCommand(int resc, mxArray *resv[], int argc, const m
 
 
 void _wrap_helicsFederateGetCommandSource(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetCommandSource:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetCommandSource:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
@@ -4602,8 +6426,6 @@ void _wrap_helicsFederateGetCommandSource(int resc, mxArray *resv[], int argc, c
 		*resv++ = _out;
 	}
 
-
-
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
 	}
@@ -4611,7 +6433,16 @@ void _wrap_helicsFederateGetCommandSource(int resc, mxArray *resv[], int argc, c
 
 
 void _wrap_helicsFederateWaitCommand(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateWaitCommand:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateWaitCommand:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
@@ -4624,8 +6455,6 @@ void _wrap_helicsFederateWaitCommand(int resc, mxArray *resv[], int argc, const 
 		*resv++ = _out;
 	}
 
-
-
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
 	}
@@ -4633,34 +6462,53 @@ void _wrap_helicsFederateWaitCommand(int resc, mxArray *resv[], int argc, const 
 
 
 void _wrap_helicsCoreSetGlobal(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsCore core = *(HelicsCore*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreSetGlobal:rhs","This function requires 3 arguments.");
+	}
 
-	char *valueName;
-	size_t valueNameLength;
-	int valueNameStatus;
-	valueNameLength = mxGetN(argv[1]) + 1;
-	valueName = (char *)malloc(valueNameLength);
-	valueNameStatus = mxGetString(argv[1], valueName, valueNameLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreSetGlobal:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsCore core = *(static_cast<HelicsCore*>(mxGetData(argv[0])));
 
-	char *value;
-	size_t valueLength;
-	int valueStatus;
-	valueLength = mxGetN(argv[2]) + 1;
-	value = (char *)malloc(valueLength);
-	valueStatus = mxGetString(argv[2], value, valueLength);
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreSetGlobal:TypeError","Argument 2 must be a string.");
+	}
+	char *valueName = nullptr;
+	size_t valueNameLength = 0;
+	int valueNameStatus = 0;
+	if(argc > 1){
+		valueNameLength = mxGetN(argv[1]) + 1;
+		valueName = static_cast<char *>(malloc(valueNameLength));
+		valueNameStatus = mxGetString(argv[1], valueName, valueNameLength);
 
+	}
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreSetGlobal:TypeError","Argument 3 must be a string.");
+	}
+	char *value = nullptr;
+	size_t valueLength = 0;
+	int valueStatus = 0;
+	if(argc > 2){
+		valueLength = mxGetN(argv[2]) + 1;
+		value = static_cast<char *>(malloc(valueLength));
+		valueStatus = mxGetString(argv[2], value, valueLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsCoreSetGlobal(core, (char const *)valueName, (char const *)value, &err);
+	helicsCoreSetGlobal(core, static_cast<const char *>(valueName), static_cast<const char *>(value), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(valueName);
 
@@ -4673,34 +6521,53 @@ void _wrap_helicsCoreSetGlobal(int resc, mxArray *resv[], int argc, const mxArra
 
 
 void _wrap_helicsBrokerSetGlobal(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsBroker broker = *(HelicsBroker*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerSetGlobal:rhs","This function requires 3 arguments.");
+	}
 
-	char *valueName;
-	size_t valueNameLength;
-	int valueNameStatus;
-	valueNameLength = mxGetN(argv[1]) + 1;
-	valueName = (char *)malloc(valueNameLength);
-	valueNameStatus = mxGetString(argv[1], valueName, valueNameLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerSetGlobal:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsBroker broker = *(static_cast<HelicsBroker*>(mxGetData(argv[0])));
 
-	char *value;
-	size_t valueLength;
-	int valueStatus;
-	valueLength = mxGetN(argv[2]) + 1;
-	value = (char *)malloc(valueLength);
-	valueStatus = mxGetString(argv[2], value, valueLength);
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerSetGlobal:TypeError","Argument 2 must be a string.");
+	}
+	char *valueName = nullptr;
+	size_t valueNameLength = 0;
+	int valueNameStatus = 0;
+	if(argc > 1){
+		valueNameLength = mxGetN(argv[1]) + 1;
+		valueName = static_cast<char *>(malloc(valueNameLength));
+		valueNameStatus = mxGetString(argv[1], valueName, valueNameLength);
 
+	}
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerSetGlobal:TypeError","Argument 3 must be a string.");
+	}
+	char *value = nullptr;
+	size_t valueLength = 0;
+	int valueStatus = 0;
+	if(argc > 2){
+		valueLength = mxGetN(argv[2]) + 1;
+		value = static_cast<char *>(malloc(valueLength));
+		valueStatus = mxGetString(argv[2], value, valueLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsBrokerSetGlobal(broker, (char const *)valueName, (char const *)value, &err);
+	helicsBrokerSetGlobal(broker, static_cast<const char *>(valueName), static_cast<const char *>(value), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(valueName);
 
@@ -4713,34 +6580,53 @@ void _wrap_helicsBrokerSetGlobal(int resc, mxArray *resv[], int argc, const mxAr
 
 
 void _wrap_helicsCoreSendCommand(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsCore core = *(HelicsCore*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreSendCommand:rhs","This function requires 3 arguments.");
+	}
 
-	char *target;
-	size_t targetLength;
-	int targetStatus;
-	targetLength = mxGetN(argv[1]) + 1;
-	target = (char *)malloc(targetLength);
-	targetStatus = mxGetString(argv[1], target, targetLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreSendCommand:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsCore core = *(static_cast<HelicsCore*>(mxGetData(argv[0])));
 
-	char *command;
-	size_t commandLength;
-	int commandStatus;
-	commandLength = mxGetN(argv[2]) + 1;
-	command = (char *)malloc(commandLength);
-	commandStatus = mxGetString(argv[2], command, commandLength);
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreSendCommand:TypeError","Argument 2 must be a string.");
+	}
+	char *target = nullptr;
+	size_t targetLength = 0;
+	int targetStatus = 0;
+	if(argc > 1){
+		targetLength = mxGetN(argv[1]) + 1;
+		target = static_cast<char *>(malloc(targetLength));
+		targetStatus = mxGetString(argv[1], target, targetLength);
 
+	}
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreSendCommand:TypeError","Argument 3 must be a string.");
+	}
+	char *command = nullptr;
+	size_t commandLength = 0;
+	int commandStatus = 0;
+	if(argc > 2){
+		commandLength = mxGetN(argv[2]) + 1;
+		command = static_cast<char *>(malloc(commandLength));
+		commandStatus = mxGetString(argv[2], command, commandLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsCoreSendCommand(core, (char const *)target, (char const *)command, &err);
+	helicsCoreSendCommand(core, static_cast<const char *>(target), static_cast<const char *>(command), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(target);
 
@@ -4753,34 +6639,53 @@ void _wrap_helicsCoreSendCommand(int resc, mxArray *resv[], int argc, const mxAr
 
 
 void _wrap_helicsCoreSendOrderedCommand(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsCore core = *(HelicsCore*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreSendOrderedCommand:rhs","This function requires 3 arguments.");
+	}
 
-	char *target;
-	size_t targetLength;
-	int targetStatus;
-	targetLength = mxGetN(argv[1]) + 1;
-	target = (char *)malloc(targetLength);
-	targetStatus = mxGetString(argv[1], target, targetLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreSendOrderedCommand:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsCore core = *(static_cast<HelicsCore*>(mxGetData(argv[0])));
 
-	char *command;
-	size_t commandLength;
-	int commandStatus;
-	commandLength = mxGetN(argv[2]) + 1;
-	command = (char *)malloc(commandLength);
-	commandStatus = mxGetString(argv[2], command, commandLength);
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreSendOrderedCommand:TypeError","Argument 2 must be a string.");
+	}
+	char *target = nullptr;
+	size_t targetLength = 0;
+	int targetStatus = 0;
+	if(argc > 1){
+		targetLength = mxGetN(argv[1]) + 1;
+		target = static_cast<char *>(malloc(targetLength));
+		targetStatus = mxGetString(argv[1], target, targetLength);
 
+	}
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreSendOrderedCommand:TypeError","Argument 3 must be a string.");
+	}
+	char *command = nullptr;
+	size_t commandLength = 0;
+	int commandStatus = 0;
+	if(argc > 2){
+		commandLength = mxGetN(argv[2]) + 1;
+		command = static_cast<char *>(malloc(commandLength));
+		commandStatus = mxGetString(argv[2], command, commandLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsCoreSendOrderedCommand(core, (char const *)target, (char const *)command, &err);
+	helicsCoreSendOrderedCommand(core, static_cast<const char *>(target), static_cast<const char *>(command), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(target);
 
@@ -4793,34 +6698,53 @@ void _wrap_helicsCoreSendOrderedCommand(int resc, mxArray *resv[], int argc, con
 
 
 void _wrap_helicsBrokerSendCommand(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsBroker broker = *(HelicsBroker*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerSendCommand:rhs","This function requires 3 arguments.");
+	}
 
-	char *target;
-	size_t targetLength;
-	int targetStatus;
-	targetLength = mxGetN(argv[1]) + 1;
-	target = (char *)malloc(targetLength);
-	targetStatus = mxGetString(argv[1], target, targetLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerSendCommand:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsBroker broker = *(static_cast<HelicsBroker*>(mxGetData(argv[0])));
 
-	char *command;
-	size_t commandLength;
-	int commandStatus;
-	commandLength = mxGetN(argv[2]) + 1;
-	command = (char *)malloc(commandLength);
-	commandStatus = mxGetString(argv[2], command, commandLength);
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerSendCommand:TypeError","Argument 2 must be a string.");
+	}
+	char *target = nullptr;
+	size_t targetLength = 0;
+	int targetStatus = 0;
+	if(argc > 1){
+		targetLength = mxGetN(argv[1]) + 1;
+		target = static_cast<char *>(malloc(targetLength));
+		targetStatus = mxGetString(argv[1], target, targetLength);
 
+	}
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerSendCommand:TypeError","Argument 3 must be a string.");
+	}
+	char *command = nullptr;
+	size_t commandLength = 0;
+	int commandStatus = 0;
+	if(argc > 2){
+		commandLength = mxGetN(argv[2]) + 1;
+		command = static_cast<char *>(malloc(commandLength));
+		commandStatus = mxGetString(argv[2], command, commandLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsBrokerSendCommand(broker, (char const *)target, (char const *)command, &err);
+	helicsBrokerSendCommand(broker, static_cast<const char *>(target), static_cast<const char *>(command), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(target);
 
@@ -4833,34 +6757,53 @@ void _wrap_helicsBrokerSendCommand(int resc, mxArray *resv[], int argc, const mx
 
 
 void _wrap_helicsBrokerSendOrderedCommand(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsBroker broker = *(HelicsBroker*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerSendOrderedCommand:rhs","This function requires 3 arguments.");
+	}
 
-	char *target;
-	size_t targetLength;
-	int targetStatus;
-	targetLength = mxGetN(argv[1]) + 1;
-	target = (char *)malloc(targetLength);
-	targetStatus = mxGetString(argv[1], target, targetLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerSendOrderedCommand:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsBroker broker = *(static_cast<HelicsBroker*>(mxGetData(argv[0])));
 
-	char *command;
-	size_t commandLength;
-	int commandStatus;
-	commandLength = mxGetN(argv[2]) + 1;
-	command = (char *)malloc(commandLength);
-	commandStatus = mxGetString(argv[2], command, commandLength);
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerSendOrderedCommand:TypeError","Argument 2 must be a string.");
+	}
+	char *target = nullptr;
+	size_t targetLength = 0;
+	int targetStatus = 0;
+	if(argc > 1){
+		targetLength = mxGetN(argv[1]) + 1;
+		target = static_cast<char *>(malloc(targetLength));
+		targetStatus = mxGetString(argv[1], target, targetLength);
 
+	}
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerSendOrderedCommand:TypeError","Argument 3 must be a string.");
+	}
+	char *command = nullptr;
+	size_t commandLength = 0;
+	int commandStatus = 0;
+	if(argc > 2){
+		commandLength = mxGetN(argv[2]) + 1;
+		command = static_cast<char *>(malloc(commandLength));
+		commandStatus = mxGetString(argv[2], command, commandLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsBrokerSendOrderedCommand(broker, (char const *)target, (char const *)command, &err);
+	helicsBrokerSendOrderedCommand(broker, static_cast<const char *>(target), static_cast<const char *>(command), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(target);
 
@@ -4873,27 +6816,40 @@ void _wrap_helicsBrokerSendOrderedCommand(int resc, mxArray *resv[], int argc, c
 
 
 void _wrap_helicsCoreSetLogFile(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsCore core = *(HelicsCore*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreSetLogFile:rhs","This function requires 2 arguments.");
+	}
 
-	char *logFileName;
-	size_t logFileNameLength;
-	int logFileNameStatus;
-	logFileNameLength = mxGetN(argv[1]) + 1;
-	logFileName = (char *)malloc(logFileNameLength);
-	logFileNameStatus = mxGetString(argv[1], logFileName, logFileNameLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreSetLogFile:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsCore core = *(static_cast<HelicsCore*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreSetLogFile:TypeError","Argument 2 must be a string.");
+	}
+	char *logFileName = nullptr;
+	size_t logFileNameLength = 0;
+	int logFileNameStatus = 0;
+	if(argc > 1){
+		logFileNameLength = mxGetN(argv[1]) + 1;
+		logFileName = static_cast<char *>(malloc(logFileNameLength));
+		logFileNameStatus = mxGetString(argv[1], logFileName, logFileNameLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsCoreSetLogFile(core, (char const *)logFileName, &err);
+	helicsCoreSetLogFile(core, static_cast<const char *>(logFileName), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(logFileName);
 
@@ -4904,27 +6860,40 @@ void _wrap_helicsCoreSetLogFile(int resc, mxArray *resv[], int argc, const mxArr
 
 
 void _wrap_helicsBrokerSetLogFile(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsBroker broker = *(HelicsBroker*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerSetLogFile:rhs","This function requires 2 arguments.");
+	}
 
-	char *logFileName;
-	size_t logFileNameLength;
-	int logFileNameStatus;
-	logFileNameLength = mxGetN(argv[1]) + 1;
-	logFileName = (char *)malloc(logFileNameLength);
-	logFileNameStatus = mxGetString(argv[1], logFileName, logFileNameLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerSetLogFile:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsBroker broker = *(static_cast<HelicsBroker*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerSetLogFile:TypeError","Argument 2 must be a string.");
+	}
+	char *logFileName = nullptr;
+	size_t logFileNameLength = 0;
+	int logFileNameStatus = 0;
+	if(argc > 1){
+		logFileNameLength = mxGetN(argv[1]) + 1;
+		logFileName = static_cast<char *>(malloc(logFileNameLength));
+		logFileNameStatus = mxGetString(argv[1], logFileName, logFileNameLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsBrokerSetLogFile(broker, (char const *)logFileName, &err);
+	helicsBrokerSetLogFile(broker, static_cast<const char *>(logFileName), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(logFileName);
 
@@ -4935,24 +6904,33 @@ void _wrap_helicsBrokerSetLogFile(int resc, mxArray *resv[], int argc, const mxA
 
 
 void _wrap_helicsBrokerSetTimeBarrier(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsBroker broker = *(HelicsBroker*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerSetTimeBarrier:rhs","This function requires 2 arguments.");
+	}
 
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerSetTimeBarrier:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsBroker broker = *(static_cast<HelicsBroker*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerSetTimeBarrier:TypeError","Argument 2 must be of type double.");
+	}
 	HelicsTime barrierTime = (HelicsTime)(mxGetScalar(argv[1]));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsBrokerSetTimeBarrier(broker, barrierTime, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -4961,47 +6939,69 @@ void _wrap_helicsBrokerSetTimeBarrier(int resc, mxArray *resv[], int argc, const
 
 
 void _wrap_helicsBrokerClearTimeBarrier(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsBroker broker = *(HelicsBroker*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerClearTimeBarrier:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerClearTimeBarrier:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsBroker broker = *(static_cast<HelicsBroker*>(mxGetData(argv[0])));
 
 	helicsBrokerClearTimeBarrier(broker);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsBrokerGlobalError(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsBroker broker = *(HelicsBroker*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerGlobalError:rhs","This function requires 3 arguments.");
+	}
 
-	int errorCode = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerGlobalError:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsBroker broker = *(static_cast<HelicsBroker*>(mxGetData(argv[0])));
 
-	char *errorString;
-	size_t errorStringLength;
-	int errorStringStatus;
-	errorStringLength = mxGetN(argv[2]) + 1;
-	errorString = (char *)malloc(errorStringLength);
-	errorStringStatus = mxGetString(argv[2], errorString, errorStringLength);
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerGlobalError:TypeError","Argument 2 must be of type integer.");
+	}
+		int errorCode = static_cast<int>(mxGetScalar(argv[1]));
 
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerGlobalError:TypeError","Argument 3 must be a string.");
+	}
+	char *errorString = nullptr;
+	size_t errorStringLength = 0;
+	int errorStringStatus = 0;
+	if(argc > 2){
+		errorStringLength = mxGetN(argv[2]) + 1;
+		errorString = static_cast<char *>(malloc(errorStringLength));
+		errorStringStatus = mxGetString(argv[2], errorString, errorStringLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsBrokerGlobalError(broker, errorCode, (char const *)errorString, &err);
+	helicsBrokerGlobalError(broker, errorCode, static_cast<const char *>(errorString), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	free(errorString);
 
@@ -5012,31 +7012,46 @@ void _wrap_helicsBrokerGlobalError(int resc, mxArray *resv[], int argc, const mx
 
 
 void _wrap_helicsCoreGlobalError(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsCore core = *(HelicsCore*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreGlobalError:rhs","This function requires 3 arguments.");
+	}
 
-	int errorCode = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreGlobalError:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsCore core = *(static_cast<HelicsCore*>(mxGetData(argv[0])));
 
-	char *errorString;
-	size_t errorStringLength;
-	int errorStringStatus;
-	errorStringLength = mxGetN(argv[2]) + 1;
-	errorString = (char *)malloc(errorStringLength);
-	errorStringStatus = mxGetString(argv[2], errorString, errorStringLength);
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreGlobalError:TypeError","Argument 2 must be of type integer.");
+	}
+		int errorCode = static_cast<int>(mxGetScalar(argv[1]));
 
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreGlobalError:TypeError","Argument 3 must be a string.");
+	}
+	char *errorString = nullptr;
+	size_t errorStringLength = 0;
+	int errorStringStatus = 0;
+	if(argc > 2){
+		errorStringLength = mxGetN(argv[2]) + 1;
+		errorString = static_cast<char *>(malloc(errorStringLength));
+		errorStringStatus = mxGetString(argv[2], errorString, errorStringLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsCoreGlobalError(core, errorCode, (char const *)errorString, &err);
+	helicsCoreGlobalError(core, errorCode, static_cast<const char *>(errorString), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	free(errorString);
 
@@ -5047,24 +7062,44 @@ void _wrap_helicsCoreGlobalError(int resc, mxArray *resv[], int argc, const mxAr
 
 
 void _wrap_helicsCreateQuery(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	char *target;
-	size_t targetLength;
-	int targetStatus;
-	targetLength = mxGetN(argv[0]) + 1;
-	target = (char *)malloc(targetLength);
-	targetStatus = mxGetString(argv[0], target, targetLength);
+	if(argc < 1 || argc > 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateQuery:rhs","This function requires at least 1 arguments and at most 2 arguments.");
+	}
 
-	char *query;
-	size_t queryLength;
-	int queryStatus;
-	queryLength = mxGetN(argv[1]) + 1;
-	query = (char *)malloc(queryLength);
-	queryStatus = mxGetString(argv[1], query, queryLength);
+	if(!mxIsChar(argv[0])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCreateQuery:TypeError","Argument 1 must be a string.");
+	}
+	char *target = nullptr;
+	size_t targetLength = 0;
+	int targetStatus = 0;
+	if(argc > 0){
+		targetLength = mxGetN(argv[0]) + 1;
+		target = static_cast<char *>(malloc(targetLength));
+		targetStatus = mxGetString(argv[0], target, targetLength);
 
-	HelicsQuery result = helicsCreateQuery((char const *)target, (char const *)query);
+	}
+	if(argc > 1){
+		if(!mxIsChar(argv[1])){
+			mexUnlock();
+			mexErrMsgIdAndTxt("MATLAB:helicsCreateQuery:TypeError","Argument 2 must be a string.");
+		}
+	}
+	char *query = nullptr;
+	size_t queryLength = 0;
+	int queryStatus = 0;
+	if(argc > 1){
+		queryLength = mxGetN(argv[1]) + 1;
+		query = static_cast<char *>(malloc(queryLength));
+		queryStatus = mxGetString(argv[1], query, queryLength);
+
+	}
+	HelicsQuery result = helicsCreateQuery(static_cast<const char *>(target), static_cast<const char *>(query));
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
@@ -5078,9 +7113,22 @@ void _wrap_helicsCreateQuery(int resc, mxArray *resv[], int argc, const mxArray 
 
 
 void _wrap_helicsQueryExecute(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsQuery query = *(HelicsQuery*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsQueryExecute:rhs","This function requires 2 arguments.");
+	}
 
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsQueryExecute:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsQuery query = *(static_cast<HelicsQuery*>(mxGetData(argv[0])));
+
+	if(mxGetClassID(argv[1]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsQueryExecute:TypeError","Argument 2 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[1])));
 
 	HelicsError err = helicsErrorInitialize();
 
@@ -5093,10 +7141,6 @@ void _wrap_helicsQueryExecute(int resc, mxArray *resv[], int argc, const mxArray
 		*resv++ = _out;
 	}
 
-
-
-
-
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
 	}
@@ -5104,9 +7148,22 @@ void _wrap_helicsQueryExecute(int resc, mxArray *resv[], int argc, const mxArray
 
 
 void _wrap_helicsQueryCoreExecute(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsQuery query = *(HelicsQuery*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsQueryCoreExecute:rhs","This function requires 2 arguments.");
+	}
 
-	HelicsCore core = *(HelicsCore*)(mxGetData(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsQueryCoreExecute:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsQuery query = *(static_cast<HelicsQuery*>(mxGetData(argv[0])));
+
+	if(mxGetClassID(argv[1]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsQueryCoreExecute:TypeError","Argument 2 must be of type uint64.");
+	}
+	HelicsCore core = *(static_cast<HelicsCore*>(mxGetData(argv[1])));
 
 	HelicsError err = helicsErrorInitialize();
 
@@ -5119,10 +7176,6 @@ void _wrap_helicsQueryCoreExecute(int resc, mxArray *resv[], int argc, const mxA
 		*resv++ = _out;
 	}
 
-
-
-
-
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
 	}
@@ -5130,9 +7183,22 @@ void _wrap_helicsQueryCoreExecute(int resc, mxArray *resv[], int argc, const mxA
 
 
 void _wrap_helicsQueryBrokerExecute(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsQuery query = *(HelicsQuery*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsQueryBrokerExecute:rhs","This function requires 2 arguments.");
+	}
 
-	HelicsBroker broker = *(HelicsBroker*)(mxGetData(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsQueryBrokerExecute:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsQuery query = *(static_cast<HelicsQuery*>(mxGetData(argv[0])));
+
+	if(mxGetClassID(argv[1]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsQueryBrokerExecute:TypeError","Argument 2 must be of type uint64.");
+	}
+	HelicsBroker broker = *(static_cast<HelicsBroker*>(mxGetData(argv[1])));
 
 	HelicsError err = helicsErrorInitialize();
 
@@ -5145,10 +7211,6 @@ void _wrap_helicsQueryBrokerExecute(int resc, mxArray *resv[], int argc, const m
 		*resv++ = _out;
 	}
 
-
-
-
-
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
 	}
@@ -5156,24 +7218,33 @@ void _wrap_helicsQueryBrokerExecute(int resc, mxArray *resv[], int argc, const m
 
 
 void _wrap_helicsQueryExecuteAsync(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsQuery query = *(HelicsQuery*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsQueryExecuteAsync:rhs","This function requires 2 arguments.");
+	}
 
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsQueryExecuteAsync:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsQuery query = *(static_cast<HelicsQuery*>(mxGetData(argv[0])));
+
+	if(mxGetClassID(argv[1]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsQueryExecuteAsync:TypeError","Argument 2 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[1])));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsQueryExecuteAsync(query, fed, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -5182,7 +7253,16 @@ void _wrap_helicsQueryExecuteAsync(int resc, mxArray *resv[], int argc, const mx
 
 
 void _wrap_helicsQueryExecuteComplete(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsQuery query = *(HelicsQuery*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsQueryExecuteComplete:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsQueryExecuteComplete:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsQuery query = *(static_cast<HelicsQuery*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
@@ -5195,8 +7275,6 @@ void _wrap_helicsQueryExecuteComplete(int resc, mxArray *resv[], int argc, const
 		*resv++ = _out;
 	}
 
-
-
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
 	}
@@ -5204,44 +7282,69 @@ void _wrap_helicsQueryExecuteComplete(int resc, mxArray *resv[], int argc, const
 
 
 void _wrap_helicsQueryIsCompleted(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsQuery query = *(HelicsQuery*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsQueryIsCompleted:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsQueryIsCompleted:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsQuery query = *(static_cast<HelicsQuery*>(mxGetData(argv[0])));
 
 	HelicsBool result = helicsQueryIsCompleted(query);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-	*((int32_t*)mxGetData(_out)) = (int32_t)result;
+	mxArray *_out = mxCreateLogicalMatrix(1, 1);
+	mxLogical *rv = mxGetLogicals(_out);
+	if(result == HELICS_TRUE){
+		rv[0] = true;
+	}else{
+		rv[0] = false;
+	}
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsQuerySetTarget(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsQuery query = *(HelicsQuery*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsQuerySetTarget:rhs","This function requires 2 arguments.");
+	}
 
-	char *target;
-	size_t targetLength;
-	int targetStatus;
-	targetLength = mxGetN(argv[1]) + 1;
-	target = (char *)malloc(targetLength);
-	targetStatus = mxGetString(argv[1], target, targetLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsQuerySetTarget:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsQuery query = *(static_cast<HelicsQuery*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsQuerySetTarget:TypeError","Argument 2 must be a string.");
+	}
+	char *target = nullptr;
+	size_t targetLength = 0;
+	int targetStatus = 0;
+	if(argc > 1){
+		targetLength = mxGetN(argv[1]) + 1;
+		target = static_cast<char *>(malloc(targetLength));
+		targetStatus = mxGetString(argv[1], target, targetLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsQuerySetTarget(query, (char const *)target, &err);
+	helicsQuerySetTarget(query, static_cast<const char *>(target), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(target);
 
@@ -5252,27 +7355,40 @@ void _wrap_helicsQuerySetTarget(int resc, mxArray *resv[], int argc, const mxArr
 
 
 void _wrap_helicsQuerySetQueryString(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsQuery query = *(HelicsQuery*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsQuerySetQueryString:rhs","This function requires 2 arguments.");
+	}
 
-	char *queryString;
-	size_t queryStringLength;
-	int queryStringStatus;
-	queryStringLength = mxGetN(argv[1]) + 1;
-	queryString = (char *)malloc(queryStringLength);
-	queryStringStatus = mxGetString(argv[1], queryString, queryStringLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsQuerySetQueryString:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsQuery query = *(static_cast<HelicsQuery*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsQuerySetQueryString:TypeError","Argument 2 must be a string.");
+	}
+	char *queryString = nullptr;
+	size_t queryStringLength = 0;
+	int queryStringStatus = 0;
+	if(argc > 1){
+		queryStringLength = mxGetN(argv[1]) + 1;
+		queryString = static_cast<char *>(malloc(queryStringLength));
+		queryStringStatus = mxGetString(argv[1], queryString, queryStringLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsQuerySetQueryString(query, (char const *)queryString, &err);
+	helicsQuerySetQueryString(query, static_cast<const char *>(queryString), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(queryString);
 
@@ -5283,24 +7399,34 @@ void _wrap_helicsQuerySetQueryString(int resc, mxArray *resv[], int argc, const 
 
 
 void _wrap_helicsQuerySetOrdering(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsQuery query = *(HelicsQuery*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsQuerySetOrdering:rhs","This function requires 2 arguments.");
+	}
 
-	int32_t mode = *((int32_t *)mxGetData(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsQuerySetOrdering:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsQuery query = *(static_cast<HelicsQuery*>(mxGetData(argv[0])));
+
+	if(mxGetClassID(argv[1]) != mxINT32_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsQuerySetOrdering:TypeError","Argument 2 must be of type int32.");
+	}
+mxInt32 *pmode = mxGetInt32s(argv[1]);
+	int32_t mode = static_cast<int32_t>(pmode[0]);
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsQuerySetOrdering(query, mode, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -5309,25 +7435,37 @@ void _wrap_helicsQuerySetOrdering(int resc, mxArray *resv[], int argc, const mxA
 
 
 void _wrap_helicsQueryFree(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsQuery query = *(HelicsQuery*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsQueryFree:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsQueryFree:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsQuery query = *(static_cast<HelicsQuery*>(mxGetData(argv[0])));
 
 	helicsQueryFree(query);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsCleanupLibrary(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	if(argc != 0){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCleanupLibrary:rhs","This function requires 0 arguments.");
+	}
+
 	helicsCleanupLibrary();
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
@@ -5337,35 +7475,55 @@ void _wrap_helicsCleanupLibrary(int resc, mxArray *resv[], int argc, const mxArr
 
 
 void _wrap_helicsFederateRegisterSubscription(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterSubscription:rhs","This function requires 3 arguments.");
+	}
 
-	char *key;
-	size_t keyLength;
-	int keyStatus;
-	keyLength = mxGetN(argv[1]) + 1;
-	key = (char *)malloc(keyLength);
-	keyStatus = mxGetString(argv[1], key, keyLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterSubscription:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
-	char *units;
-	size_t unitsLength;
-	int unitsStatus;
-	unitsLength = mxGetN(argv[2]) + 1;
-	units = (char *)malloc(unitsLength);
-	unitsStatus = mxGetString(argv[2], units, unitsLength);
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterSubscription:TypeError","Argument 2 must be a string.");
+	}
+	char *key = nullptr;
+	size_t keyLength = 0;
+	int keyStatus = 0;
+	if(argc > 1){
+		keyLength = mxGetN(argv[1]) + 1;
+		key = static_cast<char *>(malloc(keyLength));
+		keyStatus = mxGetString(argv[1], key, keyLength);
 
+	}
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterSubscription:TypeError","Argument 3 must be a string.");
+	}
+	char *units = nullptr;
+	size_t unitsLength = 0;
+	int unitsStatus = 0;
+	if(argc > 2){
+		unitsLength = mxGetN(argv[2]) + 1;
+		units = static_cast<char *>(malloc(unitsLength));
+		unitsStatus = mxGetString(argv[2], units, unitsLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsInput result = helicsFederateRegisterSubscription(fed, (char const *)key, (char const *)units, &err);
+	HelicsInput result = helicsFederateRegisterSubscription(fed, static_cast<const char *>(key), static_cast<const char *>(units), &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(key);
 
@@ -5378,42 +7536,64 @@ void _wrap_helicsFederateRegisterSubscription(int resc, mxArray *resv[], int arg
 
 
 void _wrap_helicsFederateRegisterPublication(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 4){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterPublication:rhs","This function requires 4 arguments.");
+	}
 
-	char *key;
-	size_t keyLength;
-	int keyStatus;
-	keyLength = mxGetN(argv[1]) + 1;
-	key = (char *)malloc(keyLength);
-	keyStatus = mxGetString(argv[1], key, keyLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterPublication:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterPublication:TypeError","Argument 2 must be a string.");
+	}
+	char *key = nullptr;
+	size_t keyLength = 0;
+	int keyStatus = 0;
+	if(argc > 1){
+		keyLength = mxGetN(argv[1]) + 1;
+		key = static_cast<char *>(malloc(keyLength));
+		keyStatus = mxGetString(argv[1], key, keyLength);
+
+	}
+	if(!mxIsNumeric(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterPublication:TypeError","Argument 3 must be of type int32.");
+	}
 	int typeInt = static_cast<int>(mxGetScalar(argv[2]));
 	HelicsDataTypes type = static_cast<HelicsDataTypes>(typeInt);
 
-	char *units;
-	size_t unitsLength;
-	int unitsStatus;
-	unitsLength = mxGetN(argv[3]) + 1;
-	units = (char *)malloc(unitsLength);
-	unitsStatus = mxGetString(argv[3], units, unitsLength);
+	if(!mxIsChar(argv[3])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterPublication:TypeError","Argument 4 must be a string.");
+	}
+	char *units = nullptr;
+	size_t unitsLength = 0;
+	int unitsStatus = 0;
+	if(argc > 3){
+		unitsLength = mxGetN(argv[3]) + 1;
+		units = static_cast<char *>(malloc(unitsLength));
+		unitsStatus = mxGetString(argv[3], units, unitsLength);
 
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsPublication result = helicsFederateRegisterPublication(fed, (char const *)key, type, (char const *)units, &err);
+	HelicsPublication result = helicsFederateRegisterPublication(fed, static_cast<const char *>(key), type, static_cast<const char *>(units), &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
 
-
-
 	free(key);
-
-
 
 	free(units);
 
@@ -5424,42 +7604,68 @@ void _wrap_helicsFederateRegisterPublication(int resc, mxArray *resv[], int argc
 
 
 void _wrap_helicsFederateRegisterTypePublication(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 4){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterTypePublication:rhs","This function requires 4 arguments.");
+	}
 
-	char *key;
-	size_t keyLength;
-	int keyStatus;
-	keyLength = mxGetN(argv[1]) + 1;
-	key = (char *)malloc(keyLength);
-	keyStatus = mxGetString(argv[1], key, keyLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterTypePublication:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
-	char *type;
-	size_t typeLength;
-	int typeStatus;
-	typeLength = mxGetN(argv[2]) + 1;
-	type = (char *)malloc(typeLength);
-	typeStatus = mxGetString(argv[2], type, typeLength);
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterTypePublication:TypeError","Argument 2 must be a string.");
+	}
+	char *key = nullptr;
+	size_t keyLength = 0;
+	int keyStatus = 0;
+	if(argc > 1){
+		keyLength = mxGetN(argv[1]) + 1;
+		key = static_cast<char *>(malloc(keyLength));
+		keyStatus = mxGetString(argv[1], key, keyLength);
 
-	char *units;
-	size_t unitsLength;
-	int unitsStatus;
-	unitsLength = mxGetN(argv[3]) + 1;
-	units = (char *)malloc(unitsLength);
-	unitsStatus = mxGetString(argv[3], units, unitsLength);
+	}
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterTypePublication:TypeError","Argument 3 must be a string.");
+	}
+	char *type = nullptr;
+	size_t typeLength = 0;
+	int typeStatus = 0;
+	if(argc > 2){
+		typeLength = mxGetN(argv[2]) + 1;
+		type = static_cast<char *>(malloc(typeLength));
+		typeStatus = mxGetString(argv[2], type, typeLength);
 
+	}
+	if(!mxIsChar(argv[3])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterTypePublication:TypeError","Argument 4 must be a string.");
+	}
+	char *units = nullptr;
+	size_t unitsLength = 0;
+	int unitsStatus = 0;
+	if(argc > 3){
+		unitsLength = mxGetN(argv[3]) + 1;
+		units = static_cast<char *>(malloc(unitsLength));
+		unitsStatus = mxGetString(argv[3], units, unitsLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsPublication result = helicsFederateRegisterTypePublication(fed, (char const *)key, (char const *)type, (char const *)units, &err);
+	HelicsPublication result = helicsFederateRegisterTypePublication(fed, static_cast<const char *>(key), static_cast<const char *>(type), static_cast<const char *>(units), &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(key);
 
@@ -5474,42 +7680,64 @@ void _wrap_helicsFederateRegisterTypePublication(int resc, mxArray *resv[], int 
 
 
 void _wrap_helicsFederateRegisterGlobalPublication(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 4){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalPublication:rhs","This function requires 4 arguments.");
+	}
 
-	char *key;
-	size_t keyLength;
-	int keyStatus;
-	keyLength = mxGetN(argv[1]) + 1;
-	key = (char *)malloc(keyLength);
-	keyStatus = mxGetString(argv[1], key, keyLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalPublication:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalPublication:TypeError","Argument 2 must be a string.");
+	}
+	char *key = nullptr;
+	size_t keyLength = 0;
+	int keyStatus = 0;
+	if(argc > 1){
+		keyLength = mxGetN(argv[1]) + 1;
+		key = static_cast<char *>(malloc(keyLength));
+		keyStatus = mxGetString(argv[1], key, keyLength);
+
+	}
+	if(!mxIsNumeric(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalPublication:TypeError","Argument 3 must be of type int32.");
+	}
 	int typeInt = static_cast<int>(mxGetScalar(argv[2]));
 	HelicsDataTypes type = static_cast<HelicsDataTypes>(typeInt);
 
-	char *units;
-	size_t unitsLength;
-	int unitsStatus;
-	unitsLength = mxGetN(argv[3]) + 1;
-	units = (char *)malloc(unitsLength);
-	unitsStatus = mxGetString(argv[3], units, unitsLength);
+	if(!mxIsChar(argv[3])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalPublication:TypeError","Argument 4 must be a string.");
+	}
+	char *units = nullptr;
+	size_t unitsLength = 0;
+	int unitsStatus = 0;
+	if(argc > 3){
+		unitsLength = mxGetN(argv[3]) + 1;
+		units = static_cast<char *>(malloc(unitsLength));
+		unitsStatus = mxGetString(argv[3], units, unitsLength);
 
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsPublication result = helicsFederateRegisterGlobalPublication(fed, (char const *)key, type, (char const *)units, &err);
+	HelicsPublication result = helicsFederateRegisterGlobalPublication(fed, static_cast<const char *>(key), type, static_cast<const char *>(units), &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
 
-
-
 	free(key);
-
-
 
 	free(units);
 
@@ -5520,42 +7748,68 @@ void _wrap_helicsFederateRegisterGlobalPublication(int resc, mxArray *resv[], in
 
 
 void _wrap_helicsFederateRegisterGlobalTypePublication(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 4){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalTypePublication:rhs","This function requires 4 arguments.");
+	}
 
-	char *key;
-	size_t keyLength;
-	int keyStatus;
-	keyLength = mxGetN(argv[1]) + 1;
-	key = (char *)malloc(keyLength);
-	keyStatus = mxGetString(argv[1], key, keyLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalTypePublication:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
-	char *type;
-	size_t typeLength;
-	int typeStatus;
-	typeLength = mxGetN(argv[2]) + 1;
-	type = (char *)malloc(typeLength);
-	typeStatus = mxGetString(argv[2], type, typeLength);
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalTypePublication:TypeError","Argument 2 must be a string.");
+	}
+	char *key = nullptr;
+	size_t keyLength = 0;
+	int keyStatus = 0;
+	if(argc > 1){
+		keyLength = mxGetN(argv[1]) + 1;
+		key = static_cast<char *>(malloc(keyLength));
+		keyStatus = mxGetString(argv[1], key, keyLength);
 
-	char *units;
-	size_t unitsLength;
-	int unitsStatus;
-	unitsLength = mxGetN(argv[3]) + 1;
-	units = (char *)malloc(unitsLength);
-	unitsStatus = mxGetString(argv[3], units, unitsLength);
+	}
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalTypePublication:TypeError","Argument 3 must be a string.");
+	}
+	char *type = nullptr;
+	size_t typeLength = 0;
+	int typeStatus = 0;
+	if(argc > 2){
+		typeLength = mxGetN(argv[2]) + 1;
+		type = static_cast<char *>(malloc(typeLength));
+		typeStatus = mxGetString(argv[2], type, typeLength);
 
+	}
+	if(!mxIsChar(argv[3])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalTypePublication:TypeError","Argument 4 must be a string.");
+	}
+	char *units = nullptr;
+	size_t unitsLength = 0;
+	int unitsStatus = 0;
+	if(argc > 3){
+		unitsLength = mxGetN(argv[3]) + 1;
+		units = static_cast<char *>(malloc(unitsLength));
+		unitsStatus = mxGetString(argv[3], units, unitsLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsPublication result = helicsFederateRegisterGlobalTypePublication(fed, (char const *)key, (char const *)type, (char const *)units, &err);
+	HelicsPublication result = helicsFederateRegisterGlobalTypePublication(fed, static_cast<const char *>(key), static_cast<const char *>(type), static_cast<const char *>(units), &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(key);
 
@@ -5570,42 +7824,64 @@ void _wrap_helicsFederateRegisterGlobalTypePublication(int resc, mxArray *resv[]
 
 
 void _wrap_helicsFederateRegisterInput(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 4){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterInput:rhs","This function requires 4 arguments.");
+	}
 
-	char *key;
-	size_t keyLength;
-	int keyStatus;
-	keyLength = mxGetN(argv[1]) + 1;
-	key = (char *)malloc(keyLength);
-	keyStatus = mxGetString(argv[1], key, keyLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterInput:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterInput:TypeError","Argument 2 must be a string.");
+	}
+	char *key = nullptr;
+	size_t keyLength = 0;
+	int keyStatus = 0;
+	if(argc > 1){
+		keyLength = mxGetN(argv[1]) + 1;
+		key = static_cast<char *>(malloc(keyLength));
+		keyStatus = mxGetString(argv[1], key, keyLength);
+
+	}
+	if(!mxIsNumeric(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterInput:TypeError","Argument 3 must be of type int32.");
+	}
 	int typeInt = static_cast<int>(mxGetScalar(argv[2]));
 	HelicsDataTypes type = static_cast<HelicsDataTypes>(typeInt);
 
-	char *units;
-	size_t unitsLength;
-	int unitsStatus;
-	unitsLength = mxGetN(argv[3]) + 1;
-	units = (char *)malloc(unitsLength);
-	unitsStatus = mxGetString(argv[3], units, unitsLength);
+	if(!mxIsChar(argv[3])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterInput:TypeError","Argument 4 must be a string.");
+	}
+	char *units = nullptr;
+	size_t unitsLength = 0;
+	int unitsStatus = 0;
+	if(argc > 3){
+		unitsLength = mxGetN(argv[3]) + 1;
+		units = static_cast<char *>(malloc(unitsLength));
+		unitsStatus = mxGetString(argv[3], units, unitsLength);
 
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsInput result = helicsFederateRegisterInput(fed, (char const *)key, type, (char const *)units, &err);
+	HelicsInput result = helicsFederateRegisterInput(fed, static_cast<const char *>(key), type, static_cast<const char *>(units), &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
 
-
-
 	free(key);
-
-
 
 	free(units);
 
@@ -5616,42 +7892,68 @@ void _wrap_helicsFederateRegisterInput(int resc, mxArray *resv[], int argc, cons
 
 
 void _wrap_helicsFederateRegisterTypeInput(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 4){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterTypeInput:rhs","This function requires 4 arguments.");
+	}
 
-	char *key;
-	size_t keyLength;
-	int keyStatus;
-	keyLength = mxGetN(argv[1]) + 1;
-	key = (char *)malloc(keyLength);
-	keyStatus = mxGetString(argv[1], key, keyLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterTypeInput:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
-	char *type;
-	size_t typeLength;
-	int typeStatus;
-	typeLength = mxGetN(argv[2]) + 1;
-	type = (char *)malloc(typeLength);
-	typeStatus = mxGetString(argv[2], type, typeLength);
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterTypeInput:TypeError","Argument 2 must be a string.");
+	}
+	char *key = nullptr;
+	size_t keyLength = 0;
+	int keyStatus = 0;
+	if(argc > 1){
+		keyLength = mxGetN(argv[1]) + 1;
+		key = static_cast<char *>(malloc(keyLength));
+		keyStatus = mxGetString(argv[1], key, keyLength);
 
-	char *units;
-	size_t unitsLength;
-	int unitsStatus;
-	unitsLength = mxGetN(argv[3]) + 1;
-	units = (char *)malloc(unitsLength);
-	unitsStatus = mxGetString(argv[3], units, unitsLength);
+	}
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterTypeInput:TypeError","Argument 3 must be a string.");
+	}
+	char *type = nullptr;
+	size_t typeLength = 0;
+	int typeStatus = 0;
+	if(argc > 2){
+		typeLength = mxGetN(argv[2]) + 1;
+		type = static_cast<char *>(malloc(typeLength));
+		typeStatus = mxGetString(argv[2], type, typeLength);
 
+	}
+	if(!mxIsChar(argv[3])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterTypeInput:TypeError","Argument 4 must be a string.");
+	}
+	char *units = nullptr;
+	size_t unitsLength = 0;
+	int unitsStatus = 0;
+	if(argc > 3){
+		unitsLength = mxGetN(argv[3]) + 1;
+		units = static_cast<char *>(malloc(unitsLength));
+		unitsStatus = mxGetString(argv[3], units, unitsLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsInput result = helicsFederateRegisterTypeInput(fed, (char const *)key, (char const *)type, (char const *)units, &err);
+	HelicsInput result = helicsFederateRegisterTypeInput(fed, static_cast<const char *>(key), static_cast<const char *>(type), static_cast<const char *>(units), &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(key);
 
@@ -5666,42 +7968,64 @@ void _wrap_helicsFederateRegisterTypeInput(int resc, mxArray *resv[], int argc, 
 
 
 void _wrap_helicsFederateRegisterGlobalInput(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 4){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalInput:rhs","This function requires 4 arguments.");
+	}
 
-	char *key;
-	size_t keyLength;
-	int keyStatus;
-	keyLength = mxGetN(argv[1]) + 1;
-	key = (char *)malloc(keyLength);
-	keyStatus = mxGetString(argv[1], key, keyLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalInput:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalInput:TypeError","Argument 2 must be a string.");
+	}
+	char *key = nullptr;
+	size_t keyLength = 0;
+	int keyStatus = 0;
+	if(argc > 1){
+		keyLength = mxGetN(argv[1]) + 1;
+		key = static_cast<char *>(malloc(keyLength));
+		keyStatus = mxGetString(argv[1], key, keyLength);
+
+	}
+	if(!mxIsNumeric(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalInput:TypeError","Argument 3 must be of type int32.");
+	}
 	int typeInt = static_cast<int>(mxGetScalar(argv[2]));
 	HelicsDataTypes type = static_cast<HelicsDataTypes>(typeInt);
 
-	char *units;
-	size_t unitsLength;
-	int unitsStatus;
-	unitsLength = mxGetN(argv[3]) + 1;
-	units = (char *)malloc(unitsLength);
-	unitsStatus = mxGetString(argv[3], units, unitsLength);
+	if(!mxIsChar(argv[3])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalInput:TypeError","Argument 4 must be a string.");
+	}
+	char *units = nullptr;
+	size_t unitsLength = 0;
+	int unitsStatus = 0;
+	if(argc > 3){
+		unitsLength = mxGetN(argv[3]) + 1;
+		units = static_cast<char *>(malloc(unitsLength));
+		unitsStatus = mxGetString(argv[3], units, unitsLength);
 
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsPublication result = helicsFederateRegisterGlobalInput(fed, (char const *)key, type, (char const *)units, &err);
+	HelicsPublication result = helicsFederateRegisterGlobalInput(fed, static_cast<const char *>(key), type, static_cast<const char *>(units), &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
 
-
-
 	free(key);
-
-
 
 	free(units);
 
@@ -5712,42 +8036,68 @@ void _wrap_helicsFederateRegisterGlobalInput(int resc, mxArray *resv[], int argc
 
 
 void _wrap_helicsFederateRegisterGlobalTypeInput(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 4){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalTypeInput:rhs","This function requires 4 arguments.");
+	}
 
-	char *key;
-	size_t keyLength;
-	int keyStatus;
-	keyLength = mxGetN(argv[1]) + 1;
-	key = (char *)malloc(keyLength);
-	keyStatus = mxGetString(argv[1], key, keyLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalTypeInput:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
-	char *type;
-	size_t typeLength;
-	int typeStatus;
-	typeLength = mxGetN(argv[2]) + 1;
-	type = (char *)malloc(typeLength);
-	typeStatus = mxGetString(argv[2], type, typeLength);
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalTypeInput:TypeError","Argument 2 must be a string.");
+	}
+	char *key = nullptr;
+	size_t keyLength = 0;
+	int keyStatus = 0;
+	if(argc > 1){
+		keyLength = mxGetN(argv[1]) + 1;
+		key = static_cast<char *>(malloc(keyLength));
+		keyStatus = mxGetString(argv[1], key, keyLength);
 
-	char *units;
-	size_t unitsLength;
-	int unitsStatus;
-	unitsLength = mxGetN(argv[3]) + 1;
-	units = (char *)malloc(unitsLength);
-	unitsStatus = mxGetString(argv[3], units, unitsLength);
+	}
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalTypeInput:TypeError","Argument 3 must be a string.");
+	}
+	char *type = nullptr;
+	size_t typeLength = 0;
+	int typeStatus = 0;
+	if(argc > 2){
+		typeLength = mxGetN(argv[2]) + 1;
+		type = static_cast<char *>(malloc(typeLength));
+		typeStatus = mxGetString(argv[2], type, typeLength);
 
+	}
+	if(!mxIsChar(argv[3])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalTypeInput:TypeError","Argument 4 must be a string.");
+	}
+	char *units = nullptr;
+	size_t unitsLength = 0;
+	int unitsStatus = 0;
+	if(argc > 3){
+		unitsLength = mxGetN(argv[3]) + 1;
+		units = static_cast<char *>(malloc(unitsLength));
+		unitsStatus = mxGetString(argv[3], units, unitsLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsPublication result = helicsFederateRegisterGlobalTypeInput(fed, (char const *)key, (char const *)type, (char const *)units, &err);
+	HelicsPublication result = helicsFederateRegisterGlobalTypeInput(fed, static_cast<const char *>(key), static_cast<const char *>(type), static_cast<const char *>(units), &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(key);
 
@@ -5762,28 +8112,42 @@ void _wrap_helicsFederateRegisterGlobalTypeInput(int resc, mxArray *resv[], int 
 
 
 void _wrap_helicsFederateGetPublication(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetPublication:rhs","This function requires 2 arguments.");
+	}
 
-	char *key;
-	size_t keyLength;
-	int keyStatus;
-	keyLength = mxGetN(argv[1]) + 1;
-	key = (char *)malloc(keyLength);
-	keyStatus = mxGetString(argv[1], key, keyLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetPublication:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetPublication:TypeError","Argument 2 must be a string.");
+	}
+	char *key = nullptr;
+	size_t keyLength = 0;
+	int keyStatus = 0;
+	if(argc > 1){
+		keyLength = mxGetN(argv[1]) + 1;
+		key = static_cast<char *>(malloc(keyLength));
+		keyStatus = mxGetString(argv[1], key, keyLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsPublication result = helicsFederateGetPublication(fed, (char const *)key, &err);
+	HelicsPublication result = helicsFederateGetPublication(fed, static_cast<const char *>(key), &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(key);
 
@@ -5794,25 +8158,35 @@ void _wrap_helicsFederateGetPublication(int resc, mxArray *resv[], int argc, con
 
 
 void _wrap_helicsFederateGetPublicationByIndex(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetPublicationByIndex:rhs","This function requires 2 arguments.");
+	}
 
-	int index = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetPublicationByIndex:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetPublicationByIndex:TypeError","Argument 2 must be of type integer.");
+	}
+		int index = static_cast<int>(mxGetScalar(argv[1]));
 
 	HelicsError err = helicsErrorInitialize();
 
 	HelicsPublication result = helicsFederateGetPublicationByIndex(fed, index, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -5821,28 +8195,42 @@ void _wrap_helicsFederateGetPublicationByIndex(int resc, mxArray *resv[], int ar
 
 
 void _wrap_helicsFederateGetInput(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetInput:rhs","This function requires 2 arguments.");
+	}
 
-	char *key;
-	size_t keyLength;
-	int keyStatus;
-	keyLength = mxGetN(argv[1]) + 1;
-	key = (char *)malloc(keyLength);
-	keyStatus = mxGetString(argv[1], key, keyLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetInput:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetInput:TypeError","Argument 2 must be a string.");
+	}
+	char *key = nullptr;
+	size_t keyLength = 0;
+	int keyStatus = 0;
+	if(argc > 1){
+		keyLength = mxGetN(argv[1]) + 1;
+		key = static_cast<char *>(malloc(keyLength));
+		keyStatus = mxGetString(argv[1], key, keyLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsInput result = helicsFederateGetInput(fed, (char const *)key, &err);
+	HelicsInput result = helicsFederateGetInput(fed, static_cast<const char *>(key), &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(key);
 
@@ -5853,25 +8241,35 @@ void _wrap_helicsFederateGetInput(int resc, mxArray *resv[], int argc, const mxA
 
 
 void _wrap_helicsFederateGetInputByIndex(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetInputByIndex:rhs","This function requires 2 arguments.");
+	}
 
-	int index = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetInputByIndex:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetInputByIndex:TypeError","Argument 2 must be of type integer.");
+	}
+		int index = static_cast<int>(mxGetScalar(argv[1]));
 
 	HelicsError err = helicsErrorInitialize();
 
 	HelicsInput result = helicsFederateGetInputByIndex(fed, index, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -5880,28 +8278,42 @@ void _wrap_helicsFederateGetInputByIndex(int resc, mxArray *resv[], int argc, co
 
 
 void _wrap_helicsFederateGetSubscription(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetSubscription:rhs","This function requires 2 arguments.");
+	}
 
-	char *key;
-	size_t keyLength;
-	int keyStatus;
-	keyLength = mxGetN(argv[1]) + 1;
-	key = (char *)malloc(keyLength);
-	keyStatus = mxGetString(argv[1], key, keyLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetSubscription:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetSubscription:TypeError","Argument 2 must be a string.");
+	}
+	char *key = nullptr;
+	size_t keyLength = 0;
+	int keyStatus = 0;
+	if(argc > 1){
+		keyLength = mxGetN(argv[1]) + 1;
+		key = static_cast<char *>(malloc(keyLength));
+		keyStatus = mxGetString(argv[1], key, keyLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsInput result = helicsFederateGetSubscription(fed, (char const *)key, &err);
+	HelicsInput result = helicsFederateGetSubscription(fed, static_cast<const char *>(key), &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(key);
 
@@ -5912,43 +8324,63 @@ void _wrap_helicsFederateGetSubscription(int resc, mxArray *resv[], int argc, co
 
 
 void _wrap_helicsFederateClearUpdates(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateClearUpdates:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateClearUpdates:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	helicsFederateClearUpdates(fed);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsFederateRegisterFromPublicationJSON(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterFromPublicationJSON:rhs","This function requires 2 arguments.");
+	}
 
-	char *json;
-	size_t jsonLength;
-	int jsonStatus;
-	jsonLength = mxGetN(argv[1]) + 1;
-	json = (char *)malloc(jsonLength);
-	jsonStatus = mxGetString(argv[1], json, jsonLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterFromPublicationJSON:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterFromPublicationJSON:TypeError","Argument 2 must be a string.");
+	}
+	char *json = nullptr;
+	size_t jsonLength = 0;
+	int jsonStatus = 0;
+	if(argc > 1){
+		jsonLength = mxGetN(argv[1]) + 1;
+		json = static_cast<char *>(malloc(jsonLength));
+		jsonStatus = mxGetString(argv[1], json, jsonLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateRegisterFromPublicationJSON(fed, (char const *)json, &err);
+	helicsFederateRegisterFromPublicationJSON(fed, static_cast<const char *>(json), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(json);
 
@@ -5959,27 +8391,40 @@ void _wrap_helicsFederateRegisterFromPublicationJSON(int resc, mxArray *resv[], 
 
 
 void _wrap_helicsFederatePublishJSON(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederatePublishJSON:rhs","This function requires 2 arguments.");
+	}
 
-	char *json;
-	size_t jsonLength;
-	int jsonStatus;
-	jsonLength = mxGetN(argv[1]) + 1;
-	json = (char *)malloc(jsonLength);
-	jsonStatus = mxGetString(argv[1], json, jsonLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederatePublishJSON:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederatePublishJSON:TypeError","Argument 2 must be a string.");
+	}
+	char *json = nullptr;
+	size_t jsonLength = 0;
+	int jsonStatus = 0;
+	if(argc > 1){
+		jsonLength = mxGetN(argv[1]) + 1;
+		json = static_cast<char *>(malloc(jsonLength));
+		jsonStatus = mxGetString(argv[1], json, jsonLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederatePublishJSON(fed, (char const *)json, &err);
+	helicsFederatePublishJSON(fed, static_cast<const char *>(json), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(json);
 
@@ -5990,39 +8435,66 @@ void _wrap_helicsFederatePublishJSON(int resc, mxArray *resv[], int argc, const 
 
 
 void _wrap_helicsPublicationIsValid(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsPublication pub = *(HelicsPublication*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationIsValid:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationIsValid:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsPublication pub = *(static_cast<HelicsPublication*>(mxGetData(argv[0])));
 
 	HelicsBool result = helicsPublicationIsValid(pub);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-	*((int32_t*)mxGetData(_out)) = (int32_t)result;
+	mxArray *_out = mxCreateLogicalMatrix(1, 1);
+	mxLogical *rv = mxGetLogicals(_out);
+	if(result == HELICS_TRUE){
+		rv[0] = true;
+	}else{
+		rv[0] = false;
+	}
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsPublicationPublishBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsPublication pub = *(HelicsPublication*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishBytes:rhs","This function requires 2 arguments.");
+	}
 
-	char *data;
-	size_t dataLength;
-	int dataStatus;
-	dataLength = mxGetN(argv[1]) + 1;
-	data = (char *)malloc(dataLength);
-	dataStatus = mxGetString(argv[1], data, dataLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishBytes:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsPublication pub = *(static_cast<HelicsPublication*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishBytes:TypeError","Argument 2 must be a string.");
+	}
+	char *data = nullptr;
+	size_t dataLength = 0;
+	int dataStatus = 0;
+	if(argc > 1){
+		dataLength = mxGetN(argv[1]) + 1;
+		data = static_cast<char *>(malloc(dataLength));
+		dataStatus = mxGetString(argv[1], data, dataLength);
+
+	}
 	int inputDataLength = static_cast<int>(dataLength) - 1;
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsPublicationPublishBytes(pub, (void *)data, inputDataLength, &err);
+	helicsPublicationPublishBytes(pub, static_cast<void *>(data), inputDataLength, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
@@ -6036,27 +8508,40 @@ void _wrap_helicsPublicationPublishBytes(int resc, mxArray *resv[], int argc, co
 
 
 void _wrap_helicsPublicationPublishString(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsPublication pub = *(HelicsPublication*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishString:rhs","This function requires 2 arguments.");
+	}
 
-	char *val;
-	size_t valLength;
-	int valStatus;
-	valLength = mxGetN(argv[1]) + 1;
-	val = (char *)malloc(valLength);
-	valStatus = mxGetString(argv[1], val, valLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishString:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsPublication pub = *(static_cast<HelicsPublication*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishString:TypeError","Argument 2 must be a string.");
+	}
+	char *val = nullptr;
+	size_t valLength = 0;
+	int valStatus = 0;
+	if(argc > 1){
+		valLength = mxGetN(argv[1]) + 1;
+		val = static_cast<char *>(malloc(valLength));
+		valStatus = mxGetString(argv[1], val, valLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsPublicationPublishString(pub, (char const *)val, &err);
+	helicsPublicationPublishString(pub, static_cast<const char *>(val), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(val);
 
@@ -6067,24 +8552,34 @@ void _wrap_helicsPublicationPublishString(int resc, mxArray *resv[], int argc, c
 
 
 void _wrap_helicsPublicationPublishInteger(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsPublication pub = *(HelicsPublication*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishInteger:rhs","This function requires 2 arguments.");
+	}
 
-	int64_t val = *((int64_t *)mxGetData(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishInteger:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsPublication pub = *(static_cast<HelicsPublication*>(mxGetData(argv[0])));
+
+	if(mxGetClassID(argv[1]) != mxINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishInteger:TypeError","Argument 2 must be of type int64.");
+	}
+mxInt64 *pval = mxGetInt64s(argv[1]);
+	int64_t val = static_cast<int64_t>(pval[0]);
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsPublicationPublishInteger(pub, val, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -6093,24 +8588,37 @@ void _wrap_helicsPublicationPublishInteger(int resc, mxArray *resv[], int argc, 
 
 
 void _wrap_helicsPublicationPublishBoolean(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsPublication pub = *(HelicsPublication*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishBoolean:rhs","This function requires 2 arguments.");
+	}
 
-	HelicsBool val = (HelicsBool)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishBoolean:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsPublication pub = *(static_cast<HelicsPublication*>(mxGetData(argv[0])));
+
+	if(!mxIsLogical(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishBoolean:TypeError","Argument 2 must be a 0 or 1.");
+	}
+	mxLogical *pval = mxGetLogicals(argv[1]);
+	HelicsBool val = HELICS_FALSE;
+	if(pval[0]){
+		val = HELICS_TRUE;
+	}
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsPublicationPublishBoolean(pub, val, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -6119,24 +8627,33 @@ void _wrap_helicsPublicationPublishBoolean(int resc, mxArray *resv[], int argc, 
 
 
 void _wrap_helicsPublicationPublishDouble(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsPublication pub = *(HelicsPublication*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishDouble:rhs","This function requires 2 arguments.");
+	}
 
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishDouble:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsPublication pub = *(static_cast<HelicsPublication*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishDouble:TypeError","Argument 2 must be of type double.");
+	}
 	double val = mxGetScalar(argv[1]);
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsPublicationPublishDouble(pub, val, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -6145,24 +8662,33 @@ void _wrap_helicsPublicationPublishDouble(int resc, mxArray *resv[], int argc, c
 
 
 void _wrap_helicsPublicationPublishTime(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsPublication pub = *(HelicsPublication*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishTime:rhs","This function requires 2 arguments.");
+	}
 
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishTime:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsPublication pub = *(static_cast<HelicsPublication*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishTime:TypeError","Argument 2 must be of type double.");
+	}
 	HelicsTime val = (HelicsTime)(mxGetScalar(argv[1]));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsPublicationPublishTime(pub, val, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -6171,27 +8697,40 @@ void _wrap_helicsPublicationPublishTime(int resc, mxArray *resv[], int argc, con
 
 
 void _wrap_helicsPublicationPublishChar(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsPublication pub = *(HelicsPublication*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishChar:rhs","This function requires 2 arguments.");
+	}
 
-	char *val;
-	size_t valLength;
-	int valStatus;
-	valLength = mxGetN(argv[1]) + 1;
-	val = (char *)malloc(valLength);
-	valStatus = mxGetString(argv[1], val, valLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishChar:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsPublication pub = *(static_cast<HelicsPublication*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishChar:TypeError","Argument 2 must be a string.");
+	}
+	char *val = nullptr;
+	size_t valLength = 0;
+	int valStatus = 0;
+	if(argc > 1){
+		valLength = mxGetN(argv[1]) + 1;
+		val = static_cast<char *>(malloc(valLength));
+		valStatus = mxGetString(argv[1], val, valLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
 	helicsPublicationPublishChar(pub, val[0], &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(val);
 
@@ -6202,8 +8741,21 @@ void _wrap_helicsPublicationPublishChar(int resc, mxArray *resv[], int argc, con
 
 
 void _wrap_helicsPublicationPublishComplex(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsPublication pub = *(HelicsPublication*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishComplex:rhs","This function requires 2 arguments.");
+	}
 
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishComplex:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsPublication pub = *(static_cast<HelicsPublication*>(mxGetData(argv[0])));
+
+	if(!mxIsComplex(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishComplex:TypeError","Argument 2 must be of type complex.");
+	}
 	mxComplexDouble *complexValue = mxGetComplexDoubles(argv[1]);
 	double value[2] = {complexValue[0].real, complexValue[0].imag};
 
@@ -6211,7 +8763,7 @@ void _wrap_helicsPublicationPublishComplex(int resc, mxArray *resv[], int argc, 
 
 	helicsPublicationPublishComplex(pub, value[0], value[1], &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
@@ -6225,17 +8777,30 @@ void _wrap_helicsPublicationPublishComplex(int resc, mxArray *resv[], int argc, 
 
 
 void _wrap_helicsPublicationPublishVector(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsPublication pub = *(HelicsPublication*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishVector:rhs","This function requires 2 arguments.");
+	}
 
-	int vectorLength =  (int)mxGetNumberOfElements(argv[1]);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishVector:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsPublication pub = *(static_cast<HelicsPublication*>(mxGetData(argv[0])));
 
-	double *vectorInput =  (double *)mxGetDoubles(argv[1]);
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishVector:TypeError","Argument 2 must be an array of type double.");
+	}
+	int vectorLength =  static_cast<int>(mxGetNumberOfElements(argv[1]));
+
+	double *vectorInput =  static_cast<double *>(mxGetDoubles(argv[1]));
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsPublicationPublishVector(pub, (const double *)vectorInput, vectorLength, &err);
+	helicsPublicationPublishVector(pub, static_cast<const double *>(vectorInput), vectorLength, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -6248,11 +8813,24 @@ void _wrap_helicsPublicationPublishVector(int resc, mxArray *resv[], int argc, c
 
 
 void _wrap_helicsPublicationPublishComplexVector(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsPublication pub = *(HelicsPublication*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishComplexVector:rhs","This function requires 2 arguments.");
+	}
 
-	int vectorLength =  (int)mxGetN(argv[1])*2;
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishComplexVector:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsPublication pub = *(static_cast<HelicsPublication*>(mxGetData(argv[0])));
 
-	double *vectorInput = (double *)malloc(vectorLength * sizeof(double));
+	if(!mxIsComplex(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishComplexVector:TypeError","Argument 2 must be an array of type complex.");
+	}
+	int vectorLength =  static_cast<int>(mxGetN(argv[1])*2);
+
+	double *vectorInput = static_cast<double *>(malloc(vectorLength * sizeof(double)));
 	mxComplexDouble *vals = mxGetComplexDoubles(argv[1]);
 	for(int i=0; i<vectorLength/2; ++i){
 		vectorInput[2*i] = vals[i].real;
@@ -6261,9 +8839,9 @@ void _wrap_helicsPublicationPublishComplexVector(int resc, mxArray *resv[], int 
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsPublicationPublishComplexVector(pub, (const double *)vectorInput, vectorLength, &err);
+	helicsPublicationPublishComplexVector(pub, static_cast<const double *>(vectorInput), vectorLength, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -6276,33 +8854,48 @@ void _wrap_helicsPublicationPublishComplexVector(int resc, mxArray *resv[], int 
 
 
 void _wrap_helicsPublicationPublishNamedPoint(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsPublication pub = *(HelicsPublication*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishNamedPoint:rhs","This function requires 3 arguments.");
+	}
 
-	char *field;
-	size_t fieldLength;
-	int fieldStatus;
-	fieldLength = mxGetN(argv[1]) + 1;
-	field = (char *)malloc(fieldLength);
-	fieldStatus = mxGetString(argv[1], field, fieldLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishNamedPoint:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsPublication pub = *(static_cast<HelicsPublication*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishNamedPoint:TypeError","Argument 2 must be a string.");
+	}
+	char *field = nullptr;
+	size_t fieldLength = 0;
+	int fieldStatus = 0;
+	if(argc > 1){
+		fieldLength = mxGetN(argv[1]) + 1;
+		field = static_cast<char *>(malloc(fieldLength));
+		fieldStatus = mxGetString(argv[1], field, fieldLength);
+
+	}
+	if(!mxIsNumeric(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishNamedPoint:TypeError","Argument 3 must be of type double.");
+	}
 	double val = mxGetScalar(argv[2]);
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsPublicationPublishNamedPoint(pub, (char const *)field, val, &err);
+	helicsPublicationPublishNamedPoint(pub, static_cast<const char *>(field), val, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
 
-
-
 	free(field);
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -6311,27 +8904,40 @@ void _wrap_helicsPublicationPublishNamedPoint(int resc, mxArray *resv[], int arg
 
 
 void _wrap_helicsPublicationAddTarget(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsPublication pub = *(HelicsPublication*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationAddTarget:rhs","This function requires 2 arguments.");
+	}
 
-	char *target;
-	size_t targetLength;
-	int targetStatus;
-	targetLength = mxGetN(argv[1]) + 1;
-	target = (char *)malloc(targetLength);
-	targetStatus = mxGetString(argv[1], target, targetLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationAddTarget:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsPublication pub = *(static_cast<HelicsPublication*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationAddTarget:TypeError","Argument 2 must be a string.");
+	}
+	char *target = nullptr;
+	size_t targetLength = 0;
+	int targetStatus = 0;
+	if(argc > 1){
+		targetLength = mxGetN(argv[1]) + 1;
+		target = static_cast<char *>(malloc(targetLength));
+		targetStatus = mxGetString(argv[1], target, targetLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsPublicationAddTarget(pub, (char const *)target, &err);
+	helicsPublicationAddTarget(pub, static_cast<const char *>(target), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(target);
 
@@ -6342,44 +8948,69 @@ void _wrap_helicsPublicationAddTarget(int resc, mxArray *resv[], int argc, const
 
 
 void _wrap_helicsInputIsValid(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputIsValid:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputIsValid:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
 	HelicsBool result = helicsInputIsValid(ipt);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-	*((int32_t*)mxGetData(_out)) = (int32_t)result;
+	mxArray *_out = mxCreateLogicalMatrix(1, 1);
+	mxLogical *rv = mxGetLogicals(_out);
+	if(result == HELICS_TRUE){
+		rv[0] = true;
+	}else{
+		rv[0] = false;
+	}
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsInputAddTarget(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputAddTarget:rhs","This function requires 2 arguments.");
+	}
 
-	char *target;
-	size_t targetLength;
-	int targetStatus;
-	targetLength = mxGetN(argv[1]) + 1;
-	target = (char *)malloc(targetLength);
-	targetStatus = mxGetString(argv[1], target, targetLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputAddTarget:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputAddTarget:TypeError","Argument 2 must be a string.");
+	}
+	char *target = nullptr;
+	size_t targetLength = 0;
+	int targetStatus = 0;
+	if(argc > 1){
+		targetLength = mxGetN(argv[1]) + 1;
+		target = static_cast<char *>(malloc(targetLength));
+		targetStatus = mxGetString(argv[1], target, targetLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsInputAddTarget(ipt, (char const *)target, &err);
+	helicsInputAddTarget(ipt, static_cast<const char *>(target), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(target);
 
@@ -6390,24 +9021,41 @@ void _wrap_helicsInputAddTarget(int resc, mxArray *resv[], int argc, const mxArr
 
 
 void _wrap_helicsInputGetByteCount(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetByteCount:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetByteCount:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
 	int result = helicsInputGetByteCount(ipt);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(_out)) = (int64_t)result;
+	mxInt64 *rv = mxGetInt64s(_out);
+	rv[0] = static_cast<mxInt64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsInputGetBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetBytes:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetBytes:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
 	int maxDataLen = helicsInputGetByteCount(ipt) + 2;
 
@@ -6419,10 +9067,10 @@ void _wrap_helicsInputGetBytes(int resc, mxArray *resv[], int argc, const mxArra
 
 	helicsInputGetBytes(ipt, data, maxDataLen, &actualSize, &err);
 
-	mxChar *dataChar = (mxChar *)data;
+	mxChar *dataChar = static_cast<mxChar *>(data);
 	mwSize dims[2] = {1, static_cast<mwSize>(actualSize)};
 	mxArray *_out = mxCreateCharArray(2, dims);
-	mxChar *out_data = (mxChar *)mxGetData(_out);
+	mxChar *out_data = static_cast<mxChar *>(mxGetData(_out));
 	for(int i=0; i<actualSize; ++i){
 		out_data[i] = dataChar[i];
 	}
@@ -6441,28 +9089,45 @@ void _wrap_helicsInputGetBytes(int resc, mxArray *resv[], int argc, const mxArra
 
 
 void _wrap_helicsInputGetStringSize(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetStringSize:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetStringSize:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
 	int result = helicsInputGetStringSize(ipt);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(_out)) = (int64_t)result;
+	mxInt64 *rv = mxGetInt64s(_out);
+	rv[0] = static_cast<mxInt64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsInputGetString(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetString:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetString:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
 	int maxStringLen = helicsInputGetStringSize(ipt) + 2;
 
-	char *outputString = (char *)malloc(maxStringLen);
+	char *outputString = static_cast<char *>(malloc(maxStringLen));
 
 	int actualLength = 0;
 
@@ -6472,7 +9137,7 @@ void _wrap_helicsInputGetString(int resc, mxArray *resv[], int argc, const mxArr
 
 	mwSize dims[2] = {1, static_cast<mwSize>(actualLength) - 1};
 	mxArray *_out = mxCreateCharArray(2, dims);
-	mxChar *out_data = (mxChar *)mxGetData(_out);
+	mxChar *out_data = static_cast<mxChar *>(mxGetData(_out));
 	for(int i=0; i<(actualLength-1); ++i){
 		out_data[i] = outputString[i];
 	}
@@ -6491,21 +9156,29 @@ void _wrap_helicsInputGetString(int resc, mxArray *resv[], int argc, const mxArr
 
 
 void _wrap_helicsInputGetInteger(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetInteger:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetInteger:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
 	int64_t result = helicsInputGetInteger(ipt, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(_out)) = (int64_t)result;
+	mxInt64 *rv = mxGetInt64s(_out);
+	rv[0] = static_cast<mxInt64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -6514,21 +9187,33 @@ void _wrap_helicsInputGetInteger(int resc, mxArray *resv[], int argc, const mxAr
 
 
 void _wrap_helicsInputGetBoolean(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetBoolean:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetBoolean:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
 	HelicsBool result = helicsInputGetBoolean(ipt, &err);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-	*((int32_t*)mxGetData(_out)) = (int32_t)result;
+	mxArray *_out = mxCreateLogicalMatrix(1, 1);
+	mxLogical *rv = mxGetLogicals(_out);
+	if(result == HELICS_TRUE){
+		rv[0] = true;
+	}else{
+		rv[0] = false;
+	}
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -6537,7 +9222,16 @@ void _wrap_helicsInputGetBoolean(int resc, mxArray *resv[], int argc, const mxAr
 
 
 void _wrap_helicsInputGetDouble(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetDouble:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetDouble:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
@@ -6550,8 +9244,6 @@ void _wrap_helicsInputGetDouble(int resc, mxArray *resv[], int argc, const mxArr
 		*resv++ = _out;
 	}
 
-
-
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
 	}
@@ -6559,7 +9251,16 @@ void _wrap_helicsInputGetDouble(int resc, mxArray *resv[], int argc, const mxArr
 
 
 void _wrap_helicsInputGetTime(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetTime:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetTime:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
@@ -6572,8 +9273,6 @@ void _wrap_helicsInputGetTime(int resc, mxArray *resv[], int argc, const mxArray
 		*resv++ = _out;
 	}
 
-
-
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
 	}
@@ -6581,7 +9280,16 @@ void _wrap_helicsInputGetTime(int resc, mxArray *resv[], int argc, const mxArray
 
 
 void _wrap_helicsInputGetChar(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetChar:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetChar:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
@@ -6594,8 +9302,6 @@ void _wrap_helicsInputGetChar(int resc, mxArray *resv[], int argc, const mxArray
 		*resv++ = _out;
 	}
 
-
-
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
 	}
@@ -6603,7 +9309,16 @@ void _wrap_helicsInputGetChar(int resc, mxArray *resv[], int argc, const mxArray
 
 
 void _wrap_helicsInputGetComplexObject(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetComplexObject:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetComplexObject:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
@@ -6627,7 +9342,16 @@ void _wrap_helicsInputGetComplexObject(int resc, mxArray *resv[], int argc, cons
 
 
 void _wrap_helicsInputGetComplex(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetComplex:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetComplex:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
 	double values[2];
 
@@ -6651,28 +9375,45 @@ void _wrap_helicsInputGetComplex(int resc, mxArray *resv[], int argc, const mxAr
 
 
 void _wrap_helicsInputGetVectorSize(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetVectorSize:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetVectorSize:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
 	int result = helicsInputGetVectorSize(ipt);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(_out)) = (int64_t)result;
+	mxInt64 *rv = mxGetInt64s(_out);
+	rv[0] = static_cast<mxInt64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsInputGetVector(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetVector:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetVector:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
 	int maxLength = helicsInputGetVectorSize(ipt);
 
-	double *data = (double *)malloc(maxLength * sizeof(double));
+	double *data = static_cast<double *>(malloc(maxLength * sizeof(double)));
 
 	int actualSize = 0;
 
@@ -6680,9 +9421,9 @@ void _wrap_helicsInputGetVector(int resc, mxArray *resv[], int argc, const mxArr
 
 	helicsInputGetVector(ipt, data, maxLength, &actualSize, &err);
 
-	mxDouble *result_data = (mxDouble *)mxMalloc(actualSize * sizeof(mxDouble));
+	mxDouble *result_data = static_cast<mxDouble *>(mxMalloc(actualSize * sizeof(mxDouble)));
 	for(int i=0; i<actualSize; ++i){
-		result_data[i] = (mxDouble)data[i];
+		result_data[i] = static_cast<mxDouble>(data[i]);
 	}
 	mxArray *_out = mxCreateDoubleMatrix(actualSize, 1, mxREAL);
 	int status = mxSetDoubles(_out, &(result_data[0]));
@@ -6699,11 +9440,20 @@ void _wrap_helicsInputGetVector(int resc, mxArray *resv[], int argc, const mxArr
 
 
 void _wrap_helicsInputGetComplexVector(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetComplexVector:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetComplexVector:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
 	int maxLength = helicsInputGetVectorSize(ipt);
 
-	double *data = (double *)malloc(maxLength * sizeof(double));
+	double *data = static_cast<double *>(malloc(maxLength * sizeof(double)));
 
 	int actualSize = 0;
 
@@ -6711,7 +9461,7 @@ void _wrap_helicsInputGetComplexVector(int resc, mxArray *resv[], int argc, cons
 
 	helicsInputGetComplexVector(ipt, data, maxLength, &actualSize, &err);
 
-	mxComplexDouble *result_data = (mxComplexDouble *)mxMalloc((actualSize/2)*sizeof(mxComplexDouble));
+	mxComplexDouble *result_data = static_cast<mxComplexDouble *>(mxMalloc((actualSize/2)*sizeof(mxComplexDouble)));
 	for(int i=0; i<(actualSize/2); ++i){
 		result_data[i].real = data[2*(i)];
 		result_data[i].imag = data[2*(i) + 1];
@@ -6731,11 +9481,20 @@ void _wrap_helicsInputGetComplexVector(int resc, mxArray *resv[], int argc, cons
 
 
 void _wrap_helicsInputGetNamedPoint(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetNamedPoint:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetNamedPoint:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
 	int maxStringLen = helicsInputGetStringSize(ipt) + 2;
 
-	char *outputString = (char *)malloc(maxStringLen);
+	char *outputString = static_cast<char *>(malloc(maxStringLen));
 
 	int actualLength = 0;
 
@@ -6747,7 +9506,7 @@ void _wrap_helicsInputGetNamedPoint(int resc, mxArray *resv[], int argc, const m
 
 	mwSize dims[2] = {1, static_cast<mwSize>(actualLength)-1};
 	mxArray *_out = mxCreateCharArray(2, dims);
-	mxChar *out_data = (mxChar *)mxGetData(_out);
+	mxChar *out_data = static_cast<mxChar *>(mxGetData(_out));
 	for(int i=0; i<(actualLength-1); ++i){
 		out_data[i] = outputString[i];
 	}
@@ -6771,22 +9530,37 @@ void _wrap_helicsInputGetNamedPoint(int resc, mxArray *resv[], int argc, const m
 
 
 void _wrap_helicsInputSetDefaultBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultBytes:rhs","This function requires 2 arguments.");
+	}
 
-	char *data;
-	size_t dataLength;
-	int dataStatus;
-	dataLength = mxGetN(argv[1]) + 1;
-	data = (char *)malloc(dataLength);
-	dataStatus = mxGetString(argv[1], data, dataLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultBytes:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultBytes:TypeError","Argument 2 must be a string.");
+	}
+	char *data = nullptr;
+	size_t dataLength = 0;
+	int dataStatus = 0;
+	if(argc > 1){
+		dataLength = mxGetN(argv[1]) + 1;
+		data = static_cast<char *>(malloc(dataLength));
+		dataStatus = mxGetString(argv[1], data, dataLength);
+
+	}
 	int inputDataLength = static_cast<int>(dataLength) - 1;
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsInputSetDefaultBytes(ipt, (void *)data, inputDataLength, &err);
+	helicsInputSetDefaultBytes(ipt, static_cast<void *>(data), inputDataLength, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -6801,27 +9575,40 @@ void _wrap_helicsInputSetDefaultBytes(int resc, mxArray *resv[], int argc, const
 
 
 void _wrap_helicsInputSetDefaultString(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultString:rhs","This function requires 2 arguments.");
+	}
 
-	char *defaultString;
-	size_t defaultStringLength;
-	int defaultStringStatus;
-	defaultStringLength = mxGetN(argv[1]) + 1;
-	defaultString = (char *)malloc(defaultStringLength);
-	defaultStringStatus = mxGetString(argv[1], defaultString, defaultStringLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultString:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultString:TypeError","Argument 2 must be a string.");
+	}
+	char *defaultString = nullptr;
+	size_t defaultStringLength = 0;
+	int defaultStringStatus = 0;
+	if(argc > 1){
+		defaultStringLength = mxGetN(argv[1]) + 1;
+		defaultString = static_cast<char *>(malloc(defaultStringLength));
+		defaultStringStatus = mxGetString(argv[1], defaultString, defaultStringLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsInputSetDefaultString(ipt, (char const *)defaultString, &err);
+	helicsInputSetDefaultString(ipt, static_cast<const char *>(defaultString), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(defaultString);
 
@@ -6832,24 +9619,34 @@ void _wrap_helicsInputSetDefaultString(int resc, mxArray *resv[], int argc, cons
 
 
 void _wrap_helicsInputSetDefaultInteger(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultInteger:rhs","This function requires 2 arguments.");
+	}
 
-	int64_t val = *((int64_t *)mxGetData(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultInteger:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
+
+	if(mxGetClassID(argv[1]) != mxINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultInteger:TypeError","Argument 2 must be of type int64.");
+	}
+mxInt64 *pval = mxGetInt64s(argv[1]);
+	int64_t val = static_cast<int64_t>(pval[0]);
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsInputSetDefaultInteger(ipt, val, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -6858,24 +9655,37 @@ void _wrap_helicsInputSetDefaultInteger(int resc, mxArray *resv[], int argc, con
 
 
 void _wrap_helicsInputSetDefaultBoolean(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultBoolean:rhs","This function requires 2 arguments.");
+	}
 
-	HelicsBool val = (HelicsBool)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultBoolean:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
+
+	if(!mxIsLogical(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultBoolean:TypeError","Argument 2 must be a 0 or 1.");
+	}
+	mxLogical *pval = mxGetLogicals(argv[1]);
+	HelicsBool val = HELICS_FALSE;
+	if(pval[0]){
+		val = HELICS_TRUE;
+	}
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsInputSetDefaultBoolean(ipt, val, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -6884,24 +9694,33 @@ void _wrap_helicsInputSetDefaultBoolean(int resc, mxArray *resv[], int argc, con
 
 
 void _wrap_helicsInputSetDefaultTime(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultTime:rhs","This function requires 2 arguments.");
+	}
 
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultTime:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultTime:TypeError","Argument 2 must be of type double.");
+	}
 	HelicsTime val = (HelicsTime)(mxGetScalar(argv[1]));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsInputSetDefaultTime(ipt, val, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -6910,27 +9729,40 @@ void _wrap_helicsInputSetDefaultTime(int resc, mxArray *resv[], int argc, const 
 
 
 void _wrap_helicsInputSetDefaultChar(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultChar:rhs","This function requires 2 arguments.");
+	}
 
-	char *val;
-	size_t valLength;
-	int valStatus;
-	valLength = mxGetN(argv[1]) + 1;
-	val = (char *)malloc(valLength);
-	valStatus = mxGetString(argv[1], val, valLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultChar:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultChar:TypeError","Argument 2 must be a string.");
+	}
+	char *val = nullptr;
+	size_t valLength = 0;
+	int valStatus = 0;
+	if(argc > 1){
+		valLength = mxGetN(argv[1]) + 1;
+		val = static_cast<char *>(malloc(valLength));
+		valStatus = mxGetString(argv[1], val, valLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
 	helicsInputSetDefaultChar(ipt, val[0], &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(val);
 
@@ -6941,24 +9773,33 @@ void _wrap_helicsInputSetDefaultChar(int resc, mxArray *resv[], int argc, const 
 
 
 void _wrap_helicsInputSetDefaultDouble(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultDouble:rhs","This function requires 2 arguments.");
+	}
 
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultDouble:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultDouble:TypeError","Argument 2 must be of type double.");
+	}
 	double val = mxGetScalar(argv[1]);
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsInputSetDefaultDouble(ipt, val, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -6967,15 +9808,28 @@ void _wrap_helicsInputSetDefaultDouble(int resc, mxArray *resv[], int argc, cons
 
 
 void _wrap_helicsInputSetDefaultComplex(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultComplex:rhs","This function requires 2 arguments.");
+	}
 
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultComplex:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
+
+	if(!mxIsComplex(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultComplex:TypeError","Argument 2 must be of type complex.");
+	}
 	mxComplexDouble *value = mxGetComplexDoubles(argv[1]);
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsInputSetDefaultComplex(ipt, (double)value->real, (double)value->imag, &err);
+	helicsInputSetDefaultComplex(ipt, static_cast<double>(value->real), static_cast<double>(value->imag), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -6988,17 +9842,30 @@ void _wrap_helicsInputSetDefaultComplex(int resc, mxArray *resv[], int argc, con
 
 
 void _wrap_helicsInputSetDefaultVector(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultVector:rhs","This function requires 2 arguments.");
+	}
 
-	int vectorLength =  (int)mxGetNumberOfElements(argv[1]);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultVector:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
-	double *vectorInput =  (double *)mxGetDoubles(argv[1]);
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultVector:TypeError","Argument 2 must be an array of doubles.");
+	}
+	int vectorLength =  static_cast<int>(mxGetNumberOfElements(argv[1]));
+
+	double *vectorInput =  static_cast<double *>(mxGetDoubles(argv[1]));
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsInputSetDefaultVector(ipt, (const double *)vectorInput, vectorLength, &err);
+	helicsInputSetDefaultVector(ipt, static_cast<const double *>(vectorInput), vectorLength, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -7011,11 +9878,24 @@ void _wrap_helicsInputSetDefaultVector(int resc, mxArray *resv[], int argc, cons
 
 
 void _wrap_helicsInputSetDefaultComplexVector(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultComplexVector:rhs","This function requires 2 arguments.");
+	}
 
-	int vectorLength =  (int)mxGetN(argv[1])*2;
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultComplexVector:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
-	double *vectorInput = (double *)malloc(vectorLength * sizeof(double));
+	if(!mxIsComplex(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultComplexVector:TypeError","Argument 2 must be of an array of type complex.");
+	}
+	int vectorLength =  static_cast<int>(mxGetN(argv[1])*2);
+
+	double *vectorInput = static_cast<double *>(malloc(vectorLength * sizeof(double)));
 	mxComplexDouble *vals = mxGetComplexDoubles(argv[1]);
 	for(int i=0; i<vectorLength/2; ++i){
 		vectorInput[2*i] = vals[i].real;
@@ -7024,9 +9904,9 @@ void _wrap_helicsInputSetDefaultComplexVector(int resc, mxArray *resv[], int arg
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsInputSetDefaultComplexVector(ipt, (const double *)vectorInput, vectorLength, &err);
+	helicsInputSetDefaultComplexVector(ipt, static_cast<const double *>(vectorInput), vectorLength, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -7039,33 +9919,48 @@ void _wrap_helicsInputSetDefaultComplexVector(int resc, mxArray *resv[], int arg
 
 
 void _wrap_helicsInputSetDefaultNamedPoint(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultNamedPoint:rhs","This function requires 3 arguments.");
+	}
 
-	char *defaultName;
-	size_t defaultNameLength;
-	int defaultNameStatus;
-	defaultNameLength = mxGetN(argv[1]) + 1;
-	defaultName = (char *)malloc(defaultNameLength);
-	defaultNameStatus = mxGetString(argv[1], defaultName, defaultNameLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultNamedPoint:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultNamedPoint:TypeError","Argument 2 must be a string.");
+	}
+	char *defaultName = nullptr;
+	size_t defaultNameLength = 0;
+	int defaultNameStatus = 0;
+	if(argc > 1){
+		defaultNameLength = mxGetN(argv[1]) + 1;
+		defaultName = static_cast<char *>(malloc(defaultNameLength));
+		defaultNameStatus = mxGetString(argv[1], defaultName, defaultNameLength);
+
+	}
+	if(!mxIsNumeric(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultNamedPoint:TypeError","Argument 3 must be of type double.");
+	}
 	double val = mxGetScalar(argv[2]);
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsInputSetDefaultNamedPoint(ipt, (char const *)defaultName, val, &err);
+	helicsInputSetDefaultNamedPoint(ipt, static_cast<const char *>(defaultName), val, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
 
-
-
 	free(defaultName);
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -7074,7 +9969,16 @@ void _wrap_helicsInputSetDefaultNamedPoint(int resc, mxArray *resv[], int argc, 
 
 
 void _wrap_helicsInputGetType(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetType:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetType:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
 	const char *result = helicsInputGetType(ipt);
 
@@ -7084,13 +9988,20 @@ void _wrap_helicsInputGetType(int resc, mxArray *resv[], int argc, const mxArray
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsInputGetPublicationType(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetPublicationType:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetPublicationType:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
 	const char *result = helicsInputGetPublicationType(ipt);
 
@@ -7100,30 +10011,45 @@ void _wrap_helicsInputGetPublicationType(int resc, mxArray *resv[], int argc, co
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsInputGetPublicationDataType(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetPublicationDataType:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetPublicationDataType:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
 	int result = helicsInputGetPublicationDataType(ipt);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(_out)) = (int64_t)result;
+	mxInt64 *rv = mxGetInt64s(_out);
+	rv[0] = static_cast<mxInt64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsPublicationGetType(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsPublication pub = *(HelicsPublication*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationGetType:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationGetType:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsPublication pub = *(static_cast<HelicsPublication*>(mxGetData(argv[0])));
 
 	const char *result = helicsPublicationGetType(pub);
 
@@ -7133,13 +10059,20 @@ void _wrap_helicsPublicationGetType(int resc, mxArray *resv[], int argc, const m
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsInputGetName(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetName:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetName:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
 	const char *result = helicsInputGetName(ipt);
 
@@ -7149,13 +10082,20 @@ void _wrap_helicsInputGetName(int resc, mxArray *resv[], int argc, const mxArray
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsSubscriptionGetTarget(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsSubscriptionGetTarget:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsSubscriptionGetTarget:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
 	const char *result = helicsSubscriptionGetTarget(ipt);
 
@@ -7165,13 +10105,20 @@ void _wrap_helicsSubscriptionGetTarget(int resc, mxArray *resv[], int argc, cons
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsPublicationGetName(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsPublication pub = *(HelicsPublication*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationGetName:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationGetName:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsPublication pub = *(static_cast<HelicsPublication*>(mxGetData(argv[0])));
 
 	const char *result = helicsPublicationGetName(pub);
 
@@ -7181,13 +10128,20 @@ void _wrap_helicsPublicationGetName(int resc, mxArray *resv[], int argc, const m
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsInputGetUnits(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetUnits:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetUnits:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
 	const char *result = helicsInputGetUnits(ipt);
 
@@ -7197,13 +10151,20 @@ void _wrap_helicsInputGetUnits(int resc, mxArray *resv[], int argc, const mxArra
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsInputGetInjectionUnits(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetInjectionUnits:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetInjectionUnits:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
 	const char *result = helicsInputGetInjectionUnits(ipt);
 
@@ -7213,13 +10174,20 @@ void _wrap_helicsInputGetInjectionUnits(int resc, mxArray *resv[], int argc, con
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsInputGetExtractionUnits(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetExtractionUnits:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetExtractionUnits:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
 	const char *result = helicsInputGetExtractionUnits(ipt);
 
@@ -7229,13 +10197,20 @@ void _wrap_helicsInputGetExtractionUnits(int resc, mxArray *resv[], int argc, co
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsPublicationGetUnits(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsPublication pub = *(HelicsPublication*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationGetUnits:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationGetUnits:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsPublication pub = *(static_cast<HelicsPublication*>(mxGetData(argv[0])));
 
 	const char *result = helicsPublicationGetUnits(pub);
 
@@ -7245,13 +10220,20 @@ void _wrap_helicsPublicationGetUnits(int resc, mxArray *resv[], int argc, const 
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsInputGetInfo(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput inp = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetInfo:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetInfo:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput inp = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
 	const char *result = helicsInputGetInfo(inp);
 
@@ -7261,33 +10243,44 @@ void _wrap_helicsInputGetInfo(int resc, mxArray *resv[], int argc, const mxArray
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsInputSetInfo(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput inp = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetInfo:rhs","This function requires 2 arguments.");
+	}
 
-	char *info;
-	size_t infoLength;
-	int infoStatus;
-	infoLength = mxGetN(argv[1]) + 1;
-	info = (char *)malloc(infoLength);
-	infoStatus = mxGetString(argv[1], info, infoLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetInfo:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput inp = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetInfo:TypeError","Argument 2 must be a string.");
+	}
+	char *info = nullptr;
+	size_t infoLength = 0;
+	int infoStatus = 0;
+	if(argc > 1){
+		infoLength = mxGetN(argv[1]) + 1;
+		info = static_cast<char *>(malloc(infoLength));
+		infoStatus = mxGetString(argv[1], info, infoLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsInputSetInfo(inp, (char const *)info, &err);
+	helicsInputSetInfo(inp, static_cast<const char *>(info), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(info);
 
@@ -7298,16 +10291,33 @@ void _wrap_helicsInputSetInfo(int resc, mxArray *resv[], int argc, const mxArray
 
 
 void _wrap_helicsInputGetTag(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput inp = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc < 1 || argc > 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetTag:rhs","This function requires at least 1 arguments and at most 2 arguments.");
+	}
 
-	char *tagname;
-	size_t tagnameLength;
-	int tagnameStatus;
-	tagnameLength = mxGetN(argv[1]) + 1;
-	tagname = (char *)malloc(tagnameLength);
-	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetTag:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput inp = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
-	const char *result = helicsInputGetTag(inp, (char const *)tagname);
+	if(argc > 1){
+		if(!mxIsChar(argv[1])){
+			mexUnlock();
+			mexErrMsgIdAndTxt("MATLAB:helicsInputGetTag:TypeError","Argument 2 must be a string.");
+		}
+	}
+	char *tagname = nullptr;
+	size_t tagnameLength = 0;
+	int tagnameStatus = 0;
+	if(argc > 1){
+		tagnameLength = mxGetN(argv[1]) + 1;
+		tagname = static_cast<char *>(malloc(tagnameLength));
+		tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
+
+	}
+	const char *result = helicsInputGetTag(inp, static_cast<const char *>(tagname));
 
 	mxArray *_out = mxCreateString(result);
 
@@ -7316,41 +10326,58 @@ void _wrap_helicsInputGetTag(int resc, mxArray *resv[], int argc, const mxArray 
 		*resv++ = _out;
 	}
 
-
-
 	free(tagname);
 }
 
 
 void _wrap_helicsInputSetTag(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput inp = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetTag:rhs","This function requires 3 arguments.");
+	}
 
-	char *tagname;
-	size_t tagnameLength;
-	int tagnameStatus;
-	tagnameLength = mxGetN(argv[1]) + 1;
-	tagname = (char *)malloc(tagnameLength);
-	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetTag:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput inp = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
-	char *tagvalue;
-	size_t tagvalueLength;
-	int tagvalueStatus;
-	tagvalueLength = mxGetN(argv[2]) + 1;
-	tagvalue = (char *)malloc(tagvalueLength);
-	tagvalueStatus = mxGetString(argv[2], tagvalue, tagvalueLength);
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetTag:TypeError","Argument 2 must be a string.");
+	}
+	char *tagname = nullptr;
+	size_t tagnameLength = 0;
+	int tagnameStatus = 0;
+	if(argc > 1){
+		tagnameLength = mxGetN(argv[1]) + 1;
+		tagname = static_cast<char *>(malloc(tagnameLength));
+		tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
 
+	}
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetTag:TypeError","Argument 3 must be a string.");
+	}
+	char *tagvalue = nullptr;
+	size_t tagvalueLength = 0;
+	int tagvalueStatus = 0;
+	if(argc > 2){
+		tagvalueLength = mxGetN(argv[2]) + 1;
+		tagvalue = static_cast<char *>(malloc(tagvalueLength));
+		tagvalueStatus = mxGetString(argv[2], tagvalue, tagvalueLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsInputSetTag(inp, (char const *)tagname, (char const *)tagvalue, &err);
+	helicsInputSetTag(inp, static_cast<const char *>(tagname), static_cast<const char *>(tagvalue), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(tagname);
 
@@ -7363,7 +10390,16 @@ void _wrap_helicsInputSetTag(int resc, mxArray *resv[], int argc, const mxArray 
 
 
 void _wrap_helicsPublicationGetInfo(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsPublication pub = *(HelicsPublication*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationGetInfo:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationGetInfo:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsPublication pub = *(static_cast<HelicsPublication*>(mxGetData(argv[0])));
 
 	const char *result = helicsPublicationGetInfo(pub);
 
@@ -7373,33 +10409,44 @@ void _wrap_helicsPublicationGetInfo(int resc, mxArray *resv[], int argc, const m
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsPublicationSetInfo(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsPublication pub = *(HelicsPublication*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationSetInfo:rhs","This function requires 2 arguments.");
+	}
 
-	char *info;
-	size_t infoLength;
-	int infoStatus;
-	infoLength = mxGetN(argv[1]) + 1;
-	info = (char *)malloc(infoLength);
-	infoStatus = mxGetString(argv[1], info, infoLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationSetInfo:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsPublication pub = *(static_cast<HelicsPublication*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationSetInfo:TypeError","Argument 2 must be a string.");
+	}
+	char *info = nullptr;
+	size_t infoLength = 0;
+	int infoStatus = 0;
+	if(argc > 1){
+		infoLength = mxGetN(argv[1]) + 1;
+		info = static_cast<char *>(malloc(infoLength));
+		infoStatus = mxGetString(argv[1], info, infoLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsPublicationSetInfo(pub, (char const *)info, &err);
+	helicsPublicationSetInfo(pub, static_cast<const char *>(info), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(info);
 
@@ -7410,16 +10457,33 @@ void _wrap_helicsPublicationSetInfo(int resc, mxArray *resv[], int argc, const m
 
 
 void _wrap_helicsPublicationGetTag(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsPublication pub = *(HelicsPublication*)(mxGetData(argv[0]));
+	if(argc < 1 || argc > 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationGetTag:rhs","This function requires at least 1 arguments and at most 2 arguments.");
+	}
 
-	char *tagname;
-	size_t tagnameLength;
-	int tagnameStatus;
-	tagnameLength = mxGetN(argv[1]) + 1;
-	tagname = (char *)malloc(tagnameLength);
-	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationGetTag:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsPublication pub = *(static_cast<HelicsPublication*>(mxGetData(argv[0])));
 
-	const char *result = helicsPublicationGetTag(pub, (char const *)tagname);
+	if(argc > 1){
+		if(!mxIsChar(argv[1])){
+			mexUnlock();
+			mexErrMsgIdAndTxt("MATLAB:helicsPublicationGetTag:TypeError","Argument 2 must be a string.");
+		}
+	}
+	char *tagname = nullptr;
+	size_t tagnameLength = 0;
+	int tagnameStatus = 0;
+	if(argc > 1){
+		tagnameLength = mxGetN(argv[1]) + 1;
+		tagname = static_cast<char *>(malloc(tagnameLength));
+		tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
+
+	}
+	const char *result = helicsPublicationGetTag(pub, static_cast<const char *>(tagname));
 
 	mxArray *_out = mxCreateString(result);
 
@@ -7428,41 +10492,58 @@ void _wrap_helicsPublicationGetTag(int resc, mxArray *resv[], int argc, const mx
 		*resv++ = _out;
 	}
 
-
-
 	free(tagname);
 }
 
 
 void _wrap_helicsPublicationSetTag(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsPublication pub = *(HelicsPublication*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationSetTag:rhs","This function requires 3 arguments.");
+	}
 
-	char *tagname;
-	size_t tagnameLength;
-	int tagnameStatus;
-	tagnameLength = mxGetN(argv[1]) + 1;
-	tagname = (char *)malloc(tagnameLength);
-	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationSetTag:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsPublication pub = *(static_cast<HelicsPublication*>(mxGetData(argv[0])));
 
-	char *tagvalue;
-	size_t tagvalueLength;
-	int tagvalueStatus;
-	tagvalueLength = mxGetN(argv[2]) + 1;
-	tagvalue = (char *)malloc(tagvalueLength);
-	tagvalueStatus = mxGetString(argv[2], tagvalue, tagvalueLength);
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationSetTag:TypeError","Argument 2 must be a string.");
+	}
+	char *tagname = nullptr;
+	size_t tagnameLength = 0;
+	int tagnameStatus = 0;
+	if(argc > 1){
+		tagnameLength = mxGetN(argv[1]) + 1;
+		tagname = static_cast<char *>(malloc(tagnameLength));
+		tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
 
+	}
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationSetTag:TypeError","Argument 3 must be a string.");
+	}
+	char *tagvalue = nullptr;
+	size_t tagvalueLength = 0;
+	int tagvalueStatus = 0;
+	if(argc > 2){
+		tagvalueLength = mxGetN(argv[2]) + 1;
+		tagvalue = static_cast<char *>(malloc(tagvalueLength));
+		tagvalueStatus = mxGetString(argv[2], tagvalue, tagvalueLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsPublicationSetTag(pub, (char const *)tagname, (char const *)tagvalue, &err);
+	helicsPublicationSetTag(pub, static_cast<const char *>(tagname), static_cast<const char *>(tagvalue), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(tagname);
 
@@ -7475,49 +10556,70 @@ void _wrap_helicsPublicationSetTag(int resc, mxArray *resv[], int argc, const mx
 
 
 void _wrap_helicsInputGetOption(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput inp = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetOption:rhs","This function requires 2 arguments.");
+	}
 
-	int option = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetOption:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput inp = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetOption:TypeError","Argument 2 must be of type integer.");
+	}
+		int option = static_cast<int>(mxGetScalar(argv[1]));
 
 	int result = helicsInputGetOption(inp, option);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(_out)) = (int64_t)result;
+	mxInt64 *rv = mxGetInt64s(_out);
+	rv[0] = static_cast<mxInt64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 }
 
 
 void _wrap_helicsInputSetOption(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput inp = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetOption:rhs","This function requires 3 arguments.");
+	}
 
-	int option = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetOption:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput inp = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
-	int value = (int)(mxGetScalar(argv[2]));
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetOption:TypeError","Argument 2 must be of type integer.");
+	}
+		int option = static_cast<int>(mxGetScalar(argv[1]));
+
+	if(!mxIsNumeric(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetOption:TypeError","Argument 3 must be of type integer.");
+	}
+		int value = static_cast<int>(mxGetScalar(argv[2]));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsInputSetOption(inp, option, value, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -7526,49 +10628,70 @@ void _wrap_helicsInputSetOption(int resc, mxArray *resv[], int argc, const mxArr
 
 
 void _wrap_helicsPublicationGetOption(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsPublication pub = *(HelicsPublication*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationGetOption:rhs","This function requires 2 arguments.");
+	}
 
-	int option = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationGetOption:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsPublication pub = *(static_cast<HelicsPublication*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationGetOption:TypeError","Argument 2 must be of type integer.");
+	}
+		int option = static_cast<int>(mxGetScalar(argv[1]));
 
 	int result = helicsPublicationGetOption(pub, option);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(_out)) = (int64_t)result;
+	mxInt64 *rv = mxGetInt64s(_out);
+	rv[0] = static_cast<mxInt64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 }
 
 
 void _wrap_helicsPublicationSetOption(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsPublication pub = *(HelicsPublication*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationSetOption:rhs","This function requires 3 arguments.");
+	}
 
-	int option = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationSetOption:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsPublication pub = *(static_cast<HelicsPublication*>(mxGetData(argv[0])));
 
-	int val = (int)(mxGetScalar(argv[2]));
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationSetOption:TypeError","Argument 2 must be of type integer.");
+	}
+		int option = static_cast<int>(mxGetScalar(argv[1]));
+
+	if(!mxIsNumeric(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationSetOption:TypeError","Argument 3 must be of type integer.");
+	}
+		int val = static_cast<int>(mxGetScalar(argv[2]));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsPublicationSetOption(pub, option, val, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -7577,24 +10700,33 @@ void _wrap_helicsPublicationSetOption(int resc, mxArray *resv[], int argc, const
 
 
 void _wrap_helicsPublicationSetMinimumChange(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsPublication pub = *(HelicsPublication*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationSetMinimumChange:rhs","This function requires 2 arguments.");
+	}
 
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationSetMinimumChange:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsPublication pub = *(static_cast<HelicsPublication*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationSetMinimumChange:TypeError","Argument 2 must be of type double.");
+	}
 	double tolerance = mxGetScalar(argv[1]);
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsPublicationSetMinimumChange(pub, tolerance, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -7603,24 +10735,33 @@ void _wrap_helicsPublicationSetMinimumChange(int resc, mxArray *resv[], int argc
 
 
 void _wrap_helicsInputSetMinimumChange(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput inp = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetMinimumChange:rhs","This function requires 2 arguments.");
+	}
 
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetMinimumChange:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput inp = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetMinimumChange:TypeError","Argument 2 must be of type double.");
+	}
 	double tolerance = mxGetScalar(argv[1]);
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsInputSetMinimumChange(inp, tolerance, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -7629,24 +10770,45 @@ void _wrap_helicsInputSetMinimumChange(int resc, mxArray *resv[], int argc, cons
 
 
 void _wrap_helicsInputIsUpdated(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputIsUpdated:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputIsUpdated:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
 	HelicsBool result = helicsInputIsUpdated(ipt);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-	*((int32_t*)mxGetData(_out)) = (int32_t)result;
+	mxArray *_out = mxCreateLogicalMatrix(1, 1);
+	mxLogical *rv = mxGetLogicals(_out);
+	if(result == HELICS_TRUE){
+		rv[0] = true;
+	}else{
+		rv[0] = false;
+	}
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsInputLastUpdateTime(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputLastUpdateTime:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputLastUpdateTime:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
 	HelicsTime result = helicsInputLastUpdateTime(ipt);
 
@@ -7656,91 +10818,132 @@ void _wrap_helicsInputLastUpdateTime(int resc, mxArray *resv[], int argc, const 
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsInputClearUpdate(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsInput ipt = *(HelicsInput*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputClearUpdate:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputClearUpdate:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
 	helicsInputClearUpdate(ipt);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsFederateGetPublicationCount(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetPublicationCount:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetPublicationCount:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	int result = helicsFederateGetPublicationCount(fed);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(_out)) = (int64_t)result;
+	mxInt64 *rv = mxGetInt64s(_out);
+	rv[0] = static_cast<mxInt64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsFederateGetInputCount(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetInputCount:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetInputCount:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	int result = helicsFederateGetInputCount(fed);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(_out)) = (int64_t)result;
+	mxInt64 *rv = mxGetInt64s(_out);
+	rv[0] = static_cast<mxInt64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsFederateRegisterEndpoint(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterEndpoint:rhs","This function requires 3 arguments.");
+	}
 
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[1]) + 1;
-	name = (char *)malloc(nameLength);
-	nameStatus = mxGetString(argv[1], name, nameLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterEndpoint:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
-	char *type;
-	size_t typeLength;
-	int typeStatus;
-	typeLength = mxGetN(argv[2]) + 1;
-	type = (char *)malloc(typeLength);
-	typeStatus = mxGetString(argv[2], type, typeLength);
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterEndpoint:TypeError","Argument 2 must be a string.");
+	}
+	char *name = nullptr;
+	size_t nameLength = 0;
+	int nameStatus = 0;
+	if(argc > 1){
+		nameLength = mxGetN(argv[1]) + 1;
+		name = static_cast<char *>(malloc(nameLength));
+		nameStatus = mxGetString(argv[1], name, nameLength);
 
+	}
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterEndpoint:TypeError","Argument 3 must be a string.");
+	}
+	char *type = nullptr;
+	size_t typeLength = 0;
+	int typeStatus = 0;
+	if(argc > 2){
+		typeLength = mxGetN(argv[2]) + 1;
+		type = static_cast<char *>(malloc(typeLength));
+		typeStatus = mxGetString(argv[2], type, typeLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsEndpoint result = helicsFederateRegisterEndpoint(fed, (char const *)name, (char const *)type, &err);
+	HelicsEndpoint result = helicsFederateRegisterEndpoint(fed, static_cast<const char *>(name), static_cast<const char *>(type), &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(name);
 
@@ -7753,35 +10956,55 @@ void _wrap_helicsFederateRegisterEndpoint(int resc, mxArray *resv[], int argc, c
 
 
 void _wrap_helicsFederateRegisterGlobalEndpoint(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalEndpoint:rhs","This function requires 3 arguments.");
+	}
 
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[1]) + 1;
-	name = (char *)malloc(nameLength);
-	nameStatus = mxGetString(argv[1], name, nameLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalEndpoint:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
-	char *type;
-	size_t typeLength;
-	int typeStatus;
-	typeLength = mxGetN(argv[2]) + 1;
-	type = (char *)malloc(typeLength);
-	typeStatus = mxGetString(argv[2], type, typeLength);
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalEndpoint:TypeError","Argument 2 must be a string.");
+	}
+	char *name = nullptr;
+	size_t nameLength = 0;
+	int nameStatus = 0;
+	if(argc > 1){
+		nameLength = mxGetN(argv[1]) + 1;
+		name = static_cast<char *>(malloc(nameLength));
+		nameStatus = mxGetString(argv[1], name, nameLength);
 
+	}
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalEndpoint:TypeError","Argument 3 must be a string.");
+	}
+	char *type = nullptr;
+	size_t typeLength = 0;
+	int typeStatus = 0;
+	if(argc > 2){
+		typeLength = mxGetN(argv[2]) + 1;
+		type = static_cast<char *>(malloc(typeLength));
+		typeStatus = mxGetString(argv[2], type, typeLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsEndpoint result = helicsFederateRegisterGlobalEndpoint(fed, (char const *)name, (char const *)type, &err);
+	HelicsEndpoint result = helicsFederateRegisterGlobalEndpoint(fed, static_cast<const char *>(name), static_cast<const char *>(type), &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(name);
 
@@ -7794,35 +11017,55 @@ void _wrap_helicsFederateRegisterGlobalEndpoint(int resc, mxArray *resv[], int a
 
 
 void _wrap_helicsFederateRegisterTargetedEndpoint(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterTargetedEndpoint:rhs","This function requires 3 arguments.");
+	}
 
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[1]) + 1;
-	name = (char *)malloc(nameLength);
-	nameStatus = mxGetString(argv[1], name, nameLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterTargetedEndpoint:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
-	char *type;
-	size_t typeLength;
-	int typeStatus;
-	typeLength = mxGetN(argv[2]) + 1;
-	type = (char *)malloc(typeLength);
-	typeStatus = mxGetString(argv[2], type, typeLength);
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterTargetedEndpoint:TypeError","Argument 2 must be a string.");
+	}
+	char *name = nullptr;
+	size_t nameLength = 0;
+	int nameStatus = 0;
+	if(argc > 1){
+		nameLength = mxGetN(argv[1]) + 1;
+		name = static_cast<char *>(malloc(nameLength));
+		nameStatus = mxGetString(argv[1], name, nameLength);
 
+	}
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterTargetedEndpoint:TypeError","Argument 3 must be a string.");
+	}
+	char *type = nullptr;
+	size_t typeLength = 0;
+	int typeStatus = 0;
+	if(argc > 2){
+		typeLength = mxGetN(argv[2]) + 1;
+		type = static_cast<char *>(malloc(typeLength));
+		typeStatus = mxGetString(argv[2], type, typeLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsEndpoint result = helicsFederateRegisterTargetedEndpoint(fed, (char const *)name, (char const *)type, &err);
+	HelicsEndpoint result = helicsFederateRegisterTargetedEndpoint(fed, static_cast<const char *>(name), static_cast<const char *>(type), &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(name);
 
@@ -7835,35 +11078,55 @@ void _wrap_helicsFederateRegisterTargetedEndpoint(int resc, mxArray *resv[], int
 
 
 void _wrap_helicsFederateRegisterGlobalTargetedEndpoint(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalTargetedEndpoint:rhs","This function requires 3 arguments.");
+	}
 
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[1]) + 1;
-	name = (char *)malloc(nameLength);
-	nameStatus = mxGetString(argv[1], name, nameLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalTargetedEndpoint:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
-	char *type;
-	size_t typeLength;
-	int typeStatus;
-	typeLength = mxGetN(argv[2]) + 1;
-	type = (char *)malloc(typeLength);
-	typeStatus = mxGetString(argv[2], type, typeLength);
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalTargetedEndpoint:TypeError","Argument 2 must be a string.");
+	}
+	char *name = nullptr;
+	size_t nameLength = 0;
+	int nameStatus = 0;
+	if(argc > 1){
+		nameLength = mxGetN(argv[1]) + 1;
+		name = static_cast<char *>(malloc(nameLength));
+		nameStatus = mxGetString(argv[1], name, nameLength);
 
+	}
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalTargetedEndpoint:TypeError","Argument 3 must be a string.");
+	}
+	char *type = nullptr;
+	size_t typeLength = 0;
+	int typeStatus = 0;
+	if(argc > 2){
+		typeLength = mxGetN(argv[2]) + 1;
+		type = static_cast<char *>(malloc(typeLength));
+		typeStatus = mxGetString(argv[2], type, typeLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsEndpoint result = helicsFederateRegisterGlobalTargetedEndpoint(fed, (char const *)name, (char const *)type, &err);
+	HelicsEndpoint result = helicsFederateRegisterGlobalTargetedEndpoint(fed, static_cast<const char *>(name), static_cast<const char *>(type), &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(name);
 
@@ -7876,28 +11139,42 @@ void _wrap_helicsFederateRegisterGlobalTargetedEndpoint(int resc, mxArray *resv[
 
 
 void _wrap_helicsFederateGetEndpoint(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetEndpoint:rhs","This function requires 2 arguments.");
+	}
 
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[1]) + 1;
-	name = (char *)malloc(nameLength);
-	nameStatus = mxGetString(argv[1], name, nameLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetEndpoint:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetEndpoint:TypeError","Argument 2 must be a string.");
+	}
+	char *name = nullptr;
+	size_t nameLength = 0;
+	int nameStatus = 0;
+	if(argc > 1){
+		nameLength = mxGetN(argv[1]) + 1;
+		name = static_cast<char *>(malloc(nameLength));
+		nameStatus = mxGetString(argv[1], name, nameLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsEndpoint result = helicsFederateGetEndpoint(fed, (char const *)name, &err);
+	HelicsEndpoint result = helicsFederateGetEndpoint(fed, static_cast<const char *>(name), &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(name);
 
@@ -7908,25 +11185,35 @@ void _wrap_helicsFederateGetEndpoint(int resc, mxArray *resv[], int argc, const 
 
 
 void _wrap_helicsFederateGetEndpointByIndex(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetEndpointByIndex:rhs","This function requires 2 arguments.");
+	}
 
-	int index = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetEndpointByIndex:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetEndpointByIndex:TypeError","Argument 2 must be of type integer.");
+	}
+		int index = static_cast<int>(mxGetScalar(argv[1]));
 
 	HelicsError err = helicsErrorInitialize();
 
 	HelicsEndpoint result = helicsFederateGetEndpointByIndex(fed, index, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -7935,44 +11222,69 @@ void _wrap_helicsFederateGetEndpointByIndex(int resc, mxArray *resv[], int argc,
 
 
 void _wrap_helicsEndpointIsValid(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsEndpoint endpoint = *(HelicsEndpoint*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointIsValid:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointIsValid:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsEndpoint endpoint = *(static_cast<HelicsEndpoint*>(mxGetData(argv[0])));
 
 	HelicsBool result = helicsEndpointIsValid(endpoint);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-	*((int32_t*)mxGetData(_out)) = (int32_t)result;
+	mxArray *_out = mxCreateLogicalMatrix(1, 1);
+	mxLogical *rv = mxGetLogicals(_out);
+	if(result == HELICS_TRUE){
+		rv[0] = true;
+	}else{
+		rv[0] = false;
+	}
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsEndpointSetDefaultDestination(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsEndpoint endpoint = *(HelicsEndpoint*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSetDefaultDestination:rhs","This function requires 2 arguments.");
+	}
 
-	char *dst;
-	size_t dstLength;
-	int dstStatus;
-	dstLength = mxGetN(argv[1]) + 1;
-	dst = (char *)malloc(dstLength);
-	dstStatus = mxGetString(argv[1], dst, dstLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSetDefaultDestination:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsEndpoint endpoint = *(static_cast<HelicsEndpoint*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSetDefaultDestination:TypeError","Argument 2 must be a string.");
+	}
+	char *dst = nullptr;
+	size_t dstLength = 0;
+	int dstStatus = 0;
+	if(argc > 1){
+		dstLength = mxGetN(argv[1]) + 1;
+		dst = static_cast<char *>(malloc(dstLength));
+		dstStatus = mxGetString(argv[1], dst, dstLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsEndpointSetDefaultDestination(endpoint, (char const *)dst, &err);
+	helicsEndpointSetDefaultDestination(endpoint, static_cast<const char *>(dst), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(dst);
 
@@ -7983,7 +11295,16 @@ void _wrap_helicsEndpointSetDefaultDestination(int resc, mxArray *resv[], int ar
 
 
 void _wrap_helicsEndpointGetDefaultDestination(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsEndpoint endpoint = *(HelicsEndpoint*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointGetDefaultDestination:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointGetDefaultDestination:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsEndpoint endpoint = *(static_cast<HelicsEndpoint*>(mxGetData(argv[0])));
 
 	const char *result = helicsEndpointGetDefaultDestination(endpoint);
 
@@ -7993,28 +11314,41 @@ void _wrap_helicsEndpointGetDefaultDestination(int resc, mxArray *resv[], int ar
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsEndpointSendBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsEndpoint endpoint = *(HelicsEndpoint*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSendBytes:rhs","This function requires 2 arguments.");
+	}
 
-	char *data;
-	size_t dataLength;
-	int dataStatus;
-	dataLength = mxGetN(argv[1]) + 1;
-	data = (char *)malloc(dataLength);
-	dataStatus = mxGetString(argv[1], data, dataLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSendBytes:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsEndpoint endpoint = *(static_cast<HelicsEndpoint*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSendBytes:TypeError","Argument 2 must be a string.");
+	}
+	char *data = nullptr;
+	size_t dataLength = 0;
+	int dataStatus = 0;
+	if(argc > 1){
+		dataLength = mxGetN(argv[1]) + 1;
+		data = static_cast<char *>(malloc(dataLength));
+		dataStatus = mxGetString(argv[1], data, dataLength);
+
+	}
 	int inputDataLength = (int)(dataLength - 1);
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsEndpointSendBytes(endpoint, (void *)data, inputDataLength, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -8029,29 +11363,50 @@ void _wrap_helicsEndpointSendBytes(int resc, mxArray *resv[], int argc, const mx
 
 
 void _wrap_helicsEndpointSendBytesTo(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsEndpoint endpoint = *(HelicsEndpoint*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSendBytesTo:rhs","This function requires 3 arguments.");
+	}
 
-	char *data;
-	size_t dataLength;
-	int dataStatus;
-	dataLength = mxGetN(argv[1]) + 1;
-	data = (char *)malloc(dataLength);
-	dataStatus = mxGetString(argv[1], data, dataLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSendBytesTo:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsEndpoint endpoint = *(static_cast<HelicsEndpoint*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSendBytesTo:TypeError","Argument 2 must be a string.");
+	}
+	char *data = nullptr;
+	size_t dataLength = 0;
+	int dataStatus = 0;
+	if(argc > 1){
+		dataLength = mxGetN(argv[1]) + 1;
+		data = static_cast<char *>(malloc(dataLength));
+		dataStatus = mxGetString(argv[1], data, dataLength);
+
+	}
 	int inputDataLength = (int)(dataLength - 1);
 
-	char *dst;
-	size_t dstLength;
-	int dstStatus;
-	dstLength = mxGetN(argv[2]) + 1;
-	dst = (char *)malloc(dstLength);
-	dstStatus = mxGetString(argv[2], dst, dstLength);
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSendBytesTo:TypeError","Argument 3 must be a string.");
+	}
+	char *dst = nullptr;
+	size_t dstLength = 0;
+	int dstStatus = 0;
+	if(argc > 2){
+		dstLength = mxGetN(argv[2]) + 1;
+		dst = static_cast<char *>(malloc(dstLength));
+		dstStatus = mxGetString(argv[2], dst, dstLength);
 
+	}
 	HelicsError err = helicsErrorInitialize();
 
 	helicsEndpointSendBytesTo(endpoint, (void *)data, inputDataLength, dst, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -8068,31 +11423,56 @@ void _wrap_helicsEndpointSendBytesTo(int resc, mxArray *resv[], int argc, const 
 
 
 void _wrap_helicsEndpointSendBytesToAt(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsEndpoint endpoint = *(HelicsEndpoint*)(mxGetData(argv[0]));
+	if(argc != 4){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSendBytesToAt:rhs","This function requires 4 arguments.");
+	}
 
-	char *data;
-	size_t dataLength;
-	int dataStatus;
-	dataLength = mxGetN(argv[1]) + 1;
-	data = (char *)malloc(dataLength);
-	dataStatus = mxGetString(argv[1], data, dataLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSendBytesToAt:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsEndpoint endpoint = *(static_cast<HelicsEndpoint*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSendBytesToAt:TypeError","Argument 2 must be a string.");
+	}
+	char *data = nullptr;
+	size_t dataLength = 0;
+	int dataStatus = 0;
+	if(argc > 1){
+		dataLength = mxGetN(argv[1]) + 1;
+		data = static_cast<char *>(malloc(dataLength));
+		dataStatus = mxGetString(argv[1], data, dataLength);
+
+	}
 	int inputDataLength = (int)(dataLength - 1);
 
-	char *dst;
-	size_t dstLength;
-	int dstStatus;
-	dstLength = mxGetN(argv[2]) + 1;
-	dst = (char *)malloc(dstLength);
-	dstStatus = mxGetString(argv[2], dst, dstLength);
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSendBytesToAt:TypeError","Argument 3 must be a string.");
+	}
+	char *dst = nullptr;
+	size_t dstLength = 0;
+	int dstStatus = 0;
+	if(argc > 2){
+		dstLength = mxGetN(argv[2]) + 1;
+		dst = static_cast<char *>(malloc(dstLength));
+		dstStatus = mxGetString(argv[2], dst, dstLength);
 
+	}
+	if(!mxIsNumeric(argv[3])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSendBytesToAt:TypeError","Argument 4 must be of type double.");
+	}
 	HelicsTime time = (HelicsTime)(mxGetScalar(argv[3]));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsEndpointSendBytesToAt(endpoint, (void *)data, inputDataLength, dst, time, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -8109,24 +11489,43 @@ void _wrap_helicsEndpointSendBytesToAt(int resc, mxArray *resv[], int argc, cons
 
 
 void _wrap_helicsEndpointSendBytesAt(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsEndpoint endpoint = *(HelicsEndpoint*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSendBytesAt:rhs","This function requires 3 arguments.");
+	}
 
-	char *data;
-	size_t dataLength;
-	int dataStatus;
-	dataLength = mxGetN(argv[1]) + 1;
-	data = (char *)malloc(dataLength);
-	dataStatus = mxGetString(argv[1], data, dataLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSendBytesAt:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsEndpoint endpoint = *(static_cast<HelicsEndpoint*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSendBytesAt:TypeError","Argument 2 must be a string.");
+	}
+	char *data = nullptr;
+	size_t dataLength = 0;
+	int dataStatus = 0;
+	if(argc > 1){
+		dataLength = mxGetN(argv[1]) + 1;
+		data = static_cast<char *>(malloc(dataLength));
+		dataStatus = mxGetString(argv[1], data, dataLength);
+
+	}
 	int inputDataLength = (int)(dataLength - 1);
 
+	if(!mxIsNumeric(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSendBytesAt:TypeError","Argument 3 must be of type double.");
+	}
 	HelicsTime time = (HelicsTime)(mxGetScalar(argv[2]));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsEndpointSendBytesAt(endpoint, (void *)data, inputDataLength, time, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -8141,24 +11540,33 @@ void _wrap_helicsEndpointSendBytesAt(int resc, mxArray *resv[], int argc, const 
 
 
 void _wrap_helicsEndpointSendMessage(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsEndpoint endpoint = *(HelicsEndpoint*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSendMessage:rhs","This function requires 2 arguments.");
+	}
 
-	HelicsMessage message = *(HelicsMessage*)(mxGetData(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSendMessage:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsEndpoint endpoint = *(static_cast<HelicsEndpoint*>(mxGetData(argv[0])));
+
+	if(mxGetClassID(argv[1]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSendMessage:TypeError","Argument 2 must be of type uint64.");
+	}
+	HelicsMessage message = *(static_cast<HelicsMessage*>(mxGetData(argv[1])));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsEndpointSendMessage(endpoint, message, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -8167,24 +11575,33 @@ void _wrap_helicsEndpointSendMessage(int resc, mxArray *resv[], int argc, const 
 
 
 void _wrap_helicsEndpointSendMessageZeroCopy(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsEndpoint endpoint = *(HelicsEndpoint*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSendMessageZeroCopy:rhs","This function requires 2 arguments.");
+	}
 
-	HelicsMessage message = *(HelicsMessage*)(mxGetData(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSendMessageZeroCopy:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsEndpoint endpoint = *(static_cast<HelicsEndpoint*>(mxGetData(argv[0])));
+
+	if(mxGetClassID(argv[1]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSendMessageZeroCopy:TypeError","Argument 2 must be of type uint64.");
+	}
+	HelicsMessage message = *(static_cast<HelicsMessage*>(mxGetData(argv[1])));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsEndpointSendMessageZeroCopy(endpoint, message, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -8193,27 +11610,40 @@ void _wrap_helicsEndpointSendMessageZeroCopy(int resc, mxArray *resv[], int argc
 
 
 void _wrap_helicsEndpointSubscribe(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsEndpoint endpoint = *(HelicsEndpoint*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSubscribe:rhs","This function requires 2 arguments.");
+	}
 
-	char *key;
-	size_t keyLength;
-	int keyStatus;
-	keyLength = mxGetN(argv[1]) + 1;
-	key = (char *)malloc(keyLength);
-	keyStatus = mxGetString(argv[1], key, keyLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSubscribe:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsEndpoint endpoint = *(static_cast<HelicsEndpoint*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSubscribe:TypeError","Argument 2 must be a string.");
+	}
+	char *key = nullptr;
+	size_t keyLength = 0;
+	int keyStatus = 0;
+	if(argc > 1){
+		keyLength = mxGetN(argv[1]) + 1;
+		key = static_cast<char *>(malloc(keyLength));
+		keyStatus = mxGetString(argv[1], key, keyLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsEndpointSubscribe(endpoint, (char const *)key, &err);
+	helicsEndpointSubscribe(endpoint, static_cast<const char *>(key), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(key);
 
@@ -8224,106 +11654,162 @@ void _wrap_helicsEndpointSubscribe(int resc, mxArray *resv[], int argc, const mx
 
 
 void _wrap_helicsFederateHasMessage(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateHasMessage:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateHasMessage:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	HelicsBool result = helicsFederateHasMessage(fed);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-	*((int32_t*)mxGetData(_out)) = (int32_t)result;
+	mxArray *_out = mxCreateLogicalMatrix(1, 1);
+	mxLogical *rv = mxGetLogicals(_out);
+	if(result == HELICS_TRUE){
+		rv[0] = true;
+	}else{
+		rv[0] = false;
+	}
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsEndpointHasMessage(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsEndpoint endpoint = *(HelicsEndpoint*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointHasMessage:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointHasMessage:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsEndpoint endpoint = *(static_cast<HelicsEndpoint*>(mxGetData(argv[0])));
 
 	HelicsBool result = helicsEndpointHasMessage(endpoint);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-	*((int32_t*)mxGetData(_out)) = (int32_t)result;
+	mxArray *_out = mxCreateLogicalMatrix(1, 1);
+	mxLogical *rv = mxGetLogicals(_out);
+	if(result == HELICS_TRUE){
+		rv[0] = true;
+	}else{
+		rv[0] = false;
+	}
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsFederatePendingMessageCount(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederatePendingMessageCount:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederatePendingMessageCount:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	int result = helicsFederatePendingMessageCount(fed);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(_out)) = (int64_t)result;
+	mxInt64 *rv = mxGetInt64s(_out);
+	rv[0] = static_cast<mxInt64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsEndpointPendingMessageCount(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsEndpoint endpoint = *(HelicsEndpoint*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointPendingMessageCount:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointPendingMessageCount:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsEndpoint endpoint = *(static_cast<HelicsEndpoint*>(mxGetData(argv[0])));
 
 	int result = helicsEndpointPendingMessageCount(endpoint);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(_out)) = (int64_t)result;
+	mxInt64 *rv = mxGetInt64s(_out);
+	rv[0] = static_cast<mxInt64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsEndpointGetMessage(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsEndpoint endpoint = *(HelicsEndpoint*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointGetMessage:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointGetMessage:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsEndpoint endpoint = *(static_cast<HelicsEndpoint*>(mxGetData(argv[0])));
 
 	HelicsMessage result = helicsEndpointGetMessage(endpoint);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsEndpointCreateMessage(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsEndpoint endpoint = *(HelicsEndpoint*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointCreateMessage:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointCreateMessage:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsEndpoint endpoint = *(static_cast<HelicsEndpoint*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
 	HelicsMessage result = helicsEndpointCreateMessage(endpoint, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -8332,54 +11818,77 @@ void _wrap_helicsEndpointCreateMessage(int resc, mxArray *resv[], int argc, cons
 
 
 void _wrap_helicsEndpointClearMessages(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsEndpoint endpoint = *(HelicsEndpoint*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointClearMessages:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointClearMessages:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsEndpoint endpoint = *(static_cast<HelicsEndpoint*>(mxGetData(argv[0])));
 
 	helicsEndpointClearMessages(endpoint);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsFederateGetMessage(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetMessage:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetMessage:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	HelicsMessage result = helicsFederateGetMessage(fed);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsFederateCreateMessage(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateCreateMessage:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateCreateMessage:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
 	HelicsMessage result = helicsFederateCreateMessage(fed, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -8388,23 +11897,39 @@ void _wrap_helicsFederateCreateMessage(int resc, mxArray *resv[], int argc, cons
 
 
 void _wrap_helicsFederateClearMessages(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateClearMessages:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateClearMessages:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	helicsFederateClearMessages(fed);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsEndpointGetType(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsEndpoint endpoint = *(HelicsEndpoint*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointGetType:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointGetType:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsEndpoint endpoint = *(static_cast<HelicsEndpoint*>(mxGetData(argv[0])));
 
 	const char *result = helicsEndpointGetType(endpoint);
 
@@ -8414,13 +11939,20 @@ void _wrap_helicsEndpointGetType(int resc, mxArray *resv[], int argc, const mxAr
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsEndpointGetName(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsEndpoint endpoint = *(HelicsEndpoint*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointGetName:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointGetName:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsEndpoint endpoint = *(static_cast<HelicsEndpoint*>(mxGetData(argv[0])));
 
 	const char *result = helicsEndpointGetName(endpoint);
 
@@ -8430,30 +11962,45 @@ void _wrap_helicsEndpointGetName(int resc, mxArray *resv[], int argc, const mxAr
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsFederateGetEndpointCount(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetEndpointCount:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetEndpointCount:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	int result = helicsFederateGetEndpointCount(fed);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(_out)) = (int64_t)result;
+	mxInt64 *rv = mxGetInt64s(_out);
+	rv[0] = static_cast<mxInt64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsEndpointGetInfo(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsEndpoint end = *(HelicsEndpoint*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointGetInfo:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointGetInfo:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsEndpoint end = *(static_cast<HelicsEndpoint*>(mxGetData(argv[0])));
 
 	const char *result = helicsEndpointGetInfo(end);
 
@@ -8463,33 +12010,44 @@ void _wrap_helicsEndpointGetInfo(int resc, mxArray *resv[], int argc, const mxAr
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsEndpointSetInfo(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsEndpoint endpoint = *(HelicsEndpoint*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSetInfo:rhs","This function requires 2 arguments.");
+	}
 
-	char *info;
-	size_t infoLength;
-	int infoStatus;
-	infoLength = mxGetN(argv[1]) + 1;
-	info = (char *)malloc(infoLength);
-	infoStatus = mxGetString(argv[1], info, infoLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSetInfo:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsEndpoint endpoint = *(static_cast<HelicsEndpoint*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSetInfo:TypeError","Argument 2 must be a string.");
+	}
+	char *info = nullptr;
+	size_t infoLength = 0;
+	int infoStatus = 0;
+	if(argc > 1){
+		infoLength = mxGetN(argv[1]) + 1;
+		info = static_cast<char *>(malloc(infoLength));
+		infoStatus = mxGetString(argv[1], info, infoLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsEndpointSetInfo(endpoint, (char const *)info, &err);
+	helicsEndpointSetInfo(endpoint, static_cast<const char *>(info), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(info);
 
@@ -8500,16 +12058,33 @@ void _wrap_helicsEndpointSetInfo(int resc, mxArray *resv[], int argc, const mxAr
 
 
 void _wrap_helicsEndpointGetTag(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsEndpoint endpoint = *(HelicsEndpoint*)(mxGetData(argv[0]));
+	if(argc < 1 || argc > 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointGetTag:rhs","This function requires at least 1 arguments and at most 2 arguments.");
+	}
 
-	char *tagname;
-	size_t tagnameLength;
-	int tagnameStatus;
-	tagnameLength = mxGetN(argv[1]) + 1;
-	tagname = (char *)malloc(tagnameLength);
-	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointGetTag:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsEndpoint endpoint = *(static_cast<HelicsEndpoint*>(mxGetData(argv[0])));
 
-	const char *result = helicsEndpointGetTag(endpoint, (char const *)tagname);
+	if(argc > 1){
+		if(!mxIsChar(argv[1])){
+			mexUnlock();
+			mexErrMsgIdAndTxt("MATLAB:helicsEndpointGetTag:TypeError","Argument 2 must be a string.");
+		}
+	}
+	char *tagname = nullptr;
+	size_t tagnameLength = 0;
+	int tagnameStatus = 0;
+	if(argc > 1){
+		tagnameLength = mxGetN(argv[1]) + 1;
+		tagname = static_cast<char *>(malloc(tagnameLength));
+		tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
+
+	}
+	const char *result = helicsEndpointGetTag(endpoint, static_cast<const char *>(tagname));
 
 	mxArray *_out = mxCreateString(result);
 
@@ -8518,41 +12093,58 @@ void _wrap_helicsEndpointGetTag(int resc, mxArray *resv[], int argc, const mxArr
 		*resv++ = _out;
 	}
 
-
-
 	free(tagname);
 }
 
 
 void _wrap_helicsEndpointSetTag(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsEndpoint endpoint = *(HelicsEndpoint*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSetTag:rhs","This function requires 3 arguments.");
+	}
 
-	char *tagname;
-	size_t tagnameLength;
-	int tagnameStatus;
-	tagnameLength = mxGetN(argv[1]) + 1;
-	tagname = (char *)malloc(tagnameLength);
-	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSetTag:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsEndpoint endpoint = *(static_cast<HelicsEndpoint*>(mxGetData(argv[0])));
 
-	char *tagvalue;
-	size_t tagvalueLength;
-	int tagvalueStatus;
-	tagvalueLength = mxGetN(argv[2]) + 1;
-	tagvalue = (char *)malloc(tagvalueLength);
-	tagvalueStatus = mxGetString(argv[2], tagvalue, tagvalueLength);
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSetTag:TypeError","Argument 2 must be a string.");
+	}
+	char *tagname = nullptr;
+	size_t tagnameLength = 0;
+	int tagnameStatus = 0;
+	if(argc > 1){
+		tagnameLength = mxGetN(argv[1]) + 1;
+		tagname = static_cast<char *>(malloc(tagnameLength));
+		tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
 
+	}
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSetTag:TypeError","Argument 3 must be a string.");
+	}
+	char *tagvalue = nullptr;
+	size_t tagvalueLength = 0;
+	int tagvalueStatus = 0;
+	if(argc > 2){
+		tagvalueLength = mxGetN(argv[2]) + 1;
+		tagvalue = static_cast<char *>(malloc(tagvalueLength));
+		tagvalueStatus = mxGetString(argv[2], tagvalue, tagvalueLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsEndpointSetTag(endpoint, (char const *)tagname, (char const *)tagvalue, &err);
+	helicsEndpointSetTag(endpoint, static_cast<const char *>(tagname), static_cast<const char *>(tagvalue), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(tagname);
 
@@ -8565,28 +12157,39 @@ void _wrap_helicsEndpointSetTag(int resc, mxArray *resv[], int argc, const mxArr
 
 
 void _wrap_helicsEndpointSetOption(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsEndpoint endpoint = *(HelicsEndpoint*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSetOption:rhs","This function requires 3 arguments.");
+	}
 
-	int option = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSetOption:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsEndpoint endpoint = *(static_cast<HelicsEndpoint*>(mxGetData(argv[0])));
 
-	int value = (int)(mxGetScalar(argv[2]));
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSetOption:TypeError","Argument 2 must be of type integer.");
+	}
+		int option = static_cast<int>(mxGetScalar(argv[1]));
+
+	if(!mxIsNumeric(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointSetOption:TypeError","Argument 3 must be of type integer.");
+	}
+		int value = static_cast<int>(mxGetScalar(argv[2]));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsEndpointSetOption(endpoint, option, value, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -8595,48 +12198,71 @@ void _wrap_helicsEndpointSetOption(int resc, mxArray *resv[], int argc, const mx
 
 
 void _wrap_helicsEndpointGetOption(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsEndpoint endpoint = *(HelicsEndpoint*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointGetOption:rhs","This function requires 2 arguments.");
+	}
 
-	int option = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointGetOption:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsEndpoint endpoint = *(static_cast<HelicsEndpoint*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointGetOption:TypeError","Argument 2 must be of type integer.");
+	}
+		int option = static_cast<int>(mxGetScalar(argv[1]));
 
 	int result = helicsEndpointGetOption(endpoint, option);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(_out)) = (int64_t)result;
+	mxInt64 *rv = mxGetInt64s(_out);
+	rv[0] = static_cast<mxInt64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 }
 
 
 void _wrap_helicsEndpointAddSourceTarget(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsEndpoint endpoint = *(HelicsEndpoint*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointAddSourceTarget:rhs","This function requires 2 arguments.");
+	}
 
-	char *targetEndpoint;
-	size_t targetEndpointLength;
-	int targetEndpointStatus;
-	targetEndpointLength = mxGetN(argv[1]) + 1;
-	targetEndpoint = (char *)malloc(targetEndpointLength);
-	targetEndpointStatus = mxGetString(argv[1], targetEndpoint, targetEndpointLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointAddSourceTarget:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsEndpoint endpoint = *(static_cast<HelicsEndpoint*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointAddSourceTarget:TypeError","Argument 2 must be a string.");
+	}
+	char *targetEndpoint = nullptr;
+	size_t targetEndpointLength = 0;
+	int targetEndpointStatus = 0;
+	if(argc > 1){
+		targetEndpointLength = mxGetN(argv[1]) + 1;
+		targetEndpoint = static_cast<char *>(malloc(targetEndpointLength));
+		targetEndpointStatus = mxGetString(argv[1], targetEndpoint, targetEndpointLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsEndpointAddSourceTarget(endpoint, (char const *)targetEndpoint, &err);
+	helicsEndpointAddSourceTarget(endpoint, static_cast<const char *>(targetEndpoint), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(targetEndpoint);
 
@@ -8647,27 +12273,40 @@ void _wrap_helicsEndpointAddSourceTarget(int resc, mxArray *resv[], int argc, co
 
 
 void _wrap_helicsEndpointAddDestinationTarget(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsEndpoint endpoint = *(HelicsEndpoint*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointAddDestinationTarget:rhs","This function requires 2 arguments.");
+	}
 
-	char *targetEndpoint;
-	size_t targetEndpointLength;
-	int targetEndpointStatus;
-	targetEndpointLength = mxGetN(argv[1]) + 1;
-	targetEndpoint = (char *)malloc(targetEndpointLength);
-	targetEndpointStatus = mxGetString(argv[1], targetEndpoint, targetEndpointLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointAddDestinationTarget:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsEndpoint endpoint = *(static_cast<HelicsEndpoint*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointAddDestinationTarget:TypeError","Argument 2 must be a string.");
+	}
+	char *targetEndpoint = nullptr;
+	size_t targetEndpointLength = 0;
+	int targetEndpointStatus = 0;
+	if(argc > 1){
+		targetEndpointLength = mxGetN(argv[1]) + 1;
+		targetEndpoint = static_cast<char *>(malloc(targetEndpointLength));
+		targetEndpointStatus = mxGetString(argv[1], targetEndpoint, targetEndpointLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsEndpointAddDestinationTarget(endpoint, (char const *)targetEndpoint, &err);
+	helicsEndpointAddDestinationTarget(endpoint, static_cast<const char *>(targetEndpoint), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(targetEndpoint);
 
@@ -8678,27 +12317,40 @@ void _wrap_helicsEndpointAddDestinationTarget(int resc, mxArray *resv[], int arg
 
 
 void _wrap_helicsEndpointRemoveTarget(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsEndpoint endpoint = *(HelicsEndpoint*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointRemoveTarget:rhs","This function requires 2 arguments.");
+	}
 
-	char *targetEndpoint;
-	size_t targetEndpointLength;
-	int targetEndpointStatus;
-	targetEndpointLength = mxGetN(argv[1]) + 1;
-	targetEndpoint = (char *)malloc(targetEndpointLength);
-	targetEndpointStatus = mxGetString(argv[1], targetEndpoint, targetEndpointLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointRemoveTarget:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsEndpoint endpoint = *(static_cast<HelicsEndpoint*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointRemoveTarget:TypeError","Argument 2 must be a string.");
+	}
+	char *targetEndpoint = nullptr;
+	size_t targetEndpointLength = 0;
+	int targetEndpointStatus = 0;
+	if(argc > 1){
+		targetEndpointLength = mxGetN(argv[1]) + 1;
+		targetEndpoint = static_cast<char *>(malloc(targetEndpointLength));
+		targetEndpointStatus = mxGetString(argv[1], targetEndpoint, targetEndpointLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsEndpointRemoveTarget(endpoint, (char const *)targetEndpoint, &err);
+	helicsEndpointRemoveTarget(endpoint, static_cast<const char *>(targetEndpoint), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(targetEndpoint);
 
@@ -8709,27 +12361,40 @@ void _wrap_helicsEndpointRemoveTarget(int resc, mxArray *resv[], int argc, const
 
 
 void _wrap_helicsEndpointAddSourceFilter(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsEndpoint endpoint = *(HelicsEndpoint*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointAddSourceFilter:rhs","This function requires 2 arguments.");
+	}
 
-	char *filterName;
-	size_t filterNameLength;
-	int filterNameStatus;
-	filterNameLength = mxGetN(argv[1]) + 1;
-	filterName = (char *)malloc(filterNameLength);
-	filterNameStatus = mxGetString(argv[1], filterName, filterNameLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointAddSourceFilter:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsEndpoint endpoint = *(static_cast<HelicsEndpoint*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointAddSourceFilter:TypeError","Argument 2 must be a string.");
+	}
+	char *filterName = nullptr;
+	size_t filterNameLength = 0;
+	int filterNameStatus = 0;
+	if(argc > 1){
+		filterNameLength = mxGetN(argv[1]) + 1;
+		filterName = static_cast<char *>(malloc(filterNameLength));
+		filterNameStatus = mxGetString(argv[1], filterName, filterNameLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsEndpointAddSourceFilter(endpoint, (char const *)filterName, &err);
+	helicsEndpointAddSourceFilter(endpoint, static_cast<const char *>(filterName), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(filterName);
 
@@ -8740,27 +12405,40 @@ void _wrap_helicsEndpointAddSourceFilter(int resc, mxArray *resv[], int argc, co
 
 
 void _wrap_helicsEndpointAddDestinationFilter(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsEndpoint endpoint = *(HelicsEndpoint*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointAddDestinationFilter:rhs","This function requires 2 arguments.");
+	}
 
-	char *filterName;
-	size_t filterNameLength;
-	int filterNameStatus;
-	filterNameLength = mxGetN(argv[1]) + 1;
-	filterName = (char *)malloc(filterNameLength);
-	filterNameStatus = mxGetString(argv[1], filterName, filterNameLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointAddDestinationFilter:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsEndpoint endpoint = *(static_cast<HelicsEndpoint*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsEndpointAddDestinationFilter:TypeError","Argument 2 must be a string.");
+	}
+	char *filterName = nullptr;
+	size_t filterNameLength = 0;
+	int filterNameStatus = 0;
+	if(argc > 1){
+		filterNameLength = mxGetN(argv[1]) + 1;
+		filterName = static_cast<char *>(malloc(filterNameLength));
+		filterNameStatus = mxGetString(argv[1], filterName, filterNameLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsEndpointAddDestinationFilter(endpoint, (char const *)filterName, &err);
+	helicsEndpointAddDestinationFilter(endpoint, static_cast<const char *>(filterName), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(filterName);
 
@@ -8771,7 +12449,16 @@ void _wrap_helicsEndpointAddDestinationFilter(int resc, mxArray *resv[], int arg
 
 
 void _wrap_helicsMessageGetSource(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsMessage message = *(HelicsMessage*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageGetSource:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageGetSource:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsMessage message = *(static_cast<HelicsMessage*>(mxGetData(argv[0])));
 
 	const char *result = helicsMessageGetSource(message);
 
@@ -8781,13 +12468,20 @@ void _wrap_helicsMessageGetSource(int resc, mxArray *resv[], int argc, const mxA
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsMessageGetDestination(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsMessage message = *(HelicsMessage*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageGetDestination:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageGetDestination:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsMessage message = *(static_cast<HelicsMessage*>(mxGetData(argv[0])));
 
 	const char *result = helicsMessageGetDestination(message);
 
@@ -8797,13 +12491,20 @@ void _wrap_helicsMessageGetDestination(int resc, mxArray *resv[], int argc, cons
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsMessageGetOriginalSource(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsMessage message = *(HelicsMessage*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageGetOriginalSource:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageGetOriginalSource:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsMessage message = *(static_cast<HelicsMessage*>(mxGetData(argv[0])));
 
 	const char *result = helicsMessageGetOriginalSource(message);
 
@@ -8813,13 +12514,20 @@ void _wrap_helicsMessageGetOriginalSource(int resc, mxArray *resv[], int argc, c
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsMessageGetOriginalDestination(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsMessage message = *(HelicsMessage*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageGetOriginalDestination:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageGetOriginalDestination:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsMessage message = *(static_cast<HelicsMessage*>(mxGetData(argv[0])));
 
 	const char *result = helicsMessageGetOriginalDestination(message);
 
@@ -8829,13 +12537,20 @@ void _wrap_helicsMessageGetOriginalDestination(int resc, mxArray *resv[], int ar
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsMessageGetTime(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsMessage message = *(HelicsMessage*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageGetTime:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageGetTime:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsMessage message = *(static_cast<HelicsMessage*>(mxGetData(argv[0])));
 
 	HelicsTime result = helicsMessageGetTime(message);
 
@@ -8845,13 +12560,20 @@ void _wrap_helicsMessageGetTime(int resc, mxArray *resv[], int argc, const mxArr
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsMessageGetString(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsMessage message = *(HelicsMessage*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageGetString:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageGetString:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsMessage message = *(static_cast<HelicsMessage*>(mxGetData(argv[0])));
 
 	const char *result = helicsMessageGetString(message);
 
@@ -8861,82 +12583,119 @@ void _wrap_helicsMessageGetString(int resc, mxArray *resv[], int argc, const mxA
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsMessageGetMessageID(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsMessage message = *(HelicsMessage*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageGetMessageID:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageGetMessageID:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsMessage message = *(static_cast<HelicsMessage*>(mxGetData(argv[0])));
 
 	int result = helicsMessageGetMessageID(message);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(_out)) = (int64_t)result;
+	mxInt64 *rv = mxGetInt64s(_out);
+	rv[0] = static_cast<mxInt64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsMessageGetFlagOption(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsMessage message = *(HelicsMessage*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageGetFlagOption:rhs","This function requires 2 arguments.");
+	}
 
-	int flag = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageGetFlagOption:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsMessage message = *(static_cast<HelicsMessage*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageGetFlagOption:TypeError","Argument 2 must be of type integer.");
+	}
+		int flag = static_cast<int>(mxGetScalar(argv[1]));
 
 	HelicsBool result = helicsMessageGetFlagOption(message, flag);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-	*((int32_t*)mxGetData(_out)) = (int32_t)result;
+	mxArray *_out = mxCreateLogicalMatrix(1, 1);
+	mxLogical *rv = mxGetLogicals(_out);
+	if(result == HELICS_TRUE){
+		rv[0] = true;
+	}else{
+		rv[0] = false;
+	}
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 }
 
 
 void _wrap_helicsMessageGetByteCount(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsMessage message = *(HelicsMessage*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageGetByteCount:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageGetByteCount:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsMessage message = *(static_cast<HelicsMessage*>(mxGetData(argv[0])));
 
 	int result = helicsMessageGetByteCount(message);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(_out)) = (int64_t)result;
+	mxInt64 *rv = mxGetInt64s(_out);
+	rv[0] = static_cast<mxInt64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsMessageGetBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsMessage message = *(HelicsMessage*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageGetBytes:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageGetBytes:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsMessage message = *(static_cast<HelicsMessage*>(mxGetData(argv[0])));
 
 	int maxMessageLength = helicsMessageGetByteCount(message) + 2;
 
-	char *data = (char *)malloc(maxMessageLength);
+	char *data = static_cast<char *>(malloc(maxMessageLength));
 
 	int actualSize = 0;
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsMessageGetBytes(message, (void *)data, maxMessageLength, &actualSize, &err);
+	helicsMessageGetBytes(message, static_cast<void *>(data), maxMessageLength, &actualSize, &err);
 
-	mwSize dims[2] = {1,(mwSize)actualSize};
+	mwSize dims[2] = {1,static_cast<mwSize>(actualSize)};
 	mxArray *_out = mxCreateCharArray(2,dims);
-	mxChar *out_data = (mxChar *)mxGetData(_out);
+	mxChar *out_data = static_cast<mxChar*>(mxGetData(_out));
 	for(int i=0; i<actualSize; ++i){
 		out_data[i] = data[i];
 	}
@@ -8955,61 +12714,94 @@ void _wrap_helicsMessageGetBytes(int resc, mxArray *resv[], int argc, const mxAr
 
 
 void _wrap_helicsMessageGetBytesPointer(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsMessage message = *(HelicsMessage*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageGetBytesPointer:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageGetBytesPointer:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsMessage message = *(static_cast<HelicsMessage*>(mxGetData(argv[0])));
 
 	void *result = helicsMessageGetBytesPointer(message);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsMessageIsValid(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsMessage message = *(HelicsMessage*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageIsValid:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageIsValid:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsMessage message = *(static_cast<HelicsMessage*>(mxGetData(argv[0])));
 
 	HelicsBool result = helicsMessageIsValid(message);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-	*((int32_t*)mxGetData(_out)) = (int32_t)result;
+	mxArray *_out = mxCreateLogicalMatrix(1, 1);
+	mxLogical *rv = mxGetLogicals(_out);
+	if(result == HELICS_TRUE){
+		rv[0] = true;
+	}else{
+		rv[0] = false;
+	}
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsMessageSetSource(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsMessage message = *(HelicsMessage*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetSource:rhs","This function requires 2 arguments.");
+	}
 
-	char *src;
-	size_t srcLength;
-	int srcStatus;
-	srcLength = mxGetN(argv[1]) + 1;
-	src = (char *)malloc(srcLength);
-	srcStatus = mxGetString(argv[1], src, srcLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetSource:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsMessage message = *(static_cast<HelicsMessage*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetSource:TypeError","Argument 2 must be a string.");
+	}
+	char *src = nullptr;
+	size_t srcLength = 0;
+	int srcStatus = 0;
+	if(argc > 1){
+		srcLength = mxGetN(argv[1]) + 1;
+		src = static_cast<char *>(malloc(srcLength));
+		srcStatus = mxGetString(argv[1], src, srcLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsMessageSetSource(message, (char const *)src, &err);
+	helicsMessageSetSource(message, static_cast<const char *>(src), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(src);
 
@@ -9020,27 +12812,40 @@ void _wrap_helicsMessageSetSource(int resc, mxArray *resv[], int argc, const mxA
 
 
 void _wrap_helicsMessageSetDestination(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsMessage message = *(HelicsMessage*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetDestination:rhs","This function requires 2 arguments.");
+	}
 
-	char *dst;
-	size_t dstLength;
-	int dstStatus;
-	dstLength = mxGetN(argv[1]) + 1;
-	dst = (char *)malloc(dstLength);
-	dstStatus = mxGetString(argv[1], dst, dstLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetDestination:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsMessage message = *(static_cast<HelicsMessage*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetDestination:TypeError","Argument 2 must be a string.");
+	}
+	char *dst = nullptr;
+	size_t dstLength = 0;
+	int dstStatus = 0;
+	if(argc > 1){
+		dstLength = mxGetN(argv[1]) + 1;
+		dst = static_cast<char *>(malloc(dstLength));
+		dstStatus = mxGetString(argv[1], dst, dstLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsMessageSetDestination(message, (char const *)dst, &err);
+	helicsMessageSetDestination(message, static_cast<const char *>(dst), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(dst);
 
@@ -9051,27 +12856,40 @@ void _wrap_helicsMessageSetDestination(int resc, mxArray *resv[], int argc, cons
 
 
 void _wrap_helicsMessageSetOriginalSource(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsMessage message = *(HelicsMessage*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetOriginalSource:rhs","This function requires 2 arguments.");
+	}
 
-	char *src;
-	size_t srcLength;
-	int srcStatus;
-	srcLength = mxGetN(argv[1]) + 1;
-	src = (char *)malloc(srcLength);
-	srcStatus = mxGetString(argv[1], src, srcLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetOriginalSource:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsMessage message = *(static_cast<HelicsMessage*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetOriginalSource:TypeError","Argument 2 must be a string.");
+	}
+	char *src = nullptr;
+	size_t srcLength = 0;
+	int srcStatus = 0;
+	if(argc > 1){
+		srcLength = mxGetN(argv[1]) + 1;
+		src = static_cast<char *>(malloc(srcLength));
+		srcStatus = mxGetString(argv[1], src, srcLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsMessageSetOriginalSource(message, (char const *)src, &err);
+	helicsMessageSetOriginalSource(message, static_cast<const char *>(src), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(src);
 
@@ -9082,27 +12900,40 @@ void _wrap_helicsMessageSetOriginalSource(int resc, mxArray *resv[], int argc, c
 
 
 void _wrap_helicsMessageSetOriginalDestination(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsMessage message = *(HelicsMessage*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetOriginalDestination:rhs","This function requires 2 arguments.");
+	}
 
-	char *dst;
-	size_t dstLength;
-	int dstStatus;
-	dstLength = mxGetN(argv[1]) + 1;
-	dst = (char *)malloc(dstLength);
-	dstStatus = mxGetString(argv[1], dst, dstLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetOriginalDestination:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsMessage message = *(static_cast<HelicsMessage*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetOriginalDestination:TypeError","Argument 2 must be a string.");
+	}
+	char *dst = nullptr;
+	size_t dstLength = 0;
+	int dstStatus = 0;
+	if(argc > 1){
+		dstLength = mxGetN(argv[1]) + 1;
+		dst = static_cast<char *>(malloc(dstLength));
+		dstStatus = mxGetString(argv[1], dst, dstLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsMessageSetOriginalDestination(message, (char const *)dst, &err);
+	helicsMessageSetOriginalDestination(message, static_cast<const char *>(dst), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(dst);
 
@@ -9113,24 +12944,33 @@ void _wrap_helicsMessageSetOriginalDestination(int resc, mxArray *resv[], int ar
 
 
 void _wrap_helicsMessageSetTime(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsMessage message = *(HelicsMessage*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetTime:rhs","This function requires 2 arguments.");
+	}
 
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetTime:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsMessage message = *(static_cast<HelicsMessage*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetTime:TypeError","Argument 2 must be of type double.");
+	}
 	HelicsTime time = (HelicsTime)(mxGetScalar(argv[1]));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsMessageSetTime(message, time, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -9139,24 +12979,33 @@ void _wrap_helicsMessageSetTime(int resc, mxArray *resv[], int argc, const mxArr
 
 
 void _wrap_helicsMessageResize(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsMessage message = *(HelicsMessage*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageResize:rhs","This function requires 2 arguments.");
+	}
 
-	int newSize = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageResize:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsMessage message = *(static_cast<HelicsMessage*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageResize:TypeError","Argument 2 must be of type integer.");
+	}
+		int newSize = static_cast<int>(mxGetScalar(argv[1]));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsMessageResize(message, newSize, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -9165,24 +13014,33 @@ void _wrap_helicsMessageResize(int resc, mxArray *resv[], int argc, const mxArra
 
 
 void _wrap_helicsMessageReserve(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsMessage message = *(HelicsMessage*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageReserve:rhs","This function requires 2 arguments.");
+	}
 
-	int reserveSize = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageReserve:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsMessage message = *(static_cast<HelicsMessage*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageReserve:TypeError","Argument 2 must be of type integer.");
+	}
+		int reserveSize = static_cast<int>(mxGetScalar(argv[1]));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsMessageReserve(message, reserveSize, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -9191,24 +13049,34 @@ void _wrap_helicsMessageReserve(int resc, mxArray *resv[], int argc, const mxArr
 
 
 void _wrap_helicsMessageSetMessageID(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsMessage message = *(HelicsMessage*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetMessageID:rhs","This function requires 2 arguments.");
+	}
 
-	int32_t messageID = *((int32_t *)mxGetData(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetMessageID:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsMessage message = *(static_cast<HelicsMessage*>(mxGetData(argv[0])));
+
+	if(mxGetClassID(argv[1]) != mxINT32_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetMessageID:TypeError","Argument 2 must be of type int32.");
+	}
+mxInt32 *pmessageID = mxGetInt32s(argv[1]);
+	int32_t messageID = static_cast<int32_t>(pmessageID[0]);
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsMessageSetMessageID(message, messageID, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -9217,44 +13085,66 @@ void _wrap_helicsMessageSetMessageID(int resc, mxArray *resv[], int argc, const 
 
 
 void _wrap_helicsMessageClearFlags(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsMessage message = *(HelicsMessage*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageClearFlags:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageClearFlags:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsMessage message = *(static_cast<HelicsMessage*>(mxGetData(argv[0])));
 
 	helicsMessageClearFlags(message);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsMessageSetFlagOption(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsMessage message = *(HelicsMessage*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetFlagOption:rhs","This function requires 3 arguments.");
+	}
 
-	int flag = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetFlagOption:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsMessage message = *(static_cast<HelicsMessage*>(mxGetData(argv[0])));
 
-	HelicsBool flagValue = (HelicsBool)(mxGetScalar(argv[2]));
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetFlagOption:TypeError","Argument 2 must be of type integer.");
+	}
+		int flag = static_cast<int>(mxGetScalar(argv[1]));
+
+	if(!mxIsLogical(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetFlagOption:TypeError","Argument 3 must be a 0 or 1.");
+	}
+	mxLogical *pflagValue = mxGetLogicals(argv[2]);
+	HelicsBool flagValue = HELICS_FALSE;
+	if(pflagValue[0]){
+		flagValue = HELICS_TRUE;
+	}
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsMessageSetFlagOption(message, flag, flagValue, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -9263,27 +13153,40 @@ void _wrap_helicsMessageSetFlagOption(int resc, mxArray *resv[], int argc, const
 
 
 void _wrap_helicsMessageSetString(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsMessage message = *(HelicsMessage*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetString:rhs","This function requires 2 arguments.");
+	}
 
-	char *data;
-	size_t dataLength;
-	int dataStatus;
-	dataLength = mxGetN(argv[1]) + 1;
-	data = (char *)malloc(dataLength);
-	dataStatus = mxGetString(argv[1], data, dataLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetString:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsMessage message = *(static_cast<HelicsMessage*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetString:TypeError","Argument 2 must be a string.");
+	}
+	char *data = nullptr;
+	size_t dataLength = 0;
+	int dataStatus = 0;
+	if(argc > 1){
+		dataLength = mxGetN(argv[1]) + 1;
+		data = static_cast<char *>(malloc(dataLength));
+		dataStatus = mxGetString(argv[1], data, dataLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsMessageSetString(message, (char const *)data, &err);
+	helicsMessageSetString(message, static_cast<const char *>(data), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(data);
 
@@ -9294,22 +13197,37 @@ void _wrap_helicsMessageSetString(int resc, mxArray *resv[], int argc, const mxA
 
 
 void _wrap_helicsMessageSetData(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsMessage message = *(HelicsMessage*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetData:rhs","This function requires 2 arguments.");
+	}
 
-	char *data;
-	size_t dataLength;
-	int dataStatus;
-	dataLength = mxGetN(argv[1]) + 1;
-	data = (char *)malloc(dataLength);
-	dataStatus = mxGetString(argv[1], data, dataLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetData:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsMessage message = *(static_cast<HelicsMessage*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetData:TypeError","Argument 2 must be a string.");
+	}
+	char *data = nullptr;
+	size_t dataLength = 0;
+	int dataStatus = 0;
+	if(argc > 1){
+		dataLength = mxGetN(argv[1]) + 1;
+		data = static_cast<char *>(malloc(dataLength));
+		dataStatus = mxGetString(argv[1], data, dataLength);
+
+	}
 	int inputDataLength = static_cast<int>(dataLength) - 1;
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsMessageSetData(message, (void *)data, inputDataLength, &err);
+	helicsMessageSetData(message, static_cast<void *>(data), inputDataLength, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
@@ -9323,22 +13241,37 @@ void _wrap_helicsMessageSetData(int resc, mxArray *resv[], int argc, const mxArr
 
 
 void _wrap_helicsMessageAppendData(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsMessage message = *(HelicsMessage*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageAppendData:rhs","This function requires 2 arguments.");
+	}
 
-	char *data;
-	size_t dataLength;
-	int dataStatus;
-	dataLength = mxGetN(argv[1]) + 1;
-	data = (char *)malloc(dataLength);
-	dataStatus = mxGetString(argv[1], data, dataLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageAppendData:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsMessage message = *(static_cast<HelicsMessage*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageAppendData:TypeError","Argument 2 must be a string.");
+	}
+	char *data = nullptr;
+	size_t dataLength = 0;
+	int dataStatus = 0;
+	if(argc > 1){
+		dataLength = mxGetN(argv[1]) + 1;
+		data = static_cast<char *>(malloc(dataLength));
+		dataStatus = mxGetString(argv[1], data, dataLength);
+
+	}
 	int inputDataLength = static_cast<int>(dataLength) - 1;
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsMessageAppendData(message, (void *)data, inputDataLength, &err);
+	helicsMessageAppendData(message, static_cast<void *>(data), inputDataLength, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -9351,24 +13284,33 @@ void _wrap_helicsMessageAppendData(int resc, mxArray *resv[], int argc, const mx
 
 
 void _wrap_helicsMessageCopy(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsMessage src_message = *(HelicsMessage*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageCopy:rhs","This function requires 2 arguments.");
+	}
 
-	HelicsMessage dst_message = *(HelicsMessage*)(mxGetData(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageCopy:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsMessage src_message = *(static_cast<HelicsMessage*>(mxGetData(argv[0])));
+
+	if(mxGetClassID(argv[1]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageCopy:TypeError","Argument 2 must be of type uint64.");
+	}
+	HelicsMessage dst_message = *(static_cast<HelicsMessage*>(mxGetData(argv[1])));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsMessageCopy(src_message, dst_message, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -9377,21 +13319,29 @@ void _wrap_helicsMessageCopy(int resc, mxArray *resv[], int argc, const mxArray 
 
 
 void _wrap_helicsMessageClone(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsMessage message = *(HelicsMessage*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageClone:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageClone:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsMessage message = *(static_cast<HelicsMessage*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
 	HelicsMessage result = helicsMessageClone(message, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -9400,36 +13350,50 @@ void _wrap_helicsMessageClone(int resc, mxArray *resv[], int argc, const mxArray
 
 
 void _wrap_helicsMessageFree(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsMessage message = *(HelicsMessage*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageFree:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageFree:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsMessage message = *(static_cast<HelicsMessage*>(mxGetData(argv[0])));
 
 	helicsMessageFree(message);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsMessageClear(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsMessage message = *(HelicsMessage*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageClear:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageClear:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsMessage message = *(static_cast<HelicsMessage*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsMessageClear(message, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -9438,33 +13402,49 @@ void _wrap_helicsMessageClear(int resc, mxArray *resv[], int argc, const mxArray
 
 
 void _wrap_helicsFederateRegisterFilter(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterFilter:rhs","This function requires 3 arguments.");
+	}
 
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterFilter:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterFilter:TypeError","Argument 2 must be of type int32.");
+	}
 	int typeInt = static_cast<int>(mxGetScalar(argv[1]));
 	HelicsFilterTypes type = static_cast<HelicsFilterTypes>(typeInt);
 
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[2]) + 1;
-	name = (char *)malloc(nameLength);
-	nameStatus = mxGetString(argv[2], name, nameLength);
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterFilter:TypeError","Argument 3 must be a string.");
+	}
+	char *name = nullptr;
+	size_t nameLength = 0;
+	int nameStatus = 0;
+	if(argc > 2){
+		nameLength = mxGetN(argv[2]) + 1;
+		name = static_cast<char *>(malloc(nameLength));
+		nameStatus = mxGetString(argv[2], name, nameLength);
 
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsFilter result = helicsFederateRegisterFilter(fed, type, (char const *)name, &err);
+	HelicsFilter result = helicsFederateRegisterFilter(fed, type, static_cast<const char *>(name), &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	free(name);
 
@@ -9475,33 +13455,49 @@ void _wrap_helicsFederateRegisterFilter(int resc, mxArray *resv[], int argc, con
 
 
 void _wrap_helicsFederateRegisterGlobalFilter(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalFilter:rhs","This function requires 3 arguments.");
+	}
 
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalFilter:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalFilter:TypeError","Argument 2 must be of type int32.");
+	}
 	int typeInt = static_cast<int>(mxGetScalar(argv[1]));
 	HelicsFilterTypes type = static_cast<HelicsFilterTypes>(typeInt);
 
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[2]) + 1;
-	name = (char *)malloc(nameLength);
-	nameStatus = mxGetString(argv[2], name, nameLength);
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalFilter:TypeError","Argument 3 must be a string.");
+	}
+	char *name = nullptr;
+	size_t nameLength = 0;
+	int nameStatus = 0;
+	if(argc > 2){
+		nameLength = mxGetN(argv[2]) + 1;
+		name = static_cast<char *>(malloc(nameLength));
+		nameStatus = mxGetString(argv[2], name, nameLength);
 
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsFilter result = helicsFederateRegisterGlobalFilter(fed, type, (char const *)name, &err);
+	HelicsFilter result = helicsFederateRegisterGlobalFilter(fed, type, static_cast<const char *>(name), &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	free(name);
 
@@ -9512,28 +13508,42 @@ void _wrap_helicsFederateRegisterGlobalFilter(int resc, mxArray *resv[], int arg
 
 
 void _wrap_helicsFederateRegisterCloningFilter(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterCloningFilter:rhs","This function requires 2 arguments.");
+	}
 
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[1]) + 1;
-	name = (char *)malloc(nameLength);
-	nameStatus = mxGetString(argv[1], name, nameLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterCloningFilter:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterCloningFilter:TypeError","Argument 2 must be a string.");
+	}
+	char *name = nullptr;
+	size_t nameLength = 0;
+	int nameStatus = 0;
+	if(argc > 1){
+		nameLength = mxGetN(argv[1]) + 1;
+		name = static_cast<char *>(malloc(nameLength));
+		nameStatus = mxGetString(argv[1], name, nameLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsFilter result = helicsFederateRegisterCloningFilter(fed, (char const *)name, &err);
+	HelicsFilter result = helicsFederateRegisterCloningFilter(fed, static_cast<const char *>(name), &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(name);
 
@@ -9544,28 +13554,42 @@ void _wrap_helicsFederateRegisterCloningFilter(int resc, mxArray *resv[], int ar
 
 
 void _wrap_helicsFederateRegisterGlobalCloningFilter(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalCloningFilter:rhs","This function requires 2 arguments.");
+	}
 
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[1]) + 1;
-	name = (char *)malloc(nameLength);
-	nameStatus = mxGetString(argv[1], name, nameLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalCloningFilter:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalCloningFilter:TypeError","Argument 2 must be a string.");
+	}
+	char *name = nullptr;
+	size_t nameLength = 0;
+	int nameStatus = 0;
+	if(argc > 1){
+		nameLength = mxGetN(argv[1]) + 1;
+		name = static_cast<char *>(malloc(nameLength));
+		nameStatus = mxGetString(argv[1], name, nameLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsFilter result = helicsFederateRegisterGlobalCloningFilter(fed, (char const *)name, &err);
+	HelicsFilter result = helicsFederateRegisterGlobalCloningFilter(fed, static_cast<const char *>(name), &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(name);
 
@@ -9576,33 +13600,49 @@ void _wrap_helicsFederateRegisterGlobalCloningFilter(int resc, mxArray *resv[], 
 
 
 void _wrap_helicsCoreRegisterFilter(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsCore core = *(HelicsCore*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreRegisterFilter:rhs","This function requires 3 arguments.");
+	}
 
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreRegisterFilter:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsCore core = *(static_cast<HelicsCore*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreRegisterFilter:TypeError","Argument 2 must be of type int32.");
+	}
 	int typeInt = static_cast<int>(mxGetScalar(argv[1]));
 	HelicsFilterTypes type = static_cast<HelicsFilterTypes>(typeInt);
 
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[2]) + 1;
-	name = (char *)malloc(nameLength);
-	nameStatus = mxGetString(argv[2], name, nameLength);
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreRegisterFilter:TypeError","Argument 3 must be a string.");
+	}
+	char *name = nullptr;
+	size_t nameLength = 0;
+	int nameStatus = 0;
+	if(argc > 2){
+		nameLength = mxGetN(argv[2]) + 1;
+		name = static_cast<char *>(malloc(nameLength));
+		nameStatus = mxGetString(argv[2], name, nameLength);
 
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsFilter result = helicsCoreRegisterFilter(core, type, (char const *)name, &err);
+	HelicsFilter result = helicsCoreRegisterFilter(core, type, static_cast<const char *>(name), &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	free(name);
 
@@ -9613,28 +13653,42 @@ void _wrap_helicsCoreRegisterFilter(int resc, mxArray *resv[], int argc, const m
 
 
 void _wrap_helicsCoreRegisterCloningFilter(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsCore core = *(HelicsCore*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreRegisterCloningFilter:rhs","This function requires 2 arguments.");
+	}
 
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[1]) + 1;
-	name = (char *)malloc(nameLength);
-	nameStatus = mxGetString(argv[1], name, nameLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreRegisterCloningFilter:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsCore core = *(static_cast<HelicsCore*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreRegisterCloningFilter:TypeError","Argument 2 must be a string.");
+	}
+	char *name = nullptr;
+	size_t nameLength = 0;
+	int nameStatus = 0;
+	if(argc > 1){
+		nameLength = mxGetN(argv[1]) + 1;
+		name = static_cast<char *>(malloc(nameLength));
+		nameStatus = mxGetString(argv[1], name, nameLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsFilter result = helicsCoreRegisterCloningFilter(core, (char const *)name, &err);
+	HelicsFilter result = helicsCoreRegisterCloningFilter(core, static_cast<const char *>(name), &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(name);
 
@@ -9645,45 +13699,67 @@ void _wrap_helicsCoreRegisterCloningFilter(int resc, mxArray *resv[], int argc, 
 
 
 void _wrap_helicsFederateGetFilterCount(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetFilterCount:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetFilterCount:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	int result = helicsFederateGetFilterCount(fed);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(_out)) = (int64_t)result;
+	mxInt64 *rv = mxGetInt64s(_out);
+	rv[0] = static_cast<mxInt64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsFederateGetFilter(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetFilter:rhs","This function requires 2 arguments.");
+	}
 
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[1]) + 1;
-	name = (char *)malloc(nameLength);
-	nameStatus = mxGetString(argv[1], name, nameLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetFilter:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetFilter:TypeError","Argument 2 must be a string.");
+	}
+	char *name = nullptr;
+	size_t nameLength = 0;
+	int nameStatus = 0;
+	if(argc > 1){
+		nameLength = mxGetN(argv[1]) + 1;
+		name = static_cast<char *>(malloc(nameLength));
+		nameStatus = mxGetString(argv[1], name, nameLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsFilter result = helicsFederateGetFilter(fed, (char const *)name, &err);
+	HelicsFilter result = helicsFederateGetFilter(fed, static_cast<const char *>(name), &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(name);
 
@@ -9694,25 +13770,35 @@ void _wrap_helicsFederateGetFilter(int resc, mxArray *resv[], int argc, const mx
 
 
 void _wrap_helicsFederateGetFilterByIndex(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetFilterByIndex:rhs","This function requires 2 arguments.");
+	}
 
-	int index = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetFilterByIndex:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetFilterByIndex:TypeError","Argument 2 must be of type integer.");
+	}
+		int index = static_cast<int>(mxGetScalar(argv[1]));
 
 	HelicsError err = helicsErrorInitialize();
 
 	HelicsFilter result = helicsFederateGetFilterByIndex(fed, index, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -9721,24 +13807,45 @@ void _wrap_helicsFederateGetFilterByIndex(int resc, mxArray *resv[], int argc, c
 
 
 void _wrap_helicsFilterIsValid(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFilter filt = *(HelicsFilter*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterIsValid:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterIsValid:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFilter filt = *(static_cast<HelicsFilter*>(mxGetData(argv[0])));
 
 	HelicsBool result = helicsFilterIsValid(filt);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-	*((int32_t*)mxGetData(_out)) = (int32_t)result;
+	mxArray *_out = mxCreateLogicalMatrix(1, 1);
+	mxLogical *rv = mxGetLogicals(_out);
+	if(result == HELICS_TRUE){
+		rv[0] = true;
+	}else{
+		rv[0] = false;
+	}
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsFilterGetName(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFilter filt = *(HelicsFilter*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterGetName:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterGetName:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFilter filt = *(static_cast<HelicsFilter*>(mxGetData(argv[0])));
 
 	const char *result = helicsFilterGetName(filt);
 
@@ -9748,39 +13855,52 @@ void _wrap_helicsFilterGetName(int resc, mxArray *resv[], int argc, const mxArra
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsFilterSet(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFilter filt = *(HelicsFilter*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterSet:rhs","This function requires 3 arguments.");
+	}
 
-	char *prop;
-	size_t propLength;
-	int propStatus;
-	propLength = mxGetN(argv[1]) + 1;
-	prop = (char *)malloc(propLength);
-	propStatus = mxGetString(argv[1], prop, propLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterSet:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFilter filt = *(static_cast<HelicsFilter*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterSet:TypeError","Argument 2 must be a string.");
+	}
+	char *prop = nullptr;
+	size_t propLength = 0;
+	int propStatus = 0;
+	if(argc > 1){
+		propLength = mxGetN(argv[1]) + 1;
+		prop = static_cast<char *>(malloc(propLength));
+		propStatus = mxGetString(argv[1], prop, propLength);
+
+	}
+	if(!mxIsNumeric(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterSet:TypeError","Argument 3 must be of type double.");
+	}
 	double val = mxGetScalar(argv[2]);
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFilterSet(filt, (char const *)prop, val, &err);
+	helicsFilterSet(filt, static_cast<const char *>(prop), val, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
 
-
-
 	free(prop);
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -9789,34 +13909,53 @@ void _wrap_helicsFilterSet(int resc, mxArray *resv[], int argc, const mxArray *a
 
 
 void _wrap_helicsFilterSetString(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFilter filt = *(HelicsFilter*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterSetString:rhs","This function requires 3 arguments.");
+	}
 
-	char *prop;
-	size_t propLength;
-	int propStatus;
-	propLength = mxGetN(argv[1]) + 1;
-	prop = (char *)malloc(propLength);
-	propStatus = mxGetString(argv[1], prop, propLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterSetString:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFilter filt = *(static_cast<HelicsFilter*>(mxGetData(argv[0])));
 
-	char *val;
-	size_t valLength;
-	int valStatus;
-	valLength = mxGetN(argv[2]) + 1;
-	val = (char *)malloc(valLength);
-	valStatus = mxGetString(argv[2], val, valLength);
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterSetString:TypeError","Argument 2 must be a string.");
+	}
+	char *prop = nullptr;
+	size_t propLength = 0;
+	int propStatus = 0;
+	if(argc > 1){
+		propLength = mxGetN(argv[1]) + 1;
+		prop = static_cast<char *>(malloc(propLength));
+		propStatus = mxGetString(argv[1], prop, propLength);
 
+	}
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterSetString:TypeError","Argument 3 must be a string.");
+	}
+	char *val = nullptr;
+	size_t valLength = 0;
+	int valStatus = 0;
+	if(argc > 2){
+		valLength = mxGetN(argv[2]) + 1;
+		val = static_cast<char *>(malloc(valLength));
+		valStatus = mxGetString(argv[2], val, valLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFilterSetString(filt, (char const *)prop, (char const *)val, &err);
+	helicsFilterSetString(filt, static_cast<const char *>(prop), static_cast<const char *>(val), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(prop);
 
@@ -9829,27 +13968,40 @@ void _wrap_helicsFilterSetString(int resc, mxArray *resv[], int argc, const mxAr
 
 
 void _wrap_helicsFilterAddDestinationTarget(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFilter filt = *(HelicsFilter*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterAddDestinationTarget:rhs","This function requires 2 arguments.");
+	}
 
-	char *dst;
-	size_t dstLength;
-	int dstStatus;
-	dstLength = mxGetN(argv[1]) + 1;
-	dst = (char *)malloc(dstLength);
-	dstStatus = mxGetString(argv[1], dst, dstLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterAddDestinationTarget:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFilter filt = *(static_cast<HelicsFilter*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterAddDestinationTarget:TypeError","Argument 2 must be a string.");
+	}
+	char *dst = nullptr;
+	size_t dstLength = 0;
+	int dstStatus = 0;
+	if(argc > 1){
+		dstLength = mxGetN(argv[1]) + 1;
+		dst = static_cast<char *>(malloc(dstLength));
+		dstStatus = mxGetString(argv[1], dst, dstLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFilterAddDestinationTarget(filt, (char const *)dst, &err);
+	helicsFilterAddDestinationTarget(filt, static_cast<const char *>(dst), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(dst);
 
@@ -9860,27 +14012,40 @@ void _wrap_helicsFilterAddDestinationTarget(int resc, mxArray *resv[], int argc,
 
 
 void _wrap_helicsFilterAddSourceTarget(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFilter filt = *(HelicsFilter*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterAddSourceTarget:rhs","This function requires 2 arguments.");
+	}
 
-	char *source;
-	size_t sourceLength;
-	int sourceStatus;
-	sourceLength = mxGetN(argv[1]) + 1;
-	source = (char *)malloc(sourceLength);
-	sourceStatus = mxGetString(argv[1], source, sourceLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterAddSourceTarget:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFilter filt = *(static_cast<HelicsFilter*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterAddSourceTarget:TypeError","Argument 2 must be a string.");
+	}
+	char *source = nullptr;
+	size_t sourceLength = 0;
+	int sourceStatus = 0;
+	if(argc > 1){
+		sourceLength = mxGetN(argv[1]) + 1;
+		source = static_cast<char *>(malloc(sourceLength));
+		sourceStatus = mxGetString(argv[1], source, sourceLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFilterAddSourceTarget(filt, (char const *)source, &err);
+	helicsFilterAddSourceTarget(filt, static_cast<const char *>(source), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(source);
 
@@ -9891,27 +14056,40 @@ void _wrap_helicsFilterAddSourceTarget(int resc, mxArray *resv[], int argc, cons
 
 
 void _wrap_helicsFilterAddDeliveryEndpoint(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFilter filt = *(HelicsFilter*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterAddDeliveryEndpoint:rhs","This function requires 2 arguments.");
+	}
 
-	char *deliveryEndpoint;
-	size_t deliveryEndpointLength;
-	int deliveryEndpointStatus;
-	deliveryEndpointLength = mxGetN(argv[1]) + 1;
-	deliveryEndpoint = (char *)malloc(deliveryEndpointLength);
-	deliveryEndpointStatus = mxGetString(argv[1], deliveryEndpoint, deliveryEndpointLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterAddDeliveryEndpoint:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFilter filt = *(static_cast<HelicsFilter*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterAddDeliveryEndpoint:TypeError","Argument 2 must be a string.");
+	}
+	char *deliveryEndpoint = nullptr;
+	size_t deliveryEndpointLength = 0;
+	int deliveryEndpointStatus = 0;
+	if(argc > 1){
+		deliveryEndpointLength = mxGetN(argv[1]) + 1;
+		deliveryEndpoint = static_cast<char *>(malloc(deliveryEndpointLength));
+		deliveryEndpointStatus = mxGetString(argv[1], deliveryEndpoint, deliveryEndpointLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFilterAddDeliveryEndpoint(filt, (char const *)deliveryEndpoint, &err);
+	helicsFilterAddDeliveryEndpoint(filt, static_cast<const char *>(deliveryEndpoint), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(deliveryEndpoint);
 
@@ -9922,27 +14100,40 @@ void _wrap_helicsFilterAddDeliveryEndpoint(int resc, mxArray *resv[], int argc, 
 
 
 void _wrap_helicsFilterRemoveTarget(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFilter filt = *(HelicsFilter*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterRemoveTarget:rhs","This function requires 2 arguments.");
+	}
 
-	char *target;
-	size_t targetLength;
-	int targetStatus;
-	targetLength = mxGetN(argv[1]) + 1;
-	target = (char *)malloc(targetLength);
-	targetStatus = mxGetString(argv[1], target, targetLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterRemoveTarget:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFilter filt = *(static_cast<HelicsFilter*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterRemoveTarget:TypeError","Argument 2 must be a string.");
+	}
+	char *target = nullptr;
+	size_t targetLength = 0;
+	int targetStatus = 0;
+	if(argc > 1){
+		targetLength = mxGetN(argv[1]) + 1;
+		target = static_cast<char *>(malloc(targetLength));
+		targetStatus = mxGetString(argv[1], target, targetLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFilterRemoveTarget(filt, (char const *)target, &err);
+	helicsFilterRemoveTarget(filt, static_cast<const char *>(target), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(target);
 
@@ -9953,27 +14144,40 @@ void _wrap_helicsFilterRemoveTarget(int resc, mxArray *resv[], int argc, const m
 
 
 void _wrap_helicsFilterRemoveDeliveryEndpoint(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFilter filt = *(HelicsFilter*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterRemoveDeliveryEndpoint:rhs","This function requires 2 arguments.");
+	}
 
-	char *deliveryEndpoint;
-	size_t deliveryEndpointLength;
-	int deliveryEndpointStatus;
-	deliveryEndpointLength = mxGetN(argv[1]) + 1;
-	deliveryEndpoint = (char *)malloc(deliveryEndpointLength);
-	deliveryEndpointStatus = mxGetString(argv[1], deliveryEndpoint, deliveryEndpointLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterRemoveDeliveryEndpoint:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFilter filt = *(static_cast<HelicsFilter*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterRemoveDeliveryEndpoint:TypeError","Argument 2 must be a string.");
+	}
+	char *deliveryEndpoint = nullptr;
+	size_t deliveryEndpointLength = 0;
+	int deliveryEndpointStatus = 0;
+	if(argc > 1){
+		deliveryEndpointLength = mxGetN(argv[1]) + 1;
+		deliveryEndpoint = static_cast<char *>(malloc(deliveryEndpointLength));
+		deliveryEndpointStatus = mxGetString(argv[1], deliveryEndpoint, deliveryEndpointLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFilterRemoveDeliveryEndpoint(filt, (char const *)deliveryEndpoint, &err);
+	helicsFilterRemoveDeliveryEndpoint(filt, static_cast<const char *>(deliveryEndpoint), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(deliveryEndpoint);
 
@@ -9984,7 +14188,16 @@ void _wrap_helicsFilterRemoveDeliveryEndpoint(int resc, mxArray *resv[], int arg
 
 
 void _wrap_helicsFilterGetInfo(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFilter filt = *(HelicsFilter*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterGetInfo:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterGetInfo:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFilter filt = *(static_cast<HelicsFilter*>(mxGetData(argv[0])));
 
 	const char *result = helicsFilterGetInfo(filt);
 
@@ -9994,33 +14207,44 @@ void _wrap_helicsFilterGetInfo(int resc, mxArray *resv[], int argc, const mxArra
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsFilterSetInfo(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFilter filt = *(HelicsFilter*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterSetInfo:rhs","This function requires 2 arguments.");
+	}
 
-	char *info;
-	size_t infoLength;
-	int infoStatus;
-	infoLength = mxGetN(argv[1]) + 1;
-	info = (char *)malloc(infoLength);
-	infoStatus = mxGetString(argv[1], info, infoLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterSetInfo:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFilter filt = *(static_cast<HelicsFilter*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterSetInfo:TypeError","Argument 2 must be a string.");
+	}
+	char *info = nullptr;
+	size_t infoLength = 0;
+	int infoStatus = 0;
+	if(argc > 1){
+		infoLength = mxGetN(argv[1]) + 1;
+		info = static_cast<char *>(malloc(infoLength));
+		infoStatus = mxGetString(argv[1], info, infoLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFilterSetInfo(filt, (char const *)info, &err);
+	helicsFilterSetInfo(filt, static_cast<const char *>(info), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(info);
 
@@ -10031,16 +14255,33 @@ void _wrap_helicsFilterSetInfo(int resc, mxArray *resv[], int argc, const mxArra
 
 
 void _wrap_helicsFilterGetTag(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFilter filt = *(HelicsFilter*)(mxGetData(argv[0]));
+	if(argc < 1 || argc > 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterGetTag:rhs","This function requires at least 1 arguments and at most 2 arguments.");
+	}
 
-	char *tagname;
-	size_t tagnameLength;
-	int tagnameStatus;
-	tagnameLength = mxGetN(argv[1]) + 1;
-	tagname = (char *)malloc(tagnameLength);
-	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterGetTag:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFilter filt = *(static_cast<HelicsFilter*>(mxGetData(argv[0])));
 
-	const char *result = helicsFilterGetTag(filt, (char const *)tagname);
+	if(argc > 1){
+		if(!mxIsChar(argv[1])){
+			mexUnlock();
+			mexErrMsgIdAndTxt("MATLAB:helicsFilterGetTag:TypeError","Argument 2 must be a string.");
+		}
+	}
+	char *tagname = nullptr;
+	size_t tagnameLength = 0;
+	int tagnameStatus = 0;
+	if(argc > 1){
+		tagnameLength = mxGetN(argv[1]) + 1;
+		tagname = static_cast<char *>(malloc(tagnameLength));
+		tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
+
+	}
+	const char *result = helicsFilterGetTag(filt, static_cast<const char *>(tagname));
 
 	mxArray *_out = mxCreateString(result);
 
@@ -10049,41 +14290,58 @@ void _wrap_helicsFilterGetTag(int resc, mxArray *resv[], int argc, const mxArray
 		*resv++ = _out;
 	}
 
-
-
 	free(tagname);
 }
 
 
 void _wrap_helicsFilterSetTag(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFilter filt = *(HelicsFilter*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterSetTag:rhs","This function requires 3 arguments.");
+	}
 
-	char *tagname;
-	size_t tagnameLength;
-	int tagnameStatus;
-	tagnameLength = mxGetN(argv[1]) + 1;
-	tagname = (char *)malloc(tagnameLength);
-	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterSetTag:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFilter filt = *(static_cast<HelicsFilter*>(mxGetData(argv[0])));
 
-	char *tagvalue;
-	size_t tagvalueLength;
-	int tagvalueStatus;
-	tagvalueLength = mxGetN(argv[2]) + 1;
-	tagvalue = (char *)malloc(tagvalueLength);
-	tagvalueStatus = mxGetString(argv[2], tagvalue, tagvalueLength);
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterSetTag:TypeError","Argument 2 must be a string.");
+	}
+	char *tagname = nullptr;
+	size_t tagnameLength = 0;
+	int tagnameStatus = 0;
+	if(argc > 1){
+		tagnameLength = mxGetN(argv[1]) + 1;
+		tagname = static_cast<char *>(malloc(tagnameLength));
+		tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
 
+	}
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterSetTag:TypeError","Argument 3 must be a string.");
+	}
+	char *tagvalue = nullptr;
+	size_t tagvalueLength = 0;
+	int tagvalueStatus = 0;
+	if(argc > 2){
+		tagvalueLength = mxGetN(argv[2]) + 1;
+		tagvalue = static_cast<char *>(malloc(tagvalueLength));
+		tagvalueStatus = mxGetString(argv[2], tagvalue, tagvalueLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFilterSetTag(filt, (char const *)tagname, (char const *)tagvalue, &err);
+	helicsFilterSetTag(filt, static_cast<const char *>(tagname), static_cast<const char *>(tagvalue), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(tagname);
 
@@ -10096,28 +14354,39 @@ void _wrap_helicsFilterSetTag(int resc, mxArray *resv[], int argc, const mxArray
 
 
 void _wrap_helicsFilterSetOption(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFilter filt = *(HelicsFilter*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterSetOption:rhs","This function requires 3 arguments.");
+	}
 
-	int option = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterSetOption:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFilter filt = *(static_cast<HelicsFilter*>(mxGetData(argv[0])));
 
-	int value = (int)(mxGetScalar(argv[2]));
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterSetOption:TypeError","Argument 2 must be of type integer.");
+	}
+		int option = static_cast<int>(mxGetScalar(argv[1]));
+
+	if(!mxIsNumeric(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterSetOption:TypeError","Argument 3 must be of type integer.");
+	}
+		int value = static_cast<int>(mxGetScalar(argv[2]));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsFilterSetOption(filt, option, value, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -10126,54 +14395,80 @@ void _wrap_helicsFilterSetOption(int resc, mxArray *resv[], int argc, const mxAr
 
 
 void _wrap_helicsFilterGetOption(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFilter filt = *(HelicsFilter*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterGetOption:rhs","This function requires 2 arguments.");
+	}
 
-	int option = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterGetOption:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFilter filt = *(static_cast<HelicsFilter*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterGetOption:TypeError","Argument 2 must be of type integer.");
+	}
+		int option = static_cast<int>(mxGetScalar(argv[1]));
 
 	int result = helicsFilterGetOption(filt, option);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(_out)) = (int64_t)result;
+	mxInt64 *rv = mxGetInt64s(_out);
+	rv[0] = static_cast<mxInt64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 }
 
 
 void _wrap_helicsFederateRegisterTranslator(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterTranslator:rhs","This function requires 3 arguments.");
+	}
 
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterTranslator:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterTranslator:TypeError","Argument 2 must be of type int32.");
+	}
 	int typeInt = static_cast<int>(mxGetScalar(argv[1]));
 	HelicsTranslatorTypes type = static_cast<HelicsTranslatorTypes>(typeInt);
 
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[2]) + 1;
-	name = (char *)malloc(nameLength);
-	nameStatus = mxGetString(argv[2], name, nameLength);
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterTranslator:TypeError","Argument 3 must be a string.");
+	}
+	char *name = nullptr;
+	size_t nameLength = 0;
+	int nameStatus = 0;
+	if(argc > 2){
+		nameLength = mxGetN(argv[2]) + 1;
+		name = static_cast<char *>(malloc(nameLength));
+		nameStatus = mxGetString(argv[2], name, nameLength);
 
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsTranslator result = helicsFederateRegisterTranslator(fed, type, (char const *)name, &err);
+	HelicsTranslator result = helicsFederateRegisterTranslator(fed, type, static_cast<const char *>(name), &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	free(name);
 
@@ -10184,33 +14479,49 @@ void _wrap_helicsFederateRegisterTranslator(int resc, mxArray *resv[], int argc,
 
 
 void _wrap_helicsFederateRegisterGlobalTranslator(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalTranslator:rhs","This function requires 3 arguments.");
+	}
 
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalTranslator:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalTranslator:TypeError","Argument 2 must be of type int32.");
+	}
 	int typeInt = static_cast<int>(mxGetScalar(argv[1]));
 	HelicsTranslatorTypes type = static_cast<HelicsTranslatorTypes>(typeInt);
 
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[2]) + 1;
-	name = (char *)malloc(nameLength);
-	nameStatus = mxGetString(argv[2], name, nameLength);
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateRegisterGlobalTranslator:TypeError","Argument 3 must be a string.");
+	}
+	char *name = nullptr;
+	size_t nameLength = 0;
+	int nameStatus = 0;
+	if(argc > 2){
+		nameLength = mxGetN(argv[2]) + 1;
+		name = static_cast<char *>(malloc(nameLength));
+		nameStatus = mxGetString(argv[2], name, nameLength);
 
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsTranslator result = helicsFederateRegisterGlobalTranslator(fed, type, (char const *)name, &err);
+	HelicsTranslator result = helicsFederateRegisterGlobalTranslator(fed, type, static_cast<const char *>(name), &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	free(name);
 
@@ -10221,33 +14532,49 @@ void _wrap_helicsFederateRegisterGlobalTranslator(int resc, mxArray *resv[], int
 
 
 void _wrap_helicsCoreRegisterTranslator(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsCore core = *(HelicsCore*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreRegisterTranslator:rhs","This function requires 3 arguments.");
+	}
 
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreRegisterTranslator:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsCore core = *(static_cast<HelicsCore*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreRegisterTranslator:TypeError","Argument 2 must be of type int32.");
+	}
 	int typeInt = static_cast<int>(mxGetScalar(argv[1]));
 	HelicsTranslatorTypes type = static_cast<HelicsTranslatorTypes>(typeInt);
 
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[2]) + 1;
-	name = (char *)malloc(nameLength);
-	nameStatus = mxGetString(argv[2], name, nameLength);
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreRegisterTranslator:TypeError","Argument 3 must be a string.");
+	}
+	char *name = nullptr;
+	size_t nameLength = 0;
+	int nameStatus = 0;
+	if(argc > 2){
+		nameLength = mxGetN(argv[2]) + 1;
+		name = static_cast<char *>(malloc(nameLength));
+		nameStatus = mxGetString(argv[2], name, nameLength);
 
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsTranslator result = helicsCoreRegisterTranslator(core, type, (char const *)name, &err);
+	HelicsTranslator result = helicsCoreRegisterTranslator(core, type, static_cast<const char *>(name), &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	free(name);
 
@@ -10258,45 +14585,67 @@ void _wrap_helicsCoreRegisterTranslator(int resc, mxArray *resv[], int argc, con
 
 
 void _wrap_helicsFederateGetTranslatorCount(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetTranslatorCount:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetTranslatorCount:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	int result = helicsFederateGetTranslatorCount(fed);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(_out)) = (int64_t)result;
+	mxInt64 *rv = mxGetInt64s(_out);
+	rv[0] = static_cast<mxInt64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsFederateGetTranslator(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetTranslator:rhs","This function requires 2 arguments.");
+	}
 
-	char *name;
-	size_t nameLength;
-	int nameStatus;
-	nameLength = mxGetN(argv[1]) + 1;
-	name = (char *)malloc(nameLength);
-	nameStatus = mxGetString(argv[1], name, nameLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetTranslator:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetTranslator:TypeError","Argument 2 must be a string.");
+	}
+	char *name = nullptr;
+	size_t nameLength = 0;
+	int nameStatus = 0;
+	if(argc > 1){
+		nameLength = mxGetN(argv[1]) + 1;
+		name = static_cast<char *>(malloc(nameLength));
+		nameStatus = mxGetString(argv[1], name, nameLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsTranslator result = helicsFederateGetTranslator(fed, (char const *)name, &err);
+	HelicsTranslator result = helicsFederateGetTranslator(fed, static_cast<const char *>(name), &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(name);
 
@@ -10307,25 +14656,35 @@ void _wrap_helicsFederateGetTranslator(int resc, mxArray *resv[], int argc, cons
 
 
 void _wrap_helicsFederateGetTranslatorByIndex(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetTranslatorByIndex:rhs","This function requires 2 arguments.");
+	}
 
-	int index = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetTranslatorByIndex:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateGetTranslatorByIndex:TypeError","Argument 2 must be of type integer.");
+	}
+		int index = static_cast<int>(mxGetScalar(argv[1]));
 
 	HelicsError err = helicsErrorInitialize();
 
 	HelicsTranslator result = helicsFederateGetTranslatorByIndex(fed, index, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(_out)) = (uint64_t)result;
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -10334,24 +14693,45 @@ void _wrap_helicsFederateGetTranslatorByIndex(int resc, mxArray *resv[], int arg
 
 
 void _wrap_helicsTranslatorIsValid(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsTranslator trans = *(HelicsTranslator*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorIsValid:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorIsValid:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsTranslator trans = *(static_cast<HelicsTranslator*>(mxGetData(argv[0])));
 
 	HelicsBool result = helicsTranslatorIsValid(trans);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-	*((int32_t*)mxGetData(_out)) = (int32_t)result;
+	mxArray *_out = mxCreateLogicalMatrix(1, 1);
+	mxLogical *rv = mxGetLogicals(_out);
+	if(result == HELICS_TRUE){
+		rv[0] = true;
+	}else{
+		rv[0] = false;
+	}
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsTranslatorGetName(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsTranslator trans = *(HelicsTranslator*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorGetName:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorGetName:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsTranslator trans = *(static_cast<HelicsTranslator*>(mxGetData(argv[0])));
 
 	const char *result = helicsTranslatorGetName(trans);
 
@@ -10361,39 +14741,52 @@ void _wrap_helicsTranslatorGetName(int resc, mxArray *resv[], int argc, const mx
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsTranslatorSet(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsTranslator trans = *(HelicsTranslator*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorSet:rhs","This function requires 3 arguments.");
+	}
 
-	char *prop;
-	size_t propLength;
-	int propStatus;
-	propLength = mxGetN(argv[1]) + 1;
-	prop = (char *)malloc(propLength);
-	propStatus = mxGetString(argv[1], prop, propLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorSet:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsTranslator trans = *(static_cast<HelicsTranslator*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorSet:TypeError","Argument 2 must be a string.");
+	}
+	char *prop = nullptr;
+	size_t propLength = 0;
+	int propStatus = 0;
+	if(argc > 1){
+		propLength = mxGetN(argv[1]) + 1;
+		prop = static_cast<char *>(malloc(propLength));
+		propStatus = mxGetString(argv[1], prop, propLength);
+
+	}
+	if(!mxIsNumeric(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorSet:TypeError","Argument 3 must be of type double.");
+	}
 	double val = mxGetScalar(argv[2]);
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsTranslatorSet(trans, (char const *)prop, val, &err);
+	helicsTranslatorSet(trans, static_cast<const char *>(prop), val, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
 
-
-
 	free(prop);
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -10402,34 +14795,53 @@ void _wrap_helicsTranslatorSet(int resc, mxArray *resv[], int argc, const mxArra
 
 
 void _wrap_helicsTranslatorSetString(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsTranslator trans = *(HelicsTranslator*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorSetString:rhs","This function requires 3 arguments.");
+	}
 
-	char *prop;
-	size_t propLength;
-	int propStatus;
-	propLength = mxGetN(argv[1]) + 1;
-	prop = (char *)malloc(propLength);
-	propStatus = mxGetString(argv[1], prop, propLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorSetString:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsTranslator trans = *(static_cast<HelicsTranslator*>(mxGetData(argv[0])));
 
-	char *val;
-	size_t valLength;
-	int valStatus;
-	valLength = mxGetN(argv[2]) + 1;
-	val = (char *)malloc(valLength);
-	valStatus = mxGetString(argv[2], val, valLength);
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorSetString:TypeError","Argument 2 must be a string.");
+	}
+	char *prop = nullptr;
+	size_t propLength = 0;
+	int propStatus = 0;
+	if(argc > 1){
+		propLength = mxGetN(argv[1]) + 1;
+		prop = static_cast<char *>(malloc(propLength));
+		propStatus = mxGetString(argv[1], prop, propLength);
 
+	}
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorSetString:TypeError","Argument 3 must be a string.");
+	}
+	char *val = nullptr;
+	size_t valLength = 0;
+	int valStatus = 0;
+	if(argc > 2){
+		valLength = mxGetN(argv[2]) + 1;
+		val = static_cast<char *>(malloc(valLength));
+		valStatus = mxGetString(argv[2], val, valLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsTranslatorSetString(trans, (char const *)prop, (char const *)val, &err);
+	helicsTranslatorSetString(trans, static_cast<const char *>(prop), static_cast<const char *>(val), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(prop);
 
@@ -10442,27 +14854,40 @@ void _wrap_helicsTranslatorSetString(int resc, mxArray *resv[], int argc, const 
 
 
 void _wrap_helicsTranslatorAddInputTarget(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsTranslator trans = *(HelicsTranslator*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorAddInputTarget:rhs","This function requires 2 arguments.");
+	}
 
-	char *input;
-	size_t inputLength;
-	int inputStatus;
-	inputLength = mxGetN(argv[1]) + 1;
-	input = (char *)malloc(inputLength);
-	inputStatus = mxGetString(argv[1], input, inputLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorAddInputTarget:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsTranslator trans = *(static_cast<HelicsTranslator*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorAddInputTarget:TypeError","Argument 2 must be a string.");
+	}
+	char *input = nullptr;
+	size_t inputLength = 0;
+	int inputStatus = 0;
+	if(argc > 1){
+		inputLength = mxGetN(argv[1]) + 1;
+		input = static_cast<char *>(malloc(inputLength));
+		inputStatus = mxGetString(argv[1], input, inputLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsTranslatorAddInputTarget(trans, (char const *)input, &err);
+	helicsTranslatorAddInputTarget(trans, static_cast<const char *>(input), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(input);
 
@@ -10473,27 +14898,40 @@ void _wrap_helicsTranslatorAddInputTarget(int resc, mxArray *resv[], int argc, c
 
 
 void _wrap_helicsTranslatorAddPublicationTarget(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsTranslator trans = *(HelicsTranslator*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorAddPublicationTarget:rhs","This function requires 2 arguments.");
+	}
 
-	char *pub;
-	size_t pubLength;
-	int pubStatus;
-	pubLength = mxGetN(argv[1]) + 1;
-	pub = (char *)malloc(pubLength);
-	pubStatus = mxGetString(argv[1], pub, pubLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorAddPublicationTarget:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsTranslator trans = *(static_cast<HelicsTranslator*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorAddPublicationTarget:TypeError","Argument 2 must be a string.");
+	}
+	char *pub = nullptr;
+	size_t pubLength = 0;
+	int pubStatus = 0;
+	if(argc > 1){
+		pubLength = mxGetN(argv[1]) + 1;
+		pub = static_cast<char *>(malloc(pubLength));
+		pubStatus = mxGetString(argv[1], pub, pubLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsTranslatorAddPublicationTarget(trans, (char const *)pub, &err);
+	helicsTranslatorAddPublicationTarget(trans, static_cast<const char *>(pub), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(pub);
 
@@ -10504,27 +14942,40 @@ void _wrap_helicsTranslatorAddPublicationTarget(int resc, mxArray *resv[], int a
 
 
 void _wrap_helicsTranslatorAddSourceEndpoint(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsTranslator trans = *(HelicsTranslator*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorAddSourceEndpoint:rhs","This function requires 2 arguments.");
+	}
 
-	char *ept;
-	size_t eptLength;
-	int eptStatus;
-	eptLength = mxGetN(argv[1]) + 1;
-	ept = (char *)malloc(eptLength);
-	eptStatus = mxGetString(argv[1], ept, eptLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorAddSourceEndpoint:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsTranslator trans = *(static_cast<HelicsTranslator*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorAddSourceEndpoint:TypeError","Argument 2 must be a string.");
+	}
+	char *ept = nullptr;
+	size_t eptLength = 0;
+	int eptStatus = 0;
+	if(argc > 1){
+		eptLength = mxGetN(argv[1]) + 1;
+		ept = static_cast<char *>(malloc(eptLength));
+		eptStatus = mxGetString(argv[1], ept, eptLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsTranslatorAddSourceEndpoint(trans, (char const *)ept, &err);
+	helicsTranslatorAddSourceEndpoint(trans, static_cast<const char *>(ept), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(ept);
 
@@ -10535,27 +14986,40 @@ void _wrap_helicsTranslatorAddSourceEndpoint(int resc, mxArray *resv[], int argc
 
 
 void _wrap_helicsTranslatorAddDestinationEndpoint(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsTranslator trans = *(HelicsTranslator*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorAddDestinationEndpoint:rhs","This function requires 2 arguments.");
+	}
 
-	char *ept;
-	size_t eptLength;
-	int eptStatus;
-	eptLength = mxGetN(argv[1]) + 1;
-	ept = (char *)malloc(eptLength);
-	eptStatus = mxGetString(argv[1], ept, eptLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorAddDestinationEndpoint:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsTranslator trans = *(static_cast<HelicsTranslator*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorAddDestinationEndpoint:TypeError","Argument 2 must be a string.");
+	}
+	char *ept = nullptr;
+	size_t eptLength = 0;
+	int eptStatus = 0;
+	if(argc > 1){
+		eptLength = mxGetN(argv[1]) + 1;
+		ept = static_cast<char *>(malloc(eptLength));
+		eptStatus = mxGetString(argv[1], ept, eptLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsTranslatorAddDestinationEndpoint(trans, (char const *)ept, &err);
+	helicsTranslatorAddDestinationEndpoint(trans, static_cast<const char *>(ept), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(ept);
 
@@ -10566,27 +15030,40 @@ void _wrap_helicsTranslatorAddDestinationEndpoint(int resc, mxArray *resv[], int
 
 
 void _wrap_helicsTranslatorRemoveTarget(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsTranslator trans = *(HelicsTranslator*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorRemoveTarget:rhs","This function requires 2 arguments.");
+	}
 
-	char *target;
-	size_t targetLength;
-	int targetStatus;
-	targetLength = mxGetN(argv[1]) + 1;
-	target = (char *)malloc(targetLength);
-	targetStatus = mxGetString(argv[1], target, targetLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorRemoveTarget:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsTranslator trans = *(static_cast<HelicsTranslator*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorRemoveTarget:TypeError","Argument 2 must be a string.");
+	}
+	char *target = nullptr;
+	size_t targetLength = 0;
+	int targetStatus = 0;
+	if(argc > 1){
+		targetLength = mxGetN(argv[1]) + 1;
+		target = static_cast<char *>(malloc(targetLength));
+		targetStatus = mxGetString(argv[1], target, targetLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsTranslatorRemoveTarget(trans, (char const *)target, &err);
+	helicsTranslatorRemoveTarget(trans, static_cast<const char *>(target), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(target);
 
@@ -10597,7 +15074,16 @@ void _wrap_helicsTranslatorRemoveTarget(int resc, mxArray *resv[], int argc, con
 
 
 void _wrap_helicsTranslatorGetInfo(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsTranslator trans = *(HelicsTranslator*)(mxGetData(argv[0]));
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorGetInfo:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorGetInfo:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsTranslator trans = *(static_cast<HelicsTranslator*>(mxGetData(argv[0])));
 
 	const char *result = helicsTranslatorGetInfo(trans);
 
@@ -10607,33 +15093,44 @@ void _wrap_helicsTranslatorGetInfo(int resc, mxArray *resv[], int argc, const mx
 		--resc;
 		*resv++ = _out;
 	}
-
-
 }
 
 
 void _wrap_helicsTranslatorSetInfo(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsTranslator trans = *(HelicsTranslator*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorSetInfo:rhs","This function requires 2 arguments.");
+	}
 
-	char *info;
-	size_t infoLength;
-	int infoStatus;
-	infoLength = mxGetN(argv[1]) + 1;
-	info = (char *)malloc(infoLength);
-	infoStatus = mxGetString(argv[1], info, infoLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorSetInfo:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsTranslator trans = *(static_cast<HelicsTranslator*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorSetInfo:TypeError","Argument 2 must be a string.");
+	}
+	char *info = nullptr;
+	size_t infoLength = 0;
+	int infoStatus = 0;
+	if(argc > 1){
+		infoLength = mxGetN(argv[1]) + 1;
+		info = static_cast<char *>(malloc(infoLength));
+		infoStatus = mxGetString(argv[1], info, infoLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsTranslatorSetInfo(trans, (char const *)info, &err);
+	helicsTranslatorSetInfo(trans, static_cast<const char *>(info), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(info);
 
@@ -10644,16 +15141,33 @@ void _wrap_helicsTranslatorSetInfo(int resc, mxArray *resv[], int argc, const mx
 
 
 void _wrap_helicsTranslatorGetTag(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsTranslator trans = *(HelicsTranslator*)(mxGetData(argv[0]));
+	if(argc < 1 || argc > 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorGetTag:rhs","This function requires at least 1 arguments and at most 2 arguments.");
+	}
 
-	char *tagname;
-	size_t tagnameLength;
-	int tagnameStatus;
-	tagnameLength = mxGetN(argv[1]) + 1;
-	tagname = (char *)malloc(tagnameLength);
-	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorGetTag:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsTranslator trans = *(static_cast<HelicsTranslator*>(mxGetData(argv[0])));
 
-	const char *result = helicsTranslatorGetTag(trans, (char const *)tagname);
+	if(argc > 1){
+		if(!mxIsChar(argv[1])){
+			mexUnlock();
+			mexErrMsgIdAndTxt("MATLAB:helicsTranslatorGetTag:TypeError","Argument 2 must be a string.");
+		}
+	}
+	char *tagname = nullptr;
+	size_t tagnameLength = 0;
+	int tagnameStatus = 0;
+	if(argc > 1){
+		tagnameLength = mxGetN(argv[1]) + 1;
+		tagname = static_cast<char *>(malloc(tagnameLength));
+		tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
+
+	}
+	const char *result = helicsTranslatorGetTag(trans, static_cast<const char *>(tagname));
 
 	mxArray *_out = mxCreateString(result);
 
@@ -10662,41 +15176,58 @@ void _wrap_helicsTranslatorGetTag(int resc, mxArray *resv[], int argc, const mxA
 		*resv++ = _out;
 	}
 
-
-
 	free(tagname);
 }
 
 
 void _wrap_helicsTranslatorSetTag(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsTranslator trans = *(HelicsTranslator*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorSetTag:rhs","This function requires 3 arguments.");
+	}
 
-	char *tagname;
-	size_t tagnameLength;
-	int tagnameStatus;
-	tagnameLength = mxGetN(argv[1]) + 1;
-	tagname = (char *)malloc(tagnameLength);
-	tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorSetTag:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsTranslator trans = *(static_cast<HelicsTranslator*>(mxGetData(argv[0])));
 
-	char *tagvalue;
-	size_t tagvalueLength;
-	int tagvalueStatus;
-	tagvalueLength = mxGetN(argv[2]) + 1;
-	tagvalue = (char *)malloc(tagvalueLength);
-	tagvalueStatus = mxGetString(argv[2], tagvalue, tagvalueLength);
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorSetTag:TypeError","Argument 2 must be a string.");
+	}
+	char *tagname = nullptr;
+	size_t tagnameLength = 0;
+	int tagnameStatus = 0;
+	if(argc > 1){
+		tagnameLength = mxGetN(argv[1]) + 1;
+		tagname = static_cast<char *>(malloc(tagnameLength));
+		tagnameStatus = mxGetString(argv[1], tagname, tagnameLength);
 
+	}
+	if(!mxIsChar(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorSetTag:TypeError","Argument 3 must be a string.");
+	}
+	char *tagvalue = nullptr;
+	size_t tagvalueLength = 0;
+	int tagvalueStatus = 0;
+	if(argc > 2){
+		tagvalueLength = mxGetN(argv[2]) + 1;
+		tagvalue = static_cast<char *>(malloc(tagvalueLength));
+		tagvalueStatus = mxGetString(argv[2], tagvalue, tagvalueLength);
+
+	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsTranslatorSetTag(trans, (char const *)tagname, (char const *)tagvalue, &err);
+	helicsTranslatorSetTag(trans, static_cast<const char *>(tagname), static_cast<const char *>(tagvalue), &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
 
 	free(tagname);
 
@@ -10709,28 +15240,39 @@ void _wrap_helicsTranslatorSetTag(int resc, mxArray *resv[], int argc, const mxA
 
 
 void _wrap_helicsTranslatorSetOption(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsTranslator trans = *(HelicsTranslator*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorSetOption:rhs","This function requires 3 arguments.");
+	}
 
-	int option = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorSetOption:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsTranslator trans = *(static_cast<HelicsTranslator*>(mxGetData(argv[0])));
 
-	int value = (int)(mxGetScalar(argv[2]));
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorSetOption:TypeError","Argument 2 must be of type integer.");
+	}
+		int option = static_cast<int>(mxGetScalar(argv[1]));
+
+	if(!mxIsNumeric(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorSetOption:TypeError","Argument 3 must be of type integer.");
+	}
+		int value = static_cast<int>(mxGetScalar(argv[2]));
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsTranslatorSetOption(trans, option, value, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
-
-
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -10739,23 +15281,33 @@ void _wrap_helicsTranslatorSetOption(int resc, mxArray *resv[], int argc, const 
 
 
 void _wrap_helicsTranslatorGetOption(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsTranslator trans = *(HelicsTranslator*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorGetOption:rhs","This function requires 2 arguments.");
+	}
 
-	int option = (int)(mxGetScalar(argv[1]));
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorGetOption:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsTranslator trans = *(static_cast<HelicsTranslator*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorGetOption:TypeError","Argument 2 must be of type integer.");
+	}
+		int option = static_cast<int>(mxGetScalar(argv[1]));
 
 	int result = helicsTranslatorGetOption(trans, option);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(_out)) = (int64_t)result;
+	mxInt64 *rv = mxGetInt64s(_out);
+	rv[0] = static_cast<mxInt64>(result);
 
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
-
-
-
-
 }
 
 
@@ -10764,7 +15316,8 @@ void matlabBrokerLoggingCallback(int loglevel, const char* identifier, const cha
 	mxArray *rhs[4];
 	rhs[0] = reinterpret_cast<mxArray *>(userData);
 	rhs[1] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(rhs[1])) = (int64_t)loglevel;
+	mxInt64 *rhs1Ptr = mxGetInt64s(rhs[1]);
+	rhs1Ptr[0] = static_cast<mxInt64>(loglevel);
 	rhs[2] = mxCreateString(identifier);
 	rhs[3] = mxCreateString(message);
 	int status = mexCallMATLAB(0,&lhs,4,rhs,"feval");
@@ -10775,14 +15328,23 @@ void matlabBrokerLoggingCallback(int loglevel, const char* identifier, const cha
 }
 
 void _wrap_helicsBrokerSetLoggingCallback(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsBroker broker = *(HelicsBroker*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerSetLoggingCallback:rhs","This function requires 2 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsBrokerSetLoggingCallback:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsBroker broker = *(static_cast<HelicsBroker*>(mxGetData(argv[0])));
 
 	void *userData = mxGetData(argv[1]);
 	HelicsError err = helicsErrorInitialize();
 
 	helicsBrokerSetLoggingCallback(broker, &matlabBrokerLoggingCallback, userData, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -10799,7 +15361,8 @@ void matlabCoreLoggingCallback(int loglevel, const char* identifier, const char*
 	mxArray *rhs[4];
 	rhs[0] = reinterpret_cast<mxArray *>(userData);
 	rhs[1] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(rhs[1])) = (int64_t)loglevel;
+	mxInt64 *rhs1Ptr = mxGetInt64s(rhs[1]);
+	rhs1Ptr[0] = static_cast<mxInt64>(loglevel);
 	rhs[2] = mxCreateString(identifier);
 	rhs[3] = mxCreateString(message);
 	int status = mexCallMATLAB(0,&lhs,4,rhs,"feval");
@@ -10810,14 +15373,23 @@ void matlabCoreLoggingCallback(int loglevel, const char* identifier, const char*
 }
 
 void _wrap_helicsCoreSetLoggingCallback(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsCore core = *(HelicsCore*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreSetLoggingCallback:rhs","This function requires 2 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsCoreSetLoggingCallback:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsCore core = *(static_cast<HelicsCore*>(mxGetData(argv[0])));
 
 	void *userData = mxGetData(argv[1]);
 	HelicsError err = helicsErrorInitialize();
 
 	helicsCoreSetLoggingCallback(core, &matlabCoreLoggingCallback, userData, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -10834,7 +15406,8 @@ void matlabFederateLoggingCallback(int loglevel, const char* identifier, const c
 	mxArray *rhs[4];
 	rhs[0] = reinterpret_cast<mxArray *>(userData);
 	rhs[1] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(rhs[1])) = (int64_t)loglevel;
+	mxInt64 *rhs1Ptr = mxGetInt64s(rhs[1]);
+	rhs1Ptr[0] = static_cast<mxInt64>(loglevel);
 	rhs[2] = mxCreateString(identifier);
 	rhs[3] = mxCreateString(message);
 	int status = mexCallMATLAB(0,&lhs,4,rhs,"feval");
@@ -10845,14 +15418,23 @@ void matlabFederateLoggingCallback(int loglevel, const char* identifier, const c
 }
 
 void _wrap_helicsFederateSetLoggingCallback(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetLoggingCallback:rhs","This function requires 2 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetLoggingCallback:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	void *userData = mxGetData(argv[1]);
 	HelicsError err = helicsErrorInitialize();
 
 	helicsFederateSetLoggingCallback(fed, &matlabFederateLoggingCallback, userData, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -10869,22 +15451,32 @@ HelicsMessage matlabFilterCustomCallback(HelicsMessage message, void *userData){
 	mxArray *rhs[2];
 	rhs[0] = reinterpret_cast<mxArray *>(userData);
 	rhs[1] = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(rhs[1])) = (uint64_t)message;
+	mxUint64 *rhs1Ptr = mxGetUint64s(rhs[1]);
+	rhs1Ptr[0] = reinterpret_cast<mxUint64>(message);
 	int status = mexCallMATLAB(1,lhs,2,rhs,"feval");
-	HelicsMessage rv = (HelicsMessage)(mxGetData(lhs[0]));
+	HelicsMessage rv = static_cast<HelicsMessage>(mxGetData(lhs[0]));
 	mxDestroyArray(rhs[1]);
 	return rv;
 }
 
 void _wrap_helicsFilterSetCustomCallback(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFilter filter = *(HelicsFilter*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterSetCustomCallback:rhs","This function requires 2 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFilterSetCustomCallback:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFilter filter = *(static_cast<HelicsFilter*>(mxGetData(argv[0])));
 
 	void *userData = mxGetData(argv[1]);
 	HelicsError err = helicsErrorInitialize();
 
 	helicsFilterSetCustomCallback(filter, &matlabFilterCustomCallback, userData, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -10901,10 +15493,11 @@ void matlabToMessageCallCallback(HelicsDataBuffer value, HelicsMessage message, 
 	mxArray *rhs[3];
 	rhs[0] = static_cast<mxArray **>(userData)[0];
 	rhs[1] = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(rhs[1])) = (uint64_t)value;
-
-	rhs[2] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(rhs[2])) =  (int64_t)message;
+	mxUint64 *rhs1Ptr = mxGetUint64s(rhs[1]);
+	rhs1Ptr[0] = reinterpret_cast<mxUint64>(value);
+	rhs[2] = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	mxUint64 *rhs2Ptr = mxGetUint64s(rhs[1]);
+	rhs2Ptr[0] = reinterpret_cast<mxUint64>(message);
 	int status = mexCallMATLAB(0,&lhs,3,rhs,"feval");
 	mxDestroyArray(lhs);
 	mxDestroyArray(rhs[1]);
@@ -10916,10 +15509,11 @@ void matlabToValueCallCallback(HelicsMessage message, HelicsDataBuffer value, vo
 	mxArray *rhs[3];
 	rhs[0] = static_cast<mxArray **>(userData)[1];
 	rhs[1] = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(rhs[1])) = (uint64_t)message;
-
-	rhs[2] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(rhs[2])) =  (int64_t)value;
+	mxUint64 *rhs1Ptr = mxGetUint64s(rhs[1]);
+	rhs1Ptr[0] = reinterpret_cast<mxUint64>(message);
+	rhs[2] = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	mxUint64 *rhs2Ptr = mxGetUint64s(rhs[1]);
+	rhs2Ptr[0] = reinterpret_cast<mxUint64>(value);
 	int status = mexCallMATLAB(0,&lhs,3,rhs,"feval");
 	mxDestroyArray(lhs);
 	mxDestroyArray(rhs[1]);
@@ -10927,7 +15521,16 @@ void matlabToValueCallCallback(HelicsMessage message, HelicsDataBuffer value, vo
 }
 
 void _wrap_helicsTranslatorSetCustomCallback(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsTranslator translator = *(HelicsTranslator*)(mxGetData(argv[0]));
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorSetCustomCallback:rhs","This function requires 3 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsTranslatorSetCustomCallback:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsTranslator translator = *(static_cast<HelicsTranslator*>(mxGetData(argv[0])));
 
 	mxArray *callbacks[2];
 	callbacks[0] = const_cast<mxArray *>(argv[1]);
@@ -10937,7 +15540,7 @@ void _wrap_helicsTranslatorSetCustomCallback(int resc, mxArray *resv[], int argc
 
 	helicsTranslatorSetCustomCallback(translator, &matlabToMessageCallCallback, &matlabToValueCallCallback, userData, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -10955,14 +15558,16 @@ void matlabFederateQueryCallback(const char* query, int querySize, HelicsQueryBu
 	mwSize dims[2] = {1, static_cast<mwSize>(querySize)};
 	rhs[0] = reinterpret_cast<mxArray *>(userData);
 	rhs[1] = mxCreateCharArray(2, dims);
-	mxChar *pQuery = (mxChar *)mxGetData(rhs[1]);
+	mxChar *pQuery = static_cast<mxChar *>(mxGetData(rhs[1]));
 	for(int i=0; i<querySize; ++i){
 		pQuery[i] = query[i];
 	}
 	rhs[2] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(rhs[2])) = (int64_t)querySize;
+	mxInt64 *rhs2Ptr = mxGetInt64s(rhs[2]);
+	rhs2Ptr[0] = static_cast<mxInt64>(querySize);
 	rhs[3] = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	*((uint64_t*)mxGetData(rhs[3])) = (uint64_t)buffer;
+	mxUint64 *rhs3Ptr = mxGetUint64s(rhs[3]);
+	rhs3Ptr[0] = reinterpret_cast<mxUint64>(buffer);
 	int status = mexCallMATLAB(0,&lhs,4,rhs,"feval");
 	mxDestroyArray(rhs[1]);
 	mxDestroyArray(rhs[2]);
@@ -10970,14 +15575,23 @@ void matlabFederateQueryCallback(const char* query, int querySize, HelicsQueryBu
 }
 
 void _wrap_helicsFederateSetQueryCallback(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFilter filter = *(HelicsFilter*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetQueryCallback:rhs","This function requires 2 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetQueryCallback:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFilter filter = *(static_cast<HelicsFilter*>(mxGetData(argv[0])));
 
 	void *userData = mxGetData(argv[1]);
 	HelicsError err = helicsErrorInitialize();
 
 	helicsFederateSetQueryCallback(filter, &matlabFederateQueryCallback, userData, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -10995,8 +15609,12 @@ void matlabFederateSetTimeRequestEntryCallback(HelicsTime currentTime, HelicsTim
 	rhs[0] = reinterpret_cast<mxArray *>(userData);
 	rhs[1] = mxCreateDoubleScalar(currentTime);
 	rhs[2] = mxCreateDoubleScalar(requestTime);
-	rhs[3] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(rhs[2])) =  (int64_t)iterating;
+	rhs[3] = mxCreateLogicalMatrix(1, 1);
+	mxLogical *rhs3Ptr = mxGetLogicals(rhs[3]);
+	rhs3Ptr[0] = false;
+	if(iterating == HELICS_TRUE){
+		rhs3Ptr[0] = true;
+	}
 	int status = mexCallMATLAB(0,&lhs,4,rhs,"feval");
 	mxDestroyArray(lhs);
 	mxDestroyArray(rhs[1]);
@@ -11005,14 +15623,23 @@ void matlabFederateSetTimeRequestEntryCallback(HelicsTime currentTime, HelicsTim
 }
 
 void _wrap_helicsFederateSetTimeRequestEntryCallback(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetTimeRequestEntryCallback:rhs","This function requires 2 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetTimeRequestEntryCallback:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	void *userData = mxGetData(argv[1]);
 	HelicsError err = helicsErrorInitialize();
 
 	helicsFederateSetTimeRequestEntryCallback(fed, &matlabFederateSetTimeRequestEntryCallback, userData, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -11028,9 +15655,13 @@ void matlabFederateTimeUpdateCallback(HelicsTime newTime, HelicsBool iterating, 
 	mxArray *lhs;
 	mxArray *rhs[3];
 	rhs[0] = reinterpret_cast<mxArray *>(userData);
-	rhs[1] = mxCreateDoubleScalar((double)newTime);
-	rhs[2] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(rhs[2])) =  (int64_t)iterating;
+	rhs[1] = mxCreateDoubleScalar(static_cast<double>(newTime));
+	rhs[2] = mxCreateLogicalMatrix(1, 1);
+	mxLogical *rhs2Ptr = mxGetLogicals(rhs[2]);
+	rhs2Ptr[0] = false;
+	if(iterating == HELICS_TRUE){
+		rhs2Ptr[0] = true;
+	}
 	int status = mexCallMATLAB(0,&lhs,3,rhs,"feval");
 	mxDestroyArray(lhs);
 	mxDestroyArray(rhs[1]);
@@ -11038,14 +15669,23 @@ void matlabFederateTimeUpdateCallback(HelicsTime newTime, HelicsBool iterating, 
 }
 
 void _wrap_helicsFederateSetTimeUpdateCallback(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetTimeUpdateCallback:rhs","This function requires 2 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetTimeUpdateCallback:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	void *userData = mxGetData(argv[1]);
 	HelicsError err = helicsErrorInitialize();
 
 	helicsFederateSetTimeUpdateCallback(fed, &matlabFederateTimeUpdateCallback, userData, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -11061,10 +15701,12 @@ void matlabFederateSetStateChangeCallback(HelicsFederateState newState, HelicsFe
 	mxArray *lhs;
 	mxArray *rhs[3];
 	rhs[0] = reinterpret_cast<mxArray *>(userData);
-	rhs[1] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(rhs[2])) =  (int64_t)newState;
-	rhs[2] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(rhs[2])) =  (int64_t)oldState;
+	rhs[1] = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
+	mxInt32 *rhs1Ptr = mxGetInt32s(rhs[1]);
+	rhs1Ptr[0] = static_cast<mxInt32>(newState);
+	rhs[2] = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
+	mxInt32 *rhs2Ptr = mxGetInt32s(rhs[2]);
+	rhs2Ptr[0] = static_cast<mxInt32>(oldState);
 	int status = mexCallMATLAB(0,&lhs,3,rhs,"feval");
 	mxDestroyArray(lhs);
 	mxDestroyArray(rhs[1]);
@@ -11072,14 +15714,23 @@ void matlabFederateSetStateChangeCallback(HelicsFederateState newState, HelicsFe
 }
 
 void _wrap_helicsFederateSetStateChangeCallback(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetStateChangeCallback:rhs","This function requires 2 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetStateChangeCallback:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	void *userData = mxGetData(argv[1]);
 	HelicsError err = helicsErrorInitialize();
 
 	helicsFederateSetStateChangeCallback(fed, &matlabFederateSetStateChangeCallback, userData, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -11096,8 +15747,12 @@ void matlabFederateSetTimeRequestReturnCallback(HelicsTime newTime, HelicsBool i
 	mxArray *rhs[3];
 	rhs[0] = reinterpret_cast<mxArray *>(userData);
 	rhs[1] = mxCreateDoubleScalar(newTime);
-	rhs[2] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
-	*((int64_t*)mxGetData(rhs[2])) =  (int64_t)iterating;
+	rhs[2] = mxCreateLogicalMatrix(1, 1);
+	mxLogical *rhs2Ptr = mxGetLogicals(rhs[2]);
+	rhs2Ptr[0] = false;
+	if(iterating == HELICS_TRUE){
+		rhs2Ptr[0] = true;
+	}
 	int status = mexCallMATLAB(0,&lhs,3,rhs,"feval");
 	mxDestroyArray(lhs);
 	mxDestroyArray(rhs[1]);
@@ -11105,14 +15760,23 @@ void matlabFederateSetTimeRequestReturnCallback(HelicsTime newTime, HelicsBool i
 }
 
 void _wrap_helicsFederateSetTimeRequestReturnCallback(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsFederate fed = *(HelicsFederate*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetTimeRequestReturnCallback:rhs","This function requires 2 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetTimeRequestReturnCallback:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsFederate fed = *(static_cast<HelicsFederate*>(mxGetData(argv[0])));
 
 	void *userData = mxGetData(argv[1]);
 	HelicsError err = helicsErrorInitialize();
 
 	helicsFederateSetTimeRequestReturnCallback(fed, &matlabFederateSetTimeRequestReturnCallback, userData, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -11125,22 +15789,37 @@ void _wrap_helicsFederateSetTimeRequestReturnCallback(int resc, mxArray *resv[],
 
 
 void _wrap_helicsQueryBufferFill(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	HelicsQueryBuffer buffer = *(HelicsQueryBuffer*)(mxGetData(argv[0]));
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsQueryBufferFill:rhs","This function requires 2 arguments.");
+	}
 
-	char *queryResult;
-	size_t queryResultLength;
-	int queryResultStatus;
-	queryResultLength = mxGetN(argv[1]) + 1;
-	queryResult = (char *)malloc(queryResultLength);
-	queryResultStatus = mxGetString(argv[1], queryResult, queryResultLength);
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsQueryBufferFill:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsQueryBuffer buffer = *(static_cast<HelicsQueryBuffer*>(mxGetData(argv[0])));
 
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsQueryBufferFill:TypeError","Argument 2 must be a string.");
+	}
+	char *queryResult = nullptr;
+	size_t queryResultLength = 0;
+	int queryResultStatus = 0;
+	if(argc > 1){
+		queryResultLength = mxGetN(argv[1]) + 1;
+		queryResult = static_cast<char *>(malloc(queryResultLength));
+		queryResultStatus = mxGetString(argv[1], queryResult, queryResultLength);
+
+	}
 	int strSize = static_cast<int>(queryResultLength) - 1;
 
 	HelicsError err = helicsErrorInitialize();
 
 	helicsQueryBufferFill(buffer, queryResult, strSize, &err);
 
-	mxArray *_out = (mxArray *)0;
+	mxArray *_out = nullptr;
 	if(_out){
 		--resc;
 		*resv++ = _out;
