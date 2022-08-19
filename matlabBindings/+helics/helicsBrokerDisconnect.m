@@ -1,9 +1,9 @@
 %{
-	Disconnect a broker.
+%	Disconnect a broker.
 
-	@param broker The broker to disconnect.
+%	@param broker The broker to disconnect.
 
-	@param[in,out] err An error object that will contain an error code and string if any error occurred during the execution of the function.
+%	@param[in,out] err An error object that will contain an error code and string if any error occurred during the execution of the function.
 
 %}
 function varargout = helicsBrokerDisconnect(varargin)

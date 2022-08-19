@@ -1,9 +1,9 @@
 %{
-	Get the raw data for a message object.
+%	Get the raw data for a message object.
 
-	@param message A message object to get the data for.
+%	@param message A message object to get the data for.
 
-	@return Raw string data.
+%	@return Raw string data.
 %}
 function varargout = helicsMessageGetBytes(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsMessageGetBytes', varargin{:});

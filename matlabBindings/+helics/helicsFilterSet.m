@@ -1,11 +1,11 @@
 %{
-	Set a property on a filter.
+%	Set a property on a filter.
 
-	@param filt The filter to modify.
-	@param prop A string containing the property to set.
-	@param val A numerical value for the property.
+%	@param filt The filter to modify.
+%	@param prop A string containing the property to set.
+%	@param val A numerical value for the property.
 
-	@param[in,out] err A pointer to an error object for catching errors.
+%	@param[in,out] err A pointer to an error object for catching errors.
 
 %}
 function varargout = helicsFilterSet(varargin)

@@ -1,8 +1,8 @@
 %{
-	convert a complex vector to serialized bytes.
+%	convert a complex vector to serialized bytes.
 
-	@param value The vector of complex values.
-	@return HelicsDataBuffer.
+%	@param value The vector of complex values.
+%	@return HelicsDataBuffer.
 %}
 function varargout = helicsComplexVectorToBytes(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsComplexVectorToBytes', varargin{:});

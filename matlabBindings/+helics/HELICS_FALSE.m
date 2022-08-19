@@ -1,5 +1,5 @@
 %{
-indicator used for a false response
+%indicator used for a false response
 %}
 function v = HELICS_FALSE()
 	v = false;

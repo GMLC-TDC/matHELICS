@@ -1,11 +1,11 @@
 %{
-	Remove a destination target from a filter.
+%	Remove a destination target from a filter.
 
-	@param filt The given filter.
-	@param target The named endpoint to remove as a target.
+%	@param filt The given filter.
+%	@param target The named endpoint to remove as a target.
 
 
-	@param[in,out] err A pointer to an error object for catching errors.
+%	@param[in,out] err A pointer to an error object for catching errors.
 
 %}
 function varargout = helicsFilterRemoveTarget(varargin)

@@ -1,10 +1,10 @@
 %{
-	Publish a double floating point value.
+%	Publish a double floating point value.
 
-	@param pub The publication to publish for.
-	@param val The numerical value to publish.
+%	@param pub The publication to publish for.
+%	@param val The numerical value to publish.
 
-	@param[in,out] err A pointer to an error object for catching errors.
+%	@param[in,out] err A pointer to an error object for catching errors.
 
 %}
 function varargout = helicsPublicationPublishDouble(varargin)

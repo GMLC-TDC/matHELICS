@@ -1,8 +1,8 @@
 %{
-	convert a char to serialized bytes.
+%	convert a char to serialized bytes.
 
-	@param value The char.
-	@return HelicsDataBuffer.
+%	@param value The char.
+%	@return HelicsDataBuffer.
 %}
 function varargout = helicsCharToBytes(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsCharToBytes', varargin{:});

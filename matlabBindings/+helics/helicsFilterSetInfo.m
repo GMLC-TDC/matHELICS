@@ -1,10 +1,10 @@
 %{
-	Set the data in the info field for a filter.
+%	Set the data in the info field for a filter.
 
-	@param filt The given filter.
-	@param info The string to set.
+%	@param filt The given filter.
+%	@param info The string to set.
 
-	@param[in,out] err An error object to fill out in case of an error.
+%	@param[in,out] err An error object to fill out in case of an error.
 
 %}
 function varargout = helicsFilterSetInfo(varargin)

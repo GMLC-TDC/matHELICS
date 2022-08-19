@@ -848,11 +848,24 @@ void _wrap_helicsBooleanToBytes(int resc, mxArray *resv[], int argc, const mxArr
 		mexErrMsgIdAndTxt("MATLAB:helicsBooleanToBytes:rhs","This function requires 1 arguments.");
 	}
 
-	if(!mxIsLogical(argv[0])){
+	mxLogical *pvalue = nullptr;
+	if(mxIsLogical(argv[0])){
+		pvalue = mxGetLogicals(argv[0]);
+	} else if(mxIsNumeric(argv[0])){
+		if(mxGetScalar(argv[0]) == 0.0){
+			mxArray *logicalvalue = mxCreateLogicalScalar(false);
+			pvalue = mxGetLogicals(logicalvalue);
+		} else if(mxGetScalar(argv[0]) == 1.0){
+			mxArray *logicalvalue = mxCreateLogicalScalar(true);
+			pvalue = mxGetLogicals(logicalvalue);
+		} else {
+			mexUnlock();
+			mexErrMsgIdAndTxt("MATLAB:helicsBooleanToBytes:TypeError","Argument 1 must be a logical type or a 0 or 1.");
+		}
+	} else {
 		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsBooleanToBytes:TypeError","Argument 1 must be a 0 or 1.");
+		mexErrMsgIdAndTxt("MATLAB:helicsBooleanToBytes:TypeError","Argument 1 must be a logical type or a 0 or 1.");
 	}
-	mxLogical *pvalue = mxGetLogicals(argv[0]);
 	HelicsBool value = HELICS_FALSE;
 	if(pvalue[0]){
 		value = HELICS_TRUE;
@@ -4291,11 +4304,24 @@ void _wrap_helicsFederateInfoSetFlagOption(int resc, mxArray *resv[], int argc, 
 	}
 		int flag = static_cast<int>(mxGetScalar(argv[1]));
 
-	if(!mxIsLogical(argv[2])){
+	mxLogical *pvalue = nullptr;
+	if(mxIsLogical(argv[2])){
+		pvalue = mxGetLogicals(argv[2]);
+	} else if(mxIsNumeric(argv[2])){
+		if(mxGetScalar(argv[2]) == 0.0){
+			mxArray *logicalvalue = mxCreateLogicalScalar(false);
+			pvalue = mxGetLogicals(logicalvalue);
+		} else if(mxGetScalar(argv[2]) == 1.0){
+			mxArray *logicalvalue = mxCreateLogicalScalar(true);
+			pvalue = mxGetLogicals(logicalvalue);
+		} else {
+			mexUnlock();
+			mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetFlagOption:TypeError","Argument 3 must be a logical type or a 0 or 1.");
+		}
+	} else {
 		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetFlagOption:TypeError","Argument 3 must be a 0 or 1.");
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetFlagOption:TypeError","Argument 3 must be a logical type or a 0 or 1.");
 	}
-	mxLogical *pvalue = mxGetLogicals(argv[2]);
 	HelicsBool value = HELICS_FALSE;
 	if(pvalue[0]){
 		value = HELICS_TRUE;
@@ -5585,11 +5611,24 @@ void _wrap_helicsFederateSetFlagOption(int resc, mxArray *resv[], int argc, cons
 	}
 		int flag = static_cast<int>(mxGetScalar(argv[1]));
 
-	if(!mxIsLogical(argv[2])){
+	mxLogical *pflagValue = nullptr;
+	if(mxIsLogical(argv[2])){
+		pflagValue = mxGetLogicals(argv[2]);
+	} else if(mxIsNumeric(argv[2])){
+		if(mxGetScalar(argv[2]) == 0.0){
+			mxArray *logicalflagValue = mxCreateLogicalScalar(false);
+			pflagValue = mxGetLogicals(logicalflagValue);
+		} else if(mxGetScalar(argv[2]) == 1.0){
+			mxArray *logicalflagValue = mxCreateLogicalScalar(true);
+			pflagValue = mxGetLogicals(logicalflagValue);
+		} else {
+			mexUnlock();
+			mexErrMsgIdAndTxt("MATLAB:helicsFederateSetFlagOption:TypeError","Argument 3 must be a logical type or a 0 or 1.");
+		}
+	} else {
 		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetFlagOption:TypeError","Argument 3 must be a 0 or 1.");
+		mexErrMsgIdAndTxt("MATLAB:helicsFederateSetFlagOption:TypeError","Argument 3 must be a logical type or a 0 or 1.");
 	}
-	mxLogical *pflagValue = mxGetLogicals(argv[2]);
 	HelicsBool flagValue = HELICS_FALSE;
 	if(pflagValue[0]){
 		flagValue = HELICS_TRUE;
@@ -8599,11 +8638,24 @@ void _wrap_helicsPublicationPublishBoolean(int resc, mxArray *resv[], int argc, 
 	}
 	HelicsPublication pub = *(static_cast<HelicsPublication*>(mxGetData(argv[0])));
 
-	if(!mxIsLogical(argv[1])){
+	mxLogical *pval = nullptr;
+	if(mxIsLogical(argv[1])){
+		pval = mxGetLogicals(argv[1]);
+	} else if(mxIsNumeric(argv[1])){
+		if(mxGetScalar(argv[1]) == 0.0){
+			mxArray *logicalval = mxCreateLogicalScalar(false);
+			pval = mxGetLogicals(logicalval);
+		} else if(mxGetScalar(argv[1]) == 1.0){
+			mxArray *logicalval = mxCreateLogicalScalar(true);
+			pval = mxGetLogicals(logicalval);
+		} else {
+			mexUnlock();
+			mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishBoolean:TypeError","Argument 2 must be a logical type or a 0 or 1.");
+		}
+	} else {
 		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishBoolean:TypeError","Argument 2 must be a 0 or 1.");
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishBoolean:TypeError","Argument 2 must be a logical type or a 0 or 1.");
 	}
-	mxLogical *pval = mxGetLogicals(argv[1]);
 	HelicsBool val = HELICS_FALSE;
 	if(pval[0]){
 		val = HELICS_TRUE;
@@ -9666,11 +9718,24 @@ void _wrap_helicsInputSetDefaultBoolean(int resc, mxArray *resv[], int argc, con
 	}
 	HelicsInput ipt = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
 
-	if(!mxIsLogical(argv[1])){
+	mxLogical *pval = nullptr;
+	if(mxIsLogical(argv[1])){
+		pval = mxGetLogicals(argv[1]);
+	} else if(mxIsNumeric(argv[1])){
+		if(mxGetScalar(argv[1]) == 0.0){
+			mxArray *logicalval = mxCreateLogicalScalar(false);
+			pval = mxGetLogicals(logicalval);
+		} else if(mxGetScalar(argv[1]) == 1.0){
+			mxArray *logicalval = mxCreateLogicalScalar(true);
+			pval = mxGetLogicals(logicalval);
+		} else {
+			mexUnlock();
+			mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultBoolean:TypeError","Argument 2 must be a logical type or a 0 or 1.");
+		}
+	} else {
 		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultBoolean:TypeError","Argument 2 must be a 0 or 1.");
+		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultBoolean:TypeError","Argument 2 must be a logical type or a 0 or 1.");
 	}
-	mxLogical *pval = mxGetLogicals(argv[1]);
 	HelicsBool val = HELICS_FALSE;
 	if(pval[0]){
 		val = HELICS_TRUE;
@@ -13125,11 +13190,24 @@ void _wrap_helicsMessageSetFlagOption(int resc, mxArray *resv[], int argc, const
 	}
 		int flag = static_cast<int>(mxGetScalar(argv[1]));
 
-	if(!mxIsLogical(argv[2])){
+	mxLogical *pflagValue = nullptr;
+	if(mxIsLogical(argv[2])){
+		pflagValue = mxGetLogicals(argv[2]);
+	} else if(mxIsNumeric(argv[2])){
+		if(mxGetScalar(argv[2]) == 0.0){
+			mxArray *logicalflagValue = mxCreateLogicalScalar(false);
+			pflagValue = mxGetLogicals(logicalflagValue);
+		} else if(mxGetScalar(argv[2]) == 1.0){
+			mxArray *logicalflagValue = mxCreateLogicalScalar(true);
+			pflagValue = mxGetLogicals(logicalflagValue);
+		} else {
+			mexUnlock();
+			mexErrMsgIdAndTxt("MATLAB:helicsMessageSetFlagOption:TypeError","Argument 3 must be a logical type or a 0 or 1.");
+		}
+	} else {
 		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetFlagOption:TypeError","Argument 3 must be a 0 or 1.");
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetFlagOption:TypeError","Argument 3 must be a logical type or a 0 or 1.");
 	}
-	mxLogical *pflagValue = mxGetLogicals(argv[2]);
 	HelicsBool flagValue = HELICS_FALSE;
 	if(pflagValue[0]){
 		flagValue = HELICS_TRUE;
