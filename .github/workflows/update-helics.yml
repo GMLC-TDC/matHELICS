@@ -27,7 +27,7 @@ jobs:
     - name: Update HELICS version number
       run: |
         # Update lines in the package file
-        version_line="HelicsVersion='${{ inputs.version }}'"
+        version_line="HelicsVersion='${{ inputs.version }}';"
         echo "::group::buildHelicsInterface.m version line"
         echo "$version_line"
         echo "::endgroup::"
