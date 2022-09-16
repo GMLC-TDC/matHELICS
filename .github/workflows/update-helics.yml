@@ -33,7 +33,7 @@ jobs:
         echo "::endgroup::"
         sed -i "/HelicsVersion=/c ${version_line}" buildHelicsInterface.m
 
-        git add helics/_version.py
+        git add buildHelicsInterface.m
 
         echo "::group::git diff --staged"
         git diff --staged
