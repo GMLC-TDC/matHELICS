@@ -1,0 +1,51 @@
+name: Update HELICS Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'HELICS version number'
+        required: true
+        type: string
+      dryrun:
+        description: 'Do a dry run of the update process, without making the commit'
+        required: false
+        type: boolean
+
+
+jobs:
+  update-helics-version:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Set git config for commits
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+    - name: Update HELICS version number
+      run: |
+        # Update lines in the package file
+        version_line = "HelicsVersion='${{ inputs.version }}'"
+        echo "::group::buildHelicsInterface.m version line"
+        echo "$version_line"
+        echo "::endgroup::"
+        sed -i "/HelicsVersion=/c ${version_line}" buildHelicsInterface.m
+
+        git add helics/_version.py
+
+        echo "::group::git diff --staged"
+        git diff --staged
+        echo "::endgroup::"
+
+        git commit -m "Bump HELICS download version to ${{ inputs.version }}"
+
+        echo "::group::git show"
+        git show
+        echo "::endgroup::"
+
+        if [ "${{ inputs.dryrun }}" = "false" ]; then
+          echo "Pushing changes"
+          git push
+        fi
