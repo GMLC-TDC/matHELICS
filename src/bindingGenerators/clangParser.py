@@ -25,27 +25,27 @@ clangLogger.addHandler(clangLogFileHandler)
 clangLogger.addHandler(clangLogStreamHandler)
 
 
-class HelicsHeaderParser (object):
+class CHeaderParser (object):
     """
-        Class that will parse the HELICS C API headers and create other language bindings
+        Class that will parse C API headers and create other language bindings
         
-        @ivar parsedInfo: a dictionary containing all the parsed cursors found in the HELICS C API headers
+        @ivar parsedInfo: a dictionary containing all the parsed cursors found in the C API headers
         
     """
     _types = {}
-    def __init__(self, helicsHeaders: List[str]):
+    def __init__(self, headers: List[str], ignoredMacros: List[str] = []):
         """
             Constructor
         """
-        HelicsHeaderParser._types["functions"] = {} 
+        CHeaderParser._types["functions"] = {}
         self.parsedInfo = {}
-        self.headerFiles = helicsHeaders
-        self.parseHelicsHeaderFiles(helicsHeaders)
+        self.headerFiles = headers
+        self.parseCHeaderFiles(headers, ignoredMacros)
     
     
     def _cursorInfo(self, node: cidx.Cursor) -> dict():
         """
-            Helper function for parseHelicsHeaderFiles()
+            Helper function for parseCHeaderFiles()
         """
         cursorInfoDict = {
              "kind" : node.kind.name,
@@ -70,27 +70,27 @@ class HelicsHeaderParser (object):
             if node.result_type.kind == cidx.TypeKind.TYPEDEF:
                 cursorInfoDict["result_type"] = node.result_type.get_typedef_name()
             if cursorInfoDict.get("result_type","") != "":
-                if cursorInfoDict.get("result_type","") not in HelicsHeaderParser._types.keys():
-                    HelicsHeaderParser._types[cursorInfoDict.get("result_type","")] = [cursorInfoDict.get("spelling","")]
+                if cursorInfoDict.get("result_type","") not in CHeaderParser._types.keys():
+                    CHeaderParser._types[cursorInfoDict.get("result_type","")] = [cursorInfoDict.get("spelling","")]
                 else:
-                    HelicsHeaderParser._types.get(cursorInfoDict.get("result_type",""),[]).append(cursorInfoDict.get("spelling",""))
+                    CHeaderParser._types.get(cursorInfoDict.get("result_type",""),[]).append(cursorInfoDict.get("spelling",""))
             if cursorInfoDict.get("pointer_type","") != "":
-                if cursorInfoDict.get("pointer_type","") not in HelicsHeaderParser._types.keys():
-                    HelicsHeaderParser._types[cursorInfoDict.get("pointer_type","")] = [cursorInfoDict.get("spelling","")]
+                if cursorInfoDict.get("pointer_type","") not in CHeaderParser._types.keys():
+                    CHeaderParser._types[cursorInfoDict.get("pointer_type","")] = [cursorInfoDict.get("spelling","")]
                 else:
-                    HelicsHeaderParser._types.get(cursorInfoDict.get("pointer_type",""),[]).append(cursorInfoDict.get("spelling",""))
+                    CHeaderParser._types.get(cursorInfoDict.get("pointer_type",""),[]).append(cursorInfoDict.get("spelling",""))
             if cursorInfoDict.get("double_pointer_type","") != "":
-                if cursorInfoDict.get("double_pointer_type","") not in HelicsHeaderParser._types.keys():
-                    HelicsHeaderParser._types[cursorInfoDict.get("double_pointer_type","")] = [cursorInfoDict.get("spelling","")]
+                if cursorInfoDict.get("double_pointer_type","") not in CHeaderParser._types.keys():
+                    CHeaderParser._types[cursorInfoDict.get("double_pointer_type","")] = [cursorInfoDict.get("spelling","")]
                 else:
-                    HelicsHeaderParser._types.get(cursorInfoDict.get("double_pointer_type",""),[]).append(cursorInfoDict.get("spelling",""))
+                    CHeaderParser._types.get(cursorInfoDict.get("double_pointer_type",""),[]).append(cursorInfoDict.get("spelling",""))
             cursorInfoDict["arguments"] = {}
             argNum = 0
             for arg in node.get_arguments():
                 cursorInfoDict["arguments"][argNum] = self._cursorInfo(arg)
                 argNum += 1
             cursorInfoDict["argument_count"] = argNum
-            HelicsHeaderParser._types["functions"][cursorInfoDict.get("spelling","")] = cursorInfoDict["arguments"]
+            CHeaderParser._types["functions"][cursorInfoDict.get("spelling","")] = cursorInfoDict["arguments"]
         if node.kind == cidx.CursorKind.PARM_DECL:
             if node.type.kind == cidx.TypeKind.TYPEDEF:
                 cursorInfoDict["type"] = node.type.get_typedef_name()
@@ -104,20 +104,20 @@ class HelicsHeaderParser (object):
                 else:
                     cursorInfoDict["pointer_type"] = typePointee.kind.spelling + "_*"
             if cursorInfoDict.get("type","") != "":
-                if cursorInfoDict.get("type","") not in HelicsHeaderParser._types.keys():
-                    HelicsHeaderParser._types[cursorInfoDict.get("type","")] = [cursorInfoDict.get("spelling","")]
+                if cursorInfoDict.get("type","") not in CHeaderParser._types.keys():
+                    CHeaderParser._types[cursorInfoDict.get("type","")] = [cursorInfoDict.get("spelling","")]
                 else:
-                    HelicsHeaderParser._types.get(cursorInfoDict.get("type",""),[]).append(cursorInfoDict.get("spelling",""))
+                    CHeaderParser._types.get(cursorInfoDict.get("type",""),[]).append(cursorInfoDict.get("spelling",""))
             if cursorInfoDict.get("pointer_type","") != "":
-                if cursorInfoDict.get("pointer_type","") not in HelicsHeaderParser._types.keys():
-                    HelicsHeaderParser._types[cursorInfoDict.get("pointer_type","")] = [cursorInfoDict.get("spelling","")]
+                if cursorInfoDict.get("pointer_type","") not in CHeaderParser._types.keys():
+                    CHeaderParser._types[cursorInfoDict.get("pointer_type","")] = [cursorInfoDict.get("spelling","")]
                 else:
-                    HelicsHeaderParser._types.get(cursorInfoDict.get("pointer_type",""),[]).append(cursorInfoDict.get("spelling",""))
+                    CHeaderParser._types.get(cursorInfoDict.get("pointer_type",""),[]).append(cursorInfoDict.get("spelling",""))
             if cursorInfoDict.get("double_pointer_type","") != "":
-                if cursorInfoDict.get("double_pointer_type","") not in HelicsHeaderParser._types.keys():
-                    HelicsHeaderParser._types[cursorInfoDict.get("double_pointer_type","")] = [cursorInfoDict.get("spelling","")]
+                if cursorInfoDict.get("double_pointer_type","") not in CHeaderParser._types.keys():
+                    CHeaderParser._types[cursorInfoDict.get("double_pointer_type","")] = [cursorInfoDict.get("spelling","")]
                 else:
-                    HelicsHeaderParser._types.get(cursorInfoDict.get("double_pointer_type",""),[]).append(cursorInfoDict.get("spelling",""))                  
+                    CHeaderParser._types.get(cursorInfoDict.get("double_pointer_type",""),[]).append(cursorInfoDict.get("spelling",""))
         if node.kind == cidx.CursorKind.TYPEDEF_DECL or node.type.kind == cidx.TypeKind.TYPEDEF:
             cursorInfoDict["type"] = node.underlying_typedef_type.spelling
             if cursorInfoDict["type"] == "":
@@ -159,15 +159,15 @@ class HelicsHeaderParser (object):
         return cursorInfoDict
         
         
-    def parseHelicsHeaderFiles(self, helicsHeaders: List[str]) -> None:
+    def parseCHeaderFiles(self, headers: List[str], ignoredMacros: List[str]) -> None:
         """
-            Function that parses the HELICS C header files
-            @param helicsHeaders: A list of the HELICS C header files to parse
+            Function that parses the C header files
+            @param headers: A list of the C header files to parse
+            @param ignoredMacros: A list of macros to ignore
         """
-        ignoredMacros = ["HELICS_C_API_H_", "HELICS_EXPORT", "HELICS_DEPRECATED"]
         idx = cidx.Index.create()
         cursorNum = 0
-        for headerFile in helicsHeaders:
+        for headerFile in headers:
             tu = idx.parse(headerFile, options=cidx.TranslationUnit.PARSE_DETAILED_PROCESSING_RECORD)
             for c in tu.cursor.get_children():
                 location_file = c.location.file
@@ -177,7 +177,6 @@ class HelicsHeaderParser (object):
                         cursorNum += 1
             deletekeys = []
             for key in self.parsedInfo.keys():
-                
                 if self.parsedInfo[key]["spelling"] == "":
                     for i in self.parsedInfo.keys():
                         if i != key:
@@ -186,5 +185,5 @@ class HelicsHeaderParser (object):
                                 deletekeys.append(i)
             for key in deletekeys:
                 del self.parsedInfo[key]
-        clangLogger.info("Clang successfully parsed the HELICS header files!")
-        clangLogger.debug(f"The clang parser result:\n{json.dumps(self.parsedInfo, indent=4, sort_keys=True)}\n{json.dumps(HelicsHeaderParser._types, indent=4, sort_keys=True)}")        
+        clangLogger.info("Clang successfully parsed the C header files!")
+        clangLogger.debug(f"The clang parser result:\n{json.dumps(self.parsedInfo, indent=4, sort_keys=True)}\n{json.dumps(CHeaderParser._types, indent=4, sort_keys=True)}")

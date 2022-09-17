@@ -41,7 +41,7 @@ class MatlabBindingGenerator(object):
         '''
         Constructor
         '''
-        self.__helicsParser = clangParser.HelicsHeaderParser(headerFiles)
+        self.__helicsParser = clangParser.CHeaderParser(headerFiles, ["HELICS_C_API_H_", "HELICS_EXPORT", "HELICS_DEPRECATED"])
         self.__rootDir = os.path.abspath(rootDir)
 
     def getParser(self):
