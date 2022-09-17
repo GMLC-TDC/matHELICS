@@ -1,0 +1,68 @@
+/*
+Copyright (c) 2017-2022,
+Battelle Memorial Institute; Lawrence Livermore National Security, LLC; Alliance for Sustainable Energy, LLC.  See
+the top-level NOTICE for additional details. All rights reserved.
+SPDX-License-Identifier: BSD-3-Clause
+*/
+#include "helics/helics.h"
+#include <mex.h>
+#include <stdexcept>
+#include <string>
+#include <unordered_map>
+
+static int mexFunctionCalled = 0;
+
+static void throwHelicsMatlabError(HelicsError *err) {
+	mexUnlock();
+	switch (err->error_code)
+	{
+	case HELICS_OK:
+		return;
+	case HELICS_ERROR_REGISTRATION_FAILURE:
+		mexErrMsgIdAndTxt("helics:registration_failure", err->message);
+		break;
+	case HELICS_ERROR_CONNECTION_FAILURE:
+		mexErrMsgIdAndTxt("helics:connection_failure", err->message);
+		break;
+	case HELICS_ERROR_INVALID_OBJECT:
+		mexErrMsgIdAndTxt("helics:invalid_object", err->message);
+		break;
+	case HELICS_ERROR_INVALID_ARGUMENT:
+		mexErrMsgIdAndTxt("helics:invalid_argument", err->message);
+		break;
+	case HELICS_ERROR_DISCARD:
+		mexErrMsgIdAndTxt("helics:discard", err->message);
+		break;
+	case HELICS_ERROR_SYSTEM_FAILURE:
+		mexErrMsgIdAndTxt("helics:system_failure", err->message);
+		break;
+	case HELICS_ERROR_INVALID_STATE_TRANSITION:
+		mexErrMsgIdAndTxt("helics:invalid_state_transition", err->message);
+		break;
+	case HELICS_ERROR_INVALID_FUNCTION_CALL:
+		mexErrMsgIdAndTxt("helics:invalid_function_call", err->message);
+		break;
+	case HELICS_ERROR_EXECUTION_FAILURE:
+		mexErrMsgIdAndTxt("helics:execution_failure", err->message);
+		break;
+	case HELICS_ERROR_INSUFFICIENT_SPACE:
+		mexErrMsgIdAndTxt("helics:insufficient_space", err->message);
+		break;
+	case HELICS_ERROR_OTHER:
+	case HELICS_ERROR_EXTERNAL_TYPE:
+	default:
+		mexErrMsgIdAndTxt("helics:error", err->message);
+		break;
+	}
+}
+
+static const std::unordered_map<std::string,int> wrapperFunctionMap{
+{% for elementTuple in helicsElementMapTuples %}
+{%   if not loop.last %}
+	{"{{elementTuple[0]}}",{{elementTuple[1]}}},
+{%   else %}
+	{"{{elementTuple[0]}}",{{elementTuple[1]}}}
+{%   endif %}
+{% endfor %}
+};
+

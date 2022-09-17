@@ -12,7 +12,7 @@ import shutil
 from typing import List
 
 from . import clangParser
-
+from jinja2 import Environment, PackageLoader, select_autoescape
 
 matlabBindingGeneratorLogger = logging.getLogger(__name__)
 matlabBindingGeneratorLogger.setLevel(logging.DEBUG)
@@ -46,76 +46,20 @@ class MatlabBindingGenerator(object):
 
     def getParser(self):
         return self.__helicsParser
-        
+
     def generateSource(self):
         """
             Function that creates the HELICS MATLAB Bindings
         """
         def createBoilerPlate(headerFiles: List[str], helicsElementMapTuples) -> str:
-            boilerPlateStr = "/*\n"
-            boilerPlateStr += "Copyright (c) 2017-2022,\n"
-            boilerPlateStr += "Battelle Memorial Institute; Lawrence Livermore National Security, LLC; Alliance for Sustainable Energy, LLC.  See\n"
-            boilerPlateStr += "the top-level NOTICE for additional details. All rights reserved.\n"
-            boilerPlateStr += "SPDX-License-Identifier: BSD-3-Clause\n"
-            boilerPlateStr += "*/\n"
-            for h in headerFiles:
-                boilerPlateStr = f"#include \"helics/helics.h\"\n"
-            boilerPlateStr += "#include <mex.h>\n"
-            boilerPlateStr += "#include <stdexcept>\n"
-            boilerPlateStr += "#include <string>\n"
-            boilerPlateStr += "#include <unordered_map>\n\n"
-            boilerPlateStr += "static int mexFunctionCalled = 0;\n\n"
-            boilerPlateStr += "static void throwHelicsMatlabError(HelicsError *err) {\n"
-            boilerPlateStr += "\tmexUnlock();\n"
-            boilerPlateStr += "\tswitch (err->error_code)\n"
-            boilerPlateStr += "\t{\n"
-            boilerPlateStr += "\tcase HELICS_OK:\n"
-            boilerPlateStr += "\t\treturn;\n"
-            boilerPlateStr += "\tcase HELICS_ERROR_REGISTRATION_FAILURE:\n"
-            boilerPlateStr += "\t\tmexErrMsgIdAndTxt(\"helics:registration_failure\", err->message);\n"
-            boilerPlateStr += "\t\tbreak;\n"
-            boilerPlateStr += "\tcase HELICS_ERROR_CONNECTION_FAILURE:\n"
-            boilerPlateStr += "\t\tmexErrMsgIdAndTxt(\"helics:connection_failure\", err->message);\n"
-            boilerPlateStr += "\t\tbreak;\n"
-            boilerPlateStr += "\tcase HELICS_ERROR_INVALID_OBJECT:\n"
-            boilerPlateStr += "\t\tmexErrMsgIdAndTxt(\"helics:invalid_object\", err->message);\n"
-            boilerPlateStr += "\t\tbreak;\n"
-            boilerPlateStr += "\tcase HELICS_ERROR_INVALID_ARGUMENT:\n"
-            boilerPlateStr += "\t\tmexErrMsgIdAndTxt(\"helics:invalid_argument\", err->message);\n"
-            boilerPlateStr += "\t\tbreak;\n"
-            boilerPlateStr += "\tcase HELICS_ERROR_DISCARD:\n"
-            boilerPlateStr += "\t\tmexErrMsgIdAndTxt(\"helics:discard\", err->message);\n"
-            boilerPlateStr += "\t\tbreak;\n"
-            boilerPlateStr += "\tcase HELICS_ERROR_SYSTEM_FAILURE:\n"
-            boilerPlateStr += "\t\tmexErrMsgIdAndTxt(\"helics:system_failure\", err->message);\n"
-            boilerPlateStr += "\t\tbreak;\n"
-            boilerPlateStr += "\tcase HELICS_ERROR_INVALID_STATE_TRANSITION:\n"
-            boilerPlateStr += "\t\tmexErrMsgIdAndTxt(\"helics:invalid_state_transition\", err->message);\n"
-            boilerPlateStr += "\t\tbreak;\n"
-            boilerPlateStr += "\tcase HELICS_ERROR_INVALID_FUNCTION_CALL:\n"
-            boilerPlateStr += "\t\tmexErrMsgIdAndTxt(\"helics:invalid_function_call\", err->message);\n"
-            boilerPlateStr += "\t\tbreak;\n"
-            boilerPlateStr += "\tcase HELICS_ERROR_EXECUTION_FAILURE:\n"
-            boilerPlateStr += "\t\tmexErrMsgIdAndTxt(\"helics:execution_failure\", err->message);\n"
-            boilerPlateStr += "\t\tbreak;\n"
-            boilerPlateStr += "\tcase HELICS_ERROR_INSUFFICIENT_SPACE:\n"
-            boilerPlateStr += "\t\tmexErrMsgIdAndTxt(\"helics:insufficient_space\", err->message);\n"
-            boilerPlateStr += "\t\tbreak;\n"
-            boilerPlateStr += "\tcase HELICS_ERROR_OTHER:\n"
-            boilerPlateStr += "\tcase HELICS_ERROR_EXTERNAL_TYPE:\n"
-            boilerPlateStr += "\tdefault:\n"
-            boilerPlateStr += "\t\tmexErrMsgIdAndTxt(\"helics:error\", err->message);\n"
-            boilerPlateStr += "\t\tbreak;\n"
-            boilerPlateStr += "\t}\n"
-            boilerPlateStr += "}\n\n"
-            boilerPlateStr += "static const std::unordered_map<std::string,int> wrapperFunctionMap{\n"
-            for i in range(len(helicsElementMapTuples)):
-                if i == 0:
-                    boilerPlateStr += f"\t{{\"{helicsElementMapTuples[i][0]}\",{helicsElementMapTuples[i][1]}}}"
-                else:
-                    boilerPlateStr += f",\n\t{{\"{helicsElementMapTuples[i][0]}\",{helicsElementMapTuples[i][1]}}}"
-            boilerPlateStr += "\n};\n\n"
-            return boilerPlateStr
+            env = Environment(
+                    loader=PackageLoader("bindingGenerators", "matlab_templates"),
+                    autoescape=select_autoescape()
+            )
+            env.trim_blocks = True
+            env.lstrip_blocks = True
+            template = env.get_template("boilerPlate")
+            return template.render(helicsElementMapTuples=helicsElementMapTuples)
         
         
         def createEnum(enumDict: dict()) -> None:
