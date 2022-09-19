@@ -43,6 +43,12 @@ class MatlabBindingGenerator(object):
         '''
         self.__helicsParser = clangParser.CHeaderParser(headerFiles, ["HELICS_C_API_H_", "HELICS_EXPORT", "HELICS_DEPRECATED"])
         self.__rootDir = os.path.abspath(rootDir)
+        self.__jinjaEnv = Environment(
+                loader=PackageLoader("bindingGenerators", "matlab_templates"),
+                autoescape=select_autoescape()
+        )
+        self.__jinjaEnv.trim_blocks = True
+        self.__jinjaEnv.lstrip_blocks = True
 
     def getParser(self):
         return self.__helicsParser
@@ -52,13 +58,7 @@ class MatlabBindingGenerator(object):
             Function that creates the HELICS MATLAB Bindings
         """
         def createBoilerPlate(headerFiles: List[str], helicsElementMapTuples) -> str:
-            env = Environment(
-                    loader=PackageLoader("bindingGenerators", "matlab_templates"),
-                    autoescape=select_autoescape()
-            )
-            env.trim_blocks = True
-            env.lstrip_blocks = True
-            template = env.get_template("boilerPlate")
+            template = self.__jinjaEnv.get_template("boilerPlate")
             return template.render(helicsElementMapTuples=helicsElementMapTuples)
         
         
@@ -3868,24 +3868,8 @@ class MatlabBindingGenerator(object):
         
         
         def createMexMain() -> str:
-            mexMainStr = "void mexFunction(int resc, mxArray *resv[], int argc, const mxArray *argv[]) {\n"
-            mexMainStr += "\tif(--argc < 0 || !mxIsChar(*argv)){\n"
-            mexMainStr += "\t\tmexErrMsgTxt(\"This mex file should only be called from inside the .m files. First input should be the function ID.\");\n"
-            mexMainStr += "\t}\n"
-            mexMainStr += "\tint functionId;\n"
-            mexMainStr += "\ttry {\n"
-            mexMainStr += "\t\tfunctionId = wrapperFunctionMap.at(std::string(mxArrayToString(*argv++)));\n"
-            mexMainStr += "\t} catch (const std::out_of_range& e) {\n"
-            mexMainStr += "\t\tmexErrMsgTxt(\"unrecognized function id.\");\n"
-            mexMainStr += "\t}\n"
-            mexMainStr += "\tint flag=0;\n"
-            mexMainStr += "\t/* Prevent unloading this file until MATLAB exits */\n"
-            mexMainStr += "\tif(!mexFunctionCalled) {\n"
-            mexMainStr += "\t\tmexFunctionCalled = 1;\n"
-            mexMainStr += "\t\tmexLock();\n"
-            mexMainStr += "\t}\n"
-            mexMainStr += "\tswitch (functionId) {\n"
-            return mexMainStr
+            template = self.__jinjaEnv.get_template("mexMain")
+            return template.render()
         
         
         def closeBoilerPlate() -> str:

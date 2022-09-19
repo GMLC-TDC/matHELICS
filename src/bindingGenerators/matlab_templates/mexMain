@@ -1,0 +1,18 @@
+void mexFunction(int resc, mxArray *resv[], int argc, const mxArray *argv[]) {
+	if(--argc < 0 || !mxIsChar(*argv)){
+		mexErrMsgTxt("This mex file should only be called from inside the .m files. First input should be the function ID.");
+	}
+	int functionId;
+	try {
+		functionId = wrapperFunctionMap.at(std::string(mxArrayToString(*argv++)));
+	} catch (const std::out_of_range& e) {
+		mexErrMsgTxt("unrecognized function id.");
+	}
+	int flag=0;
+	/* Prevent unloading this file until MATLAB exits */
+	if(!mexFunctionCalled) {
+		mexFunctionCalled = 1;
+		mexLock();
+	}
+	switch (functionId) {
+
