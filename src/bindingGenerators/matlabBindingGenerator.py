@@ -293,7 +293,14 @@ class MatlabBindingGenerator(object):
                 "helicsDataBufferToVector",
                 "helicsDataBufferToComplexVector",
                 "helicsDataBufferToNamedPoint",
-                "helicsCloseLibrary"
+                "helicsCloseLibrary",
+                "helicsFederateInitializingEntryCallback",
+                "helicsFederateExecutingEntryCallback",
+                "helicsFederateCosimulationTerminationCallback",
+                "helicsFederateErrorHandlerCallback",
+                "helicsCallbackFederateNextTimeCallback",
+                "helicsCallbackFederateNextTimeIterativeCallback",
+                "helicsCallbackFederateInitializeCallback"
             ]
             functionsToIgnore = ["helicsErrorInitialize", "helicsErrorClear", "helicsComplexObjectToBytes"]
             functionName = functionDict.get("spelling")
@@ -892,7 +899,14 @@ class MatlabBindingGenerator(object):
                 "helicsDataBufferToComplexVector": helicsDataBufferToComplexVectorMatlabWrapper,
                 "helicsDataBufferToNamedPoint": helicsDataBufferToNamedPointMatlabWrapper,
                 "helicsTranslatorSetCustomCallback": helicsTranslatorSetCustomCallbackMatlabWrapper,
-                "helicsCloseLibrary": helicsCloseLibraryMatlabWrapper
+                "helicsCloseLibrary": helicsCloseLibraryMatlabWrapper,
+                "helicsFederateInitializingEntryCallback": helicsFederateInitializingEntryCallbackMatlabWrapper,
+                "helicsFederateExecutingEntryCallback": helicsFederateExecutingEntryCallbackMatlabWrapper,
+                "helicsFederateCosimulationTerminationCallback": helicsFederateCosimulationTerminationCallbackMatlabWrapper,
+                "helicsFederateErrorHandlerCallback": helicsFederateErrorHandlerCallbackMatlabWrapper,
+                "helicsCallbackFederateNextTimeCallback": helicsCallbackFederateNextTimeCallbackMatlabWrapper,
+                "helicsCallbackFederateNextTimeIterativeCallback": helicsCallbackFederateNextTimeIterativeCallbackMatlabWrapper,
+                "helicsCallbackFederateInitializeCallback": helicsCallbackFederateInitializeCallbackMatlabWrapper
             }
             functionComment, functionWrapper, functionMainElement = modifiedPythonFunctionList[functionDict.get("spelling","")](functionDict, cursorIdx)
             
@@ -3917,6 +3931,428 @@ class MatlabBindingGenerator(object):
             functionWrapper += "\t\t*resv++ = _out;\n"
             functionWrapper += "\t}\n"
             functionWrapper += "\tmexUnlock();\n"
+            functionWrapper += "}\n\n\n"
+            functionMainElements = f"\tcase {cursorIdx}:\n"
+            functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
+            functionMainElements += f"\t\tbreak;\n"
+            return functionComment, functionWrapper, functionMainElements
+        
+        
+        def helicsFederateInitializingEntryCallbackMatlabWrapper(functionDict: dict(), cursorIdx: int):
+            #check to see if function signiture changed
+            argNum = len(functionDict.get("arguments", {}).keys())
+            if argNum != 4:
+                raise RuntimeError("the function signature for helicsFederateInitializingEntryCallback has changed!")
+            arg0 = functionDict.get("arguments", {}).get(0, {})
+            if arg0.get("spelling","") != "fed" or arg0.get("type", "") != "HelicsFederate":
+                raise RuntimeError("the function signature for helicsFederateInitializingEntryCallback has changed!")
+            arg1 = functionDict.get("arguments", {}).get(1, {})
+            if arg1.get("spelling","") != "initializingEntry" or arg1.get("pointer_type", "") != "FunctionProto_*":
+                raise RuntimeError("the function signature for helicsFederateInitializingEntryCallback has changed!")
+            arg2 = functionDict.get("arguments", {}).get(2, {})
+            if arg2.get("spelling","") != "userdata" or arg2.get("pointer_type", "") != "Void_*":
+                raise RuntimeError("the function signature for helicsFederateInitializingEntryCallback has changed!")
+            arg3 = functionDict.get("arguments", {}).get(3, {})
+            if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
+                raise RuntimeError("the function signature for helicsFederateInitializingEntryCallback has changed!")
+            functionName = functionDict.get("spelling","")
+            functionComment = "%{\n"
+            functionComment += "\tSet callback for the entry to initializingMode.n\n"
+            functionComment += "\t@details This callback will be executed when the initializingMode is entered.\n\n"
+            functionComment += "\t@param fed The federate object in which to set the callback.\n"
+            functionComment += "\t@param initializingEntry A function handle with the signature void(HelicsBool iterating).\n"
+            functionComment += "%}\n"
+            functionWrapper = "void matlabFederateInitializingEntryCallback(HelicsBool iterating, void *userData){\n"
+            functionWrapper += "\tmxArray *lhs;\n"
+            functionWrapper += "\tmxArray *rhs[2];\n"
+            functionWrapper += "\trhs[0] = reinterpret_cast<mxArray *>(userData);\n"
+            functionWrapper += "\trhs[1] = mxCreateLogicalMatrix(1, 1);\n"
+            functionWrapper += "\tmxLogical *rhs1Ptr = mxGetLogicals(rhs[1]);\n"
+            functionWrapper += "\trhs1Ptr[0] = false;\n"
+            functionWrapper += "\tif(iterating == HELICS_TRUE){\n"
+            functionWrapper += "\t\trhs1Ptr[0] = true;\n"
+            functionWrapper += "\t}\n"
+            functionWrapper += '\tint status = mexCallMATLAB(0,&lhs,2,rhs,"feval");\n'
+            functionWrapper += "\tmxDestroyArray(lhs);\n"
+            functionWrapper += "\tmxDestroyArray(rhs[1]);\n"
+            functionWrapper += "}\n\n"
+            functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
+            functionWrapper += f"\tif(argc != 2){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 2 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsFederate", "fed", 0, functionName)
+            functionWrapper += "\tvoid *userData = mxGetData(argv[1]);\n"
+            functionWrapper += initializeArgHelicsErrorPtr("err")
+            functionWrapper += f"\t{functionName}(fed, &matlabFederateInitializingEntryCallback, userData, &err);\n\n"
+            functionWrapper += "\tmxArray *_out = nullptr;\n"
+            functionWrapper += "\tif(_out){\n"
+            functionWrapper += "\t\t--resc;\n"
+            functionWrapper += "\t\t*resv++ = _out;\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += f'{argHelicsErrorPtrPostFunctionCall("err")}\n'
+            functionWrapper += "}\n\n\n"
+            functionMainElements = f"\tcase {cursorIdx}:\n"
+            functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
+            functionMainElements += f"\t\tbreak;\n"
+            return functionComment, functionWrapper, functionMainElements
+        
+        
+        def helicsFederateExecutingEntryCallbackMatlabWrapper(functionDict: dict(), cursorIdx: int):
+            #check to see if function signiture changed
+            argNum = len(functionDict.get("arguments", {}).keys())
+            if argNum != 4:
+                raise RuntimeError("the function signature for helicsFederateExecutingEntryCallback has changed!")
+            arg0 = functionDict.get("arguments", {}).get(0, {})
+            if arg0.get("spelling","") != "fed" or arg0.get("type", "") != "HelicsFederate":
+                raise RuntimeError("the function signature for helicsFederateExecutingEntryCallback has changed!")
+            arg1 = functionDict.get("arguments", {}).get(1, {})
+            if arg1.get("spelling","") != "executingEntry" or arg1.get("pointer_type", "") != "FunctionProto_*":
+                raise RuntimeError("the function signature for helicsFederateExecutingEntryCallback has changed!")
+            arg2 = functionDict.get("arguments", {}).get(2, {})
+            if arg2.get("spelling","") != "userdata" or arg2.get("pointer_type", "") != "Void_*":
+                raise RuntimeError("the function signature for helicsFederateExecutingEntryCallback has changed!")
+            arg3 = functionDict.get("arguments", {}).get(3, {})
+            if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
+                raise RuntimeError("the function signature for helicsFederateExecutingEntryCallback has changed!")
+            functionName = functionDict.get("spelling","")
+            functionComment = "%{\n"
+            functionComment += "\tSet callback for the entry to ExecutingMode.n\n"
+            functionComment += "\t@details This callback will be executed once on first entry to executing mode.\n\n"
+            functionComment += "\t@param fed The federate object in which to set the callback.\n"
+            functionComment += "\t@param executingEntry A function handle with the signature void(void).\n"
+            functionComment += "%}\n"
+            functionWrapper = "void matlabFederateExecutingEntryCallback(void *userData){\n"
+            functionWrapper += "\tmxArray *lhs;\n"
+            functionWrapper += "\tmxArray *rhs[1];\n"
+            functionWrapper += "\trhs[0] = reinterpret_cast<mxArray *>(userData);\n"
+            functionWrapper += '\tint status = mexCallMATLAB(0,&lhs,1,rhs,"feval");\n'
+            functionWrapper += "\tmxDestroyArray(lhs);\n"
+            functionWrapper += "}\n\n"
+            functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
+            functionWrapper += f"\tif(argc != 2){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 2 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsFederate", "fed", 0, functionName)
+            functionWrapper += "\tvoid *userData = mxGetData(argv[1]);\n"
+            functionWrapper += initializeArgHelicsErrorPtr("err")
+            functionWrapper += f"\t{functionName}(fed, &matlabFederateExecutingEntryCallback, userData, &err);\n\n"
+            functionWrapper += "\tmxArray *_out = nullptr;\n"
+            functionWrapper += "\tif(_out){\n"
+            functionWrapper += "\t\t--resc;\n"
+            functionWrapper += "\t\t*resv++ = _out;\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += f'{argHelicsErrorPtrPostFunctionCall("err")}\n'
+            functionWrapper += "}\n\n\n"
+            functionMainElements = f"\tcase {cursorIdx}:\n"
+            functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
+            functionMainElements += f"\t\tbreak;\n"
+            return functionComment, functionWrapper, functionMainElements
+        
+        
+        def helicsFederateCosimulationTerminationCallbackMatlabWrapper(functionDict: dict(), cursorIdx: int):
+            #check to see if function signiture changed
+            argNum = len(functionDict.get("arguments", {}).keys())
+            if argNum != 4:
+                raise RuntimeError("the function signature for helicsFederateCosimulationTerminationCallback has changed!")
+            arg0 = functionDict.get("arguments", {}).get(0, {})
+            if arg0.get("spelling","") != "fed" or arg0.get("type", "") != "HelicsFederate":
+                raise RuntimeError("the function signature for helicsFederateCosimulationTerminationCallback has changed!")
+            arg1 = functionDict.get("arguments", {}).get(1, {})
+            if arg1.get("spelling","") != "cosimTermination" or arg1.get("pointer_type", "") != "FunctionProto_*":
+                raise RuntimeError("the function signature for helicsFederateCosimulationTerminationCallback has changed!")
+            arg2 = functionDict.get("arguments", {}).get(2, {})
+            if arg2.get("spelling","") != "userdata" or arg2.get("pointer_type", "") != "Void_*":
+                raise RuntimeError("the function signature for helicsFederateCosimulationTerminationCallback has changed!")
+            arg3 = functionDict.get("arguments", {}).get(3, {})
+            if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
+                raise RuntimeError("the function signature for helicsFederateCosimulationTerminationCallback has changed!")
+            functionName = functionDict.get("spelling","")
+            functionComment = "%{\n"
+            functionComment += "\tSet callback for cosimulation termination.n\n"
+            functionComment += "\t@details This callback will be executed once when the time advance of the federate/co-simulation has terminated\n\tthis may be called as part of the finalize operation, or when a maxTime signal is returned from the requestTime or when and error is encountered.\n\n"
+            functionComment += "\t@param fed The federate object in which to set the callback.\n"
+            functionComment += "\t@param cosimTermination A function handle with the signature void(void).\n"
+            functionComment += "%}\n"
+            functionWrapper = "void matlabFederateCosimulationTerminationCallback(void *userData){\n"
+            functionWrapper += "\tmxArray *lhs;\n"
+            functionWrapper += "\tmxArray *rhs[1];\n"
+            functionWrapper += "\trhs[0] = reinterpret_cast<mxArray *>(userData);\n"
+            functionWrapper += '\tint status = mexCallMATLAB(0,&lhs,1,rhs,"feval");\n'
+            functionWrapper += "\tmxDestroyArray(lhs);\n"
+            functionWrapper += "}\n\n"
+            functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
+            functionWrapper += f"\tif(argc != 2){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 2 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsFederate", "fed", 0, functionName)
+            functionWrapper += "\tvoid *userData = mxGetData(argv[1]);\n"
+            functionWrapper += initializeArgHelicsErrorPtr("err")
+            functionWrapper += f"\t{functionName}(fed, &matlabFederateCosimulationTerminationCallback, userData, &err);\n\n"
+            functionWrapper += "\tmxArray *_out = nullptr;\n"
+            functionWrapper += "\tif(_out){\n"
+            functionWrapper += "\t\t--resc;\n"
+            functionWrapper += "\t\t*resv++ = _out;\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += f'{argHelicsErrorPtrPostFunctionCall("err")}\n'
+            functionWrapper += "}\n\n\n"
+            functionMainElements = f"\tcase {cursorIdx}:\n"
+            functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
+            functionMainElements += f"\t\tbreak;\n"
+            return functionComment, functionWrapper, functionMainElements
+        
+        
+        def helicsFederateErrorHandlerCallbackMatlabWrapper(functionDict: dict(), cursorIdx: int):
+            #check to see if function signiture changed
+            argNum = len(functionDict.get("arguments", {}).keys())
+            if argNum != 4:
+                raise RuntimeError("the function signature for helicsFederateErrorHandlerCallback has changed!")
+            arg0 = functionDict.get("arguments", {}).get(0, {})
+            if arg0.get("spelling","") != "fed" or arg0.get("type", "") != "HelicsFederate":
+                raise RuntimeError("the function signature for helicsFederateErrorHandlerCallback has changed!")
+            arg1 = functionDict.get("arguments", {}).get(1, {})
+            if arg1.get("spelling","") != "errorHandler" or arg1.get("pointer_type", "") != "FunctionProto_*":
+                raise RuntimeError("the function signature for helicsFederateErrorHandlerCallback has changed!")
+            arg2 = functionDict.get("arguments", {}).get(2, {})
+            if arg2.get("spelling","") != "userdata" or arg2.get("pointer_type", "") != "Void_*":
+                raise RuntimeError("the function signature for helicsFederateErrorHandlerCallback has changed!")
+            arg3 = functionDict.get("arguments", {}).get(3, {})
+            if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
+                raise RuntimeError("the function signature for helicsFederateErrorHandlerCallback has changed!")
+            functionName = functionDict.get("spelling","")
+            functionComment = "%{\n"
+            functionComment += "\tSet callback for error handling.n\n"
+            functionComment += "\t@details This callback will be executed when a federate error is encountered\n\n"
+            functionComment += "\t@param fed The federate object in which to set the callback.\n"
+            functionComment += "\t@param errorHandler A function handle with the signature void(int errorCode, const char* errorString).\n"
+            functionComment += "%}\n"
+            functionWrapper = "void matlabFederateErrorHandlerCallback(void *userData){\n"
+            functionWrapper += "\tmxArray *lhs;\n"
+            functionWrapper += "\tmxArray *rhs[3];\n"
+            functionWrapper += "\trhs[0] = reinterpret_cast<mxArray *>(userData);\n"
+            functionWrapper += "\trhs[1] = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);\n"
+            functionWrapper += "\tmxInt32 *rhs1Ptr = mxGetInt32s(rhs[1]);\n"
+            functionWrapper += "\trhs1Ptr[0] = static_cast<mxInt32>(newState);\n"
+            functionWrapper += "\trhs[2] = mxCreateString(errorString);\n"
+            functionWrapper += '\tint status = mexCallMATLAB(0,&lhs,3,rhs,"feval");\n'
+            functionWrapper += "\tmxDestroyArray(lhs);\n"
+            functionWrapper += "\tmxDestroyArray(rhs[1]);\n"
+            functionWrapper += "\tmxDestroyArray(rhs[2]);\n"
+            functionWrapper += "}\n\n"
+            functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
+            functionWrapper += f"\tif(argc != 2){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 2 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsFederate", "fed", 0, functionName)
+            functionWrapper += "\tvoid *userData = mxGetData(argv[1]);\n"
+            functionWrapper += initializeArgHelicsErrorPtr("err")
+            functionWrapper += f"\t{functionName}(fed, &matlabFederateErrorHandlerCallback, userData, &err);\n\n"
+            functionWrapper += "\tmxArray *_out = nullptr;\n"
+            functionWrapper += "\tif(_out){\n"
+            functionWrapper += "\t\t--resc;\n"
+            functionWrapper += "\t\t*resv++ = _out;\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += f'{argHelicsErrorPtrPostFunctionCall("err")}\n'
+            functionWrapper += "}\n\n\n"
+            functionMainElements = f"\tcase {cursorIdx}:\n"
+            functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
+            functionMainElements += f"\t\tbreak;\n"
+            return functionComment, functionWrapper, functionMainElements
+        
+        
+        def helicsCallbackFederateNextTimeCallbackMatlabWrapper(functionDict: dict(), cursorIdx: int):
+            #check to see if function signiture changed
+            argNum = len(functionDict.get("arguments", {}).keys())
+            if argNum != 4:
+                raise RuntimeError("the function signature for helicsCallbackFederateNextTimeCallback has changed!")
+            arg0 = functionDict.get("arguments", {}).get(0, {})
+            if arg0.get("spelling","") != "fed" or arg0.get("type", "") != "HelicsFederate":
+                raise RuntimeError("the function signature for helicsCallbackFederateNextTimeCallback has changed!")
+            arg1 = functionDict.get("arguments", {}).get(1, {})
+            if arg1.get("spelling","") != "timeUpdate" or arg1.get("pointer_type", "") != "FunctionProto_*":
+                raise RuntimeError("the function signature for helicsCallbackFederateNextTimeCallback has changed!")
+            arg2 = functionDict.get("arguments", {}).get(2, {})
+            if arg2.get("spelling","") != "userdata" or arg2.get("pointer_type", "") != "Void_*":
+                raise RuntimeError("the function signature for helicsCallbackFederateNextTimeCallback has changed!")
+            arg3 = functionDict.get("arguments", {}).get(3, {})
+            if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
+                raise RuntimeError("the function signature for helicsCallbackFederateNextTimeCallback has changed!")
+            functionName = functionDict.get("spelling","")
+            functionComment = "%{\n"
+            functionComment += "\tSet callback for the next time update=.\n\n"
+            functionComment += "\t@details This callback will be executed to compute the next time update for a callback federate.\n\n"
+            functionComment += "\t@param fed The federate object in which to set the callback.\n"
+            functionComment += "\t@param timeUpdate A function handle with the signature HelicsTime (HelicsTime time).\n"
+            functionComment += "%}\n"
+            functionWrapper = "void matlabCallbackFederateNextTimeCallback(HelicsTime time, void *userData){\n"
+            functionWrapper += "\tmxArray *lhs[1];\n"
+            functionWrapper += "\tmxArray *rhs[2];\n"
+            functionWrapper += "\trhs[0] = reinterpret_cast<mxArray *>(userData);\n"
+            functionWrapper += "\trhs[1] = mxCreateDoubleScalar(time);\n"
+            functionWrapper += '\tint status = mexCallMATLAB(1,&lhs,2,rhs,"feval");\n'
+            functionWrapper += f"\tif(!mxIsNumeric(lhs[0])){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"return type must be of type double.\");\n"
+            functionWrapper += "\t}\n"
+            functionWrapper += f"\tHelicsTime rv = (HelicsTime)(mxGetScalar(lhs[0]));\n\n"
+            functionWrapper += "\tmxDestroyArray(lhs[0]);\n"
+            functionWrapper += "\tmxDestroyArray(rhs[1]);\n"
+            functionWrapper += "\treturn rv;\n"
+            functionWrapper += "}\n\n"
+            functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
+            functionWrapper += f"\tif(argc != 2){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:matlabCallbackFederateNextTimeCallback:rhs\",\"This function requires 2 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsFederate", "fed", 0, functionName)
+            functionWrapper += "\tvoid *userData = mxGetData(argv[1]);\n"
+            functionWrapper += initializeArgHelicsErrorPtr("err")
+            functionWrapper += f"\t{functionName}(fed, &matlabCallbackFederateNextTimeCallback, userData, &err);\n\n"
+            functionWrapper += "\tmxArray *_out = nullptr;\n"
+            functionWrapper += "\tif(_out){\n"
+            functionWrapper += "\t\t--resc;\n"
+            functionWrapper += "\t\t*resv++ = _out;\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += f'{argHelicsErrorPtrPostFunctionCall("err")}\n'
+            functionWrapper += "}\n\n\n"
+            functionMainElements = f"\tcase {cursorIdx}:\n"
+            functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
+            functionMainElements += f"\t\tbreak;\n"
+            return functionComment, functionWrapper, functionMainElements
+        
+        
+        def helicsCallbackFederateNextTimeIterativeCallbackMatlabWrapper(functionDict: dict(), cursorIdx: int):
+            #check to see if function signiture changed
+            argNum = len(functionDict.get("arguments", {}).keys())
+            if argNum != 4:
+                raise RuntimeError("the function signature for helicsCallbackFederateNextTimeIterativeCallback has changed!")
+            arg0 = functionDict.get("arguments", {}).get(0, {})
+            if arg0.get("spelling","") != "fed" or arg0.get("type", "") != "HelicsFederate":
+                raise RuntimeError("the function signature for helicsCallbackFederateNextTimeIterativeCallback has changed!")
+            arg1 = functionDict.get("arguments", {}).get(1, {})
+            if arg1.get("spelling","") != "timeUpdate" or arg1.get("pointer_type", "") != "FunctionProto_*":
+                raise RuntimeError("the function signature for helicsCallbackFederateNextTimeIterativeCallback has changed!")
+            arg2 = functionDict.get("arguments", {}).get(2, {})
+            if arg2.get("spelling","") != "userdata" or arg2.get("pointer_type", "") != "Void_*":
+                raise RuntimeError("the function signature for helicsCallbackFederateNextTimeIterativeCallback has changed!")
+            arg3 = functionDict.get("arguments", {}).get(3, {})
+            if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
+                raise RuntimeError("the function signature for helicsCallbackFederateNextTimeIterativeCallback has changed!")
+            functionName = functionDict.get("spelling","")
+            functionComment = "%{\n"
+            functionComment += "\tSet callback for the next time update with iteration capability.\n\n"
+            functionComment += "\t@details This callback will be executed to compute the next time update for a callback federate.\n\n"
+            functionComment += "\t@param fed The federate object in which to set the callback.\n"
+            functionComment += "\t@param timeUpdate A function handle with the signature void(HelicsTime time, HelicsIterationResult iterationResult, HelicsIterationRequest* iteration).\n"
+            functionComment += "%}\n"
+            functionWrapper = "void matlabCallbackFederateNextTimeIterativeCallback(HelicsTime time, void *userData){\n"
+            functionWrapper += "\tmxArray *lhs[2];\n"
+            functionWrapper += "\tmxArray *rhs[4];\n"
+            functionWrapper += "\trhs[0] = reinterpret_cast<mxArray *>(userData);\n"
+            functionWrapper += "\trhs[1] = mxCreateDoubleScalar(time);\n"
+            functionWrapper += "\trhs[2] = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);\n"
+            functionWrapper += "\tmxInt32 *pRhs2 = mxGetInt32s(rhs[2]);\n"
+            functionWrapper += "\tpRhs2[0] = static_cast<mxInt32>(iterationResult);\n"
+            functionWrapper += "\trhs[3] = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);\n"
+            functionWrapper += "\tmxInt32 *pRhs3 = mxGetInt32s(rhs[3]);\n"
+            functionWrapper += "\tpRhs3[0] = static_cast<mxInt32>(*iterationResultRequest);\n"
+            functionWrapper += '\tint status = mexCallMATLAB(2,&lhs,4,rhs,"feval");\n'
+            functionWrapper += f"\tif(!mxIsNumeric(lhs[0])){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:matlabCallbackFederateNextTimeIterativeCallback:TypeError\",\"first type returned must be of type double.\");\n"
+            functionWrapper += "\t}\n"
+            functionWrapper += f"\tHelicsTime rv = (HelicsTime)(mxGetScalar(lhs[0]));\n\n"
+            functionWrapper += f"\tif(mxGetClassID(lhs[1]) != mxINT32_CLASS){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:matlabCallbackFederateNextTimeIterativeCallback:TypeError\",\"second type returned must be of type int32.\");\n"
+            functionWrapper += "\t}\n"
+            functionWrapper += f"mxInt32 *pIterationRequest = mxGetInt32s(lhs[1]);\n"
+            functionWrapper += f"\t*iterationRequest = static_cast<HelicsIterationRequest>(pIterationRequest[0]);\n\n"
+            functionWrapper += "\tmxDestroyArray(lhs[0]);\n"
+            functionWrapper += "\tmxDestroyArray(lhs[1]);\n"
+            functionWrapper += "\tmxDestroyArray(rhs[1]);\n"
+            functionWrapper += "\tmxDestroyArray(rhs[2]);\n"
+            functionWrapper += "\tmxDestroyArray(rhs[3]);\n"
+            functionWrapper += "return rv"
+            functionWrapper += "}\n\n"
+            functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
+            functionWrapper += f"\tif(argc != 2){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 2 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsFederate", "fed", 0, functionName)
+            functionWrapper += "\tvoid *userData = mxGetData(argv[1]);\n"
+            functionWrapper += initializeArgHelicsErrorPtr("err")
+            functionWrapper += f"\t{functionName}(fed, &helicsCallbackFederateNextTimeIterativeCallback, userData, &err);\n\n"
+            functionWrapper += "\tmxArray *_out = nullptr;\n"
+            functionWrapper += "\tif(_out){\n"
+            functionWrapper += "\t\t--resc;\n"
+            functionWrapper += "\t\t*resv++ = _out;\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += f'{argHelicsErrorPtrPostFunctionCall("err")}\n'
+            functionWrapper += "}\n\n\n"
+            functionMainElements = f"\tcase {cursorIdx}:\n"
+            functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
+            functionMainElements += f"\t\tbreak;\n"
+            return functionComment, functionWrapper, functionMainElements
+        
+        
+        def helicsCallbackFederateInitializeCallbackMatlabWrapper(functionDict: dict(), cursorIdx: int):
+            #check to see if function signiture changed
+            argNum = len(functionDict.get("arguments", {}).keys())
+            if argNum != 4:
+                raise RuntimeError("the function signature for helicsCallbackFederateInitializeCallback has changed!")
+            arg0 = functionDict.get("arguments", {}).get(0, {})
+            if arg0.get("spelling","") != "fed" or arg0.get("type", "") != "HelicsFederate":
+                raise RuntimeError("the function signature for helicsCallbackFederateInitializeCallback has changed!")
+            arg1 = functionDict.get("arguments", {}).get(1, {})
+            if arg1.get("spelling","") != "initialize" or arg1.get("pointer_type", "") != "FunctionProto_*":
+                raise RuntimeError("the function signature for helicsCallbackFederateInitializeCallback has changed!")
+            arg2 = functionDict.get("arguments", {}).get(2, {})
+            if arg2.get("spelling","") != "userdata" or arg2.get("pointer_type", "") != "Void_*":
+                raise RuntimeError("the function signature for helicsCallbackFederateInitializeCallback has changed!")
+            arg3 = functionDict.get("arguments", {}).get(3, {})
+            if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
+                raise RuntimeError("the function signature for helicsCallbackFederateInitializeCallback has changed!")
+            functionName = functionDict.get("spelling","")
+            functionComment = "%{\n"
+            functionComment += "\tSet callback for initialization.\n\n"
+            functionComment += "\t@details This callback will be executed when computing whether to iterate in initialization mode.\n\n"
+            functionComment += "\t@param fed The federate object in which to set the callback.\n"
+            functionComment += "\t@param timeUpdate A function handle with the signature HelicsIterationRequest(void).\n"
+            functionComment += "%}\n"
+            functionWrapper = "void matlabCallbackFederateInitializeCallback(HelicsTime time, void *userData){\n"
+            functionWrapper += "\tmxArray *lhs[1];\n"
+            functionWrapper += "\tmxArray *rhs[1];\n"
+            functionWrapper += "\trhs[0] = reinterpret_cast<mxArray *>(userData);\n"
+            functionWrapper += '\tint status = mexCallMATLAB(1,&lhs,1,rhs,"feval");\n'
+            functionWrapper += f"\tif(mxGetClassID(lhs[0]) != mxINT32_CLASS){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:matlabCallbackFederateInitializeCallback:TypeError\",\"return type must be of type int32.\");\n"
+            functionWrapper += "\t}\n"
+            functionWrapper += f"mxInt32 *pIterationRequest = mxGetInt32s(lhs[0]);\n"
+            functionWrapper += f"\tHelicsIterationRequest rv = static_cast<HelicsIterationRequest>(pIterationRequest[0]);\n\n"
+            functionWrapper += "\tmxDestroyArray(lhs[0]);\n"
+            functionWrapper += "return rv"
+            functionWrapper += "}\n\n"
+            functionWrapper += f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
+            functionWrapper += f"\tif(argc != 2){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 2 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsFederate", "fed", 0, functionName)
+            functionWrapper += "\tvoid *userData = mxGetData(argv[1]);\n"
+            functionWrapper += initializeArgHelicsErrorPtr("err")
+            functionWrapper += f"\t{functionName}(fed, &matlabCallbackFederateInitializeCallback, userData, &err);\n\n"
+            functionWrapper += "\tmxArray *_out = nullptr;\n"
+            functionWrapper += "\tif(_out){\n"
+            functionWrapper += "\t\t--resc;\n"
+            functionWrapper += "\t\t*resv++ = _out;\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += f'{argHelicsErrorPtrPostFunctionCall("err")}\n'
             functionWrapper += "}\n\n\n"
             functionMainElements = f"\tcase {cursorIdx}:\n"
             functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
