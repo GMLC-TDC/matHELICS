@@ -26,6 +26,4 @@ if __name__ == '__main__':
     userInputParser.add_argument("headers", default=[], nargs="+",
         help="list of helics header files to parse")
     userArgs = userInputParser.parse_args()
-    print(userArgs.bindingsRootDir)
-    print(userArgs.headers)
     main(userArgs.bindingsRootDir, userArgs.headers)

@@ -15990,13 +15990,13 @@ void _wrap_helicsFederateCosimulationTerminationCallback(int resc, mxArray *resv
 }
 
 
-void matlabFederateErrorHandlerCallback(void *userData){
+void matlabFederateErrorHandlerCallback(int errorCode, const char* errorString, void *userData){
 	mxArray *lhs;
 	mxArray *rhs[3];
 	rhs[0] = reinterpret_cast<mxArray *>(userData);
 	rhs[1] = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
 	mxInt32 *rhs1Ptr = mxGetInt32s(rhs[1]);
-	rhs1Ptr[0] = static_cast<mxInt32>(newState);
+	rhs1Ptr[0] = static_cast<mxInt32>(errorCode);
 	rhs[2] = mxCreateString(errorString);
 	int status = mexCallMATLAB(0,&lhs,3,rhs,"feval");
 	mxDestroyArray(lhs);
@@ -16033,12 +16033,12 @@ void _wrap_helicsFederateErrorHandlerCallback(int resc, mxArray *resv[], int arg
 }
 
 
-void matlabCallbackFederateNextTimeCallback(HelicsTime time, void *userData){
+HelicsTime matlabCallbackFederateNextTimeCallback(HelicsTime time, void *userData){
 	mxArray *lhs[1];
 	mxArray *rhs[2];
 	rhs[0] = reinterpret_cast<mxArray *>(userData);
 	rhs[1] = mxCreateDoubleScalar(time);
-	int status = mexCallMATLAB(1,&lhs,2,rhs,"feval");
+	int status = mexCallMATLAB(1,lhs,2,rhs,"feval");
 	if(!mxIsNumeric(lhs[0])){
 		mexUnlock();
 		mexErrMsgIdAndTxt("MATLAB:helicsCallbackFederateNextTimeCallback:TypeError","return type must be of type double.");
@@ -16079,7 +16079,7 @@ void _wrap_helicsCallbackFederateNextTimeCallback(int resc, mxArray *resv[], int
 }
 
 
-void matlabCallbackFederateNextTimeIterativeCallback(HelicsTime time, void *userData){
+HelicsTime matlabCallbackFederateNextTimeIterativeCallback(HelicsTime time, HelicsIterationResult iterationResult, HelicsIterationRequest *iteration, void *userData){
 	mxArray *lhs[2];
 	mxArray *rhs[4];
 	rhs[0] = reinterpret_cast<mxArray *>(userData);
@@ -16089,8 +16089,8 @@ void matlabCallbackFederateNextTimeIterativeCallback(HelicsTime time, void *user
 	pRhs2[0] = static_cast<mxInt32>(iterationResult);
 	rhs[3] = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
 	mxInt32 *pRhs3 = mxGetInt32s(rhs[3]);
-	pRhs3[0] = static_cast<mxInt32>(*iterationResultRequest);
-	int status = mexCallMATLAB(2,&lhs,4,rhs,"feval");
+	pRhs3[0] = static_cast<mxInt32>(*iteration);
+	int status = mexCallMATLAB(2,lhs,4,rhs,"feval");
 	if(!mxIsNumeric(lhs[0])){
 		mexUnlock();
 		mexErrMsgIdAndTxt("MATLAB:matlabCallbackFederateNextTimeIterativeCallback:TypeError","first type returned must be of type double.");
@@ -16101,15 +16101,16 @@ void matlabCallbackFederateNextTimeIterativeCallback(HelicsTime time, void *user
 		mexUnlock();
 		mexErrMsgIdAndTxt("MATLAB:matlabCallbackFederateNextTimeIterativeCallback:TypeError","second type returned must be of type int32.");
 	}
-mxInt32 *pIterationRequest = mxGetInt32s(lhs[1]);
-	*iterationRequest = static_cast<HelicsIterationRequest>(pIterationRequest[0]);
+	mxInt32 *pIterationRequest = mxGetInt32s(lhs[1]);
+	*iteration = static_cast<HelicsIterationRequest>(pIterationRequest[0]);
 
 	mxDestroyArray(lhs[0]);
 	mxDestroyArray(lhs[1]);
 	mxDestroyArray(rhs[1]);
 	mxDestroyArray(rhs[2]);
 	mxDestroyArray(rhs[3]);
-return rv}
+	return rv;
+}
 
 void _wrap_helicsCallbackFederateNextTimeIterativeCallback(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
 	if(argc != 2){
@@ -16126,7 +16127,7 @@ void _wrap_helicsCallbackFederateNextTimeIterativeCallback(int resc, mxArray *re
 	void *userData = mxGetData(argv[1]);
 	HelicsError err = helicsErrorInitialize();
 
-	helicsCallbackFederateNextTimeIterativeCallback(fed, &helicsCallbackFederateNextTimeIterativeCallback, userData, &err);
+	helicsCallbackFederateNextTimeIterativeCallback(fed, &matlabCallbackFederateNextTimeIterativeCallback, userData, &err);
 
 	mxArray *_out = nullptr;
 	if(_out){
@@ -16140,20 +16141,21 @@ void _wrap_helicsCallbackFederateNextTimeIterativeCallback(int resc, mxArray *re
 }
 
 
-void matlabCallbackFederateInitializeCallback(HelicsTime time, void *userData){
+HelicsIterationRequest matlabCallbackFederateInitializeCallback(void *userData){
 	mxArray *lhs[1];
 	mxArray *rhs[1];
 	rhs[0] = reinterpret_cast<mxArray *>(userData);
-	int status = mexCallMATLAB(1,&lhs,1,rhs,"feval");
+	int status = mexCallMATLAB(1,lhs,1,rhs,"feval");
 	if(mxGetClassID(lhs[0]) != mxINT32_CLASS){
 		mexUnlock();
 		mexErrMsgIdAndTxt("MATLAB:matlabCallbackFederateInitializeCallback:TypeError","return type must be of type int32.");
 	}
-mxInt32 *pIterationRequest = mxGetInt32s(lhs[0]);
+	mxInt32 *pIterationRequest = mxGetInt32s(lhs[0]);
 	HelicsIterationRequest rv = static_cast<HelicsIterationRequest>(pIterationRequest[0]);
 
 	mxDestroyArray(lhs[0]);
-return rv}
+	return rv;
+}
 
 void _wrap_helicsCallbackFederateInitializeCallback(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
 	if(argc != 2){
