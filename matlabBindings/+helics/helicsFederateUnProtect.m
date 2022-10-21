@@ -5,7 +5,7 @@
  later otherwise it will be destroyed
 	when the library is closed
 
-	@param fed the name of an existing federate that should not be protected
+	@param fedName the name of an existing federate that should not be protected
 
 	@param[in,out] err An error object that will contain an error code and string if the federate was not found.
 %}

@@ -2,6 +2,7 @@
 enumeration of possible federate states
 
 Attributes:
+	HELICS_STATE_UNKNOWN: value:-1	
 	HELICS_STATE_STARTUP: value:0	when created the federate is in startup state
 	HELICS_STATE_INITIALIZATION: value:1	entered after the enterInitializingMode call has returned
 	HELICS_STATE_EXECUTION: value:2	entered after the enterExectuationState call has returned
@@ -16,6 +17,7 @@ Attributes:
 %}
 classdef HelicsFederateState
 	properties (Constant)
+		HELICS_STATE_UNKNOWN = int32(-1);
 		HELICS_STATE_STARTUP = int32(0);
 		HELICS_STATE_INITIALIZATION = int32(1);
 		HELICS_STATE_EXECUTION = int32(2);

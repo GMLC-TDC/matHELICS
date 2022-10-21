@@ -10,6 +10,7 @@ Attributes:
 	HELICS_PROPERTY_TIME_RT_TOLERANCE: value:145	the property controlling real time tolerance for a federate sets both rt_lag and rt_lead
 	HELICS_PROPERTY_TIME_INPUT_DELAY: value:148	the property controlling input delay for a federate
 	HELICS_PROPERTY_TIME_OUTPUT_DELAY: value:150	the property controlling output delay for a federate
+	HELICS_PROPERTY_TIME_MAXTIME: value:152	specify the maximum time of a federate (callback federates only
 	HELICS_PROPERTY_TIME_GRANT_TIMEOUT: value:161	the property specifying a timeout to trigger actions if the time for granting exceeds a certain threshold
 	HELICS_PROPERTY_INT_MAX_ITERATIONS: value:259	integer property controlling the maximum number of iterations in a federate
 	HELICS_PROPERTY_INT_LOG_LEVEL: value:271	integer property controlling the log level in a federate see HelicsLogLevels
@@ -27,6 +28,7 @@ classdef HelicsProperties
 		HELICS_PROPERTY_TIME_RT_TOLERANCE = int32(145);
 		HELICS_PROPERTY_TIME_INPUT_DELAY = int32(148);
 		HELICS_PROPERTY_TIME_OUTPUT_DELAY = int32(150);
+		HELICS_PROPERTY_TIME_MAXTIME = int32(152);
 		HELICS_PROPERTY_TIME_GRANT_TIMEOUT = int32(161);
 		HELICS_PROPERTY_INT_MAX_ITERATIONS = int32(259);
 		HELICS_PROPERTY_INT_LOG_LEVEL = int32(271);
