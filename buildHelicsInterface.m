@@ -47,11 +47,14 @@ if ismac
     % download the helics library if needed
     if (~exist(fullfile(basePath,'include/helics/helics.h'),'file'))
         if (~exist(targetTarFile,'file'))
+            fprintf('downloading helics binary package\n')
             websave(targetTarFile,['https://github.com/GMLC-TDC/HELICS/releases/download/v',HelicsVersion,'/',baseFile]);
         end
+        fprintf('extracting helics binary package\n')
         system(['tar xf ',targetTarFile,' -C ',targetPath]);
     end
     %actually build the mex file
+    fprintf('building helics mex target\n')
     mex('-lhelics','-R2018a',['-I',basePath,'/include/'],['-L',basePath,'/lib'],['LDFLAGS=$LDFLAGS -Wl,-rpath,$ORIGIN/lib,-rpath,',basePath,'/lib',',-rpath,',basePath,'/lib64'],fullfile(inputPath,'helicsMex.cpp'),'-outdir',targetPath)
 elseif isunix
     basePath=fullfile(targetPath,['Helics-',HelicsVersion,'-Linux-x86_64']);
@@ -60,11 +63,14 @@ elseif isunix
     % download the helics library if needed
     if (~exist(fullfile(basePath,'include/helics/helics.h'),'file'))
         if (~exist(targetTarFile,'file'))
+            fprintf('downloading helics binary package\n')
             websave(targetTarFile,['https://github.com/GMLC-TDC/HELICS/releases/download/v',HelicsVersion,'/',baseFile]);
         end
+        fprintf('extracting helics binary package\n')
         system(['tar xf ',targetTarFile,' -C ',targetPath]);
     end
     %actually build the mex file
+    fprintf('building helics mex target\n')
     mex('-lhelics','-R2018a',['-I',basePath,'/include/'],['-L',basePath,'/lib'],['-L',basePath,'/lib64'],['LDFLAGS=$LDFLAGS -Wl,-rpath,$ORIGIN/lib,-rpath,',basePath,'/lib',',-rpath,',basePath,'/lib64'],fullfile(inputPath,'helicsMex.cpp'),'-outdir',targetPath)
 elseif ispc
     if isequal(computer,'PCWIN64')
@@ -79,12 +85,15 @@ elseif ispc
     % download the helics library if needed
     if (~exist(fullfile(basePath,'include/helics/helics.h'),'file'))
         if (~exist(targetTarFile,'file'))
+            fprintf('downloading helics binary package\n')
             websave(targetTarFile,['https://github.com/GMLC-TDC/HELICS/releases/download/v',HelicsVersion,'/',baseFile]);
         end
+        fprintf('extracting helics binary package\n')
         untar(targetTarFile,targetPath);
 
     end
     %actually build the mex file
+    fprintf('building helics mex target\n')
     mex('-lhelics','-R2018a',['-I',basePath,'/include/'],['-L',basePath,'/lib'],['-L',basePath,'/bin'],fullfile(inputPath,'helicsMex.cpp'),'-outdir',targetPath)
     %copy the needed dll file if on windows
     if ispc
@@ -98,6 +107,7 @@ else
 end
 
 %% now build the interface directory and copy files
+fprintf('copying required files\n')
 copyfile(fullfile(inputPath,'matlabBindings','+helics'),fullfile(targetPath,'+helics'));
 copyfile(fullfile(inputPath,'extra_m_codes'),fullfile(targetPath,'+helics'));
 % copy the include directory with the C headers
@@ -150,6 +160,7 @@ end
     fclose(fid);
 
 if (makePackage)
+    fprintf('generating helics matlab binary package file\n')
     rmdir(basePath,'s');
     delete(targetTarFile);
     if ismac || isunix
