@@ -14,20 +14,20 @@ There is also a release that should work with ubuntu 20.04,  It is unclear if th
 
 For other platforms the installation is as simple as downloading this repository and inside matlab executing the `buildHelicsInterface` Matlab script.
 
-This should download the requried HELICS binary files and compile the platform specific mex file.  This does require a compiler be installed on the system and executing inside matlab
+This should download the required HELICS binary files and compile the platform specific mex file.  This does require a compiler be installed on the system and executing inside matlab
 
 ``` matlab
 >> mex -setup
 ```
 
-This setup is only once on any given Matlab installation and does not need to be repeated is upgrading HELICS 
+This setup is only once on any given Matlab installation and does not need to be repeated when upgrading HELICS 
 
 ```matlab
 >> cd matHELICS
 >> buildHelicsInterface('../helics');
 ```
 
-this will generate the helics interface in a folder 1 level above the matHELICS directory.  If desired it can also be build in the matHELICS directory for example:
+this will generate the helics interface in a folder 1 level above the matHELICS directory.  If desired it can also be built in the matHELICS directory for example:
 
 ```matlab
 >> cd matHELICS
@@ -36,7 +36,7 @@ this will generate the helics interface in a folder 1 level above the matHELICS 
 
 The `buildHelicsInterface` function also has an option to generate the package file.  This can be used to generate a package that can be transfered to a similar system.
 
-This a new process for building a Matlab interface it is tested but not extensively and not on a large variaty of platforms if you run into issues please let us know.
+This is a new process for building a Matlab interface, it is tested but not extensively and not on a large variety of platforms if you run into issues please let us know.
 
 ### Requirements
 
@@ -61,9 +61,9 @@ On mac or linux it is necessary to run helicsStartup prior to use.  After that a
 
 ## Building with older versions of Matlab
 
-If it is necessary to run on an older version of Matlab prior to 2018a, some minor modifications to the helicsMex.cpp may be possible to allow things to work fine, please contact the developers for specific instructions
+If it is necessary to run on an older version of Matlab prior to 2018a, some minor modifications to the helicsMex.cpp may be possible to allow things to work fine, please contact the developers for specific instructions.
 
-Versions prior Matlab 2015 will require more extensive modifications.  And may be better served by using the Swig based matlab build from Helics version 3.2 which should be compatible with other HELICS versions in the 3.X series.
+Versions prior to Matlab 2015 will require more extensive modifications.  And may be better served by using the Swig based matlab build from Helics version 3.2 which should be compatible with other HELICS versions in the 3.X series.
 
 ## Source Repo
 
