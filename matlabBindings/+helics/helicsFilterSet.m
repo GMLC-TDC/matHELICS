@@ -1,5 +1,5 @@
-%{
-%	Set a property on a filter.
+function varargout = helicsFilterSet(varargin)
+ Set a property on a filter.
 
 %	@param filt The filter to modify.
 %	@param prop A string containing the property to set.
@@ -7,7 +7,5 @@
 
 %	@param[in,out] err A pointer to an error object for catching errors.
 
-%}
-function varargout = helicsFilterSet(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsFilterSet', varargin{:});
 end

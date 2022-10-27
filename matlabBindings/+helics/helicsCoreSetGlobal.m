@@ -1,5 +1,5 @@
-%{
-%	Set a global value in a core.
+function varargout = helicsCoreSetGlobal(varargin)
+ Set a global value in a core.
 
 %	@details This overwrites any previous value for this name.
 
@@ -8,7 +8,5 @@
 %	@param value The value of the global.
 
 %	@param[in,out] err An error object that will contain an error code and string if any error occurred during the execution of the function.
-%}
-function varargout = helicsCoreSetGlobal(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsCoreSetGlobal', varargin{:});
 end

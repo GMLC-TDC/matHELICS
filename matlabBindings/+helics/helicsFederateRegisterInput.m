@@ -1,5 +1,5 @@
-%{
-%	Register a named input.
+function varargout = helicsFederateRegisterInput(varargin)
+ Register a named input.
 
 %	@details The input becomes part of the federate and is destroyed when the federate is freed so there are no separate free
 %	functions for subscriptions, inputs, and publications.
@@ -13,7 +13,5 @@
 
 
 %	@return An object containing the input.
-%}
-function varargout = helicsFederateRegisterInput(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsFederateRegisterInput', varargin{:});
 end

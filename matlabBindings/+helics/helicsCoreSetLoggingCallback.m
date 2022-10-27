@@ -1,4 +1,4 @@
-%{
+function varargout = helicsCoreSetLoggingCallback(varargin)
 %	Set the logging callback to a core
 
 %	@details Add a logging callback function to a core.
@@ -7,7 +7,5 @@
 
 %	@param core The core object in which to set the callback.
 %	@param logger A function handle with the signature void(int loglevel, string identifier, string message).
-%}
-function varargout = helicsCoreSetLoggingCallback(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsCoreSetLoggingCallback', varargin{:});
 end

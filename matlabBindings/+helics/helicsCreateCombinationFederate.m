@@ -1,5 +1,5 @@
-%{
-%	Create a combination federate from a federate info object.
+function varargout = helicsCreateCombinationFederate(varargin)
+ Create a combination federate from a federate info object.
 
 %	@details Combination federates are both value federates and message federates, objects can be used in all functions
 %	                     that take a HelicsFederate, helics_message_federate or HelicsFederate object as an argument
@@ -11,7 +11,5 @@
 
 
 %	@return An opaque value federate object nullptr if the object creation failed.
-%}
-function varargout = helicsCreateCombinationFederate(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsCreateCombinationFederate', varargin{:});
 end

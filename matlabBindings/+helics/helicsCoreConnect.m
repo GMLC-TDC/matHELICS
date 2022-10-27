@@ -1,5 +1,5 @@
-%{
-%	Connect a core to the federate based on current configuration.
+function varargout = helicsCoreConnect(varargin)
+ Connect a core to the federate based on current configuration.
 
 %	@param core The core to connect.
 
@@ -7,7 +7,5 @@
 
 
 %	@return HELICS_FALSE if not connected, HELICS_TRUE if it is connected.
-%}
-function varargout = helicsCoreConnect(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsCoreConnect', varargin{:});
 end

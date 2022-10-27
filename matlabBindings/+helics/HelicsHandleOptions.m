@@ -1,7 +1,6 @@
-%{
-enumeration of options that apply to handles
-
-Attributes:
+% enumeration of options that apply to handles
+%
+% Attributes:
 %	HELICS_HANDLE_OPTION_CONNECTION_REQUIRED: value:397	specify that a connection is required for an interface and will generate an error if not available
 %	HELICS_HANDLE_OPTION_CONNECTION_OPTIONAL: value:402	specify that a connection is NOT required for an interface and will only be made if available no warning will be issues if not available
 %	HELICS_HANDLE_OPTION_SINGLE_CONNECTION_ONLY: value:407	specify that only a single connection is allowed for an interface
@@ -17,7 +16,6 @@ Attributes:
 %	HELICS_HANDLE_OPTION_CLEAR_PRIORITY_LIST: value:512	specify that the priority list should be cleared or question if it is cleared
 %	HELICS_HANDLE_OPTION_CONNECTIONS: value:522	specify the required number of connections or get the actual number of connections
 %	HELICS_HANDLE_OPTION_TIME_RESTRICTED: value:557	specify that the interface only sends or receives data at specified intervals
-%}
 classdef HelicsHandleOptions
 	properties (Constant)
 		HELICS_HANDLE_OPTION_CONNECTION_REQUIRED = int32(397);

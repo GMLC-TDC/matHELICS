@@ -1,5 +1,5 @@
-%{
-%	Link a named publication and named input using a broker.
+function varargout = helicsBrokerDataLink(varargin)
+ Link a named publication and named input using a broker.
 
 %	@param broker The broker to generate the connection from.
 %	@param source The name of the publication (cannot be NULL).
@@ -7,7 +7,5 @@
 
 %	@param[in,out] err A HelicsError object, can be NULL if the errors are to be ignored.
 
-%}
-function varargout = helicsBrokerDataLink(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsBrokerDataLink', varargin{:});
 end

@@ -1,5 +1,5 @@
-%{
-%	Create a new empty message object.
+function varargout = helicsFederateCreateMessage(varargin)
+ Create a new empty message object.
 
 %	@details The message is empty and isValid will return false since there is no data associated with the message yet.
 
@@ -9,7 +9,5 @@
 
 
 %	@return A HelicsMessage containing the message data.
-%}
-function varargout = helicsFederateCreateMessage(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsFederateCreateMessage', varargin{:});
 end

@@ -1,5 +1,5 @@
-%{
-%	Create a message federate from a JSON file or JSON string or TOML file.
+function varargout = helicsCreateMessageFederateFromConfig(varargin)
+ Create a message federate from a JSON file or JSON string or TOML file.
 
 %	@details helics_message_federate objects can be used in all functions that take a helics_message_federate or HelicsFederate object as an
 %	argument.
@@ -10,7 +10,5 @@
 
 
 %	@return An opaque message federate object.
-%}
-function varargout = helicsCreateMessageFederateFromConfig(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsCreateMessageFederateFromConfig', varargin{:});
 end

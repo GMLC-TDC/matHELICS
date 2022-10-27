@@ -1,7 +1,6 @@
-%{
-log level definitions
-
-Attributes:
+% log level definitions
+%
+% Attributes:
 %	HELICS_LOG_LEVEL_DUMPLOG: value:-10	log level for dumping log messages
 %	HELICS_LOG_LEVEL_NO_PRINT: value:-4	don't print anything except a few catastrophic errors
 %	HELICS_LOG_LEVEL_ERROR: value:0	only print error level indicators
@@ -14,7 +13,6 @@ Attributes:
 %	HELICS_LOG_LEVEL_DATA: value:18	timing+ data transfer notices
 %	HELICS_LOG_LEVEL_DEBUG: value:21	data+ additional debug message
 %	HELICS_LOG_LEVEL_TRACE: value:24	all internal messages
-%}
 classdef HelicsLogLevels
 	properties (Constant)
 		HELICS_LOG_LEVEL_DUMPLOG = int32(-10);

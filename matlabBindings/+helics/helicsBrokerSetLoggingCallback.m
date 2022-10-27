@@ -1,4 +1,4 @@
-%{
+function varargout = helicsBrokerSetLoggingCallback(varargin)
 %	Set the logging callback to a broker
 
 %	@details Add a logging callback function to a broker.
@@ -7,7 +7,5 @@
 
 %	@param broker The broker object in which to set the callback.
 %	@param logger A function handle with the signature void(int loglevel, string identifier, string message).
-%}
-function varargout = helicsBrokerSetLoggingCallback(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsBrokerSetLoggingCallback', varargin{:});
 end

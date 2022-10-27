@@ -1,5 +1,5 @@
-%{
-%	Register a publication with a known type.
+function varargout = helicsFederateRegisterPublication(varargin)
+ Register a publication with a known type.
 
 %	@details The publication becomes part of the federate and is destroyed when the federate is freed so there are no separate free
 %	functions for subscriptions and publications.
@@ -13,7 +13,5 @@
 
 
 %	@return An object containing the publication.
-%}
-function varargout = helicsFederateRegisterPublication(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsFederateRegisterPublication', varargin{:});
 end

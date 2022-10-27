@@ -1,5 +1,5 @@
-%{
-%	Create a message federate from a federate info object.
+function varargout = helicsCreateMessageFederate(varargin)
+ Create a message federate from a federate info object.
 
 %	@details helics_message_federate objects can be used in all functions that take a helics_message_federate or HelicsFederate object as an
 %	argument.
@@ -11,7 +11,5 @@
 
 
 %	@return An opaque message federate object.
-%}
-function varargout = helicsCreateMessageFederate(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsCreateMessageFederate', varargin{:});
 end

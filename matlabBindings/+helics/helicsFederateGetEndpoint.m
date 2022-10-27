@@ -1,5 +1,5 @@
-%{
-%	Get an endpoint object from a name.
+function varargout = helicsFederateGetEndpoint(varargin)
+ Get an endpoint object from a name.
 
 %	@param fed The message federate object to use to get the endpoint.
 %	@param name The name of the endpoint.
@@ -10,7 +10,5 @@
 %	@return A HelicsEndpoint object.
 
 %	The object will not be valid and err will contain an error code if no endpoint with the specified name exists.
-%}
-function varargout = helicsFederateGetEndpoint(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsFederateGetEndpoint', varargin{:});
 end

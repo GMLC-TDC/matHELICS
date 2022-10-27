@@ -1,5 +1,5 @@
-%{
-%	Create a global targeted endpoint, Targeted endpoints have specific destinations predefined and do not allow sending messages to other
+function varargout = helicsFederateRegisterGlobalTargetedEndpoint(varargin)
+ Create a global targeted endpoint, Targeted endpoints have specific destinations predefined and do not allow sending messages to other
  endpoints
 
 %	@details The endpoint becomes part of the federate and is destroyed when the federate is freed
@@ -13,7 +13,5 @@
 %	@param[in,out] err A pointer to an error object for catching errors.
 
 %	@return An object containing the endpoint, or nullptr on failure.
-%}
-function varargout = helicsFederateRegisterGlobalTargetedEndpoint(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsFederateRegisterGlobalTargetedEndpoint', varargin{:});
 end

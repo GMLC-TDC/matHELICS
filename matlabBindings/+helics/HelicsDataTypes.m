@@ -1,7 +1,6 @@
-%{
-enumeration of allowable data types for publications and inputs
-
-Attributes:
+% enumeration of allowable data types for publications and inputs
+%
+% Attributes:
 %	HELICS_DATA_TYPE_UNKNOWN: value:-1	
 %	HELICS_DATA_TYPE_STRING: value:0	a sequence of characters
 %	HELICS_DATA_TYPE_DOUBLE: value:1	a double precision floating point number
@@ -17,7 +16,6 @@ Attributes:
 %	HELICS_DATA_TYPE_JSON: value:30	type converts to a valid json string
 %	HELICS_DATA_TYPE_MULTI: value:33	the data type can change
 %	HELICS_DATA_TYPE_ANY: value:25262	open type that can be anything
-%}
 classdef HelicsDataTypes
 	properties (Constant)
 		HELICS_DATA_TYPE_UNKNOWN = int32(-1);

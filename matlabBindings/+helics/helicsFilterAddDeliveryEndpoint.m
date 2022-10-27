@@ -1,5 +1,5 @@
-%{
-%	Add a delivery endpoint to a cloning filter.
+function varargout = helicsFilterAddDeliveryEndpoint(varargin)
+ Add a delivery endpoint to a cloning filter.
 
 %	@details All cloned messages are sent to the delivery address(es).
 
@@ -8,7 +8,5 @@
 
 %	@param[in,out] err A pointer to an error object for catching errors.
 
-%}
-function varargout = helicsFilterAddDeliveryEndpoint(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsFilterAddDeliveryEndpoint', varargin{:});
 end

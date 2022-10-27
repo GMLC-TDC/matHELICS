@@ -1,5 +1,5 @@
-%{
-%	Create a value federate from a JSON file, JSON string, or TOML file.
+function varargout = helicsCreateValueFederateFromConfig(varargin)
+ Create a value federate from a JSON file, JSON string, or TOML file.
 
 %	@details HelicsFederate objects can be used in all functions that take a HelicsFederate or HelicsFederate object as an argument.
 
@@ -9,7 +9,5 @@
 
 
 %	@return An opaque value federate object.
-%}
-function varargout = helicsCreateValueFederateFromConfig(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsCreateValueFederateFromConfig', varargin{:});
 end

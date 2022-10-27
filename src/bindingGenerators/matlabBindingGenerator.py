@@ -127,7 +127,7 @@ class MatlabBindingGenerator(object):
             enumSpelling = enumDict.get('spelling','')
             enumComment = enumDict.get('brief_comment','')
             with open(os.path.join(self.__rootDir, f"matlabBindings/+helics/{enumSpelling}.m"),"w") as enumMFile:
-                enumMFile.write("%{\n"+f"{enumComment}\n\nAttributes:")
+                enumMFile.write(f"% {enumComment}\n%\n% Attributes:")
                 docStrBody = ""
                 enumStrBody = ""
                 for enumKey in enumDict.get('enumerations',{}).keys():
@@ -139,7 +139,6 @@ class MatlabBindingGenerator(object):
                     docStrBody += f"\n%\t{keywordSpelling}: value:{keywordValue}\t{keywordComment}"
                     enumStrBody += f"\n\t\t{keywordSpelling} = int32({keywordValue});"
                 enumMFile.write(docStrBody)
-                enumMFile.write("\n%}")
                 enumMFile.write(f"\nclassdef {enumSpelling}\n\tproperties (Constant)")
                 enumMFile.write(enumStrBody)
                 enumMFile.write("\n\tend\nend")
@@ -156,11 +155,9 @@ class MatlabBindingGenerator(object):
             macroMapTuple = None
             if isinstance(macroValue, str):
                 with open(os.path.join(self.__rootDir, f"matlabBindings/+helics/{macroSpelling}.m"), "w") as macroFile:
-                    if macroComment != None:
-                        macroFile.write("%{\n")
-                        macroFile.write(f"%{macroComment}\n")
-                        macroFile.write("%}\n")
                     macroFile.write(f"function v = {macroSpelling}()\n")
+                    if macroComment != None:
+                        macroFile.write(f"% {macroComment}\n")
                     macroFile.write(f"\tv = helicsMex('{macroSpelling}');\n")
                     macroFile.write("end\n")
                 macroWrapperStr += f"void _wrap_{macroSpelling}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
@@ -178,11 +175,9 @@ class MatlabBindingGenerator(object):
                 macroMapTuple = (macroSpelling, cursorIdx)
             elif isinstance(macroValue, float) or isinstance(macroValue, int):
                 with open(os.path.join(self.__rootDir, f"matlabBindings/+helics/{macroSpelling}.m"), "w") as macroFile:
-                    if macroComment != None:
-                        macroFile.write("%{\n")
-                        macroFile.write(f"%{macroComment}\n")
-                        macroFile.write("%}\n")
                     macroFile.write(f"function v = {macroSpelling}()\n")
+                    if macroComment != None:
+                        macroFile.write(f"% {macroComment}\n")
                     macroFile.write(f"\tv = {macroValue};\n")
                     macroFile.write("end\n")
             return macroWrapperStr, macroMainFunctionElementStr, macroMapTuple
@@ -198,29 +193,23 @@ class MatlabBindingGenerator(object):
                 matlabBindingGeneratorLogger.debug(f"creating MATLAB var definition for:\n{json.dumps(varDict,indent=4,sort_keys=True)}")
                 if isinstance(varValue, str):
                     with open(os.path.join(self.__rootDir, f"matlabBindings/+helics/{varSpelling}.m"), "w") as varFile:
-                        if varComment != None:
-                            varFile.write("%{\n")
-                            varFile.write(f"%{varComment}\n")
-                            varFile.write("%}\n")
                         varFile.write(f"function v = {varSpelling}()\n")
+                        if varComment != None:
+                            varFile.write(f"% {varComment}\n")
                         varFile.write(f"\tv = {varValue}();\n")
                         varFile.write("end\n")
                 elif isinstance(varValue, float):
                     with open(os.path.join(self.__rootDir, f"matlabBindings/+helics/{varSpelling}.m"), "w") as varFile:
-                        if varComment != None:
-                            varFile.write("%{\n")
-                            varFile.write(f"%{varComment}\n")
-                            varFile.write("%}\n")
                         varFile.write(f"function v = {varSpelling}()\n")
+                        if varComment != None:
+                            varFile.write(f"% {varComment}\n")
                         varFile.write(f"\tv = {varValue};\n")
                         varFile.write("end\n")
                 elif isinstance(varValue, int):
                     with open(os.path.join(self.__rootDir, f"matlabBindings/+helics/{varSpelling}.m"), "w") as varFile:
-                        if varComment != None:
-                            varFile.write("%{\n")
-                            varFile.write(f"%{varComment}\n")
-                            varFile.write("%}\n")
                         varFile.write(f"function v = {varSpelling}()\n")
+                        if varComment != None:
+                            varFile.write(f"% {varComment}\n")
                         if varType != "HelicsBool":
                             varFile.write(f"\tv = int32({varValue});\n")
                         else:
@@ -308,8 +297,8 @@ class MatlabBindingGenerator(object):
                 return createModifiedMatlabFunction(functionDict, cursorIdx)
             if functionName not in functionsToIgnore:
                 functionComment = functionDict.get("raw_comment")
-                functionComment = functionComment.replace("/**", '%{')
-                functionComment = functionComment.replace("\n */", "\n")
+                functionComment = functionComment.replace("/**\n", '')
+                functionComment = functionComment.replace("\n */", "")
                 functionComment = functionComment.replace("\n * ", "\n%\t")
                 functionComment = functionComment.replace(" *", "")
                 if "@forcpponly" in functionComment:
@@ -317,14 +306,14 @@ class MatlabBindingGenerator(object):
                     funComPart1 = funComPart[2].partition("@endforcpponly\n")
                     if "@forcpponly in funComPart1[2]":
                         funComPart2 = funComPart1[2].partition("\t@forcpponly")
-                        functionComment = funComPart[0] + funComPart2[0] + '%}\n'
+                        functionComment = funComPart[0] + funComPart2[0] + "\n"
                     else:
-                        functionComment = funComPart[0] + funComPart1[2] + '\n%}\n'
+                        functionComment = funComPart[0] + funComPart1[2] + '\n\n'
                 else:
-                    functionComment = functionComment + '%}\n'
+                    functionComment = functionComment + '\n'
                 with open(os.path.join(self.__rootDir, f"matlabBindings/+helics/{functionName}.m"), "w") as functionMFile:
-                    functionMFile.write(functionComment)
                     functionMFile.write(f"function varargout = {functionName}(varargin)\n")
+                    functionMFile.write(functionComment)
                     functionMFile.write("\t[varargout{1:nargout}] = helicsMex(" + f"'{functionName}', varargin" + "{:});\n")
                     functionMFile.write("end\n")
                 functionWrapperStr = ""
@@ -924,8 +913,8 @@ class MatlabBindingGenerator(object):
             functionComment, functionWrapper, functionMainElement = modifiedPythonFunctionList[functionDict.get("spelling","")](functionDict, cursorIdx)
             
             with open(os.path.join(self.__rootDir, f'matlabBindings/+helics/{functionDict.get("spelling","")}.m'), "w") as functionMFile:
-                functionMFile.write(functionComment)
                 functionMFile.write(f'function varargout = {functionDict.get("spelling","")}(varargin)\n')
+                functionMFile.write(functionComment)
                 functionMFile.write("\t[varargout{1:nargout}] = helicsMex(" + f'\'{functionDict.get("spelling","")}\', varargin' + "{:});\n")
                 functionMFile.write("end\n")
             return functionWrapper, functionMainElement, (functionDict.get("spelling",""), cursorIdx)
@@ -952,13 +941,11 @@ class MatlabBindingGenerator(object):
             if arg4.get("spelling","") != "err" or arg4.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsCreateCoreFromArgs has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tCreate a core object by passing command line arguments.\n\n"
+            functionComment = "%\tCreate a core object by passing command line arguments.\n\n"
             functionComment += "%\t@param type The type of the core to create.\n"
             functionComment += "%\t@param name The name of the core.\n"
             functionComment += "%\t@param arguments The list of string values from a command line.\n\n"
             functionComment += "%\t@return A HelicsCore object.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 3){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -1020,13 +1007,11 @@ class MatlabBindingGenerator(object):
             if arg4.get("spelling","") != "err" or arg4.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsCreateBrokerFromArgs has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tCreate a broker object by passing command line arguments.\n\n"
+            functionComment = "%\tCreate a broker object by passing command line arguments.\n\n"
             functionComment += "%\t@param type The type of the core to create.\n"
             functionComment += "%\t@param name The name of the core.\n"
             functionComment += "%\t@param arguments The list of string values from a command line.\n\n"
             functionComment += "%\t@return A HelicsBroker object.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 3){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -1085,11 +1070,9 @@ class MatlabBindingGenerator(object):
             if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsFederateInfoLoadFromArgs has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tLoad federate info from command line arguments.\n\n"
+            functionComment = "%\tLoad federate info from command line arguments.\n\n"
             functionComment += "%\t@param fi A federateInfo object.\n"
             functionComment += "%\t@param arguments A list of strings from the command line.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 2){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -1145,11 +1128,9 @@ class MatlabBindingGenerator(object):
             if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsEndpointSendBytes has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tSend a message to the targeted destinations.\n\n"
+            functionComment = "%\tSend a message to the targeted destinations.\n\n"
             functionComment += "%\t@param endpoint The endpoint to send the data from.\n"
             functionComment += "%\t@param data The data to send.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 2){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -1195,12 +1176,10 @@ class MatlabBindingGenerator(object):
             if arg4.get("spelling","") != "err" or arg4.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsEndpointSendBytesAt has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tSend a message to the targeted destinations at a specified time.\n\n"
+            functionComment = "%\tSend a message to the targeted destinations at a specified time.\n\n"
             functionComment += "%\t@param endpoint The endpoint to send the data from.\n"
             functionComment += "%\t@param data The data to send.\n"
             functionComment += "%\t@param time The time to send the message at.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 3){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -1247,12 +1226,10 @@ class MatlabBindingGenerator(object):
             if arg4.get("spelling","") != "err" or arg4.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsEndpointSendBytesTo has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tSend a message to the specified destination.\n\n"
+            functionComment = "%\tSend a message to the specified destination.\n\n"
             functionComment += "%\t@param endpoint The endpoint to send the data from.\n"
             functionComment += "%\t@param data The data to send.\n"
             functionComment += "%\t@param dst The destination to send the message to.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 3){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -1303,13 +1280,11 @@ class MatlabBindingGenerator(object):
             if arg5.get("spelling","") != "err" or arg5.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsEndpointSendBytesToAt has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tSend a message to the specified destination at a specified time.\n\n"
+            functionComment = "%\tSend a message to the specified destination at a specified time.\n\n"
             functionComment += "%\t@param endpoint The endpoint to send the data from.\n"
             functionComment += "%\t@param data The data to send.\n"
             functionComment += "%\t@param dst The destination to send the message to.\n"
             functionComment += "%\t@param time The time to send the message at.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 4){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -1358,15 +1333,13 @@ class MatlabBindingGenerator(object):
             if arg4.get("spelling","") != "err" or arg4.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsFederateRequestTimeIterative has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tRequest an iterative time.\n\n"
+            functionComment = "%\tRequest an iterative time.\n\n"
             functionComment += "%\t@details This call allows for finer grain control of the iterative process than /ref helicsFederateRequestTime. It takes a time and and\n"
             functionComment += "%\titeration request, and returns a time and iteration status.\n\n"
             functionComment += "%\t@param fed The federate to make the request of.\n"
             functionComment += "%\t@param requestTime The next desired time.\n"
             functionComment += "%\t@param iterate The requested iteration mode.\n\n"
             functionComment += "%\t@return granted time and HelicsIterationResult.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 3){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -1412,11 +1385,9 @@ class MatlabBindingGenerator(object):
             if arg2.get("spelling","") != "err" or arg2.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsFederateRequestTimeIterativeComplete has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tComplete an iterative time request asynchronous call.\n\n"
+            functionComment = "%\tComplete an iterative time request asynchronous call.\n\n"
             functionComment += "%\t@param fed The federate to make the request of.\n\n"
             functionComment += "%\t@return tuple of HelicsTime and HelicsIterationResult.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 1){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -1466,11 +1437,9 @@ class MatlabBindingGenerator(object):
             if arg4.get("spelling","") != "err" or arg4.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsInputGetBytes has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tGet the raw data for the latest value of a subscription.\n\n"
+            functionComment = "%\tGet the raw data for the latest value of a subscription.\n\n"
             functionComment += "%\t@param ipt The input to get the data for.\n\n"
             functionComment += "%\t@return  raw Bytes of the value, the value is uninterpreted raw bytes.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 1){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -1514,11 +1483,9 @@ class MatlabBindingGenerator(object):
             if arg1.get("spelling","") != "err" or arg1.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsInputGetComplexObject has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tGet a complex value from an input object.\n\n"
+            functionComment = "%\tGet a complex value from an input object.\n\n"
             functionComment += "%\t@param ipt The input to get the data for.\n\n"
             functionComment += "%\t@return  A complex number.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 1){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -1562,11 +1529,9 @@ class MatlabBindingGenerator(object):
             if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsInputGetComplex has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tGet a complex value from an input object.\n\n"
+            functionComment = "%\tGet a complex value from an input object.\n\n"
             functionComment += "%\t@param ipt The input to get the data for.\n\n"
             functionComment += "%\t@return  A complex number.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 1){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -1616,11 +1581,9 @@ class MatlabBindingGenerator(object):
             if arg5.get("spelling","") != "err" or arg5.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsInputGetNamedPoint has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tGet a named point from a subscription.\n\n"
+            functionComment = "%\tGet a named point from a subscription.\n\n"
             functionComment += "%\t@param ipt The input to get the result for.\n\n"
             functionComment += "%\t@return a string and a double value for the named point\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 1){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -1677,11 +1640,9 @@ class MatlabBindingGenerator(object):
             if arg4.get("spelling","") != "err" or arg4.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsInputGetString has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tGet a string value from a subscription.\n\n"
+            functionComment = "%\tGet a string value from a subscription.\n\n"
             functionComment += "%\t@param ipt The input to get the string for.\n\n"
             functionComment += "%\t@return the string value.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 1){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -1733,11 +1694,9 @@ class MatlabBindingGenerator(object):
             if arg4.get("spelling","") != "err" or arg4.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsInputGetVector has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tGet a vector from a subscription.\n\n"
+            functionComment = "%\tGet a vector from a subscription.\n\n"
             functionComment += "%\t@param ipt The input to get the vector for.\n\n"
             functionComment += "%\t@return  a list of floating point values.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 1){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -1788,11 +1747,9 @@ class MatlabBindingGenerator(object):
             if arg4.get("spelling","") != "err" or arg4.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsInputGetComplexVector has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tGet a compelx vector from a subscription.\n\n"
+            functionComment = "%\tGet a compelx vector from a subscription.\n\n"
             functionComment += "%\t@param ipt The input to get the vector for.\n\n"
             functionComment += "%\t@return a list of complex values.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 1){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -1841,11 +1798,9 @@ class MatlabBindingGenerator(object):
             if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsInputSetDefaultBytes has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tSet the default as a raw data array.\n\n"
+            functionComment = "%\tSet the default as a raw data array.\n\n"
             functionComment += "%\t@param ipt The input to set the default for.\n"
             functionComment += "%\t@param raw data to use for the default.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 2){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -1888,11 +1843,9 @@ class MatlabBindingGenerator(object):
             if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsInputSetDefaultComplex has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tSet the default as a complex number.\n\n"
+            functionComment = "%\tSet the default as a complex number.\n\n"
             functionComment += "%\t@param ipt The input to get the data for.\n"
             functionComment += "%\t@param value The default complex value.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 2){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -1937,11 +1890,9 @@ class MatlabBindingGenerator(object):
             if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsInputSetDefaultVector has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tSet the default as a list of floats.\n\n"
+            functionComment = "%\tSet the default as a list of floats.\n\n"
             functionComment += "%\t@param ipt The input to get the data for.\n"
             functionComment += "%\t@param vectorInput The default list of floating point values.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 2){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -1987,11 +1938,9 @@ class MatlabBindingGenerator(object):
             if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsInputSetDefaultComplexVector has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tSet the default as a list of floats.\n\n"
+            functionComment = "%\tSet the default as a list of floats.\n\n"
             functionComment += "%\t@param ipt The input to get the data for.\n"
             functionComment += "%\t@param vectorInput The default list of complex values.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 2){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -2042,11 +1991,9 @@ class MatlabBindingGenerator(object):
             if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsMessageAppendData has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tAppend data to the payload.\n\n"
+            functionComment = "%\tAppend data to the payload.\n\n"
             functionComment += "%\t@param message The message object in question.\n"
             functionComment += "%\t@param data A string containing the message data to append.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 2){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -2091,11 +2038,9 @@ class MatlabBindingGenerator(object):
             if arg4.get("spelling","") != "err" or arg4.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsMessageGetBytes has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tGet the raw data for a message object.\n\n"
+            functionComment = "%\tGet the raw data for a message object.\n\n"
             functionComment += "%\t@param message A message object to get the data for.\n\n"
             functionComment += "%\t@return Raw string data.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 1){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -2144,11 +2089,9 @@ class MatlabBindingGenerator(object):
             if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsMessageSetData has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tSet the data payload of a message as raw data.\n\n"
+            functionComment = "%\tSet the data payload of a message as raw data.\n\n"
             functionComment += "%\t@param message The message object in question.\n"
             functionComment += "%\t@param data A string containing the message data.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 2){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -2190,11 +2133,9 @@ class MatlabBindingGenerator(object):
             if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsPublicationPublishBytes has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tPublish raw data.\n\n"
+            functionComment = "%\tPublish raw data.\n\n"
             functionComment += "%\t@param pub The publication to publish for.\n"
             functionComment += "%\t@param data the raw byte data to publish.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 2){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -2236,11 +2177,9 @@ class MatlabBindingGenerator(object):
             if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsPublicationPublishComplex has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tPublish a complex number.\n\n"
+            functionComment = "%\tPublish a complex number.\n\n"
             functionComment += "%\t@param pub The publication to publish for.\n"
             functionComment += "%\t@param value The complex number.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 2){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -2286,11 +2225,9 @@ class MatlabBindingGenerator(object):
             if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsPublicationPublishVector has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tPublish a vector of doubles.\n\n"
+            functionComment = "%\tPublish a vector of doubles.\n\n"
             functionComment += "%\t@param pub The publication to publish for.\n"
             functionComment += "%\t@param vectorInput The list of floating point values.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 2){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -2336,11 +2273,9 @@ class MatlabBindingGenerator(object):
             if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsPublicationPublishVector has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tPublish a vector of doubles.\n\n"
+            functionComment = "%\tPublish a vector of doubles.\n\n"
             functionComment += "%\t@param pub The publication to publish for.\n"
             functionComment += "%\t@param vectorInput The list of complex values.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 2){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -2391,12 +2326,10 @@ class MatlabBindingGenerator(object):
             if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsQueryBufferFill has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tSet the data for a query callback.\n\n"
+            functionComment = "%\tSet the data for a query callback.\n\n"
             functionComment += "%\t@details There are many queries that HELICS understands directly, but it is occasionally useful to have a federate be able to respond to specific queries with answers specific to a federate.\n\n"
             functionComment += "%\t@param buffer The buffer received in a helicsQueryCallback.\n"
             functionComment += "%\t@param queryResult The string with the data to fill the buffer with.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 2){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -2446,12 +2379,10 @@ class MatlabBindingGenerator(object):
             if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsBrokerSetLoggingCallback has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tSet the logging callback to a broker\n\n"
+            functionComment = "%\tSet the logging callback to a broker\n\n"
             functionComment += "%\t@details Add a logging callback function to a broker.\n%\t\tThe logging callback will be called when\n%\t\ta message flows into a broker from the core or from a broker.\n\n"
             functionComment += "%\t@param broker The broker object in which to set the callback.\n"
             functionComment += "%\t@param logger A function handle with the signature void(int loglevel, string identifier, string message).\n"
-            functionComment += "%}\n"
             functionWrapper = "void matlabBrokerLoggingCallback(int loglevel, const char* identifier, const char* message, void *userData){\n"
             functionWrapper += "\tmxArray *lhs;\n"
             functionWrapper += "\tmxArray *rhs[4];\n"
@@ -2507,12 +2438,10 @@ class MatlabBindingGenerator(object):
             if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsCoreSetLoggingCallback has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tSet the logging callback to a core\n\n"
+            functionComment = "%\tSet the logging callback to a core\n\n"
             functionComment += "%\t@details Add a logging callback function to a core.\n%\t\tThe logging callback will be called when\n%\t\ta message flows into a core from the core or from a broker.\n\n"
             functionComment += "%\t@param core The core object in which to set the callback.\n"
             functionComment += "%\t@param logger A function handle with the signature void(int loglevel, string identifier, string message).\n"
-            functionComment += "%}\n"
             functionWrapper = "void matlabCoreLoggingCallback(int loglevel, const char* identifier, const char* message, void *userData){\n"
             functionWrapper += "\tmxArray *lhs;\n"
             functionWrapper += "\tmxArray *rhs[4];\n"
@@ -2568,12 +2497,10 @@ class MatlabBindingGenerator(object):
             if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsFederateSetLoggingCallback has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tSet the logging callback for a federate\n\n"
+            functionComment = "%\tSet the logging callback for a federate\n\n"
             functionComment += "%\t@details Add a logging callback function for a federate.\n%\t\tThe logging callback will be called when\n%\t\ta message flows into a federate from the core or from a federate.\n\n"
             functionComment += "%\t@param fed The federate object in which to set the callback.\n"
             functionComment += "%\t@param logger A function handle with the signature void(int loglevel, string identifier, string message).\n"
-            functionComment += "%}\n"
             functionWrapper = "void matlabFederateLoggingCallback(int loglevel, const char* identifier, const char* message, void *userData){\n"
             functionWrapper += "\tmxArray *lhs;\n"
             functionWrapper += "\tmxArray *rhs[4];\n"
@@ -2629,12 +2556,10 @@ class MatlabBindingGenerator(object):
             if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsFilterSetCustomCallback has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tSet a general callback for a custom filter.\n\n"
+            functionComment = "%\tSet a general callback for a custom filter.\n\n"
             functionComment += "%\t@details Add a custom filter callback function for creating a custom filter operation in the c shared library.\n\n"
             functionComment += "%\t@param filter The filter object in which to set the callback.\n"
             functionComment += "%\t@param filtCall A function handle with the signature HelicsMessage(HelicsMessage message).\n"
-            functionComment += "%}\n"
             functionWrapper = "HelicsMessage matlabFilterCustomCallback(HelicsMessage message, void *userData){\n"
             functionWrapper += "\tmxArray *lhs[1];\n"
             functionWrapper += "\tmxArray *rhs[2];\n"
@@ -2687,12 +2612,10 @@ class MatlabBindingGenerator(object):
             if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsFederateSetQueryCallback has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tSet callback for queries executed against a federate.\n\n"
+            functionComment = "%\tSet callback for queries executed against a federate.\n\n"
             functionComment += "%\t@details There are many queries that HELICS understands directly, but it is occasionally useful to a have a federate be able to respond\n%\ttospecific queries with answers specific to a federate.\n\n"
             functionComment += "%\t@param fed The federate object in which to set the callback.\n"
             functionComment += "%\t@param queryAnswer A function handle with the signature const void(const char *query, int querySize, HelicsQueryBuffer buffer).\n"
-            functionComment += "%}\n"
             functionWrapper = "void matlabFederateQueryCallback(const char* query, int querySize, HelicsQueryBuffer buffer, void *userData){\n"
             functionWrapper += "\tmxArray *lhs;\n"
             functionWrapper += "\tmxArray *rhs[4];\n"
@@ -2754,12 +2677,10 @@ class MatlabBindingGenerator(object):
             if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsFederateSetTimeUpdateCallback has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tSet callback for the federate time update.n\n"
+            functionComment = "%\tSet callback for the federate time update.n\n"
             functionComment += "%\t@details This callback will be executed every time the simulation time is updated starting on entry to executing mode.\n\n"
             functionComment += "%\t@param fed The federate object in which to set the callback.\n"
             functionComment += "%\t@param timeUpdate A function handle with the signature void(double newTime, int iterating).\n"
-            functionComment += "%}\n"
             functionWrapper = "void matlabFederateTimeUpdateCallback(HelicsTime newTime, HelicsBool iterating, void *userData){\n"
             functionWrapper += "\tmxArray *lhs;\n"
             functionWrapper += "\tmxArray *rhs[3];\n"
@@ -2816,12 +2737,10 @@ class MatlabBindingGenerator(object):
             if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsFederateSetStateChangeCallback has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tSet callback for the federate mode change.n\n"
+            functionComment = "%\tSet callback for the federate mode change.n\n"
             functionComment += "%\t@details This callback will be executed every time the operating mode of the federate changes.\n\n"
             functionComment += "%\t@param fed The federate object in which to set the callback.\n"
             functionComment += "%\t@param stateChange A function handle with the signature void(int newState, int oldState).\n"
-            functionComment += "%}\n"
             functionWrapper = "void matlabFederateSetStateChangeCallback(HelicsFederateState newState, HelicsFederateState oldState, void *userData){\n"
             functionWrapper += "\tmxArray *lhs;\n"
             functionWrapper += "\tmxArray *rhs[3];\n"
@@ -2877,13 +2796,11 @@ class MatlabBindingGenerator(object):
             if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsFederateSetTimeRequestEntryCallback has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tSet callback for the federate time request.n\n"
+            functionComment = "%\tSet callback for the federate time request.n\n"
             functionComment += "%\t@details This callback will be executed when a valid time request is made.\n"
             functionComment += "%\tIt is intended for the possibility of embedded data grabbers in a callback to simplify user code.\n\n"
             functionComment += "%\t@param fed The federate object in which to set the callback.\n"
             functionComment += "%\t@param requestTime A callback with the signature void(double currentTime, double requestTime, bool iterating).\n"
-            functionComment += "%}\n"
             functionWrapper = "void matlabFederateSetTimeRequestEntryCallback(HelicsTime currentTime, HelicsTime requestTime, HelicsBool iterating, void *userData){\n"
             functionWrapper += "\tmxArray *lhs;\n"
             functionWrapper += "\tmxArray *rhs[4];\n"
@@ -2942,13 +2859,11 @@ class MatlabBindingGenerator(object):
             if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsFederateSetTimeRequestReturnCallback has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tSet callback for the federate time request return.n\n"
+            functionComment = "%\tSet callback for the federate time request return.n\n"
             functionComment += "%\t@details This callback will be executed when after all other callbacks for a time request return.\n"
             functionComment += "%\tThis callback will be the last thing executed before returning control the user program.\n\n"
             functionComment += "%\t@param fed The federate object in which to set the callback.\n"
             functionComment += "%\t@param requestTimeReturn A callback with the signature void(double newTime, bool iterating).\n"
-            functionComment += "%}\n"
             functionWrapper = "void matlabFederateSetTimeRequestReturnCallback(HelicsTime newTime, HelicsBool iterating, void *userData){\n"
             functionWrapper += "\tmxArray *lhs;\n"
             functionWrapper += "\tmxArray *rhs[3];\n"
@@ -3008,13 +2923,11 @@ class MatlabBindingGenerator(object):
             if arg4.get("spelling","") != "err" or arg4.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsTranslatorSetCustomCallback has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tSet a general callback for a custom Translator.n\n"
+            functionComment = "%\tSet a general callback for a custom Translator.n\n"
             functionComment += "%\t@details Add a pair of custom callbacks for running a translator operation in the C shared library.\n"
             functionComment += "%\t@param translator The translator object to set the callbacks for.\n"
             functionComment += "%\t@param toMessageCall A callback with the signature void(HelicsDataBuffer, HelicsMessage).\n"
             functionComment += "%\t@param toValueCall A callback with the signature void(HelicsMessage, HelicsDataBuffer).\n"
-            functionComment += "%}\n"
             functionWrapper = "void matlabToMessageCallCallback(HelicsDataBuffer value, HelicsMessage message, void *userData){\n"
             functionWrapper += "\tmxArray *lhs;\n"
             functionWrapper += "\tmxArray *rhs[3];\n"
@@ -3082,11 +2995,9 @@ class MatlabBindingGenerator(object):
             if arg1.get("spelling","") != "data" or arg1.get("type", "") != "HelicsDataBuffer":
                 raise RuntimeError("the function signature for helicsIntegerToBytes has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tconvert an int to serialized bytes.\n\n"
+            functionComment = "%\tconvert an int to serialized bytes.\n\n"
             functionComment += "%\t@param value The integer.\n"
             functionComment += "%\t@return HelicsDataBuffer.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 1){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -3121,11 +3032,9 @@ class MatlabBindingGenerator(object):
             if arg1.get("spelling","") != "data" or arg1.get("type", "") != "HelicsDataBuffer":
                 raise RuntimeError("the function signature for helicsDoubleToBytes has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tconvert a double to serialized bytes.\n\n"
+            functionComment = "%\tconvert a double to serialized bytes.\n\n"
             functionComment += "%\t@param value The double.\n"
             functionComment += "%\t@return HelicsDataBuffer.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 1){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -3160,11 +3069,9 @@ class MatlabBindingGenerator(object):
             if arg1.get("spelling","") != "data" or arg1.get("type", "") != "HelicsDataBuffer":
                 raise RuntimeError("the function signature for helicsStringToBytes has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tconvert a string to serialized bytes.\n\n"
+            functionComment = "%\tconvert a string to serialized bytes.\n\n"
             functionComment += "%\t@param str The string.\n"
             functionComment += "%\t@return HelicsDataBuffer.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 1){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -3202,11 +3109,9 @@ class MatlabBindingGenerator(object):
             if arg2.get("spelling","") != "data" or arg2.get("type", "") != "HelicsDataBuffer":
                 raise RuntimeError("the function signature for helicsRawStringToBytes has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tconvert a raw string to serialized bytes.\n\n"
+            functionComment = "%\tconvert a raw string to serialized bytes.\n\n"
             functionComment += "%\t@param str The string.\n"
             functionComment += "%\t@return HelicsDataBuffer.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 1){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -3241,11 +3146,9 @@ class MatlabBindingGenerator(object):
             if arg1.get("spelling","") != "data" or arg1.get("type", "") != "HelicsDataBuffer":
                 raise RuntimeError("the function signature for helicsBooleanToBytes has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tconvert a HelicsBool to serialized bytes.\n\n"
+            functionComment = "%\tconvert a HelicsBool to serialized bytes.\n\n"
             functionComment += "%\t@param value The HelicsBool.\n"
             functionComment += "%\t@return HelicsDataBuffer.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 1){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -3280,11 +3183,9 @@ class MatlabBindingGenerator(object):
             if arg1.get("spelling","") != "data" or arg1.get("type", "") != "HelicsDataBuffer":
                 raise RuntimeError("the function signature for helicsCharToBytes has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tconvert a char to serialized bytes.\n\n"
+            functionComment = "%\tconvert a char to serialized bytes.\n\n"
             functionComment += "%\t@param value The char.\n"
             functionComment += "%\t@return HelicsDataBuffer.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 1){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -3319,11 +3220,9 @@ class MatlabBindingGenerator(object):
             if arg1.get("spelling","") != "data" or arg1.get("type", "") != "HelicsDataBuffer":
                 raise RuntimeError("the function signature for helicsTimeToBytes has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tconvert a HelicsTime to serialized bytes.\n\n"
+            functionComment = "%\tconvert a HelicsTime to serialized bytes.\n\n"
             functionComment += "%\t@param value The HelicsTime value.\n"
             functionComment += "%\t@return HelicsDataBuffer.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 1){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -3361,11 +3260,9 @@ class MatlabBindingGenerator(object):
             if arg2.get("spelling","") != "data" or arg2.get("type", "") != "HelicsDataBuffer":
                 raise RuntimeError("the function signature for helicsComplexToBytes has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tconvert a complex to serialized bytes.\n\n"
+            functionComment = "%\tconvert a complex to serialized bytes.\n\n"
             functionComment += "%\t@param value The complex value.\n"
             functionComment += "%\t@return HelicsDataBuffer.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 1){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -3404,11 +3301,9 @@ class MatlabBindingGenerator(object):
             if arg1.get("spelling","") != "data" or arg1.get("type", "") != "HelicsDataBuffer":
                 raise RuntimeError("the function signature for helicsComplexObjectToBytes has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tconvert a complex to serialized bytes.\n\n"
+            functionComment = "%\tconvert a complex to serialized bytes.\n\n"
             functionComment += "%\t@param value The complex value.\n"
             functionComment += "%\t@return HelicsDataBuffer.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 1){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -3451,11 +3346,9 @@ class MatlabBindingGenerator(object):
             if arg2.get("spelling","") != "data" or arg2.get("type", "") != "HelicsDataBuffer":
                 raise RuntimeError("the function signature for helicsVectorToBytes has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tconvert a real vector to serialized bytes.\n\n"
+            functionComment = "%\tconvert a real vector to serialized bytes.\n\n"
             functionComment += "%\t@param value The vector of doubles.\n"
             functionComment += "%\t@return HelicsDataBuffer.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 1){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -3498,12 +3391,10 @@ class MatlabBindingGenerator(object):
             if arg2.get("spelling","") != "data" or arg2.get("type", "") != "HelicsDataBuffer":
                 raise RuntimeError("the function signature for helicsNamedPointToBytes has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tconvert a named point to serialized bytes.\n\n"
+            functionComment = "%\tconvert a named point to serialized bytes.\n\n"
             functionComment += "%\t@param name The name of the named point.\n"
             functionComment += "%\t@param value The double value of the named point.\n"
             functionComment += "%\t@return HelicsDataBuffer.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 2){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -3542,11 +3433,9 @@ class MatlabBindingGenerator(object):
             if arg2.get("spelling","") != "data" or arg2.get("type", "") != "HelicsDataBuffer":
                 raise RuntimeError("the function signature for helicsComplexVectorToBytesMatlabWrapper has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tconvert a complex vector to serialized bytes.\n\n"
+            functionComment = "%\tconvert a complex vector to serialized bytes.\n\n"
             functionComment += "%\t@param value The vector of complex values.\n"
             functionComment += "%\t@return HelicsDataBuffer.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 1){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -3597,11 +3486,9 @@ class MatlabBindingGenerator(object):
             if arg3.get("spelling","") != "actualLength" or arg3.get("pointer_type", "") != "Int_*":
                 raise RuntimeError("the function signature for helicsDataBufferToString has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tGet a string value from a HelicsDataBuffer.\n\n"
+            functionComment = "%\tGet a string value from a HelicsDataBuffer.\n\n"
             functionComment += "%\t@param data The HelicsDataBuffer to get the string from.\n\n"
             functionComment += "%\t@return the string value.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 1){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -3648,11 +3535,9 @@ class MatlabBindingGenerator(object):
             if arg3.get("spelling","") != "actualLength" or arg3.get("pointer_type", "") != "Int_*":
                 raise RuntimeError("the function signature for helicsDataBufferToRawString has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tGet a raw string value from a HelicsDataBuffer.\n\n"
+            functionComment = "%\tGet a raw string value from a HelicsDataBuffer.\n\n"
             functionComment += "%\t@param data The HelicsDataBuffer to get the raw string from.\n\n"
             functionComment += "%\t@return the raw string value.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 1){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -3696,11 +3581,9 @@ class MatlabBindingGenerator(object):
             if arg2.get("spelling","") != "imag" or arg2.get("pointer_type", "") != "Double_*":
                 raise RuntimeError("the function signature for helicsDataBufferToComplex has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tGet a complex value from an input object.\n\n"
+            functionComment = "%\tGet a complex value from an input object.\n\n"
             functionComment += "%\t@param ipt The input to get the data for.\n\n"
             functionComment += "%\t@return  A complex number.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 1){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -3733,11 +3616,9 @@ class MatlabBindingGenerator(object):
             if arg0.get("spelling","") != "data" or arg0.get("type", "") != "HelicsDataBuffer":
                 raise RuntimeError("the function signature for helicsDataBufferToComplexObject has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tGet a complex value from an HelicsDataBuffer.\n\n"
+            functionComment = "%\tGet a complex value from an HelicsDataBuffer.\n\n"
             functionComment += "%\t@param data The HelicsDataBuffer to get the data for.\n\n"
             functionComment += "%\t@return  A complex number.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 1){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -3779,11 +3660,9 @@ class MatlabBindingGenerator(object):
             if arg3.get("spelling","") != "actualSize" or arg3.get("pointer_type", "") != "Int_*":
                 raise RuntimeError("the function signature for helicsDataBufferToVector has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tGet a vector from a HelicsDataBuffer.\n\n"
+            functionComment = "%\tGet a vector from a HelicsDataBuffer.\n\n"
             functionComment += "%\t@param data The HelicsDataBuffer to get the vector for.\n\n"
             functionComment += "%\t@return  a list of floating point values.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 1){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -3829,11 +3708,9 @@ class MatlabBindingGenerator(object):
             if arg3.get("spelling","") != "actualSize" or arg3.get("pointer_type", "") != "Int_*":
                 raise RuntimeError("the function signature for helicsDataBufferToComplexVector has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tGet a compelx vector from a HelicsDataBuffer.\n\n"
+            functionComment = "%\tGet a compelx vector from a HelicsDataBuffer.\n\n"
             functionComment += "%\t@param data The HelicsDataBuffer to get the vector for.\n\n"
             functionComment += "%\t@return a list of complex values.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 1){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -3883,11 +3760,9 @@ class MatlabBindingGenerator(object):
             if arg4.get("spelling","") != "val" or arg4.get("pointer_type", "") != "Double_*":
                 raise RuntimeError("the function signature for helicsDataBufferToNamedPoint has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tGet a named point from a subscription.\n\n"
+            functionComment = "%\tGet a named point from a subscription.\n\n"
             functionComment += "%\t@param ipt The input to get the result for.\n\n"
             functionComment += "%\t@return a string and a double value for the named point\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 1){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -3927,11 +3802,9 @@ class MatlabBindingGenerator(object):
             if argNum != 0:
                 raise RuntimeError("the function signature for helicsCloseLibrary has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "%\tCall when done using the helics library.\n"
+            functionComment = "%\tCall when done using the helics library.\n"
             functionComment += "%\tThis function will ensure the threads are closed properly.\n"
             functionComment += "%\tIf possible this should be the last call before exiting.\n"
-            functionComment += "%}\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 0){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
@@ -3969,12 +3842,10 @@ class MatlabBindingGenerator(object):
             if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsFederateInitializingEntryCallback has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "\tSet callback for the entry to initializingMode.n\n"
+            functionComment = "\tSet callback for the entry to initializingMode.n\n"
             functionComment += "\t@details This callback will be executed when the initializingMode is entered.\n\n"
             functionComment += "\t@param fed The federate object in which to set the callback.\n"
             functionComment += "\t@param initializingEntry A function handle with the signature void(HelicsBool iterating).\n"
-            functionComment += "%}\n"
             functionWrapper = "void matlabFederateInitializingEntryCallback(HelicsBool iterating, void *userData){\n"
             functionWrapper += "\tmxArray *lhs;\n"
             functionWrapper += "\tmxArray *rhs[2];\n"
@@ -4029,12 +3900,10 @@ class MatlabBindingGenerator(object):
             if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsFederateExecutingEntryCallback has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "\tSet callback for the entry to ExecutingMode.n\n"
+            functionComment = "\tSet callback for the entry to ExecutingMode.n\n"
             functionComment += "\t@details This callback will be executed once on first entry to executing mode.\n\n"
             functionComment += "\t@param fed The federate object in which to set the callback.\n"
             functionComment += "\t@param executingEntry A function handle with the signature void(void).\n"
-            functionComment += "%}\n"
             functionWrapper = "void matlabFederateExecutingEntryCallback(void *userData){\n"
             functionWrapper += "\tmxArray *lhs;\n"
             functionWrapper += "\tmxArray *rhs[1];\n"
@@ -4082,12 +3951,10 @@ class MatlabBindingGenerator(object):
             if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsFederateCosimulationTerminationCallback has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "\tSet callback for cosimulation termination.n\n"
+            functionComment = "\tSet callback for cosimulation termination.n\n"
             functionComment += "\t@details This callback will be executed once when the time advance of the federate/co-simulation has terminated\n\tthis may be called as part of the finalize operation, or when a maxTime signal is returned from the requestTime or when and error is encountered.\n\n"
             functionComment += "\t@param fed The federate object in which to set the callback.\n"
             functionComment += "\t@param cosimTermination A function handle with the signature void(void).\n"
-            functionComment += "%}\n"
             functionWrapper = "void matlabFederateCosimulationTerminationCallback(void *userData){\n"
             functionWrapper += "\tmxArray *lhs;\n"
             functionWrapper += "\tmxArray *rhs[1];\n"
@@ -4135,12 +4002,10 @@ class MatlabBindingGenerator(object):
             if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsFederateErrorHandlerCallback has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "\tSet callback for error handling.n\n"
+            functionComment = "\tSet callback for error handling.n\n"
             functionComment += "\t@details This callback will be executed when a federate error is encountered\n\n"
             functionComment += "\t@param fed The federate object in which to set the callback.\n"
             functionComment += "\t@param errorHandler A function handle with the signature void(int errorCode, const char* errorString).\n"
-            functionComment += "%}\n"
             functionWrapper = "void matlabFederateErrorHandlerCallback(int errorCode, const char* errorString, void *userData){\n"
             functionWrapper += "\tmxArray *lhs;\n"
             functionWrapper += "\tmxArray *rhs[3];\n"
@@ -4194,12 +4059,10 @@ class MatlabBindingGenerator(object):
             if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsCallbackFederateNextTimeCallback has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "\tSet callback for the next time update=.\n\n"
+            functionComment = "\tSet callback for the next time update=.\n\n"
             functionComment += "\t@details This callback will be executed to compute the next time update for a callback federate.\n\n"
             functionComment += "\t@param fed The federate object in which to set the callback.\n"
             functionComment += "\t@param timeUpdate A function handle with the signature HelicsTime (HelicsTime time).\n"
-            functionComment += "%}\n"
             functionWrapper = "HelicsTime matlabCallbackFederateNextTimeCallback(HelicsTime time, void *userData){\n"
             functionWrapper += "\tmxArray *lhs[1];\n"
             functionWrapper += "\tmxArray *rhs[2];\n"
@@ -4255,12 +4118,10 @@ class MatlabBindingGenerator(object):
             if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsCallbackFederateNextTimeIterativeCallback has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "\tSet callback for the next time update with iteration capability.\n\n"
+            functionComment = "\tSet callback for the next time update with iteration capability.\n\n"
             functionComment += "\t@details This callback will be executed to compute the next time update for a callback federate.\n\n"
             functionComment += "\t@param fed The federate object in which to set the callback.\n"
             functionComment += "\t@param timeUpdate A function handle with the signature void(HelicsTime time, HelicsIterationResult iterationResult, HelicsIterationRequest* iteration).\n"
-            functionComment += "%}\n"
             functionWrapper = "HelicsTime matlabCallbackFederateNextTimeIterativeCallback(HelicsTime time, HelicsIterationResult iterationResult, HelicsIterationRequest *iteration, void *userData){\n"
             functionWrapper += "\tmxArray *lhs[2];\n"
             functionWrapper += "\tmxArray *rhs[4];\n"
@@ -4331,12 +4192,10 @@ class MatlabBindingGenerator(object):
             if arg3.get("spelling","") != "err" or arg3.get("pointer_type", "") != "HelicsError_*":
                 raise RuntimeError("the function signature for helicsCallbackFederateInitializeCallback has changed!")
             functionName = functionDict.get("spelling","")
-            functionComment = "%{\n"
-            functionComment += "\tSet callback for initialization.\n\n"
+            functionComment = "\tSet callback for initialization.\n\n"
             functionComment += "\t@details This callback will be executed when computing whether to iterate in initialization mode.\n\n"
             functionComment += "\t@param fed The federate object in which to set the callback.\n"
             functionComment += "\t@param initialize A function handle with the signature HelicsIterationRequest(void).\n"
-            functionComment += "%}\n"
             functionWrapper = "HelicsIterationRequest matlabCallbackFederateInitializeCallback(void *userData){\n"
             functionWrapper += "\tmxArray *lhs[1];\n"
             functionWrapper += "\tmxArray *rhs[1];\n"

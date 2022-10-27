@@ -1,5 +1,5 @@
-%{
-%	Create a core object.
+function varargout = helicsCreateCore(varargin)
+ Create a core object.
 
 %	@param type The type of the core to create.
 %	@param name The name of the core. It can be a nullptr or empty string to have a name automatically assigned.
@@ -13,7 +13,5 @@
 
 %	If the core is invalid, err will contain the corresponding error message and the returned object will be NULL.
 
-%}
-function varargout = helicsCreateCore(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsCreateCore', varargin{:});
 end

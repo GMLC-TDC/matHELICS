@@ -1,5 +1,5 @@
-%{
-%	Create a source Filter on the specified federate.
+function varargout = helicsFederateRegisterFilter(varargin)
+ Create a source Filter on the specified federate.
 
 %	@details Filters can be created through a federate or a core, linking through a federate allows
 %	         a few extra features of name matching to function on the federate interface but otherwise equivalent behavior
@@ -12,7 +12,5 @@
 
 
 %	@return A HelicsFilter object.
-%}
-function varargout = helicsFederateRegisterFilter(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsFederateRegisterFilter', varargin{:});
 end

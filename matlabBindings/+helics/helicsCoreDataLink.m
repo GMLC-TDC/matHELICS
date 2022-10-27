@@ -1,5 +1,5 @@
-%{
-%	Link a named publication and named input using a core.
+function varargout = helicsCoreDataLink(varargin)
+ Link a named publication and named input using a core.
 
 %	@param core The core to generate the connection from.
 %	@param source The name of the publication (cannot be NULL).
@@ -7,7 +7,5 @@
 
 %	@param[in,out] err A HelicsError object, can be NULL if the errors are to be ignored.
 
-%}
-function varargout = helicsCoreDataLink(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsCoreDataLink', varargin{:});
 end

@@ -1,5 +1,5 @@
-%{
-%	Register an input with a defined type.
+function varargout = helicsFederateRegisterTypeInput(varargin)
+ Register an input with a defined type.
 
 %	@details The input becomes part of the federate and is destroyed when the federate is freed so there are no separate free
 %	functions for subscriptions, inputs, and publications.
@@ -13,7 +13,5 @@
 
 
 %	@return An object containing the publication.
-%}
-function varargout = helicsFederateRegisterTypeInput(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsFederateRegisterTypeInput', varargin{:});
 end

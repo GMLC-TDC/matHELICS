@@ -1,7 +1,6 @@
-%{
-enumeration of properties that apply to federates and sometimes cores
-
-Attributes:
+% enumeration of properties that apply to federates and sometimes cores
+%
+% Attributes:
 %	HELICS_PROPERTY_TIME_DELTA: value:137	the property controlling the minimum time delta for a federate
 %	HELICS_PROPERTY_TIME_PERIOD: value:140	the property controlling the period for a federate
 %	HELICS_PROPERTY_TIME_OFFSET: value:141	the property controlling time offset for the period of federate
@@ -17,7 +16,6 @@ Attributes:
 %	HELICS_PROPERTY_INT_FILE_LOG_LEVEL: value:272	integer property controlling the log level for file logging in a federate see HelicsLogLevels
 %	HELICS_PROPERTY_INT_CONSOLE_LOG_LEVEL: value:274	integer property controlling the log level for console logging in a federate see HelicsLogLevels
 %	HELICS_PROPERTY_INT_LOG_BUFFER: value:276	integer property controlling the size of the log buffer
-%}
 classdef HelicsProperties
 	properties (Constant)
 		HELICS_PROPERTY_TIME_DELTA = int32(137);

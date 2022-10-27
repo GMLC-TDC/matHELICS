@@ -1,5 +1,5 @@
-%{
-%	Set the data in a specific tag for a translator.
+function varargout = helicsTranslatorSetTag(varargin)
+ Set the data in a specific tag for a translator.
 
 %	@param trans The translator object to set the tag for.
 %	@param tagname The string to set.
@@ -7,7 +7,5 @@
 
 %	@param[in,out] err An error object to fill out in case of an error.
 
-%}
-function varargout = helicsTranslatorSetTag(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsTranslatorSetTag', varargin{:});
 end

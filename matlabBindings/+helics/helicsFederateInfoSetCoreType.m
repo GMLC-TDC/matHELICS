@@ -1,5 +1,5 @@
-%{
-%	Set the core type by integer code.
+function varargout = helicsFederateInfoSetCoreType(varargin)
+ Set the core type by integer code.
 
 %	@details Valid values available by definitions in api-data.h.
 %	@param fi The federate info object to alter.
@@ -7,7 +7,5 @@
 
 %	@param[in,out] err An error object that will contain an error code and string if any error occurred during the execution of the function.
 
-%}
-function varargout = helicsFederateInfoSetCoreType(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsFederateInfoSetCoreType', varargin{:});
 end

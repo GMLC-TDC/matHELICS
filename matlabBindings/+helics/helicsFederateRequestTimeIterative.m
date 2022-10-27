@@ -1,4 +1,4 @@
-%{
+function varargout = helicsFederateRequestTimeIterative(varargin)
 %	Request an iterative time.
 
 %	@details This call allows for finer grain control of the iterative process than /ref helicsFederateRequestTime. It takes a time and and
@@ -9,7 +9,5 @@
 %	@param iterate The requested iteration mode.
 
 %	@return granted time and HelicsIterationResult.
-%}
-function varargout = helicsFederateRequestTimeIterative(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsFederateRequestTimeIterative', varargin{:});
 end

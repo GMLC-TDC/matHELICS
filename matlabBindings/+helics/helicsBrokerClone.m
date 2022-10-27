@@ -1,5 +1,5 @@
-%{
-%	Create a new reference to an existing broker.
+function varargout = helicsBrokerClone(varargin)
+ Create a new reference to an existing broker.
 
 %	@details This will create a new broker object that references the existing broker it must be freed as well.
 
@@ -9,7 +9,5 @@
 
 
 %	@return A new reference to the same broker.
-%}
-function varargout = helicsBrokerClone(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsBrokerClone', varargin{:});
 end

@@ -1,5 +1,5 @@
-%{
-%	Register a global named input.
+function varargout = helicsFederateRegisterGlobalInput(varargin)
+ Register a global named input.
 
 %	@details The publication becomes part of the federate and is destroyed when the federate is freed so there are no separate free
 %	functions for subscriptions and publications.
@@ -13,7 +13,5 @@
 
 
 %	@return An object containing the publication.
-%}
-function varargout = helicsFederateRegisterGlobalInput(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsFederateRegisterGlobalInput', varargin{:});
 end

@@ -1,5 +1,5 @@
-%{
-%	Add a source target to a filter.
+function varargout = helicsFilterAddSourceTarget(varargin)
+ Add a source target to a filter.
 
 %	@details All messages coming from a source are copied to the delivery address(es).
 
@@ -8,7 +8,5 @@
 
 %	@param[in,out] err A pointer to an error object for catching errors.
 
-%}
-function varargout = helicsFilterAddSourceTarget(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsFilterAddSourceTarget', varargin{:});
 end

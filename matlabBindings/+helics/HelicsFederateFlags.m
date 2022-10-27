@@ -1,7 +1,6 @@
-%{
-enumeration of possible federate flags
-
-Attributes:
+% enumeration of possible federate flags
+%
+% Attributes:
 %	HELICS_FLAG_OBSERVER: value:0	flag indicating that a federate is observe only
 %	HELICS_FLAG_UNINTERRUPTIBLE: value:1	flag indicating that a federate can only return requested times
 %	HELICS_FLAG_INTERRUPTIBLE: value:2	flag indicating that a federate can be interrupted
@@ -21,7 +20,6 @@ Attributes:
 %	HELICS_FLAG_LOCAL_PROFILING_CAPTURE: value:96	specify that that federate should capture the profiling data to the local federate logging system
 %	HELICS_FLAG_CALLBACK_FEDERATE: value:103	specify that the federate is a callback based federate using callbacks for execution
 %	HELICS_FLAG_AUTOMATED_TIMEREQUEST: value:106	specify that a federate should automatically call timeRequest on completion of current request
-%}
 classdef HelicsFederateFlags
 	properties (Constant)
 		HELICS_FLAG_OBSERVER = int32(0);

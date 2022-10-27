@@ -1,7 +1,6 @@
-%{
-enumeration of possible federate states
-
-Attributes:
+% enumeration of possible federate states
+%
+% Attributes:
 %	HELICS_STATE_UNKNOWN: value:-1	
 %	HELICS_STATE_STARTUP: value:0	when created the federate is in startup state
 %	HELICS_STATE_INITIALIZATION: value:1	entered after the enterInitializingMode call has returned
@@ -14,7 +13,6 @@ Attributes:
 %	HELICS_STATE_PENDING_ITERATIVE_TIME: value:8	state that the federate is pending an iterative time request
 %	HELICS_STATE_PENDING_FINALIZE: value:9	state that the federate is pending a finalize request
 %	HELICS_STATE_FINISHED: value:10	state that the federate is finished simulating but still connected
-%}
 classdef HelicsFederateState
 	properties (Constant)
 		HELICS_STATE_UNKNOWN = int32(-1);

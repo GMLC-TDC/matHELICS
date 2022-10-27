@@ -1,5 +1,5 @@
-%{
-%	Create a subscription.
+function varargout = helicsFederateRegisterSubscription(varargin)
+ Create a subscription.
 
 %	@details The subscription becomes part of the federate and is destroyed when the federate is freed so there are no separate free
 %	functions for subscriptions and publications.
@@ -13,7 +13,5 @@
 
 
 %	@return An object containing the subscription.
-%}
-function varargout = helicsFederateRegisterSubscription(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsFederateRegisterSubscription', varargin{:});
 end

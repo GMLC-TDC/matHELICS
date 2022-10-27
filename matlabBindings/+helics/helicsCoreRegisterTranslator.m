@@ -1,5 +1,5 @@
-%{
-%	Create a Translator on the specified core.
+function varargout = helicsCoreRegisterTranslator(varargin)
+ Create a Translator on the specified core.
 
 %	@details Translators can be created through a federate or a core. Linking through a federate allows
 %	         a few extra features of name matching to function on the federate interface but otherwise have equivalent behavior.
@@ -12,7 +12,5 @@
 
 
 %	@return A HelicsTranslator object.
-%}
-function varargout = helicsCoreRegisterTranslator(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsCoreRegisterTranslator', varargin{:});
 end

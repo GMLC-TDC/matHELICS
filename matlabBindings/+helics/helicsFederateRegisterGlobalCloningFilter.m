@@ -1,5 +1,5 @@
-%{
-%	Create a global cloning Filter on the specified federate.
+function varargout = helicsFederateRegisterGlobalCloningFilter(varargin)
+ Create a global cloning Filter on the specified federate.
 
 %	@details Cloning filters copy a message and send it to multiple locations, source and destination can be added
 %	         through other functions.
@@ -11,7 +11,5 @@
 
 
 %	@return A HelicsFilter object.
-%}
-function varargout = helicsFederateRegisterGlobalCloningFilter(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsFederateRegisterGlobalCloningFilter', varargin{:});
 end

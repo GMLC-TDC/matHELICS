@@ -1,5 +1,5 @@
-%{
-%	Create an endpoint.
+function varargout = helicsFederateRegisterGlobalEndpoint(varargin)
+ Create an endpoint.
 
 %	@details The endpoint becomes part of the federate and is destroyed when the federate is freed
 %	         so there are no separate free functions for endpoints.
@@ -12,7 +12,5 @@
 %	@param[in,out] err A pointer to an error object for catching errors.
 
 %	@return An object containing the endpoint, or nullptr on failure.
-%}
-function varargout = helicsFederateRegisterGlobalEndpoint(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsFederateRegisterGlobalEndpoint', varargin{:});
 end

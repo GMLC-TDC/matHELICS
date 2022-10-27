@@ -1,5 +1,5 @@
-%{
-%	Create a value federate from a federate info object.
+function varargout = helicsCreateValueFederate(varargin)
+ Create a value federate from a federate info object.
 
 %	@details HelicsFederate objects can be used in all functions that take a HelicsFederate or HelicsFederate object as an argument.
 
@@ -10,7 +10,5 @@
 
 
 %	@return An opaque value federate object.
-%}
-function varargout = helicsCreateValueFederate(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsCreateValueFederate', varargin{:});
 end

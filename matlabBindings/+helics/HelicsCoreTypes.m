@@ -1,7 +1,6 @@
-%{
-pick a core type depending on compile configuration usually either ZMQ if available or TCP
-
-Attributes:
+% pick a core type depending on compile configuration usually either ZMQ if available or TCP
+%
+% Attributes:
 %	HELICS_CORE_TYPE_DEFAULT: value:0	a default core type that will default to something available
 %	HELICS_CORE_TYPE_ZMQ: value:1	use the Zero MQ networking protocol
 %	HELICS_CORE_TYPE_MPI: value:2	use MPI for operation on a parallel cluster
@@ -18,7 +17,6 @@ Attributes:
 %	HELICS_CORE_TYPE_INPROC: value:18	an in process core type for handling communications in shared memory it is pretty similar to the test core but stripped from the "test" components
 %	HELICS_CORE_TYPE_NULL: value:66	an explicit core type that is recognized but explicitly doesn't exist, for testing and a few other assorted reasons
 %	HELICS_CORE_TYPE_EMPTY: value:77	an explicit core type exists but does nothing but return empty values or sink calls
-%}
 classdef HelicsCoreTypes
 	properties (Constant)
 		HELICS_CORE_TYPE_DEFAULT = int32(0);

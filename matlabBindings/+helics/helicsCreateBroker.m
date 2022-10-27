@@ -1,5 +1,5 @@
-%{
-%	Create a broker object.
+function varargout = helicsCreateBroker(varargin)
+ Create a broker object.
 
 %	@param type The type of the broker to create.
 %	@param name The name of the broker. It can be a nullptr or empty string to have a name automatically assigned.
@@ -14,7 +14,5 @@
 
 %	It will be NULL if there was an error indicated in the err object.
 
-%}
-function varargout = helicsCreateBroker(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsCreateBroker', varargin{:});
 end

@@ -1,5 +1,5 @@
-%{
-%	Create a cloning Filter on the specified core.
+function varargout = helicsCoreRegisterCloningFilter(varargin)
+ Create a cloning Filter on the specified core.
 
 %	@details Cloning filters copy a message and send it to multiple locations, source and destination can be added
 %	         through other functions.
@@ -11,7 +11,5 @@
 
 
 %	@return A HelicsFilter object.
-%}
-function varargout = helicsCoreRegisterCloningFilter(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsCoreRegisterCloningFilter', varargin{:});
 end

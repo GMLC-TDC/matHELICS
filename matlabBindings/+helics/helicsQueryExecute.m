@@ -1,5 +1,5 @@
-%{
-%	Execute a query.
+function varargout = helicsQueryExecute(varargin)
+ Execute a query.
 
 %	@details The call will block until the query finishes which may require communication or other delays.
 
@@ -12,7 +12,5 @@
 %	@return A pointer to a string.  The string will remain valid until the query is freed or executed again.
 %	The return will be nullptr if fed or query is an invalid object, the return string will be "#invalid" if the query itself was
 %	invalid.
-%}
-function varargout = helicsQueryExecute(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsQueryExecute', varargin{:});
 end

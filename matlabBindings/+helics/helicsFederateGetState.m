@@ -1,5 +1,5 @@
-%{
-%	Get the current state of a federate.
+function varargout = helicsFederateGetState(varargin)
+ Get the current state of a federate.
 
 %	@param fed The federate to query.
 
@@ -8,7 +8,5 @@
 %	HELICS_STATE_UNKOWN
 
 %	@return State the resulting state if the federate is invalid will return HELICS_STATE_UNKNOWN
-%}
-function varargout = helicsFederateGetState(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsFederateGetState', varargin{:});
 end

@@ -1,5 +1,5 @@
-%{
-%	Register a global publication with an arbitrary type.
+function varargout = helicsFederateRegisterGlobalTypeInput(varargin)
+ Register a global publication with an arbitrary type.
 
 %	@details The publication becomes part of the federate and is destroyed when the federate is freed so there are no separate free
 %	functions for subscriptions and publications.
@@ -13,7 +13,5 @@
 
 
 %	@return An object containing the publication.
-%}
-function varargout = helicsFederateRegisterGlobalTypeInput(varargin)
 	[varargout{1:nargout}] = helicsMex('helicsFederateRegisterGlobalTypeInput', varargin{:});
 end

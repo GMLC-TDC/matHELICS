@@ -1,7 +1,6 @@
-%{
-enumeration of return values from the C interface functions
-
-Attributes:
+% enumeration of return values from the C interface functions
+%
+% Attributes:
 %	HELICS_ERROR_FATAL: value:-404	global fatal error for federation
 %	HELICS_ERROR_EXTERNAL_TYPE: value:-203	an unknown non-helics error was produced
 %	HELICS_ERROR_OTHER: value:-101	the function produced a helics error of some other type
@@ -20,7 +19,6 @@ Attributes:
 %	HELICS_OK: value:0	the function executed successfully
 %	HELICS_ERROR_USER_ABORT: value:130	user system abort to match typical SIGINT value
 %	HELICS_ERROR_TERMINATED: value:143	force termination to match typical SIGKILL value
-%}
 classdef HelicsErrorTypes
 	properties (Constant)
 		HELICS_ERROR_FATAL = int32(-404);
