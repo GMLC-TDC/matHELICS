@@ -4,7 +4,6 @@ function varargout = helicsFederateRegisterFromPublicationJSON(varargin)
 %	@param fed The value federate object to use to register the publications.
 %	@param json The JSON publication string.
 % 
-%	@param[in,out] err The error object to complete if there is an error.
 %
 % 
 %	@details This would be the same JSON that would be used to publish data.

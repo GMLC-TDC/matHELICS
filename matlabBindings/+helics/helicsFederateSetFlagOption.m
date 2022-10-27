@@ -5,6 +5,5 @@ function varargout = helicsFederateSetFlagOption(varargin)
 %	@param flag The flag to change.
 %	@param flagValue The new value of the flag. 0 for false, !=0 for true.
 % 
-%	@param[in,out] err An error object that will contain an error code and string if any error occurred during the execution of the function.
 	[varargout{1:nargout}] = helicsMex('helicsFederateSetFlagOption', varargin{:});
 end

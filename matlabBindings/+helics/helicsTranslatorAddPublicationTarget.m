@@ -8,7 +8,6 @@ function varargout = helicsTranslatorAddPublicationTarget(varargin)
 %	@param trans The given translator.
 %	@param pub The name of the publication to subscribe.
 % 
-%	@param[in,out] err A pointer to an error object for catching errors.
 
 	[varargout{1:nargout}] = helicsMex('helicsTranslatorAddPublicationTarget', varargin{:});
 end

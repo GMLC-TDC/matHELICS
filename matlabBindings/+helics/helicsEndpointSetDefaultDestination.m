@@ -4,6 +4,5 @@ function varargout = helicsEndpointSetDefaultDestination(varargin)
 %	@param endpoint The endpoint to set the destination for.
 %	@param dst A string naming the desired default endpoint.
 % 
-%	@param[in,out] err A pointer to an error object for catching errors.
 	[varargout{1:nargout}] = helicsMex('helicsEndpointSetDefaultDestination', varargin{:});
 end

@@ -4,7 +4,6 @@ function varargout = helicsFederateGetFilter(varargin)
 %	@param fed The federate object to use to get the filter.
 %	@param name The name of the filter.
 % 
-%	@param[in,out] err The error object to complete if there is an error.
 %
 % 
 %	@return A HelicsFilter object, the object will not be valid and err will contain an error code if no filter with the specified name

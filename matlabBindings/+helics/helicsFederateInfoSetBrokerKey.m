@@ -5,7 +5,6 @@ function varargout = helicsFederateInfoSetBrokerKey(varargin)
 %	@param fi The federate info object to alter.
 %	@param brokerkey A string containing a key for the broker to connect.
 % 
-%	@param[in,out] err An error object that will contain an error code and string if any error occurred during the execution of the function.
 
 	[varargout{1:nargout}] = helicsMex('helicsFederateInfoSetBrokerKey', varargin{:});
 end

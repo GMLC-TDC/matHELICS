@@ -4,7 +4,6 @@ function varargout = helicsInputAddTarget(varargin)
 %	@param ipt The named input to modify.
 %	@param target The name of a publication that an input should subscribe to.
 % 
-%	@param[in,out] err A pointer to an error object for catching errors.
 
 	[varargout{1:nargout}] = helicsMex('helicsInputAddTarget', varargin{:});
 end

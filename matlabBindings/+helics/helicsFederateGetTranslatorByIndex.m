@@ -4,7 +4,6 @@ function varargout = helicsFederateGetTranslatorByIndex(varargin)
 %	@param fed The federate object in which to create a publication.
 %	@param index The index of the translator to get.
 % 
-%	@param[in,out] err A pointer to an error object for catching errors.
 %
 % 
 %	@return A HelicsTranslator, which will be NULL if an invalid index is given.

@@ -5,6 +5,5 @@ function varargout = helicsPublicationSetOption(varargin)
 %	@param option Integer code for the option to set /ref helics_handle_options.
 %	@param val The value to set the option to.
 % 
-%	@param[in,out] err An error object to fill out in case of an error.
 	[varargout{1:nargout}] = helicsMex('helicsPublicationSetOption', varargin{:});
 end

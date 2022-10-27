@@ -6,7 +6,6 @@ function varargout = helicsTranslatorAddSourceEndpoint(varargin)
 %	@param trans The given translator.
 %	@param ept The name of the endpoint which will send the endpoint data
 % 
-%	@param[in,out] err A pointer to an error object for catching errors.
 
 	[varargout{1:nargout}] = helicsMex('helicsTranslatorAddSourceEndpoint', varargin{:});
 end

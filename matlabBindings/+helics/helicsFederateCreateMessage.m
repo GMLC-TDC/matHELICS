@@ -5,7 +5,6 @@ function varargout = helicsFederateCreateMessage(varargin)
 % 
 %	@param fed the federate object to associate the message with
 % 
-%	@param[in,out] err An error object to fill out in case of an error.
 %
 % 
 %	@return A HelicsMessage containing the message data.

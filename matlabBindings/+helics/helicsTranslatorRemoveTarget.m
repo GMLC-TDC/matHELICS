@@ -5,7 +5,6 @@ function varargout = helicsTranslatorRemoveTarget(varargin)
 %	@param target The name of the interface to remove as a target.
 % 
 % 
-%	@param[in,out] err A pointer to an error object for catching errors.
 
 	[varargout{1:nargout}] = helicsMex('helicsTranslatorRemoveTarget', varargin{:});
 end

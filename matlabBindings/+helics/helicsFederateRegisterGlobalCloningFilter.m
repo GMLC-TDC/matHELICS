@@ -7,7 +7,6 @@ function varargout = helicsFederateRegisterGlobalCloningFilter(varargin)
 %	@param fed The federate to register through.
 %	@param name The name of the filter (can be NULL).
 % 
-%	@param[in,out] err A pointer to an error object for catching errors.
 %
 % 
 %	@return A HelicsFilter object.

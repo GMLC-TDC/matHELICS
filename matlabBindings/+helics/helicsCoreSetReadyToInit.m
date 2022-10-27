@@ -6,7 +6,6 @@ function varargout = helicsCoreSetReadyToInit(varargin)
 % 
 %	@param core The core object to enable init values for.
 % 
-%	@param[in,out] err An error object that will contain an error code and string if any error occurred during the execution of the function.
 
 	[varargout{1:nargout}] = helicsMex('helicsCoreSetReadyToInit', varargin{:});
 end

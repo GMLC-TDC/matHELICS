@@ -8,6 +8,5 @@ function varargout = helicsFederateRequestTimeIterativeAsync(varargin)
 %	@param requestTime The next desired time.
 %	@param iterate The requested iteration mode.
 % 
-%	@param[in,out] err An error object that will contain an error code and string if any error occurred during the execution of the function.
 	[varargout{1:nargout}] = helicsMex('helicsFederateRequestTimeIterativeAsync', varargin{:});
 end

@@ -9,7 +9,6 @@ function varargout = helicsFederateRegisterGlobalEndpoint(varargin)
 %	@param name The identifier for the endpoint, the given name is the global identifier.
 %	@param type A string describing the expected type of the publication (may be NULL).
 % 
-%	@param[in,out] err A pointer to an error object for catching errors.
 %
 %	@return An object containing the endpoint, or nullptr on failure.
 	[varargout{1:nargout}] = helicsMex('helicsFederateRegisterGlobalEndpoint', varargin{:});

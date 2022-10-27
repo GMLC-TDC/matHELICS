@@ -6,6 +6,5 @@ function varargout = helicsFederateSetTag(varargin)
 %	@param tagName The name of the tag to set.
 %	@param value The value of the tag.
 % 
-%	@param[in,out] err A pointer to an error object for catching errors.
 	[varargout{1:nargout}] = helicsMex('helicsFederateSetTag', varargin{:});
 end

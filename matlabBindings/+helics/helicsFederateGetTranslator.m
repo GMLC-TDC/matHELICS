@@ -4,7 +4,6 @@ function varargout = helicsFederateGetTranslator(varargin)
 %	@param fed The federate object to use to get the translator.
 %	@param name The name of the translator.
 % 
-%	@param[in,out] err The error object to complete if there is an error.
 %
 % 
 %	@return A HelicsTranslator object. If no translator with the specified name exists, the object will not be valid and

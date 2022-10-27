@@ -5,7 +5,6 @@ function varargout = helicsFilterAddDestinationTarget(varargin)
 %	@param filt The given filter to add a destination target to.
 %	@param dst The name of the endpoint to add as a destination target.
 % 
-%	@param[in,out] err A pointer to an error object for catching errors.
 
 	[varargout{1:nargout}] = helicsMex('helicsFilterAddDestinationTarget', varargin{:});
 end

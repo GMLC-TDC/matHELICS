@@ -4,7 +4,6 @@ function varargout = helicsTranslatorSetInfo(varargin)
 %	@param trans The given translator.
 %	@param info The string to set.
 % 
-%	@param[in,out] err An error object to fill out in case of an error.
 
 	[varargout{1:nargout}] = helicsMex('helicsTranslatorSetInfo', varargin{:});
 end

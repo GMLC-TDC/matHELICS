@@ -4,7 +4,6 @@ function varargout = helicsEndpointAddSourceTarget(varargin)
 %	@param endpoint The endpoint to modify.
 %	@param targetEndpoint the endpoint to get messages from
 % 
-%	@param[in,out] err An error object to fill out in case of an error.
 
 	[varargout{1:nargout}] = helicsMex('helicsEndpointAddSourceTarget', varargin{:});
 end

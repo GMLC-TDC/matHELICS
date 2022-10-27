@@ -5,7 +5,6 @@ function varargout = helicsBrokerAddSourceFilterToEndpoint(varargin)
 %	@param filter The name of the filter (cannot be NULL).
 %	@param endpoint The name of the endpoint to filter the data from (cannot be NULL).
 % 
-%	@param[in,out] err A HelicsError object, can be NULL if the errors are to be ignored.
 
 	[varargout{1:nargout}] = helicsMex('helicsBrokerAddSourceFilterToEndpoint', varargin{:});
 end

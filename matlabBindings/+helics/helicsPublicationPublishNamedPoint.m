@@ -5,7 +5,6 @@ function varargout = helicsPublicationPublishNamedPoint(varargin)
 %	@param field A null terminated string for the field name of the namedPoint to publish.
 %	@param val A double for the value to publish.
 % 
-%	@param[in,out] err A pointer to an error object for catching errors.
 
 	[varargout{1:nargout}] = helicsMex('helicsPublicationPublishNamedPoint', varargin{:});
 end

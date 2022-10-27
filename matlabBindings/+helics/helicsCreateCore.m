@@ -6,7 +6,6 @@ function varargout = helicsCreateCore(varargin)
 %	@param initString An initialization string to send to the core. The format is similar to command line arguments.
 %	                  Typical options include a broker name, the broker address, the number of federates, etc.
 % 
-%	@param[in,out] err An error object that will contain an error code and string if any error occurred during the execution of the function.
 %
 % 
 %	@return A HelicsCore object.

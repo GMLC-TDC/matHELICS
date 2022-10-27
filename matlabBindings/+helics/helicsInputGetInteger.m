@@ -3,7 +3,6 @@ function varargout = helicsInputGetInteger(varargin)
 % 
 %	@param ipt The input to get the data for.
 % 
-%	@param[in,out] err A pointer to an error object for catching errors.
 % 
 %	@return An int64_t value with the current value of the input.
 	[varargout{1:nargout}] = helicsMex('helicsInputGetInteger', varargin{:});

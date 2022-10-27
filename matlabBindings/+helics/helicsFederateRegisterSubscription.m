@@ -9,7 +9,6 @@ function varargout = helicsFederateRegisterSubscription(varargin)
 %	@param key The identifier matching a publication to get a subscription for.
 %	@param units A string listing the units of the subscription (may be NULL).
 % 
-%	@param[in,out] err A pointer to an error object for catching errors.
 %
 % 
 %	@return An object containing the subscription.

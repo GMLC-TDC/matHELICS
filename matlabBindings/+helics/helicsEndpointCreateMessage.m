@@ -5,7 +5,6 @@ function varargout = helicsEndpointCreateMessage(varargin)
 % 
 %	@param endpoint The endpoint object to associate the message with.
 % 
-%	@param[in,out] err An error object to fill out in case of an error.
 %
 % 
 %	@return A new HelicsMessage.

@@ -6,6 +6,5 @@ function varargout = helicsMessageReserve(varargin)
 %	@param message The message object in question.
 %	@param reserveSize The number of bytes to reserve in the message object.
 % 
-%	@param[in,out] err An error object to fill out in case of an error.
 	[varargout{1:nargout}] = helicsMex('helicsMessageReserve', varargin{:});
 end

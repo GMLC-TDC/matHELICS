@@ -7,6 +7,5 @@ function varargout = helicsMessageResize(varargin)
 %	@param message The message object in question.
 %	@param newSize The new size in bytes of the buffer.
 % 
-%	@param[in,out] err An error object to fill out in case of an error.
 	[varargout{1:nargout}] = helicsMex('helicsMessageResize', varargin{:});
 end

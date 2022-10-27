@@ -6,7 +6,6 @@ function varargout = helicsTranslatorAddInputTarget(varargin)
 %	@param trans The given translator to add a destination target to.
 %	@param input The name of the input which will be receiving translated messages
 % 
-%	@param[in,out] err A pointer to an error object for catching errors.
 
 	[varargout{1:nargout}] = helicsMex('helicsTranslatorAddInputTarget', varargin{:});
 end

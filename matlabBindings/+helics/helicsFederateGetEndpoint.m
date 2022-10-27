@@ -4,7 +4,6 @@ function varargout = helicsFederateGetEndpoint(varargin)
 %	@param fed The message federate object to use to get the endpoint.
 %	@param name The name of the endpoint.
 % 
-%	@param[in,out] err The error object to complete if there is an error.
 %
 % 
 %	@return A HelicsEndpoint object.

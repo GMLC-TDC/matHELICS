@@ -5,6 +5,5 @@ function varargout = helicsQuerySetOrdering(varargin)
 %	@param mode 0 for fast, 1 for ordered
 % 
 % 
-%	@param[in,out] err An error object that will contain an error code and string if any error occurred during the execution of the function.
 	[varargout{1:nargout}] = helicsMex('helicsQuerySetOrdering', varargin{:});
 end

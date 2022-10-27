@@ -9,7 +9,6 @@ function varargout = helicsFederateRegisterGlobalTypePublication(varargin)
 %	@param type A string describing the expected type of the publication.
 %	@param units A string listing the units of the subscription (may be NULL).
 % 
-%	@param[in,out] err A pointer to an error object for catching errors.
 %
 % 
 %	@return An object containing the publication.

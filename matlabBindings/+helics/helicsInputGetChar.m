@@ -3,7 +3,6 @@ function varargout = helicsInputGetChar(varargin)
 % 
 %	@param ipt The input to get the data for.
 % 
-%	@param[in,out] err A pointer to an error object for catching errors.
 % 
 %	@return The resulting character value.
 %	        NAK (negative acknowledgment) symbol returned on error

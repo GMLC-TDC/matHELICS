@@ -4,6 +4,5 @@ function varargout = helicsFederateAddDependency(varargin)
 %	@param fed The federate to add the dependency for.
 %	@param fedName The name of the federate to depend on.
 % 
-%	@param[in,out] err A pointer to an error object for catching errors.
 	[varargout{1:nargout}] = helicsMex('helicsFederateAddDependency', varargin{:});
 end

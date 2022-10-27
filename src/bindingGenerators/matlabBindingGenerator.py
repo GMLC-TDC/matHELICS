@@ -314,6 +314,16 @@ class MatlabBindingGenerator(object):
                         functionComment = funComPart[0] + funComPart1[2] + '\n\n'
                 else:
                     functionComment = functionComment + '\n'
+                #remove HelicsError in/out documentation from function help text
+                functionCommentList = functionComment.split("\n")
+                errIdx = None
+                for line in functionCommentList:
+                    if "@param[in,out] err" in line:
+                        errIdx = functionCommentList.index(line)
+                        break
+                if errIdx != None:
+                    del functionCommentList[errIdx]
+                functionComment = "\n".join(functionCommentList)
                 matlabBindingGeneratorLogger.debug(f"the raw_comment after converting to a matlab help text:\n{functionComment}")
                 with open(os.path.join(self.__rootDir, f"matlabBindings/+helics/{functionName}.m"), "w") as functionMFile:
                     functionMFile.write(f"function varargout = {functionName}(varargin)\n")

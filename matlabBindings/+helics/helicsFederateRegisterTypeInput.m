@@ -9,7 +9,6 @@ function varargout = helicsFederateRegisterTypeInput(varargin)
 %	@param type A string describing the expected type of the input.
 %	@param units A string listing the units of the input maybe NULL.
 % 
-%	@param[in,out] err A pointer to an error object for catching errors.
 %
 % 
 %	@return An object containing the publication.

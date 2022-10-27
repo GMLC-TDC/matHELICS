@@ -10,7 +10,6 @@ function varargout = helicsFederateRegisterTargetedEndpoint(varargin)
 %	@param name The identifier for the endpoint. This will be prepended with the federate name for the global identifier.
 %	@param type A string describing the expected type of the publication (may be NULL).
 % 
-%	@param[in,out] err A pointer to an error object for catching errors.
 %
 % 
 %	@return An object containing the endpoint, or nullptr on failure.

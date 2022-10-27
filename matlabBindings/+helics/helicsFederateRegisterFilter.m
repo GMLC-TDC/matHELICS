@@ -8,7 +8,6 @@ function varargout = helicsFederateRegisterFilter(varargin)
 %	@param type The type of filter to create /ref HelicsFilterTypes.
 %	@param name The name of the filter (can be NULL).
 % 
-%	@param[in,out] err A pointer to an error object for catching errors.
 %
 % 
 %	@return A HelicsFilter object.

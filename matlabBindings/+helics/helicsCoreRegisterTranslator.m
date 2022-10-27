@@ -8,7 +8,6 @@ function varargout = helicsCoreRegisterTranslator(varargin)
 %	@param type The type of translator to create /ref HelicsTranslatorTypes.
 %	@param name The name of the translator (can be NULL).
 % 
-%	@param[in,out] err A pointer to an error object for catching errors.
 %
 % 
 %	@return A HelicsTranslator object.

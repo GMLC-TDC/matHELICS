@@ -6,7 +6,6 @@ function varargout = helicsFederateInfoSetBrokerPort(varargin)
 %	@param fi The federate info object to alter.
 %	@param brokerPort The integer port number to use for connection with a broker.
 % 
-%	@param[in,out] err An error object that will contain an error code and string if any error occurred during the execution of the function.
 
 	[varargout{1:nargout}] = helicsMex('helicsFederateInfoSetBrokerPort', varargin{:});
 end
