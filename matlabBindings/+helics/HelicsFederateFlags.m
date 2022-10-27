@@ -19,6 +19,8 @@ Attributes:
 %	HELICS_FLAG_USE_JSON_SERIALIZATION: value:79	specify that the federate should use json serialization for all data types
 %	HELICS_FLAG_EVENT_TRIGGERED: value:81	specify that the federate is event triggered-meaning (all/most) events are triggered by incoming events
 %	HELICS_FLAG_LOCAL_PROFILING_CAPTURE: value:96	specify that that federate should capture the profiling data to the local federate logging system
+%	HELICS_FLAG_CALLBACK_FEDERATE: value:103	specify that the federate is a callback based federate using callbacks for execution
+%	HELICS_FLAG_AUTOMATED_TIMEREQUEST: value:106	specify that a federate should automatically call timeRequest on completion of current request
 %}
 classdef HelicsFederateFlags
 	properties (Constant)
@@ -39,5 +41,7 @@ classdef HelicsFederateFlags
 		HELICS_FLAG_USE_JSON_SERIALIZATION = int32(79);
 		HELICS_FLAG_EVENT_TRIGGERED = int32(81);
 		HELICS_FLAG_LOCAL_PROFILING_CAPTURE = int32(96);
+		HELICS_FLAG_CALLBACK_FEDERATE = int32(103);
+		HELICS_FLAG_AUTOMATED_TIMEREQUEST = int32(106);
 	end
 end

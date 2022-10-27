@@ -16,6 +16,7 @@ Attributes:
 %	HELICS_HANDLE_OPTION_INPUT_PRIORITY_LOCATION: value:510	specify the source index with the highest priority
 %	HELICS_HANDLE_OPTION_CLEAR_PRIORITY_LIST: value:512	specify that the priority list should be cleared or question if it is cleared
 %	HELICS_HANDLE_OPTION_CONNECTIONS: value:522	specify the required number of connections or get the actual number of connections
+%	HELICS_HANDLE_OPTION_TIME_RESTRICTED: value:557	specify that the interface only sends or receives data at specified intervals
 %}
 classdef HelicsHandleOptions
 	properties (Constant)
@@ -33,5 +34,6 @@ classdef HelicsHandleOptions
 		HELICS_HANDLE_OPTION_INPUT_PRIORITY_LOCATION = int32(510);
 		HELICS_HANDLE_OPTION_CLEAR_PRIORITY_LIST = int32(512);
 		HELICS_HANDLE_OPTION_CONNECTIONS = int32(522);
+		HELICS_HANDLE_OPTION_TIME_RESTRICTED = int32(557);
 	end
 end
