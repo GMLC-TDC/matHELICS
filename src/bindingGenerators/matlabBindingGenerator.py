@@ -297,10 +297,13 @@ class MatlabBindingGenerator(object):
                 return createModifiedMatlabFunction(functionDict, cursorIdx)
             if functionName not in functionsToIgnore:
                 functionComment = functionDict.get("raw_comment")
+                matlabBindingGeneratorLogger.debug(f"the raw_comment before converting to a matlab help text:\n{functionComment}")
                 functionComment = functionComment.replace("/**\n", '')
                 functionComment = functionComment.replace("\n */", "")
+                functionComment = functionComment.replace("\n  ", "\n% ")
+                functionComment = functionComment.replace("\n\n", "\n%\n")
                 functionComment = functionComment.replace("\n * ", "\n%\t")
-                functionComment = functionComment.replace(" *", "")
+                functionComment = functionComment.replace(" *", "% ")
                 if "@forcpponly" in functionComment:
                     funComPart = functionComment.partition("\t@forcpponly")
                     funComPart1 = funComPart[2].partition("@endforcpponly\n")
@@ -311,6 +314,7 @@ class MatlabBindingGenerator(object):
                         functionComment = funComPart[0] + funComPart1[2] + '\n\n'
                 else:
                     functionComment = functionComment + '\n'
+                matlabBindingGeneratorLogger.debug(f"the raw_comment after converting to a matlab help text:\n{functionComment}")
                 with open(os.path.join(self.__rootDir, f"matlabBindings/+helics/{functionName}.m"), "w") as functionMFile:
                     functionMFile.write(f"function varargout = {functionName}(varargin)\n")
                     functionMFile.write(functionComment)

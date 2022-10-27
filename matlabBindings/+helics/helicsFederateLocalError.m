@@ -1,6 +1,6 @@
 function varargout = helicsFederateLocalError(varargin)
- Generate a local error in a federate.
-
+%  Generate a local error in a federate.
+% 
 %	@details This will propagate through the co-simulation but not necessarily halt the co-simulation, it has a similar effect to finalize
 %	but does allow some interaction with a core for a brief time.
 %	@param fed The federate to create an error in.
