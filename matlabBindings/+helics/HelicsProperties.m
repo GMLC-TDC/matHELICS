@@ -9,13 +9,15 @@
 %	HELICS_PROPERTY_TIME_RT_TOLERANCE: value:145	the property controlling real time tolerance for a federate sets both rt_lag and rt_lead
 %	HELICS_PROPERTY_TIME_INPUT_DELAY: value:148	the property controlling input delay for a federate
 %	HELICS_PROPERTY_TIME_OUTPUT_DELAY: value:150	the property controlling output delay for a federate
-%	HELICS_PROPERTY_TIME_MAXTIME: value:152	specify the maximum time of a federate (callback federates only
+%	HELICS_PROPERTY_TIME_STOPTIME: value:152	specify the maximum time of a federate
 %	HELICS_PROPERTY_TIME_GRANT_TIMEOUT: value:161	the property specifying a timeout to trigger actions if the time for granting exceeds a certain threshold
+%	HELICS_PROPERTY_INT_CURRENT_ITERATION: value:258	read only property getting the current iteration count
 %	HELICS_PROPERTY_INT_MAX_ITERATIONS: value:259	integer property controlling the maximum number of iterations in a federate
 %	HELICS_PROPERTY_INT_LOG_LEVEL: value:271	integer property controlling the log level in a federate see HelicsLogLevels
 %	HELICS_PROPERTY_INT_FILE_LOG_LEVEL: value:272	integer property controlling the log level for file logging in a federate see HelicsLogLevels
 %	HELICS_PROPERTY_INT_CONSOLE_LOG_LEVEL: value:274	integer property controlling the log level for console logging in a federate see HelicsLogLevels
 %	HELICS_PROPERTY_INT_LOG_BUFFER: value:276	integer property controlling the size of the log buffer
+%	HELICS_PROPERTY_INT_INDEX_GROUP: value:282	integer property specifying an index group
 classdef HelicsProperties
 	properties (Constant)
 		HELICS_PROPERTY_TIME_DELTA = int32(137);
@@ -26,12 +28,14 @@ classdef HelicsProperties
 		HELICS_PROPERTY_TIME_RT_TOLERANCE = int32(145);
 		HELICS_PROPERTY_TIME_INPUT_DELAY = int32(148);
 		HELICS_PROPERTY_TIME_OUTPUT_DELAY = int32(150);
-		HELICS_PROPERTY_TIME_MAXTIME = int32(152);
+		HELICS_PROPERTY_TIME_STOPTIME = int32(152);
 		HELICS_PROPERTY_TIME_GRANT_TIMEOUT = int32(161);
+		HELICS_PROPERTY_INT_CURRENT_ITERATION = int32(258);
 		HELICS_PROPERTY_INT_MAX_ITERATIONS = int32(259);
 		HELICS_PROPERTY_INT_LOG_LEVEL = int32(271);
 		HELICS_PROPERTY_INT_FILE_LOG_LEVEL = int32(272);
 		HELICS_PROPERTY_INT_CONSOLE_LOG_LEVEL = int32(274);
 		HELICS_PROPERTY_INT_LOG_BUFFER = int32(276);
+		HELICS_PROPERTY_INT_INDEX_GROUP = int32(282);
 	end
 end

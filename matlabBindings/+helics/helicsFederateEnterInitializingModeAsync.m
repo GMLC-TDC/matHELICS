@@ -1,7 +1,7 @@
 function varargout = helicsFederateEnterInitializingModeAsync(varargin)
 %  Non blocking alternative to \ref helicsFederateEnterInitializingMode.
 % 
-%	@details The function helicsFederateEnterInitializationModeFinalize must be called to finish the operation.
+%	@details The function helicsFederateEnterInitializationModeComplete must be called to finish the operation.
 % 
 %	@param fed The federate to operate on.
 % 
