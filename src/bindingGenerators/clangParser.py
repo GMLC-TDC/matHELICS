@@ -42,7 +42,59 @@ class CHeaderParser (object):
         self.headerFiles = headers
         self.parseCHeaderFiles(headers, ignoredMacros)
     
-    
+    def _updateTypeFunctionMap(self, dataType: str, spelling: str):
+        """
+            Updates the types to function map
+        """
+        if dataType and dataType != "":
+            if spelling == None:
+                spelling = ""
+            if dataType not in CHeaderParser._types.keys():
+                CHeaderParser._types[dataType] = [spelling]
+            else:
+                CHeaderParser._types.get(dataType,[]).append(spelling)
+
+    def _addFunctionTypeInfo(self, node: cidx.Cursor, cursorInfoDict: dict):
+        """
+            Adds type information related to function arguments and return types
+        """
+        typeKey = ""
+        typePointee = None
+        if node.kind == cidx.CursorKind.FUNCTION_DECL:
+            typeKey = "result_type"
+            typePointee = node.result_type
+        elif node.kind == cidx.CursorKind.PARM_DECL:
+            typeKey = "type"
+            typePointee = node.type
+
+        levels, suffix, typeName = self._getPointerAndTypeInfo(typePointee)
+
+        if typePointee.kind == cidx.TypeKind.TYPEDEF:
+            cursorInfoDict[typeKey] = typeName
+
+        if typePointee.kind == cidx.TypeKind.POINTER:
+            if levels == 2:
+                cursorInfoDict[typeKey] = "Double Pointer"
+                cursorInfoDict["double_pointer_type"] = typeName + suffix
+            else:
+                cursorInfoDict["pointer_type"] = typeName + suffix
+
+        self._updateTypeFunctionMap(cursorInfoDict.get(typeKey,""), cursorInfoDict.get("spelling",""))
+        self._updateTypeFunctionMap(cursorInfoDict.get("pointer_type",""), cursorInfoDict.get("spelling",""))
+        self._updateTypeFunctionMap(cursorInfoDict.get("double_pointer_type",""), cursorInfoDict.get("spelling",""))
+
+    def _getPointerAndTypeInfo(self, typePointee: cidx.Type):
+        """
+            Gets type name and pointer related information for the given type
+        """
+        levels = 0
+        suffix = "_"
+        while typePointee.kind == cidx.TypeKind.POINTER:
+            levels += 1
+            suffix += "*"
+            typePointee = typePointee.get_pointee()
+        return levels, suffix, typePointee.get_typedef_name() if typePointee.kind == cidx.TypeKind.TYPEDEF else typePointee.kind.spelling
+
     def _cursorInfo(self, node: cidx.Cursor) -> dict():
         """
             Helper function for parseCHeaderFiles()
@@ -60,30 +112,7 @@ class CHeaderParser (object):
         cursorInfoDict["end_line"] = cursor_range.end.line
         if node.kind == cidx.CursorKind.FUNCTION_DECL:
             cursorInfoDict["raw_comment"] = node.raw_comment
-            if node.result_type.kind == cidx.TypeKind.POINTER:
-                pointerType = node.result_type.get_pointee()
-                if pointerType.kind == cidx.TypeKind.POINTER:
-                    cursorInfoDict["result_type"] = "Double Pointer"
-                    cursorInfoDict["double_pointer_type"] = pointerType.get_pointee().kind.spelling + "_**"
-                else:
-                    cursorInfoDict["pointer_type"] = pointerType.kind.spelling + "_*"
-            if node.result_type.kind == cidx.TypeKind.TYPEDEF:
-                cursorInfoDict["result_type"] = node.result_type.get_typedef_name()
-            if cursorInfoDict.get("result_type","") != "":
-                if cursorInfoDict.get("result_type","") not in CHeaderParser._types.keys():
-                    CHeaderParser._types[cursorInfoDict.get("result_type","")] = [cursorInfoDict.get("spelling","")]
-                else:
-                    CHeaderParser._types.get(cursorInfoDict.get("result_type",""),[]).append(cursorInfoDict.get("spelling",""))
-            if cursorInfoDict.get("pointer_type","") != "":
-                if cursorInfoDict.get("pointer_type","") not in CHeaderParser._types.keys():
-                    CHeaderParser._types[cursorInfoDict.get("pointer_type","")] = [cursorInfoDict.get("spelling","")]
-                else:
-                    CHeaderParser._types.get(cursorInfoDict.get("pointer_type",""),[]).append(cursorInfoDict.get("spelling",""))
-            if cursorInfoDict.get("double_pointer_type","") != "":
-                if cursorInfoDict.get("double_pointer_type","") not in CHeaderParser._types.keys():
-                    CHeaderParser._types[cursorInfoDict.get("double_pointer_type","")] = [cursorInfoDict.get("spelling","")]
-                else:
-                    CHeaderParser._types.get(cursorInfoDict.get("double_pointer_type",""),[]).append(cursorInfoDict.get("spelling",""))
+            self._addFunctionTypeInfo(node, cursorInfoDict)
             cursorInfoDict["arguments"] = {}
             argNum = 0
             for arg in node.get_arguments():
@@ -92,32 +121,7 @@ class CHeaderParser (object):
             cursorInfoDict["argument_count"] = argNum
             CHeaderParser._types["functions"][cursorInfoDict.get("spelling","")] = cursorInfoDict["arguments"]
         if node.kind == cidx.CursorKind.PARM_DECL:
-            if node.type.kind == cidx.TypeKind.TYPEDEF:
-                cursorInfoDict["type"] = node.type.get_typedef_name()
-            if node.type.kind == cidx.TypeKind.POINTER:
-                typePointee = node.type.get_pointee()
-                if typePointee.kind == cidx.TypeKind.TYPEDEF:
-                    cursorInfoDict["pointer_type"] = typePointee.get_typedef_name() + "_*"
-                elif typePointee.kind == cidx.TypeKind.POINTER:
-                    cursorInfoDict["type"] = "Double Pointer"
-                    cursorInfoDict["double_pointer_type"] = typePointee.get_pointee().kind.spelling + "_**"
-                else:
-                    cursorInfoDict["pointer_type"] = typePointee.kind.spelling + "_*"
-            if cursorInfoDict.get("type","") != "":
-                if cursorInfoDict.get("type","") not in CHeaderParser._types.keys():
-                    CHeaderParser._types[cursorInfoDict.get("type","")] = [cursorInfoDict.get("spelling","")]
-                else:
-                    CHeaderParser._types.get(cursorInfoDict.get("type",""),[]).append(cursorInfoDict.get("spelling",""))
-            if cursorInfoDict.get("pointer_type","") != "":
-                if cursorInfoDict.get("pointer_type","") not in CHeaderParser._types.keys():
-                    CHeaderParser._types[cursorInfoDict.get("pointer_type","")] = [cursorInfoDict.get("spelling","")]
-                else:
-                    CHeaderParser._types.get(cursorInfoDict.get("pointer_type",""),[]).append(cursorInfoDict.get("spelling",""))
-            if cursorInfoDict.get("double_pointer_type","") != "":
-                if cursorInfoDict.get("double_pointer_type","") not in CHeaderParser._types.keys():
-                    CHeaderParser._types[cursorInfoDict.get("double_pointer_type","")] = [cursorInfoDict.get("spelling","")]
-                else:
-                    CHeaderParser._types.get(cursorInfoDict.get("double_pointer_type",""),[]).append(cursorInfoDict.get("spelling",""))
+            self._addFunctionTypeInfo(node, cursorInfoDict)
         if node.kind == cidx.CursorKind.TYPEDEF_DECL or node.type.kind == cidx.TypeKind.TYPEDEF:
             cursorInfoDict["type"] = node.underlying_typedef_type.spelling
             if cursorInfoDict["type"] == "":
