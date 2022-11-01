@@ -8,6 +8,7 @@ import glob
 import json
 import logging
 import os
+import re
 import shutil
 from typing import List
 
@@ -298,32 +299,15 @@ class MatlabBindingGenerator(object):
             if functionName not in functionsToIgnore:
                 functionComment = functionDict.get("raw_comment")
                 matlabBindingGeneratorLogger.debug(f"the raw_comment before converting to a matlab help text:\n{functionComment}")
-                functionComment = functionComment.replace("/**\n", '')
-                functionComment = functionComment.replace("\n */", "")
-                functionComment = functionComment.replace("\n  ", "\n% ")
-                functionComment = functionComment.replace("\n\n", "\n%\n")
-                functionComment = functionComment.replace("\n * ", "\n%\t")
-                functionComment = functionComment.replace(" *", "% ")
-                if "@forcpponly" in functionComment:
-                    funComPart = functionComment.partition("\t@forcpponly")
-                    funComPart1 = funComPart[2].partition("@endforcpponly\n")
-                    if "@forcpponly in funComPart1[2]":
-                        funComPart2 = funComPart1[2].partition("\t@forcpponly")
-                        functionComment = funComPart[0] + funComPart2[0] + "\n"
-                    else:
-                        functionComment = funComPart[0] + funComPart1[2] + '\n\n'
-                else:
-                    functionComment = functionComment + '\n'
-                #remove HelicsError in/out documentation from function help text
-                functionCommentList = functionComment.split("\n")
-                errIdx = None
-                for line in functionCommentList:
-                    if "@param[in,out] err" in line:
-                        errIdx = functionCommentList.index(line)
-                        break
-                if errIdx != None:
-                    del functionCommentList[errIdx]
-                functionComment = "\n".join(functionCommentList)
+                functionComment = re.sub("^/\*\*\n","",functionComment)
+                functionComment = re.sub("^/\*\*(?=.)","%",functionComment)
+                functionComment = re.sub("\n.*\*(?=[^/])","\n%",functionComment)
+                functionComment = re.sub(" *\*(?=[^/])","%",functionComment)
+                functionComment = re.sub("\n* *\*/","",functionComment)
+                functionComment = re.sub("\n(?=[^%])","\n%",functionComment)
+                functionComment = re.sub("\n.*@param\[in,out\] err.*\n","\n",functionComment)
+                functionComment = re.sub("%(?=[^ ])", "% ",functionComment)
+                functionComment += "\n\n"
                 matlabBindingGeneratorLogger.debug(f"the raw_comment after converting to a matlab help text:\n{functionComment}")
                 with open(os.path.join(self.__rootDir, f"matlabBindings/+helics/{functionName}.m"), "w") as functionMFile:
                     functionMFile.write(f"function varargout = {functionName}(varargin)\n")
