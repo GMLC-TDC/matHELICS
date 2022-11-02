@@ -1,20 +1,18 @@
-%{
-log level definitions
-
-Attributes:
-	HELICS_LOG_LEVEL_DUMPLOG: value:-10	log level for dumping log messages
-	HELICS_LOG_LEVEL_NO_PRINT: value:-4	don't print anything except a few catastrophic errors
-	HELICS_LOG_LEVEL_ERROR: value:0	only print error level indicators
-	HELICS_LOG_LEVEL_PROFILING: value:2	profiling log level
-	HELICS_LOG_LEVEL_WARNING: value:3	only print warnings and errors
-	HELICS_LOG_LEVEL_SUMMARY: value:6	warning errors and summary level information
-	HELICS_LOG_LEVEL_CONNECTIONS: value:9	summary+ notices about federate and broker connections +messages about network connections
-	HELICS_LOG_LEVEL_INTERFACES: value:12	connections+ interface definitions
-	HELICS_LOG_LEVEL_TIMING: value:15	interfaces + timing message
-	HELICS_LOG_LEVEL_DATA: value:18	timing+ data transfer notices
-	HELICS_LOG_LEVEL_DEBUG: value:21	data+ additional debug message
-	HELICS_LOG_LEVEL_TRACE: value:24	all internal messages
-%}
+% log level definitions
+%
+% Attributes:
+%	HELICS_LOG_LEVEL_DUMPLOG: value:-10	log level for dumping log messages
+%	HELICS_LOG_LEVEL_NO_PRINT: value:-4	don't print anything except a few catastrophic errors
+%	HELICS_LOG_LEVEL_ERROR: value:0	only print error level indicators
+%	HELICS_LOG_LEVEL_PROFILING: value:2	profiling log level
+%	HELICS_LOG_LEVEL_WARNING: value:3	only print warnings and errors
+%	HELICS_LOG_LEVEL_SUMMARY: value:6	warning errors and summary level information
+%	HELICS_LOG_LEVEL_CONNECTIONS: value:9	summary+ notices about federate and broker connections +messages about network connections
+%	HELICS_LOG_LEVEL_INTERFACES: value:12	connections+ interface definitions
+%	HELICS_LOG_LEVEL_TIMING: value:15	interfaces + timing message
+%	HELICS_LOG_LEVEL_DATA: value:18	timing+ data transfer notices
+%	HELICS_LOG_LEVEL_DEBUG: value:21	data+ additional debug message
+%	HELICS_LOG_LEVEL_TRACE: value:24	all internal messages
 classdef HelicsLogLevels
 	properties (Constant)
 		HELICS_LOG_LEVEL_DUMPLOG = int32(-10);
