@@ -13,13 +13,15 @@
 %	HELICS_FLAG_FORWARD_COMPUTE: value:14	flag indicating that a federate performs forward computation and does internal rollback
 %	HELICS_FLAG_REALTIME: value:16	flag indicating that a federate needs to run in real time
 %	HELICS_FLAG_SINGLE_THREAD_FEDERATE: value:27	flag indicating that the federate will only interact on a single thread
+%	HELICS_FLAG_MULTI_THREAD_CORE: value:28	flag indicating use of a thread safe core
+%	HELICS_FLAG_SINGLE_THREAD_CORE: value:29	flag indicating use of a single threaded core
 %	HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS: value:67	used to not display warnings on mismatched requested times
 %	HELICS_FLAG_STRICT_CONFIG_CHECKING: value:75	specify that checking on configuration files should be strict and throw and error on any invalid values
 %	HELICS_FLAG_USE_JSON_SERIALIZATION: value:79	specify that the federate should use json serialization for all data types
 %	HELICS_FLAG_EVENT_TRIGGERED: value:81	specify that the federate is event triggered-meaning (all/most) events are triggered by incoming events
 %	HELICS_FLAG_LOCAL_PROFILING_CAPTURE: value:96	specify that that federate should capture the profiling data to the local federate logging system
 %	HELICS_FLAG_CALLBACK_FEDERATE: value:103	specify that the federate is a callback based federate using callbacks for execution
-%	HELICS_FLAG_AUTOMATED_TIMEREQUEST: value:106	specify that a federate should automatically call timeRequest on completion of current request
+%	HELICS_FLAG_AUTOMATED_TIME_REQUEST: value:106	specify that a federate should automatically call timeRequest on completion of current request
 classdef HelicsFederateFlags
 	properties (Constant)
 		HELICS_FLAG_OBSERVER = int32(0);
@@ -34,12 +36,14 @@ classdef HelicsFederateFlags
 		HELICS_FLAG_FORWARD_COMPUTE = int32(14);
 		HELICS_FLAG_REALTIME = int32(16);
 		HELICS_FLAG_SINGLE_THREAD_FEDERATE = int32(27);
+		HELICS_FLAG_MULTI_THREAD_CORE = int32(28);
+		HELICS_FLAG_SINGLE_THREAD_CORE = int32(29);
 		HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS = int32(67);
 		HELICS_FLAG_STRICT_CONFIG_CHECKING = int32(75);
 		HELICS_FLAG_USE_JSON_SERIALIZATION = int32(79);
 		HELICS_FLAG_EVENT_TRIGGERED = int32(81);
 		HELICS_FLAG_LOCAL_PROFILING_CAPTURE = int32(96);
 		HELICS_FLAG_CALLBACK_FEDERATE = int32(103);
-		HELICS_FLAG_AUTOMATED_TIMEREQUEST = int32(106);
+		HELICS_FLAG_AUTOMATED_TIME_REQUEST = int32(106);
 	end
 end
