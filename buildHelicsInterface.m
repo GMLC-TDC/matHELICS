@@ -37,7 +37,7 @@ if (makePackage)
     end
 end
 inputPath=fileparts(mfilename('fullpath'));
-HelicsVersion='3.3.2';
+HelicsVersion='3.4.0';
 % set up platform specific names and locations
 targetTarFile=fullfile(targetPath,['helicsTar',HelicsVersion,'.tar.gz']);
 if ismac
