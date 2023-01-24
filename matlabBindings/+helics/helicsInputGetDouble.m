@@ -1,5 +1,5 @@
 function varargout = helicsInputGetDouble(varargin)
-% Get a double value from a subscription.
+% Get a double value from an input.
 % 
 % @param ipt The input to get the data for.
 % 

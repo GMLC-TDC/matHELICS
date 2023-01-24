@@ -1,17 +1,15 @@
 function varargout = helicsFederateRegisterGlobalTypeInput(varargin)
-% Register a global publication with an arbitrary type.
+% Register an input with an arbitrary type.
 % 
-% @details The publication becomes part of the federate and is destroyed when the federate is freed so there are no separate free
-% functions for subscriptions and publications.
+% @details The input becomes part of the federate and is destroyed when the federate is freed so there are no separate free
+% functions for interfaces.
 % 
-% @param fed The federate object in which to create a publication.
-% @param key The identifier for the publication.
-% @param type A string defining the type of the input.
-% @param units A string listing the units of the subscription maybe NULL.
+% @param fed The federate object in which to create an input.
+% @param key The identifier for the input (may be NULL).
+% @param type A string defining the type of the input (may be NULL).
+% @param units A string listing the units of the input (may be NULL).
 % 
-% 
-% 
-% @return An object containing the publication.
+% @return An object containing the input.
 
 	[varargout{1:nargout}] = helicsMex('helicsFederateRegisterGlobalTypeInput', varargin{:});
 end

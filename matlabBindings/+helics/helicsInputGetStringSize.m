@@ -1,5 +1,5 @@
 function varargout = helicsInputGetStringSize(varargin)
-% Get the size of a value for subscription assuming return as a string.
+% Get the size of a value for an input assuming return as a string.
 % 
 % @return The size of the string.
 

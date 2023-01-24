@@ -1,5 +1,5 @@
 function varargout = helicsInputGetBoolean(varargin)
-% Get a boolean value from a subscription.
+% Get a boolean value from an input.
 % 
 % @param ipt The input to get the data for.
 % 
