@@ -1,5 +1,6 @@
 function varargout = helicsFederateGetSubscription(varargin)
 % Get an input object from a subscription target.
+% DEPRECATED: use helicsFederateGetInputByTarget instead
 % 
 % @param fed The value federate object to use to get the publication.
 % @param key The name of the publication that a subscription is targeting.

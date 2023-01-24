@@ -1,5 +1,5 @@
 function varargout = helicsInputGetInteger(varargin)
-% Get an integer value from a subscription.
+% Get an integer value from an input.
 % 
 % @param ipt The input to get the data for.
 % 
