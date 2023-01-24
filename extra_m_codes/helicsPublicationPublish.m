@@ -1,4 +1,8 @@
 function  helicsPublicationPublish(varargin)
+%publish a value through HELICS
+%helicsPublicationPublish(pub,value)
+%pub is the publication object
+% value is the data value to set as the default can be a char,integer, double, vector, logical, or string. 
     pubdata=varargin{2};
     import helics.*
    switch (class(pubdata))
