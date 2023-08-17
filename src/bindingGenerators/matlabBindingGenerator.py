@@ -4,7 +4,6 @@ Battelle Memorial Institute; Lawrence Livermore National Security, LLC; Alliance
 the top-level NOTICE for additional details. All rights reserved.
 SPDX-License-Identifier: BSD-3-Clause
 '''
-import glob
 import json
 import logging
 import os
@@ -15,7 +14,6 @@ from typing import List
 import clang.cindex as cidx
 
 from . import clangParser
-from pickle import FALSE
 
 
 matlabBindingGeneratorLogger = logging.getLogger(__name__)
@@ -717,7 +715,7 @@ class MatlabBindingGenerator(object):
             retStr += "\t\tmexUnlock();\n"
             retStr += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument {position+1} must be of type int32.\");\n"
             retStr += "\t}\n"
-            retStr += f"mxInt32 *p{argName} = mxGetInt32s(argv[{position}]);\n"
+            retStr += f"\tmxInt32 *p{argName} = mxGetInt32s(argv[{position}]);\n"
             retStr += f"\tint32_t {argName} = static_cast<int32_t>(p{argName}[0]);\n\n"
             return retStr
         
@@ -727,7 +725,7 @@ class MatlabBindingGenerator(object):
             retStr += "\t\tmexUnlock();\n"
             retStr += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument {position+1} must be of type int64.\");\n"
             retStr += "\t}\n"
-            retStr += f"mxInt64 *p{argName} = mxGetInt64s(argv[{position}]);\n"
+            retStr += f"\tmxInt64 *p{argName} = mxGetInt64s(argv[{position}]);\n"
             retStr += f"\tint64_t {argName} = static_cast<int64_t>(p{argName}[0]);\n\n"
             
             return retStr

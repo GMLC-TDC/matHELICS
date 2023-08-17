@@ -1,4 +1,4 @@
-function buildHelicsInterface(targetPath,makePackage)
+function buildMatlabHelicsInterface(targetPath,makePackage)
 % buildHelicsInterface(targetPath,makePackage) will generate the files
 % necessary for the Matlab HELICS interface.  It will download additional
 % files from github if needed.  
