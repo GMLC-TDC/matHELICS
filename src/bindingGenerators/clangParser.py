@@ -7,6 +7,7 @@ SPDX-License-Identifier: BSD-3-Clause
 import json
 import logging
 import os
+import sys
 from typing import List
 
 import clang.cindex as cidx
@@ -191,3 +192,13 @@ class CHeaderParser (object):
                 del self.parsedInfo[key]
         clangLogger.info("Clang successfully parsed the C header files!")
         clangLogger.debug(f"The clang parser result:\n{json.dumps(self.parsedInfo, indent=4, sort_keys=True)}\n{json.dumps(CHeaderParser._types, indent=4, sort_keys=True)}")
+
+if len(sys.argv) < 2:
+    print("At least one header file must be provided as an input argument.")
+    exit(1)
+
+with open("ast.json", "w+") as f:
+    json.dump(CHeaderParser(sys.argv[1:]).parsedInfo, f, indent=4, sort_keys=False)
+
+with open("types.json", "w+") as f:
+    json.dump(CHeaderParser(sys.argv[1:])._types, f, indent=4, sort_keys=False)
