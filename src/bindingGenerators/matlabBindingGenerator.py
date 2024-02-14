@@ -12,10 +12,7 @@ import re
 import shutil
 from typing import List
 
-import clang.cindex as cidx
-
 from . import clangParser
-from pickle import FALSE
 
 
 matlabBindingGeneratorLogger = logging.getLogger(__name__)
@@ -47,7 +44,9 @@ class MatlabBindingGenerator(object):
         '''
         self.__helicsParser = clangParser.HelicsHeaderParser(headerFiles)
         self.__rootDir = os.path.abspath(rootDir)
-        
+
+    def getParser(self):
+        return self.__helicsParser
         
     def generateSource(self):
         """
@@ -4280,17 +4279,17 @@ class MatlabBindingGenerator(object):
         helicsMexMainFunctionElements = []
         helicsMapTuples = []
         for cu in self.__helicsParser.parsedInfo.keys():
-            if self.__helicsParser.parsedInfo[cu]["kind"] == cidx.CursorKind.ENUM_DECL.name:
+            if self.__helicsParser.parsedInfo[cu]["kind"] == "ENUM_DECL":
                 createEnum(self.__helicsParser.parsedInfo[cu])
-            if self.__helicsParser.parsedInfo[cu]["kind"] == cidx.CursorKind.MACRO_DEFINITION.name:
+            if self.__helicsParser.parsedInfo[cu]["kind"] == "MACRO_DEFINITION":
                 macroMexWrapperFunctionStr, macroMexMainFunctionElementStr, macroMapTuple= createMacro(self.__helicsParser.parsedInfo[cu],int(cu))
                 helicsMexWrapperFunctions.append(macroMexWrapperFunctionStr)
                 helicsMexMainFunctionElements.append(macroMexMainFunctionElementStr)
                 if macroMapTuple != None:
                     helicsMapTuples.append(macroMapTuple)
-            if self.__helicsParser.parsedInfo[cu]["kind"] == cidx.CursorKind.VAR_DECL.name:
+            if self.__helicsParser.parsedInfo[cu]["kind"] == "VAR_DECL":
                 createVar(self.__helicsParser.parsedInfo[cu],int(cu))
-            if self.__helicsParser.parsedInfo[cu]["kind"] == cidx.CursorKind.FUNCTION_DECL.name:
+            if self.__helicsParser.parsedInfo[cu]["kind"] == "FUNCTION_DECL":
                 functionMexWrapperFunctionStr, functionMexMainFunctionElementStr, functionMapTuple= createFunction(self.__helicsParser.parsedInfo[cu],int(cu))
                 helicsMexWrapperFunctions.append(functionMexWrapperFunctionStr)
                 helicsMexMainFunctionElements.append(functionMexMainFunctionElementStr)
