@@ -1,7 +1,7 @@
-function buildMatlabHelicsInterface(targetPath,makePackage)
+function buildHelicsInterface(targetPath,makePackage)
 % buildHelicsInterface(targetPath,makePackage) will generate the files
 % necessary for the Matlab HELICS interface.  It will download additional
-% files from github if needed.  
+% files from github if needed.
 % buildHelicsInterface() will generate the package files in the current
 % directory
 % buildHelicsInterface(targetPath) will create the package files in the
@@ -9,15 +9,15 @@ function buildMatlabHelicsInterface(targetPath,makePackage)
 % buildHelicsInterface('') is equivalent to buildHelicsInterface()
 % buildHelicsInterface(targetPath,makePackage) will if makePackage is set
 % to true generate a zip/tar.gz file with all the files that can be copied
-% and extracted on a similar system.  
+% and extracted on a similar system.
 %
 % To make the helics library accessible anywhere on the matlab path the
 % targetPath folder should be added to the matlab path.  (NOTE: it should
 % not be added with subfolders as all required matlab code is in the main
 % folder or in the +helics folder which matlab will recognize as a
 % package).
-% 
-% this file requires matlab 2018a or higher.  
+%
+% this file requires matlab 2018a or higher.
 if (nargin==0)
     targetPath=fileparts(mfilename('fullpath'));
 end
@@ -37,6 +37,7 @@ if (makePackage)
     end
 end
 inputPath=fileparts(mfilename('fullpath'));
+isOctave = (exist('OCTAVE_VERSION', 'builtin') ~= 0);
 HelicsVersion='3.4.0';
 % set up platform specific names and locations
 targetTarFile=fullfile(targetPath,['helicsTar',HelicsVersion,'.tar.gz']);
@@ -47,15 +48,23 @@ if ismac
     % download the helics library if needed
     if (~exist(fullfile(basePath,'include/helics/helics.h'),'file'))
         if (~exist(targetTarFile,'file'))
-            fprintf('downloading helics binary package\n')
-            websave(targetTarFile,['https://github.com/GMLC-TDC/HELICS/releases/download/v',HelicsVersion,'/',baseFile]);
+            fprintf('downloading helics binary package\n');
+            if isOctave
+                urlwrite(["https://github.com/GMLC-TDC/HELICS/releases/download/v",HelicsVersion,"/",baseFile],targetTarFile);
+            else
+                websave(targetTarFile,['https://github.com/GMLC-TDC/HELICS/releases/download/v',HelicsVersion,'/',baseFile]);
+            end
         end
-        fprintf('extracting helics binary package\n')
+        fprintf('extracting helics binary package\n');
         system(['tar xf ',targetTarFile,' -C ',targetPath]);
     end
     %actually build the mex file
-    fprintf('building helics mex target\n')
-    mex('-lhelics','-R2018a',['-I',basePath,'/include/'],['-L',basePath,'/lib'],['LDFLAGS=$LDFLAGS -Wl,-rpath,$ORIGIN/lib,-rpath,',basePath,'/lib',',-rpath,',basePath,'/lib64'],fullfile(inputPath,'helicsMex.cpp'),'-outdir',targetPath)
+    fprintf('building helics mex target\n');
+    if isOctave
+        mex("-lhelics","-DMX_HAS_INTERLEAVED_COMPLEX",["-I",basePath,"/include/"],["-L",basePath,"/lib"],["-Wl,-rpath,$ORIGIN/lib:",basePath,"/lib",":",basePath,"/lib64"],"-o helicsMex.mex",fullfile(inputPath,"helicsMex.cpp"));
+    else
+        mex('-lhelics','-R2018a',['-I',basePath,'/include/'],['-L',basePath,'/lib'],['LDFLAGS=$LDFLAGS -Wl,-rpath,$ORIGIN/lib,-rpath,',basePath,'/lib',',-rpath,',basePath,'/lib64'],fullfile(inputPath,'helicsMex.cpp'),'-outdir',targetPath);
+    end
 elseif isunix
     basePath=fullfile(targetPath,['Helics-',HelicsVersion,'-Linux-x86_64']);
     baseFile=['Helics-shared-',HelicsVersion,'-Linux-x86_64.tar.gz'];
@@ -63,15 +72,23 @@ elseif isunix
     % download the helics library if needed
     if (~exist(fullfile(basePath,'include/helics/helics.h'),'file'))
         if (~exist(targetTarFile,'file'))
-            fprintf('downloading helics binary package\n')
-            websave(targetTarFile,['https://github.com/GMLC-TDC/HELICS/releases/download/v',HelicsVersion,'/',baseFile]);
+            fprintf('downloading helics binary package\n');
+            if isOctave
+                urlwrite(["https://github.com/GMLC-TDC/HELICS/releases/download/v",HelicsVersion,"/",baseFile],targetTarFile);
+            else
+                websave(targetTarFile,['https://github.com/GMLC-TDC/HELICS/releases/download/v',HelicsVersion,'/',baseFile]);
+            end
         end
-        fprintf('extracting helics binary package\n')
+        fprintf('extracting helics binary package\n');
         system(['tar xf ',targetTarFile,' -C ',targetPath]);
     end
     %actually build the mex file
-    fprintf('building helics mex target\n')
-    mex('-lhelics','-R2018a',['-I',basePath,'/include/'],['-L',basePath,'/lib'],['-L',basePath,'/lib64'],['LDFLAGS=$LDFLAGS -Wl,-rpath,$ORIGIN/lib,-rpath,',basePath,'/lib',',-rpath,',basePath,'/lib64'],fullfile(inputPath,'helicsMex.cpp'),'-outdir',targetPath)
+    fprintf('building helics mex target\n');
+    if isOctave
+        mex("-lhelics","-DMX_HAS_INTERLEAVED_COMPLEX",["-I",basePath,"/include/"],["-L",basePath,"/lib"],['-L',basePath,'/lib64'],["-Wl,-rpath,$ORIGIN/lib:",basePath,"/lib",":",basePath,"/lib64"],"-o helicsMex.mex",fullfile(inputPath,"helicsMex.cpp"));
+    else
+        mex('-lhelics','-R2018a',['-I',basePath,'/include/'],['-L',basePath,'/lib'],['-L',basePath,'/lib64'],['LDFLAGS=$LDFLAGS -Wl,-rpath,$ORIGIN/lib,-rpath,',basePath,'/lib',',-rpath,',basePath,'/lib64'],fullfile(inputPath,'helicsMex.cpp'),'-outdir',targetPath);
+    end
 elseif ispc
     if isequal(computer,'PCWIN64')
         basePath=fullfile(targetPath,['Helics-',HelicsVersion,'-win64']);
@@ -85,16 +102,23 @@ elseif ispc
     % download the helics library if needed
     if (~exist(fullfile(basePath,'include/helics/helics.h'),'file'))
         if (~exist(targetTarFile,'file'))
-            fprintf('downloading helics binary package\n')
-            websave(targetTarFile,['https://github.com/GMLC-TDC/HELICS/releases/download/v',HelicsVersion,'/',baseFile]);
+            fprintf('downloading helics binary package\n');
+            if isOctave
+                urlwrite(["https://github.com/GMLC-TDC/HELICS/releases/download/v",HelicsVersion,"/",baseFile],targetTarFile);
+            else
+                websave(targetTarFile,['https://github.com/GMLC-TDC/HELICS/releases/download/v',HelicsVersion,'/',baseFile]);
+            end
         end
-        fprintf('extracting helics binary package\n')
+        fprintf('extracting helics binary package\n');
         untar(targetTarFile,targetPath);
-
     end
     %actually build the mex file
-    fprintf('building helics mex target\n')
-    mex('-lhelics','-R2018a',['-I',basePath,'/include/'],['-L',basePath,'/lib'],['-L',basePath,'/bin'],fullfile(inputPath,'helicsMex.cpp'),'-outdir',targetPath)
+    fprintf('building helics mex target\n');
+    if isOctave
+        mex("-lhelics","-DMX_HAS_INTERLEAVED_COMPLEX",["-I",basePath,"/include/"],["-L",basePath,"/lib"],["-Wl,-rpath,$ORIGIN/lib:",basePath,"/lib",":",basePath,"/lib64"],"-o helicsMex.mex",fullfile(inputPath,"helicsMex.cpp"));
+    else
+        mex('-lhelics','-R2018a',['-I',basePath,'/include/'],['-L',basePath,'/lib'],['-L',basePath,'/bin'],fullfile(inputPath,'helicsMex.cpp'),'-outdir',targetPath);
+    end
     %copy the needed dll file if on windows
     if ispc
         if (~exist(fullfile(targetPath,targetFile),'file'))
@@ -105,11 +129,10 @@ elseif ispc
 else
     error('Platform not supported');
 end
-
 %% now build the interface directory and copy files
-fprintf('copying required files\n')
+fprintf('copying required files\n');
 copyfile(fullfile(inputPath,'matlabBindings','+helics'),fullfile(targetPath,'+helics'));
-copyfile(fullfile(inputPath,'extra_m_codes'),fullfile(targetPath,'+helics'));
+copyfile(fullfile(inputPath,'extra_m_codes/*'),fullfile(targetPath,'+helics'));
 % copy the include directory with the C headers
 if (~exist(fullfile(targetPath,'include'),'dir'))
     mkdir(fullfile(targetPath,'include'));
@@ -128,9 +151,8 @@ elseif (isunix)
 else
     copyfile(fullfile(basePath,'bin'),fullfile(targetPath,'bin'));
 end
-
 %% generate a startup script to load the library
-
+if (isOctave == 0)
     fid=fopen(fullfile(targetPath,'helicsStartup.m'),'w');
     fprintf(fid,'function helicsStartup(libraryName,headerName)\n');
     fprintf(fid,'%% function to load the helics library prior to execution\n');
@@ -158,9 +180,9 @@ end
     fprintf(fid,'\tdisp(''Unable to find library for HELICS'')\n');
     fprintf(fid,'end\n');
     fclose(fid);
-
+end
 if (makePackage)
-    fprintf('generating helics matlab binary package file\n')
+    fprintf('generating helics matlab binary package file\n');
     rmdir(basePath,'s');
     delete(targetTarFile);
     if ismac || isunix
