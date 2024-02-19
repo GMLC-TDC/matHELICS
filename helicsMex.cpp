@@ -60,18 +60,17 @@ static const std::unordered_map<std::string,int> wrapperFunctionMap{
 	{"helicsDataBufferData",71},
 	{"helicsDataBufferReserve",72},
 	{"helicsDataBufferClone",73},
-	{"helicsIntegerToBytes",74},
-	{"helicsDoubleToBytes",75},
-	{"helicsStringToBytes",76},
-	{"helicsRawStringToBytes",77},
-	{"helicsBooleanToBytes",78},
-	{"helicsCharToBytes",79},
-	{"helicsTimeToBytes",80},
-	{"helicsComplexToBytes",81},
-	{"helicsComplexObjectToBytes",82},
-	{"helicsVectorToBytes",83},
-	{"helicsNamedPointToBytes",84},
-	{"helicsComplexVectorToBytes",85},
+	{"helicsDataBufferFillFromInteger",74},
+	{"helicsDataBufferFillFromDouble",75},
+	{"helicsDataBufferFillFromString",76},
+	{"helicsDataBufferFillFromRawString",77},
+	{"helicsDataBufferFillFromBoolean",78},
+	{"helicsDataBufferFillFromChar",79},
+	{"helicsDataBufferFillFromTime",80},
+	{"helicsDataBufferFillFromComplex",81},
+	{"helicsDataBufferFillFromVector",83},
+	{"helicsDataBufferFillFromNamedPoint",84},
+	{"helicsDataBufferFillFromComplexVector",85},
 	{"helicsDataBufferType",86},
 	{"helicsDataBufferToInteger",87},
 	{"helicsDataBufferToDouble",88},
@@ -284,198 +283,202 @@ static const std::unordered_map<std::string,int> wrapperFunctionMap{
 	{"helicsPublicationPublishVector",297},
 	{"helicsPublicationPublishComplexVector",298},
 	{"helicsPublicationPublishNamedPoint",299},
-	{"helicsPublicationAddTarget",300},
-	{"helicsInputIsValid",301},
-	{"helicsInputAddTarget",302},
-	{"helicsInputGetByteCount",303},
-	{"helicsInputGetBytes",304},
-	{"helicsInputGetStringSize",305},
-	{"helicsInputGetString",306},
-	{"helicsInputGetInteger",307},
-	{"helicsInputGetBoolean",308},
-	{"helicsInputGetDouble",309},
-	{"helicsInputGetTime",310},
-	{"helicsInputGetChar",311},
-	{"helicsInputGetComplexObject",312},
-	{"helicsInputGetComplex",313},
-	{"helicsInputGetVectorSize",314},
-	{"helicsInputGetVector",315},
-	{"helicsInputGetComplexVector",316},
-	{"helicsInputGetNamedPoint",317},
-	{"helicsInputSetDefaultBytes",318},
-	{"helicsInputSetDefaultString",319},
-	{"helicsInputSetDefaultInteger",320},
-	{"helicsInputSetDefaultBoolean",321},
-	{"helicsInputSetDefaultTime",322},
-	{"helicsInputSetDefaultChar",323},
-	{"helicsInputSetDefaultDouble",324},
-	{"helicsInputSetDefaultComplex",325},
-	{"helicsInputSetDefaultVector",326},
-	{"helicsInputSetDefaultComplexVector",327},
-	{"helicsInputSetDefaultNamedPoint",328},
-	{"helicsInputGetType",329},
-	{"helicsInputGetPublicationType",330},
-	{"helicsInputGetPublicationDataType",331},
-	{"helicsPublicationGetType",332},
-	{"helicsInputGetName",333},
-	{"helicsSubscriptionGetTarget",334},
-	{"helicsInputGetTarget",335},
-	{"helicsPublicationGetName",336},
-	{"helicsInputGetUnits",337},
-	{"helicsInputGetInjectionUnits",338},
-	{"helicsInputGetExtractionUnits",339},
-	{"helicsPublicationGetUnits",340},
-	{"helicsInputGetInfo",341},
-	{"helicsInputSetInfo",342},
-	{"helicsInputGetTag",343},
-	{"helicsInputSetTag",344},
-	{"helicsPublicationGetInfo",345},
-	{"helicsPublicationSetInfo",346},
-	{"helicsPublicationGetTag",347},
-	{"helicsPublicationSetTag",348},
-	{"helicsInputGetOption",349},
-	{"helicsInputSetOption",350},
-	{"helicsPublicationGetOption",351},
-	{"helicsPublicationSetOption",352},
-	{"helicsPublicationSetMinimumChange",353},
-	{"helicsInputSetMinimumChange",354},
-	{"helicsInputIsUpdated",355},
-	{"helicsInputLastUpdateTime",356},
-	{"helicsInputClearUpdate",357},
-	{"helicsFederateGetPublicationCount",358},
-	{"helicsFederateGetInputCount",359},
-	{"helicsFederateRegisterEndpoint",360},
-	{"helicsFederateRegisterGlobalEndpoint",361},
-	{"helicsFederateRegisterTargetedEndpoint",362},
-	{"helicsFederateRegisterGlobalTargetedEndpoint",363},
-	{"helicsFederateGetEndpoint",364},
-	{"helicsFederateGetEndpointByIndex",365},
-	{"helicsEndpointIsValid",366},
-	{"helicsEndpointSetDefaultDestination",367},
-	{"helicsEndpointGetDefaultDestination",368},
-	{"helicsEndpointSendBytes",369},
-	{"helicsEndpointSendBytesTo",370},
-	{"helicsEndpointSendBytesToAt",371},
-	{"helicsEndpointSendBytesAt",372},
-	{"helicsEndpointSendMessage",373},
-	{"helicsEndpointSendMessageZeroCopy",374},
-	{"helicsEndpointSubscribe",375},
-	{"helicsFederateHasMessage",376},
-	{"helicsEndpointHasMessage",377},
-	{"helicsFederatePendingMessageCount",378},
-	{"helicsEndpointPendingMessageCount",379},
-	{"helicsEndpointGetMessage",380},
-	{"helicsEndpointCreateMessage",381},
-	{"helicsEndpointClearMessages",382},
-	{"helicsFederateGetMessage",383},
-	{"helicsFederateCreateMessage",384},
-	{"helicsFederateClearMessages",385},
-	{"helicsEndpointGetType",386},
-	{"helicsEndpointGetName",387},
-	{"helicsFederateGetEndpointCount",388},
-	{"helicsEndpointGetInfo",389},
-	{"helicsEndpointSetInfo",390},
-	{"helicsEndpointGetTag",391},
-	{"helicsEndpointSetTag",392},
-	{"helicsEndpointSetOption",393},
-	{"helicsEndpointGetOption",394},
-	{"helicsEndpointAddSourceTarget",395},
-	{"helicsEndpointAddDestinationTarget",396},
-	{"helicsEndpointRemoveTarget",397},
-	{"helicsEndpointAddSourceFilter",398},
-	{"helicsEndpointAddDestinationFilter",399},
-	{"helicsMessageGetSource",400},
-	{"helicsMessageGetDestination",401},
-	{"helicsMessageGetOriginalSource",402},
-	{"helicsMessageGetOriginalDestination",403},
-	{"helicsMessageGetTime",404},
-	{"helicsMessageGetString",405},
-	{"helicsMessageGetMessageID",406},
-	{"helicsMessageGetFlagOption",407},
-	{"helicsMessageGetByteCount",408},
-	{"helicsMessageGetBytes",409},
-	{"helicsMessageGetBytesPointer",410},
-	{"helicsMessageIsValid",411},
-	{"helicsMessageSetSource",412},
-	{"helicsMessageSetDestination",413},
-	{"helicsMessageSetOriginalSource",414},
-	{"helicsMessageSetOriginalDestination",415},
-	{"helicsMessageSetTime",416},
-	{"helicsMessageResize",417},
-	{"helicsMessageReserve",418},
-	{"helicsMessageSetMessageID",419},
-	{"helicsMessageClearFlags",420},
-	{"helicsMessageSetFlagOption",421},
-	{"helicsMessageSetString",422},
-	{"helicsMessageSetData",423},
-	{"helicsMessageAppendData",424},
-	{"helicsMessageCopy",425},
-	{"helicsMessageClone",426},
-	{"helicsMessageFree",427},
-	{"helicsMessageClear",428},
-	{"helicsFederateRegisterFilter",429},
-	{"helicsFederateRegisterGlobalFilter",430},
-	{"helicsFederateRegisterCloningFilter",431},
-	{"helicsFederateRegisterGlobalCloningFilter",432},
-	{"helicsCoreRegisterFilter",433},
-	{"helicsCoreRegisterCloningFilter",434},
-	{"helicsFederateGetFilterCount",435},
-	{"helicsFederateGetFilter",436},
-	{"helicsFederateGetFilterByIndex",437},
-	{"helicsFilterIsValid",438},
-	{"helicsFilterGetName",439},
-	{"helicsFilterSet",440},
-	{"helicsFilterSetString",441},
-	{"helicsFilterAddDestinationTarget",442},
-	{"helicsFilterAddSourceTarget",443},
-	{"helicsFilterAddDeliveryEndpoint",444},
-	{"helicsFilterRemoveTarget",445},
-	{"helicsFilterRemoveDeliveryEndpoint",446},
-	{"helicsFilterGetInfo",447},
-	{"helicsFilterSetInfo",448},
-	{"helicsFilterGetTag",449},
-	{"helicsFilterSetTag",450},
-	{"helicsFilterSetOption",451},
-	{"helicsFilterGetOption",452},
-	{"helicsFederateRegisterTranslator",453},
-	{"helicsFederateRegisterGlobalTranslator",454},
-	{"helicsCoreRegisterTranslator",455},
-	{"helicsFederateGetTranslatorCount",456},
-	{"helicsFederateGetTranslator",457},
-	{"helicsFederateGetTranslatorByIndex",458},
-	{"helicsTranslatorIsValid",459},
-	{"helicsTranslatorGetName",460},
-	{"helicsTranslatorSet",461},
-	{"helicsTranslatorSetString",462},
-	{"helicsTranslatorAddInputTarget",463},
-	{"helicsTranslatorAddPublicationTarget",464},
-	{"helicsTranslatorAddSourceEndpoint",465},
-	{"helicsTranslatorAddDestinationEndpoint",466},
-	{"helicsTranslatorRemoveTarget",467},
-	{"helicsTranslatorGetInfo",468},
-	{"helicsTranslatorSetInfo",469},
-	{"helicsTranslatorGetTag",470},
-	{"helicsTranslatorSetTag",471},
-	{"helicsTranslatorSetOption",472},
-	{"helicsTranslatorGetOption",473},
-	{"helicsBrokerSetLoggingCallback",474},
-	{"helicsCoreSetLoggingCallback",475},
-	{"helicsFederateSetLoggingCallback",476},
-	{"helicsFilterSetCustomCallback",477},
-	{"helicsTranslatorSetCustomCallback",478},
-	{"helicsFederateSetQueryCallback",479},
-	{"helicsFederateSetTimeRequestEntryCallback",480},
-	{"helicsFederateSetTimeUpdateCallback",481},
-	{"helicsFederateSetStateChangeCallback",482},
-	{"helicsFederateSetTimeRequestReturnCallback",483},
-	{"helicsFederateInitializingEntryCallback",484},
-	{"helicsFederateExecutingEntryCallback",485},
-	{"helicsFederateCosimulationTerminationCallback",486},
-	{"helicsFederateErrorHandlerCallback",487},
-	{"helicsCallbackFederateNextTimeCallback",488},
-	{"helicsCallbackFederateNextTimeIterativeCallback",489},
-	{"helicsCallbackFederateInitializeCallback",490},
-	{"helicsQueryBufferFill",491}
+	{"helicsPublicationPublishDataBuffer",300},
+	{"helicsPublicationAddTarget",301},
+	{"helicsInputIsValid",302},
+	{"helicsInputAddTarget",303},
+	{"helicsInputGetByteCount",304},
+	{"helicsInputGetBytes",305},
+	{"helicsInputGetDataBuffer",306},
+	{"helicsInputGetStringSize",307},
+	{"helicsInputGetString",308},
+	{"helicsInputGetInteger",309},
+	{"helicsInputGetBoolean",310},
+	{"helicsInputGetDouble",311},
+	{"helicsInputGetTime",312},
+	{"helicsInputGetChar",313},
+	{"helicsInputGetComplexObject",314},
+	{"helicsInputGetComplex",315},
+	{"helicsInputGetVectorSize",316},
+	{"helicsInputGetVector",317},
+	{"helicsInputGetComplexVector",318},
+	{"helicsInputGetNamedPoint",319},
+	{"helicsInputSetDefaultBytes",320},
+	{"helicsInputSetDefaultString",321},
+	{"helicsInputSetDefaultInteger",322},
+	{"helicsInputSetDefaultBoolean",323},
+	{"helicsInputSetDefaultTime",324},
+	{"helicsInputSetDefaultChar",325},
+	{"helicsInputSetDefaultDouble",326},
+	{"helicsInputSetDefaultComplex",327},
+	{"helicsInputSetDefaultVector",328},
+	{"helicsInputSetDefaultComplexVector",329},
+	{"helicsInputSetDefaultNamedPoint",330},
+	{"helicsInputGetType",331},
+	{"helicsInputGetPublicationType",332},
+	{"helicsInputGetPublicationDataType",333},
+	{"helicsPublicationGetType",334},
+	{"helicsInputGetName",335},
+	{"helicsSubscriptionGetTarget",336},
+	{"helicsInputGetTarget",337},
+	{"helicsPublicationGetName",338},
+	{"helicsInputGetUnits",339},
+	{"helicsInputGetInjectionUnits",340},
+	{"helicsInputGetExtractionUnits",341},
+	{"helicsPublicationGetUnits",342},
+	{"helicsInputGetInfo",343},
+	{"helicsInputSetInfo",344},
+	{"helicsInputGetTag",345},
+	{"helicsInputSetTag",346},
+	{"helicsPublicationGetInfo",347},
+	{"helicsPublicationSetInfo",348},
+	{"helicsPublicationGetTag",349},
+	{"helicsPublicationSetTag",350},
+	{"helicsInputGetOption",351},
+	{"helicsInputSetOption",352},
+	{"helicsPublicationGetOption",353},
+	{"helicsPublicationSetOption",354},
+	{"helicsPublicationSetMinimumChange",355},
+	{"helicsInputSetMinimumChange",356},
+	{"helicsInputIsUpdated",357},
+	{"helicsInputLastUpdateTime",358},
+	{"helicsInputClearUpdate",359},
+	{"helicsFederateGetPublicationCount",360},
+	{"helicsFederateGetInputCount",361},
+	{"helicsFederateRegisterEndpoint",362},
+	{"helicsFederateRegisterGlobalEndpoint",363},
+	{"helicsFederateRegisterTargetedEndpoint",364},
+	{"helicsFederateRegisterGlobalTargetedEndpoint",365},
+	{"helicsFederateGetEndpoint",366},
+	{"helicsFederateGetEndpointByIndex",367},
+	{"helicsEndpointIsValid",368},
+	{"helicsEndpointSetDefaultDestination",369},
+	{"helicsEndpointGetDefaultDestination",370},
+	{"helicsEndpointSendBytes",371},
+	{"helicsEndpointSendBytesTo",372},
+	{"helicsEndpointSendBytesToAt",373},
+	{"helicsEndpointSendBytesAt",374},
+	{"helicsEndpointSendMessage",375},
+	{"helicsEndpointSendMessageZeroCopy",376},
+	{"helicsEndpointSubscribe",377},
+	{"helicsFederateHasMessage",378},
+	{"helicsEndpointHasMessage",379},
+	{"helicsFederatePendingMessageCount",380},
+	{"helicsEndpointPendingMessageCount",381},
+	{"helicsEndpointGetMessage",382},
+	{"helicsEndpointCreateMessage",383},
+	{"helicsEndpointClearMessages",384},
+	{"helicsFederateGetMessage",385},
+	{"helicsFederateCreateMessage",386},
+	{"helicsFederateClearMessages",387},
+	{"helicsEndpointGetType",388},
+	{"helicsEndpointGetName",389},
+	{"helicsFederateGetEndpointCount",390},
+	{"helicsEndpointGetInfo",391},
+	{"helicsEndpointSetInfo",392},
+	{"helicsEndpointGetTag",393},
+	{"helicsEndpointSetTag",394},
+	{"helicsEndpointSetOption",395},
+	{"helicsEndpointGetOption",396},
+	{"helicsEndpointAddSourceTarget",397},
+	{"helicsEndpointAddDestinationTarget",398},
+	{"helicsEndpointRemoveTarget",399},
+	{"helicsEndpointAddSourceFilter",400},
+	{"helicsEndpointAddDestinationFilter",401},
+	{"helicsMessageGetSource",402},
+	{"helicsMessageGetDestination",403},
+	{"helicsMessageGetOriginalSource",404},
+	{"helicsMessageGetOriginalDestination",405},
+	{"helicsMessageGetTime",406},
+	{"helicsMessageGetString",407},
+	{"helicsMessageGetMessageID",408},
+	{"helicsMessageGetFlagOption",409},
+	{"helicsMessageGetByteCount",410},
+	{"helicsMessageGetBytes",411},
+	{"helicsMessageGetBytesPointer",412},
+	{"helicsMessageDataBuffer",413},
+	{"helicsMessageIsValid",414},
+	{"helicsMessageSetSource",415},
+	{"helicsMessageSetDestination",416},
+	{"helicsMessageSetOriginalSource",417},
+	{"helicsMessageSetOriginalDestination",418},
+	{"helicsMessageSetTime",419},
+	{"helicsMessageResize",420},
+	{"helicsMessageReserve",421},
+	{"helicsMessageSetMessageID",422},
+	{"helicsMessageClearFlags",423},
+	{"helicsMessageSetFlagOption",424},
+	{"helicsMessageSetString",425},
+	{"helicsMessageSetData",426},
+	{"helicsMessageSetDataBuffer",427},
+	{"helicsMessageAppendData",428},
+	{"helicsMessageCopy",429},
+	{"helicsMessageClone",430},
+	{"helicsMessageFree",431},
+	{"helicsMessageClear",432},
+	{"helicsFederateRegisterFilter",433},
+	{"helicsFederateRegisterGlobalFilter",434},
+	{"helicsFederateRegisterCloningFilter",435},
+	{"helicsFederateRegisterGlobalCloningFilter",436},
+	{"helicsCoreRegisterFilter",437},
+	{"helicsCoreRegisterCloningFilter",438},
+	{"helicsFederateGetFilterCount",439},
+	{"helicsFederateGetFilter",440},
+	{"helicsFederateGetFilterByIndex",441},
+	{"helicsFilterIsValid",442},
+	{"helicsFilterGetName",443},
+	{"helicsFilterSet",444},
+	{"helicsFilterSetString",445},
+	{"helicsFilterAddDestinationTarget",446},
+	{"helicsFilterAddSourceTarget",447},
+	{"helicsFilterAddDeliveryEndpoint",448},
+	{"helicsFilterRemoveTarget",449},
+	{"helicsFilterRemoveDeliveryEndpoint",450},
+	{"helicsFilterGetInfo",451},
+	{"helicsFilterSetInfo",452},
+	{"helicsFilterGetTag",453},
+	{"helicsFilterSetTag",454},
+	{"helicsFilterSetOption",455},
+	{"helicsFilterGetOption",456},
+	{"helicsFederateRegisterTranslator",457},
+	{"helicsFederateRegisterGlobalTranslator",458},
+	{"helicsCoreRegisterTranslator",459},
+	{"helicsFederateGetTranslatorCount",460},
+	{"helicsFederateGetTranslator",461},
+	{"helicsFederateGetTranslatorByIndex",462},
+	{"helicsTranslatorIsValid",463},
+	{"helicsTranslatorGetName",464},
+	{"helicsTranslatorSet",465},
+	{"helicsTranslatorSetString",466},
+	{"helicsTranslatorAddInputTarget",467},
+	{"helicsTranslatorAddPublicationTarget",468},
+	{"helicsTranslatorAddSourceEndpoint",469},
+	{"helicsTranslatorAddDestinationEndpoint",470},
+	{"helicsTranslatorRemoveTarget",471},
+	{"helicsTranslatorGetInfo",472},
+	{"helicsTranslatorSetInfo",473},
+	{"helicsTranslatorGetTag",474},
+	{"helicsTranslatorSetTag",475},
+	{"helicsTranslatorSetOption",476},
+	{"helicsTranslatorGetOption",477},
+	{"helicsBrokerSetLoggingCallback",478},
+	{"helicsCoreSetLoggingCallback",479},
+	{"helicsFederateSetLoggingCallback",480},
+	{"helicsFilterSetCustomCallback",481},
+	{"helicsTranslatorSetCustomCallback",482},
+	{"helicsFederateSetQueryCallback",483},
+	{"helicsFederateSetTimeRequestEntryCallback",484},
+	{"helicsFederateSetTimeUpdateCallback",485},
+	{"helicsFederateSetStateChangeCallback",486},
+	{"helicsFederateSetTimeRequestReturnCallback",487},
+	{"helicsFederateInitializingEntryCallback",488},
+	{"helicsFederateExecutingEntryCallback",489},
+	{"helicsFederateCosimulationTerminationCallback",490},
+	{"helicsFederateErrorHandlerCallback",491},
+	{"helicsCallbackFederateNextTimeCallback",492},
+	{"helicsCallbackFederateNextTimeIterativeCallback",493},
+	{"helicsCallbackFederateInitializeCallback",494},
+	{"helicsQueryBufferFill",495}
 };
 
 void _wrap_helicsCreateDataBuffer(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
@@ -729,26 +732,31 @@ void _wrap_helicsDataBufferClone(int resc, mxArray *resv[], int argc, const mxAr
 }
 
 
-void _wrap_helicsIntegerToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	if(argc != 1){
+void _wrap_helicsDataBufferFillFromInteger(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	if(argc != 2){
 		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsIntegerToBytes:rhs","This function requires 1 arguments.");
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromInteger:rhs","This function requires 2 arguments.");
 	}
 
-	if(mxGetClassID(argv[0]) != mxINT64_CLASS){
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
 		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsIntegerToBytes:TypeError","Argument 1 must be of type int64.");
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromInteger:TypeError","Argument 1 must be of type uint64.");
 	}
-mxInt64 *pvalue = mxGetInt64s(argv[0]);
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[0])));
+
+	if(mxGetClassID(argv[1]) != mxINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromInteger:TypeError","Argument 2 must be of type int64.");
+	}
+mxInt64 *pvalue = mxGetInt64s(argv[1]);
 	int64_t value = static_cast<int64_t>(pvalue[0]);
 
-	HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(int));
+	int32_t result = helicsDataBufferFillFromInteger(data, value);
 
-	int32_t result = helicsIntegerToBytes(value, data);
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
+	mxInt32 *rv = mxGetInt32s(_out);
+	rv[0] = static_cast<mxInt32>(result);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	mxUint64 *rv = mxGetUint64s(_out);
-	rv[0] = reinterpret_cast<mxUint64>(data);
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -756,25 +764,30 @@ mxInt64 *pvalue = mxGetInt64s(argv[0]);
 }
 
 
-void _wrap_helicsDoubleToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	if(argc != 1){
+void _wrap_helicsDataBufferFillFromDouble(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	if(argc != 2){
 		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsDoubleToBytes:rhs","This function requires 1 arguments.");
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromDouble:rhs","This function requires 2 arguments.");
 	}
 
-	if(!mxIsNumeric(argv[0])){
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
 		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsDoubleToBytes:TypeError","Argument 1 must be of type double.");
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromDouble:TypeError","Argument 1 must be of type uint64.");
 	}
-	double value = mxGetScalar(argv[0]);
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[0])));
 
-	HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(double));
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromDouble:TypeError","Argument 2 must be of type double.");
+	}
+	double value = mxGetScalar(argv[1]);
 
-	int32_t result = helicsDoubleToBytes(value, data);
+	int32_t result = helicsDataBufferFillFromDouble(data, value);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	mxUint64 *rv = mxGetUint64s(_out);
-	rv[0] = reinterpret_cast<mxUint64>(data);
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
+	mxInt32 *rv = mxGetInt32s(_out);
+	rv[0] = static_cast<mxInt32>(result);
+
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -782,108 +795,135 @@ void _wrap_helicsDoubleToBytes(int resc, mxArray *resv[], int argc, const mxArra
 }
 
 
-void _wrap_helicsStringToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	if(argc != 1){
+void _wrap_helicsDataBufferFillFromString(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	if(argc < 1 || argc > 2){
 		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsStringToBytes:rhs","This function requires 1 arguments.");
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromString:rhs","This function requires at least 1 arguments and at most 2 arguments.");
 	}
 
-	if(!mxIsChar(argv[0])){
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
 		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsStringToBytes:TypeError","Argument 1 must be a string.");
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromString:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[0])));
+
+	if(argc > 1){
+		if(!mxIsChar(argv[1])){
+			mexUnlock();
+			mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromString:TypeError","Argument 2 must be a string.");
+		}
 	}
 	char *value = nullptr;
 	size_t valueLength = 0;
 	int valueStatus = 0;
-	if(argc > 0){
-		valueLength = mxGetN(argv[0]) + 1;
+	if(argc > 1){
+		valueLength = mxGetN(argv[1]) + 1;
 		value = static_cast<char *>(malloc(valueLength));
-		valueStatus = mxGetString(argv[0], value, valueLength);
+		valueStatus = mxGetString(argv[1], value, valueLength);
 
 	}
-	HelicsDataBuffer data = helicsCreateDataBuffer(static_cast<int32_t>(valueLength));
+	int32_t result = helicsDataBufferFillFromString(data, static_cast<const char *>(value));
 
-	int32_t result = helicsStringToBytes(value, data);
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
+	mxInt32 *rv = mxGetInt32s(_out);
+	rv[0] = static_cast<mxInt32>(result);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	mxUint64 *rv = mxGetUint64s(_out);
-	rv[0] = reinterpret_cast<mxUint64>(data);
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
+
+	free(value);
 }
 
 
-void _wrap_helicsRawStringToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	if(argc != 1){
+void _wrap_helicsDataBufferFillFromRawString(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	if(argc != 3){
 		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsRawStringToBytes:rhs","This function requires 1 arguments.");
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromRawString:rhs","This function requires 3 arguments.");
 	}
 
-	if(!mxIsChar(argv[0])){
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
 		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsRawStringToBytes:TypeError","Argument 1 must be a string.");
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromRawString:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[0])));
+
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromRawString:TypeError","Argument 2 must be a string.");
 	}
 	char *str = nullptr;
 	size_t strLength = 0;
 	int strStatus = 0;
-	if(argc > 0){
-		strLength = mxGetN(argv[0]) + 1;
+	if(argc > 1){
+		strLength = mxGetN(argv[1]) + 1;
 		str = static_cast<char *>(malloc(strLength));
-		strStatus = mxGetString(argv[0], str, strLength);
+		strStatus = mxGetString(argv[1], str, strLength);
 
 	}
-	HelicsDataBuffer data = helicsCreateDataBuffer(static_cast<int32_t>(strLength));
+	if(!mxIsNumeric(argv[2])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromRawString:TypeError","Argument 3 must be of type integer.");
+	}
+		int stringSize = static_cast<int>(mxGetScalar(argv[2]));
 
-	int32_t result = helicsRawStringToBytes(str, (int)strLength, data);
+	int32_t result = helicsDataBufferFillFromRawString(data, static_cast<const char *>(str), stringSize);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	mxUint64 *rv = mxGetUint64s(_out);
-	rv[0] = reinterpret_cast<mxUint64>(data);
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
+	mxInt32 *rv = mxGetInt32s(_out);
+	rv[0] = static_cast<mxInt32>(result);
+
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
+
+	free(str);
 }
 
 
-void _wrap_helicsBooleanToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	if(argc != 1){
+void _wrap_helicsDataBufferFillFromBoolean(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	if(argc != 2){
 		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsBooleanToBytes:rhs","This function requires 1 arguments.");
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromBoolean:rhs","This function requires 2 arguments.");
 	}
 
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromBoolean:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[0])));
+
 	mxLogical *pvalue = nullptr;
-	if(mxIsLogical(argv[0])){
-		pvalue = mxGetLogicals(argv[0]);
-	} else if(mxIsNumeric(argv[0])){
-		if(mxGetScalar(argv[0]) == 0.0){
+	if(mxIsLogical(argv[1])){
+		pvalue = mxGetLogicals(argv[1]);
+	} else if(mxIsNumeric(argv[1])){
+		if(mxGetScalar(argv[1]) == 0.0){
 			mxArray *logicalvalue = mxCreateLogicalScalar(false);
 			pvalue = mxGetLogicals(logicalvalue);
-		} else if(mxGetScalar(argv[0]) == 1.0){
+		} else if(mxGetScalar(argv[1]) == 1.0){
 			mxArray *logicalvalue = mxCreateLogicalScalar(true);
 			pvalue = mxGetLogicals(logicalvalue);
 		} else {
 			mexUnlock();
-			mexErrMsgIdAndTxt("MATLAB:helicsBooleanToBytes:TypeError","Argument 1 must be a logical type or a 0 or 1.");
+			mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromBoolean:TypeError","Argument 2 must be a logical type or a 0 or 1.");
 		}
 	} else {
 		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsBooleanToBytes:TypeError","Argument 1 must be a logical type or a 0 or 1.");
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromBoolean:TypeError","Argument 2 must be a logical type or a 0 or 1.");
 	}
 	HelicsBool value = HELICS_FALSE;
 	if(pvalue[0]){
 		value = HELICS_TRUE;
 	}
 
-	HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(HelicsBool));
+	int32_t result = helicsDataBufferFillFromBoolean(data, value);
 
-	int32_t result = helicsBooleanToBytes(value, data);
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
+	mxInt32 *rv = mxGetInt32s(_out);
+	rv[0] = static_cast<mxInt32>(result);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	mxUint64 *rv = mxGetUint64s(_out);
-	rv[0] = reinterpret_cast<mxUint64>(data);
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -891,214 +931,216 @@ void _wrap_helicsBooleanToBytes(int resc, mxArray *resv[], int argc, const mxArr
 }
 
 
-void _wrap_helicsCharToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	if(argc != 1){
+void _wrap_helicsDataBufferFillFromChar(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	if(argc != 2){
 		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsCharToBytes:rhs","This function requires 1 arguments.");
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromChar:rhs","This function requires 2 arguments.");
 	}
 
-	if(!mxIsChar(argv[0])){
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
 		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsCharToBytes:TypeError","Argument 1 must be a string.");
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromChar:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[0])));
+
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromChar:TypeError","Argument 2 must be a string.");
 	}
 	char *value = nullptr;
 	size_t valueLength = 0;
 	int valueStatus = 0;
-	if(argc > 0){
-		valueLength = mxGetN(argv[0]) + 1;
+	if(argc > 1){
+		valueLength = mxGetN(argv[1]) + 1;
 		value = static_cast<char *>(malloc(valueLength));
-		valueStatus = mxGetString(argv[0], value, valueLength);
+		valueStatus = mxGetString(argv[1], value, valueLength);
 
 	}
-	HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(char));
+	int32_t result = helicsDataBufferFillFromChar(data, value[0]);
 
-	int32_t result = helicsCharToBytes(*value, data);
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
+	mxInt32 *rv = mxGetInt32s(_out);
+	rv[0] = static_cast<mxInt32>(result);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	mxUint64 *rv = mxGetUint64s(_out);
-	rv[0] = reinterpret_cast<mxUint64>(data);
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
+
+	free(value);
 }
 
 
-void _wrap_helicsTimeToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	if(argc != 1){
-		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsTimeToBytes:rhs","This function requires 1 arguments.");
-	}
-
-	if(!mxIsNumeric(argv[0])){
-		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsTimeToBytes:TypeError","Argument 1 must be of type double.");
-	}
-	HelicsTime value = (HelicsTime)(mxGetScalar(argv[0]));
-
-	HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(HelicsTime));
-
-	int32_t result = helicsTimeToBytes(value, data);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	mxUint64 *rv = mxGetUint64s(_out);
-	rv[0] = reinterpret_cast<mxUint64>(data);
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-}
-
-
-void _wrap_helicsComplexToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	if(argc != 1){
-		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsComplexToBytes:rhs","This function requires 1 arguments.");
-	}
-
-	if(!mxIsComplex(argv[0])){
-		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsComplexToBytes:TypeError","Argument 1 must be of type complex.");
-	}
-
-	mxComplexDouble *value = mxGetComplexDoubles(argv[0]);
-
-	HelicsDataBuffer data = helicsCreateDataBuffer(2*sizeof(double));
-
-	int32_t result = helicsComplexToBytes(value->real, value->imag, data);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	mxUint64 *rv = mxGetUint64s(_out);
-	rv[0] = reinterpret_cast<mxUint64>(data);
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-}
-
-
-void _wrap_helicsComplexObjectToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	if(argc != 1){
-		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsComplexObjectToBytes:rhs","This function requires 1 arguments.");
-	}
-
-	if(!mxIsComplex(argv[0])){
-		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsComplexObjectToBytes:TypeError","Argument 1 must be of type complex.");
-	}
-
-	mxComplexDouble *value = mxGetComplexDoubles(argv[0]);
-
-	HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(HelicsComplex));
-
-	HelicsComplex vObj = {value->real, value->imag};
-
-	int32_t result = helicsComplexObjectToBytes(vObj, data);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	mxUint64 *rv = mxGetUint64s(_out);
-	rv[0] = reinterpret_cast<mxUint64>(data);
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-}
-
-
-void _wrap_helicsVectorToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	if(argc != 1){
-		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsVectorToBytes:rhs","This function requires 1 arguments.");
-	}
-
-	if(!mxIsNumeric(argv[0])){
-		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsVectorToBytes:TypeError","Argument 1 must be an array of doubles.");
-	}
-	int dataSize =  static_cast<int>(mxGetNumberOfElements(argv[0]));
-
-	double *value =  static_cast<double *>(mxGetDoubles(argv[0]));
-
-	HelicsDataBuffer data = helicsCreateDataBuffer(dataSize*sizeof(double));
-
-	int32_t result = helicsVectorToBytes(static_cast<const double *>(value), dataSize, data);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	mxUint64 *rv = mxGetUint64s(_out);
-	rv[0] = reinterpret_cast<mxUint64>(data);
-	if(_out){
-		--resc;
-		*resv++ = _out;
-	}
-}
-
-
-void _wrap_helicsNamedPointToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+void _wrap_helicsDataBufferFillFromTime(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
 	if(argc != 2){
 		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsNamedPointToBytes:rhs","This function requires 2 arguments.");
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromTime:rhs","This function requires 2 arguments.");
 	}
 
-	if(!mxIsChar(argv[0])){
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
 		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsNamedPointToBytes:TypeError","Argument 1 must be a string.");
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromTime:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromTime:TypeError","Argument 2 must be of type double.");
+	}
+	HelicsTime value = (HelicsTime)(mxGetScalar(argv[1]));
+
+	int32_t result = helicsDataBufferFillFromTime(data, value);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
+	mxInt32 *rv = mxGetInt32s(_out);
+	rv[0] = static_cast<mxInt32>(result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+}
+
+
+void _wrap_helicsDataBufferFillFromComplex(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromComplex:rhs","This function requires 2 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromComplex:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[0])));
+
+	if(!mxIsComplex(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromComplex:TypeError","Argument 1 must be of type complex.");
+	}
+
+	mxComplexDouble *value = mxGetComplexDoubles(argv[1]);
+
+	int32_t result = helicsDataBufferFillFromComplex(data, value->real, value->imag);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
+	mxInt32 *rv = mxGetInt32s(_out);
+	rv[0] = static_cast<mxInt32>(result);
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+}
+
+
+void _wrap_helicsDataBufferFillFromVector(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromVector:rhs","This function requires 2 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromVector:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[0])));
+
+	if(!mxIsNumeric(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromVector:TypeError","Argument 1 must be an array of doubles.");
+	}
+	int dataSize =  static_cast<int>(mxGetNumberOfElements(argv[1]));
+
+	double *value =  static_cast<double *>(mxGetDoubles(argv[1]));
+
+	int32_t result = helicsDataBufferFillFromVector(data, static_cast<const double *>(value), dataSize);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
+	mxInt32 *rv = mxGetInt32s(_out);
+	rv[0] = static_cast<mxInt32>(result);
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+}
+
+
+void _wrap_helicsDataBufferFillFromNamedPoint(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	if(argc != 3){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromNamedPoint:rhs","This function requires 3 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromNamedPoint:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[0])));
+
+	if(!mxIsChar(argv[1])){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromNamedPoint:TypeError","Argument 2 must be a string.");
 	}
 	char *name = nullptr;
 	size_t nameLength = 0;
 	int nameStatus = 0;
-	if(argc > 0){
-		nameLength = mxGetN(argv[0]) + 1;
+	if(argc > 1){
+		nameLength = mxGetN(argv[1]) + 1;
 		name = static_cast<char *>(malloc(nameLength));
-		nameStatus = mxGetString(argv[0], name, nameLength);
+		nameStatus = mxGetString(argv[1], name, nameLength);
 
 	}
-	if(!mxIsNumeric(argv[1])){
+	if(!mxIsNumeric(argv[2])){
 		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsNamedPointToBytes:TypeError","Argument 2 must be of type double.");
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromNamedPoint:TypeError","Argument 3 must be of type double.");
 	}
-	double value = mxGetScalar(argv[1]);
+	double value = mxGetScalar(argv[2]);
 
-	HelicsDataBuffer data = helicsCreateDataBuffer(sizeof(double));
+	int32_t result = helicsDataBufferFillFromNamedPoint(data, static_cast<const char *>(name), value);
 
-	int32_t result = helicsNamedPointToBytes(name, value, data);
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
+	mxInt32 *rv = mxGetInt32s(_out);
+	rv[0] = static_cast<mxInt32>(result);
 
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	mxUint64 *rv = mxGetUint64s(_out);
-	rv[0] = reinterpret_cast<mxUint64>(data);
 	if(_out){
 		--resc;
 		*resv++ = _out;
 	}
+
+	free(name);
 }
 
 
-void _wrap_helicsComplexVectorToBytes(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
-	if(argc != 1){
+void _wrap_helicsDataBufferFillFromComplexVector(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	if(argc != 2){
 		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsComplexVectorToBytes:rhs","This function requires 1 arguments.");
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromComplexVector:rhs","This function requires 2 arguments.");
 	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromComplexVector:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[0])));
 
 	if(!mxIsComplex(argv[1])){
 		mexUnlock();
-		mexErrMsgIdAndTxt("MATLAB:helicsComplexVectorToBytes:TypeError","Argument 1 must be of an array of type complex.");
+		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromComplexVector:TypeError","Argument 2 must be of an array of type complex.");
 	}
-	int dataSize =  static_cast<int>(mxGetN(argv[0])*2);
+	int dataSize =  static_cast<int>(mxGetN(argv[1])*2);
 
 	double *value = static_cast<double *>(malloc(dataSize * sizeof(double)));
-	mxComplexDouble *vals = mxGetComplexDoubles(argv[0]);
+	mxComplexDouble *vals = mxGetComplexDoubles(argv[1]);
 	for(int i=0; i<dataSize/2; ++i){
 		value[2*i] = vals[i].real;
 		value[2*i + 1] = vals[i].imag;
 	}
 
-	HelicsDataBuffer data = helicsCreateDataBuffer(dataSize*sizeof(double));
+	int32_t result = helicsDataBufferFillFromComplexVector(data, static_cast<const double *>(value), dataSize);
 
-	int32_t result = helicsComplexVectorToBytes(static_cast<const double *>(value), dataSize, data);
-
-	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-	mxUint64 *rv = mxGetUint64s(_out);
-	rv[0] = reinterpret_cast<mxUint64>(data);
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
+	mxInt32 *rv = mxGetInt32s(_out);
+	rv[0] = static_cast<mxInt32>(result);
 	if(_out){
 		--resc;
 		*resv++ = _out;
@@ -3156,11 +3198,11 @@ void _wrap_helicsCreateValueFederate(int resc, mxArray *resv[], int argc, const 
 		mexUnlock();
 		mexErrMsgIdAndTxt("MATLAB:helicsCreateValueFederate:TypeError","Argument 2 must be of type uint64.");
 	}
-	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[1])));
+	HelicsFederateInfo fedInfo = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[1])));
 
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsFederate result = helicsCreateValueFederate(static_cast<const char *>(fedName), fi, &err);
+	HelicsFederate result = helicsCreateValueFederate(static_cast<const char *>(fedName), fedInfo, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
 	mxUint64 *rv = mxGetUint64s(_out);
@@ -3242,11 +3284,11 @@ void _wrap_helicsCreateMessageFederate(int resc, mxArray *resv[], int argc, cons
 		mexUnlock();
 		mexErrMsgIdAndTxt("MATLAB:helicsCreateMessageFederate:TypeError","Argument 2 must be of type uint64.");
 	}
-	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[1])));
+	HelicsFederateInfo fedInfo = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[1])));
 
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsFederate result = helicsCreateMessageFederate(static_cast<const char *>(fedName), fi, &err);
+	HelicsFederate result = helicsCreateMessageFederate(static_cast<const char *>(fedName), fedInfo, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
 	mxUint64 *rv = mxGetUint64s(_out);
@@ -3328,11 +3370,11 @@ void _wrap_helicsCreateCombinationFederate(int resc, mxArray *resv[], int argc, 
 		mexUnlock();
 		mexErrMsgIdAndTxt("MATLAB:helicsCreateCombinationFederate:TypeError","Argument 2 must be of type uint64.");
 	}
-	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[1])));
+	HelicsFederateInfo fedInfo = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[1])));
 
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsFederate result = helicsCreateCombinationFederate(static_cast<const char *>(fedName), fi, &err);
+	HelicsFederate result = helicsCreateCombinationFederate(static_cast<const char *>(fedName), fedInfo, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
 	mxUint64 *rv = mxGetUint64s(_out);
@@ -3414,11 +3456,11 @@ void _wrap_helicsCreateCallbackFederate(int resc, mxArray *resv[], int argc, con
 		mexUnlock();
 		mexErrMsgIdAndTxt("MATLAB:helicsCreateCallbackFederate:TypeError","Argument 2 must be of type uint64.");
 	}
-	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[1])));
+	HelicsFederateInfo fedInfo = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[1])));
 
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsFederate result = helicsCreateCallbackFederate(static_cast<const char *>(fedName), fi, &err);
+	HelicsFederate result = helicsCreateCallbackFederate(static_cast<const char *>(fedName), fedInfo, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
 	mxUint64 *rv = mxGetUint64s(_out);
@@ -3657,11 +3699,11 @@ void _wrap_helicsFederateInfoClone(int resc, mxArray *resv[], int argc, const mx
 		mexUnlock();
 		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoClone:TypeError","Argument 1 must be of type uint64.");
 	}
-	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
+	HelicsFederateInfo fedInfo = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
 
 	HelicsError err = helicsErrorInitialize();
 
-	HelicsFederateInfo result = helicsFederateInfoClone(fi, &err);
+	HelicsFederateInfo result = helicsFederateInfoClone(fedInfo, &err);
 
 	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
 	mxUint64 *rv = mxGetUint64s(_out);
@@ -3688,7 +3730,7 @@ void _wrap_helicsFederateInfoLoadFromArgs(int resc, mxArray *resv[], int argc, c
 		mexUnlock();
 		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoLoadFromArgs:TypeError","Argument 1 must be of type uint64.");
 	}
-	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
+	HelicsFederateInfo fedInfo = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
 
 	if(!mxIsCell(argv[1])){
 		mexUnlock();
@@ -3708,7 +3750,7 @@ void _wrap_helicsFederateInfoLoadFromArgs(int resc, mxArray *resv[], int argc, c
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateInfoLoadFromArgs(fi, arg1, arg2, &err);
+	helicsFederateInfoLoadFromArgs(fedInfo, arg1, arg2, &err);
 
 	mxArray *_out = nullptr;
 	if(_out){
@@ -3734,7 +3776,7 @@ void _wrap_helicsFederateInfoLoadFromString(int resc, mxArray *resv[], int argc,
 		mexUnlock();
 		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoLoadFromString:TypeError","Argument 1 must be of type uint64.");
 	}
-	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
+	HelicsFederateInfo fedInfo = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
 
 	if(!mxIsChar(argv[1])){
 		mexUnlock();
@@ -3751,7 +3793,7 @@ void _wrap_helicsFederateInfoLoadFromString(int resc, mxArray *resv[], int argc,
 	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateInfoLoadFromString(fi, static_cast<const char *>(args), &err);
+	helicsFederateInfoLoadFromString(fedInfo, static_cast<const char *>(args), &err);
 
 	mxArray *_out = nullptr;
 
@@ -3778,9 +3820,9 @@ void _wrap_helicsFederateInfoFree(int resc, mxArray *resv[], int argc, const mxA
 		mexUnlock();
 		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoFree:TypeError","Argument 1 must be of type uint64.");
 	}
-	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
+	HelicsFederateInfo fedInfo = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
 
-	helicsFederateInfoFree(fi);
+	helicsFederateInfoFree(fedInfo);
 
 	mxArray *_out = nullptr;
 
@@ -3830,7 +3872,7 @@ void _wrap_helicsFederateInfoSetCoreName(int resc, mxArray *resv[], int argc, co
 		mexUnlock();
 		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetCoreName:TypeError","Argument 1 must be of type uint64.");
 	}
-	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
+	HelicsFederateInfo fedInfo = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
 
 	if(!mxIsChar(argv[1])){
 		mexUnlock();
@@ -3847,7 +3889,7 @@ void _wrap_helicsFederateInfoSetCoreName(int resc, mxArray *resv[], int argc, co
 	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateInfoSetCoreName(fi, static_cast<const char *>(corename), &err);
+	helicsFederateInfoSetCoreName(fedInfo, static_cast<const char *>(corename), &err);
 
 	mxArray *_out = nullptr;
 
@@ -3874,7 +3916,7 @@ void _wrap_helicsFederateInfoSetCoreInitString(int resc, mxArray *resv[], int ar
 		mexUnlock();
 		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetCoreInitString:TypeError","Argument 1 must be of type uint64.");
 	}
-	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
+	HelicsFederateInfo fedInfo = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
 
 	if(!mxIsChar(argv[1])){
 		mexUnlock();
@@ -3891,7 +3933,7 @@ void _wrap_helicsFederateInfoSetCoreInitString(int resc, mxArray *resv[], int ar
 	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateInfoSetCoreInitString(fi, static_cast<const char *>(coreInit), &err);
+	helicsFederateInfoSetCoreInitString(fedInfo, static_cast<const char *>(coreInit), &err);
 
 	mxArray *_out = nullptr;
 
@@ -3918,7 +3960,7 @@ void _wrap_helicsFederateInfoSetBrokerInitString(int resc, mxArray *resv[], int 
 		mexUnlock();
 		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetBrokerInitString:TypeError","Argument 1 must be of type uint64.");
 	}
-	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
+	HelicsFederateInfo fedInfo = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
 
 	if(!mxIsChar(argv[1])){
 		mexUnlock();
@@ -3935,7 +3977,7 @@ void _wrap_helicsFederateInfoSetBrokerInitString(int resc, mxArray *resv[], int 
 	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateInfoSetBrokerInitString(fi, static_cast<const char *>(brokerInit), &err);
+	helicsFederateInfoSetBrokerInitString(fedInfo, static_cast<const char *>(brokerInit), &err);
 
 	mxArray *_out = nullptr;
 
@@ -3962,7 +4004,7 @@ void _wrap_helicsFederateInfoSetCoreType(int resc, mxArray *resv[], int argc, co
 		mexUnlock();
 		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetCoreType:TypeError","Argument 1 must be of type uint64.");
 	}
-	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
+	HelicsFederateInfo fedInfo = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
 
 	if(!mxIsNumeric(argv[1])){
 		mexUnlock();
@@ -3972,7 +4014,7 @@ void _wrap_helicsFederateInfoSetCoreType(int resc, mxArray *resv[], int argc, co
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateInfoSetCoreType(fi, coretype, &err);
+	helicsFederateInfoSetCoreType(fedInfo, coretype, &err);
 
 	mxArray *_out = nullptr;
 
@@ -3997,7 +4039,7 @@ void _wrap_helicsFederateInfoSetCoreTypeFromString(int resc, mxArray *resv[], in
 		mexUnlock();
 		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetCoreTypeFromString:TypeError","Argument 1 must be of type uint64.");
 	}
-	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
+	HelicsFederateInfo fedInfo = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
 
 	if(!mxIsChar(argv[1])){
 		mexUnlock();
@@ -4014,7 +4056,7 @@ void _wrap_helicsFederateInfoSetCoreTypeFromString(int resc, mxArray *resv[], in
 	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateInfoSetCoreTypeFromString(fi, static_cast<const char *>(coretype), &err);
+	helicsFederateInfoSetCoreTypeFromString(fedInfo, static_cast<const char *>(coretype), &err);
 
 	mxArray *_out = nullptr;
 
@@ -4041,7 +4083,7 @@ void _wrap_helicsFederateInfoSetBroker(int resc, mxArray *resv[], int argc, cons
 		mexUnlock();
 		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetBroker:TypeError","Argument 1 must be of type uint64.");
 	}
-	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
+	HelicsFederateInfo fedInfo = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
 
 	if(!mxIsChar(argv[1])){
 		mexUnlock();
@@ -4058,7 +4100,7 @@ void _wrap_helicsFederateInfoSetBroker(int resc, mxArray *resv[], int argc, cons
 	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateInfoSetBroker(fi, static_cast<const char *>(broker), &err);
+	helicsFederateInfoSetBroker(fedInfo, static_cast<const char *>(broker), &err);
 
 	mxArray *_out = nullptr;
 
@@ -4085,7 +4127,7 @@ void _wrap_helicsFederateInfoSetBrokerKey(int resc, mxArray *resv[], int argc, c
 		mexUnlock();
 		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetBrokerKey:TypeError","Argument 1 must be of type uint64.");
 	}
-	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
+	HelicsFederateInfo fedInfo = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
 
 	if(!mxIsChar(argv[1])){
 		mexUnlock();
@@ -4102,7 +4144,7 @@ void _wrap_helicsFederateInfoSetBrokerKey(int resc, mxArray *resv[], int argc, c
 	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateInfoSetBrokerKey(fi, static_cast<const char *>(brokerkey), &err);
+	helicsFederateInfoSetBrokerKey(fedInfo, static_cast<const char *>(brokerkey), &err);
 
 	mxArray *_out = nullptr;
 
@@ -4129,7 +4171,7 @@ void _wrap_helicsFederateInfoSetBrokerPort(int resc, mxArray *resv[], int argc, 
 		mexUnlock();
 		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetBrokerPort:TypeError","Argument 1 must be of type uint64.");
 	}
-	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
+	HelicsFederateInfo fedInfo = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
 
 	if(!mxIsNumeric(argv[1])){
 		mexUnlock();
@@ -4139,7 +4181,7 @@ void _wrap_helicsFederateInfoSetBrokerPort(int resc, mxArray *resv[], int argc, 
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateInfoSetBrokerPort(fi, brokerPort, &err);
+	helicsFederateInfoSetBrokerPort(fedInfo, brokerPort, &err);
 
 	mxArray *_out = nullptr;
 
@@ -4164,7 +4206,7 @@ void _wrap_helicsFederateInfoSetLocalPort(int resc, mxArray *resv[], int argc, c
 		mexUnlock();
 		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetLocalPort:TypeError","Argument 1 must be of type uint64.");
 	}
-	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
+	HelicsFederateInfo fedInfo = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
 
 	if(!mxIsChar(argv[1])){
 		mexUnlock();
@@ -4181,7 +4223,7 @@ void _wrap_helicsFederateInfoSetLocalPort(int resc, mxArray *resv[], int argc, c
 	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateInfoSetLocalPort(fi, static_cast<const char *>(localPort), &err);
+	helicsFederateInfoSetLocalPort(fedInfo, static_cast<const char *>(localPort), &err);
 
 	mxArray *_out = nullptr;
 
@@ -4388,7 +4430,7 @@ void _wrap_helicsFederateInfoSetFlagOption(int resc, mxArray *resv[], int argc, 
 		mexUnlock();
 		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetFlagOption:TypeError","Argument 1 must be of type uint64.");
 	}
-	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
+	HelicsFederateInfo fedInfo = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
 
 	if(!mxIsNumeric(argv[1])){
 		mexUnlock();
@@ -4421,7 +4463,7 @@ void _wrap_helicsFederateInfoSetFlagOption(int resc, mxArray *resv[], int argc, 
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateInfoSetFlagOption(fi, flag, value, &err);
+	helicsFederateInfoSetFlagOption(fedInfo, flag, value, &err);
 
 	mxArray *_out = nullptr;
 
@@ -4446,7 +4488,7 @@ void _wrap_helicsFederateInfoSetSeparator(int resc, mxArray *resv[], int argc, c
 		mexUnlock();
 		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetSeparator:TypeError","Argument 1 must be of type uint64.");
 	}
-	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
+	HelicsFederateInfo fedInfo = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
 
 	if(!mxIsChar(argv[1])){
 		mexUnlock();
@@ -4463,7 +4505,7 @@ void _wrap_helicsFederateInfoSetSeparator(int resc, mxArray *resv[], int argc, c
 	}
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateInfoSetSeparator(fi, separator[0], &err);
+	helicsFederateInfoSetSeparator(fedInfo, separator[0], &err);
 
 	mxArray *_out = nullptr;
 
@@ -4490,7 +4532,7 @@ void _wrap_helicsFederateInfoSetTimeProperty(int resc, mxArray *resv[], int argc
 		mexUnlock();
 		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetTimeProperty:TypeError","Argument 1 must be of type uint64.");
 	}
-	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
+	HelicsFederateInfo fedInfo = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
 
 	if(!mxIsNumeric(argv[1])){
 		mexUnlock();
@@ -4506,7 +4548,7 @@ void _wrap_helicsFederateInfoSetTimeProperty(int resc, mxArray *resv[], int argc
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateInfoSetTimeProperty(fi, timeProperty, propertyValue, &err);
+	helicsFederateInfoSetTimeProperty(fedInfo, timeProperty, propertyValue, &err);
 
 	mxArray *_out = nullptr;
 
@@ -4531,7 +4573,7 @@ void _wrap_helicsFederateInfoSetIntegerProperty(int resc, mxArray *resv[], int a
 		mexUnlock();
 		mexErrMsgIdAndTxt("MATLAB:helicsFederateInfoSetIntegerProperty:TypeError","Argument 1 must be of type uint64.");
 	}
-	HelicsFederateInfo fi = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
+	HelicsFederateInfo fedInfo = *(static_cast<HelicsFederateInfo*>(mxGetData(argv[0])));
 
 	if(!mxIsNumeric(argv[1])){
 		mexUnlock();
@@ -4547,7 +4589,7 @@ void _wrap_helicsFederateInfoSetIntegerProperty(int resc, mxArray *resv[], int a
 
 	HelicsError err = helicsErrorInitialize();
 
-	helicsFederateInfoSetIntegerProperty(fi, intProperty, propertyValue, &err);
+	helicsFederateInfoSetIntegerProperty(fedInfo, intProperty, propertyValue, &err);
 
 	mxArray *_out = nullptr;
 
@@ -9357,6 +9399,41 @@ void _wrap_helicsPublicationPublishNamedPoint(int resc, mxArray *resv[], int arg
 }
 
 
+void _wrap_helicsPublicationPublishDataBuffer(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishDataBuffer:rhs","This function requires 2 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishDataBuffer:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsPublication pub = *(static_cast<HelicsPublication*>(mxGetData(argv[0])));
+
+	if(mxGetClassID(argv[1]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishDataBuffer:TypeError","Argument 2 must be of type uint64.");
+	}
+	HelicsDataBuffer buffer = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[1])));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsPublicationPublishDataBuffer(pub, buffer, &err);
+
+	mxArray *_out = nullptr;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
 void _wrap_helicsPublicationAddTarget(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
 	if(argc != 2){
 		mexUnlock();
@@ -9535,6 +9612,37 @@ void _wrap_helicsInputGetBytes(int resc, mxArray *resv[], int argc, const mxArra
 	}
 
 	free(data);
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsInputGetDataBuffer(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetDataBuffer:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsInputGetDataBuffer:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsInput inp = *(static_cast<HelicsInput*>(mxGetData(argv[0])));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsDataBuffer result = helicsInputGetDataBuffer(inp, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
 
 	if(err.error_code != HELICS_OK){
 		throwHelicsMatlabError(&err);
@@ -13228,6 +13336,37 @@ void _wrap_helicsMessageGetBytesPointer(int resc, mxArray *resv[], int argc, con
 }
 
 
+void _wrap_helicsMessageDataBuffer(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	if(argc != 1){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageDataBuffer:rhs","This function requires 1 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageDataBuffer:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsMessage message = *(static_cast<HelicsMessage*>(mxGetData(argv[0])));
+
+	HelicsError err = helicsErrorInitialize();
+
+	HelicsDataBuffer result = helicsMessageDataBuffer(message, &err);
+
+	mxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+	mxUint64 *rv = mxGetUint64s(_out);
+	rv[0] = reinterpret_cast<mxUint64>(result);
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
 void _wrap_helicsMessageIsValid(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
 	if(argc != 1){
 		mexUnlock();
@@ -13729,6 +13868,41 @@ void _wrap_helicsMessageSetData(int resc, mxArray *resv[], int argc, const mxArr
 	HelicsError err = helicsErrorInitialize();
 
 	helicsMessageSetData(message, static_cast<void *>(data), inputDataLength, &err);
+
+	mxArray *_out = nullptr;
+
+	if(_out){
+		--resc;
+		*resv++ = _out;
+	}
+
+	if(err.error_code != HELICS_OK){
+		throwHelicsMatlabError(&err);
+	}
+}
+
+
+void _wrap_helicsMessageSetDataBuffer(int resc, mxArray *resv[], int argc, const mxArray *argv[]){
+	if(argc != 2){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetDataBuffer:rhs","This function requires 2 arguments.");
+	}
+
+	if(mxGetClassID(argv[0]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetDataBuffer:TypeError","Argument 1 must be of type uint64.");
+	}
+	HelicsMessage message = *(static_cast<HelicsMessage*>(mxGetData(argv[0])));
+
+	if(mxGetClassID(argv[1]) != mxUINT64_CLASS){
+		mexUnlock();
+		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetDataBuffer:TypeError","Argument 2 must be of type uint64.");
+	}
+	HelicsDataBuffer data = *(static_cast<HelicsDataBuffer*>(mxGetData(argv[1])));
+
+	HelicsError err = helicsErrorInitialize();
+
+	helicsMessageSetDataBuffer(message, data, &err);
 
 	mxArray *_out = nullptr;
 
@@ -16693,40 +16867,37 @@ void mexFunction(int resc, mxArray *resv[], int argc, const mxArray *argv[]) {
 		_wrap_helicsDataBufferClone(resc, resv, argc, argv);
 		break;
 	case 74:
-		_wrap_helicsIntegerToBytes(resc, resv, argc, argv);
+		_wrap_helicsDataBufferFillFromInteger(resc, resv, argc, argv);
 		break;
 	case 75:
-		_wrap_helicsDoubleToBytes(resc, resv, argc, argv);
+		_wrap_helicsDataBufferFillFromDouble(resc, resv, argc, argv);
 		break;
 	case 76:
-		_wrap_helicsStringToBytes(resc, resv, argc, argv);
+		_wrap_helicsDataBufferFillFromString(resc, resv, argc, argv);
 		break;
 	case 77:
-		_wrap_helicsRawStringToBytes(resc, resv, argc, argv);
+		_wrap_helicsDataBufferFillFromRawString(resc, resv, argc, argv);
 		break;
 	case 78:
-		_wrap_helicsBooleanToBytes(resc, resv, argc, argv);
+		_wrap_helicsDataBufferFillFromBoolean(resc, resv, argc, argv);
 		break;
 	case 79:
-		_wrap_helicsCharToBytes(resc, resv, argc, argv);
+		_wrap_helicsDataBufferFillFromChar(resc, resv, argc, argv);
 		break;
 	case 80:
-		_wrap_helicsTimeToBytes(resc, resv, argc, argv);
+		_wrap_helicsDataBufferFillFromTime(resc, resv, argc, argv);
 		break;
 	case 81:
-		_wrap_helicsComplexToBytes(resc, resv, argc, argv);
-		break;
-	case 82:
-		_wrap_helicsComplexObjectToBytes(resc, resv, argc, argv);
+		_wrap_helicsDataBufferFillFromComplex(resc, resv, argc, argv);
 		break;
 	case 83:
-		_wrap_helicsVectorToBytes(resc, resv, argc, argv);
+		_wrap_helicsDataBufferFillFromVector(resc, resv, argc, argv);
 		break;
 	case 84:
-		_wrap_helicsNamedPointToBytes(resc, resv, argc, argv);
+		_wrap_helicsDataBufferFillFromNamedPoint(resc, resv, argc, argv);
 		break;
 	case 85:
-		_wrap_helicsComplexVectorToBytes(resc, resv, argc, argv);
+		_wrap_helicsDataBufferFillFromComplexVector(resc, resv, argc, argv);
 		break;
 	case 86:
 		_wrap_helicsDataBufferType(resc, resv, argc, argv);
@@ -17359,579 +17530,591 @@ void mexFunction(int resc, mxArray *resv[], int argc, const mxArray *argv[]) {
 		_wrap_helicsPublicationPublishNamedPoint(resc, resv, argc, argv);
 		break;
 	case 300:
-		_wrap_helicsPublicationAddTarget(resc, resv, argc, argv);
+		_wrap_helicsPublicationPublishDataBuffer(resc, resv, argc, argv);
 		break;
 	case 301:
-		_wrap_helicsInputIsValid(resc, resv, argc, argv);
+		_wrap_helicsPublicationAddTarget(resc, resv, argc, argv);
 		break;
 	case 302:
-		_wrap_helicsInputAddTarget(resc, resv, argc, argv);
+		_wrap_helicsInputIsValid(resc, resv, argc, argv);
 		break;
 	case 303:
-		_wrap_helicsInputGetByteCount(resc, resv, argc, argv);
+		_wrap_helicsInputAddTarget(resc, resv, argc, argv);
 		break;
 	case 304:
-		_wrap_helicsInputGetBytes(resc, resv, argc, argv);
+		_wrap_helicsInputGetByteCount(resc, resv, argc, argv);
 		break;
 	case 305:
-		_wrap_helicsInputGetStringSize(resc, resv, argc, argv);
+		_wrap_helicsInputGetBytes(resc, resv, argc, argv);
 		break;
 	case 306:
-		_wrap_helicsInputGetString(resc, resv, argc, argv);
+		_wrap_helicsInputGetDataBuffer(resc, resv, argc, argv);
 		break;
 	case 307:
-		_wrap_helicsInputGetInteger(resc, resv, argc, argv);
+		_wrap_helicsInputGetStringSize(resc, resv, argc, argv);
 		break;
 	case 308:
-		_wrap_helicsInputGetBoolean(resc, resv, argc, argv);
+		_wrap_helicsInputGetString(resc, resv, argc, argv);
 		break;
 	case 309:
-		_wrap_helicsInputGetDouble(resc, resv, argc, argv);
+		_wrap_helicsInputGetInteger(resc, resv, argc, argv);
 		break;
 	case 310:
-		_wrap_helicsInputGetTime(resc, resv, argc, argv);
+		_wrap_helicsInputGetBoolean(resc, resv, argc, argv);
 		break;
 	case 311:
-		_wrap_helicsInputGetChar(resc, resv, argc, argv);
+		_wrap_helicsInputGetDouble(resc, resv, argc, argv);
 		break;
 	case 312:
-		_wrap_helicsInputGetComplexObject(resc, resv, argc, argv);
+		_wrap_helicsInputGetTime(resc, resv, argc, argv);
 		break;
 	case 313:
-		_wrap_helicsInputGetComplex(resc, resv, argc, argv);
+		_wrap_helicsInputGetChar(resc, resv, argc, argv);
 		break;
 	case 314:
-		_wrap_helicsInputGetVectorSize(resc, resv, argc, argv);
+		_wrap_helicsInputGetComplexObject(resc, resv, argc, argv);
 		break;
 	case 315:
-		_wrap_helicsInputGetVector(resc, resv, argc, argv);
+		_wrap_helicsInputGetComplex(resc, resv, argc, argv);
 		break;
 	case 316:
-		_wrap_helicsInputGetComplexVector(resc, resv, argc, argv);
+		_wrap_helicsInputGetVectorSize(resc, resv, argc, argv);
 		break;
 	case 317:
-		_wrap_helicsInputGetNamedPoint(resc, resv, argc, argv);
+		_wrap_helicsInputGetVector(resc, resv, argc, argv);
 		break;
 	case 318:
-		_wrap_helicsInputSetDefaultBytes(resc, resv, argc, argv);
+		_wrap_helicsInputGetComplexVector(resc, resv, argc, argv);
 		break;
 	case 319:
-		_wrap_helicsInputSetDefaultString(resc, resv, argc, argv);
+		_wrap_helicsInputGetNamedPoint(resc, resv, argc, argv);
 		break;
 	case 320:
-		_wrap_helicsInputSetDefaultInteger(resc, resv, argc, argv);
+		_wrap_helicsInputSetDefaultBytes(resc, resv, argc, argv);
 		break;
 	case 321:
-		_wrap_helicsInputSetDefaultBoolean(resc, resv, argc, argv);
+		_wrap_helicsInputSetDefaultString(resc, resv, argc, argv);
 		break;
 	case 322:
-		_wrap_helicsInputSetDefaultTime(resc, resv, argc, argv);
+		_wrap_helicsInputSetDefaultInteger(resc, resv, argc, argv);
 		break;
 	case 323:
-		_wrap_helicsInputSetDefaultChar(resc, resv, argc, argv);
+		_wrap_helicsInputSetDefaultBoolean(resc, resv, argc, argv);
 		break;
 	case 324:
-		_wrap_helicsInputSetDefaultDouble(resc, resv, argc, argv);
+		_wrap_helicsInputSetDefaultTime(resc, resv, argc, argv);
 		break;
 	case 325:
-		_wrap_helicsInputSetDefaultComplex(resc, resv, argc, argv);
+		_wrap_helicsInputSetDefaultChar(resc, resv, argc, argv);
 		break;
 	case 326:
-		_wrap_helicsInputSetDefaultVector(resc, resv, argc, argv);
+		_wrap_helicsInputSetDefaultDouble(resc, resv, argc, argv);
 		break;
 	case 327:
-		_wrap_helicsInputSetDefaultComplexVector(resc, resv, argc, argv);
+		_wrap_helicsInputSetDefaultComplex(resc, resv, argc, argv);
 		break;
 	case 328:
-		_wrap_helicsInputSetDefaultNamedPoint(resc, resv, argc, argv);
+		_wrap_helicsInputSetDefaultVector(resc, resv, argc, argv);
 		break;
 	case 329:
-		_wrap_helicsInputGetType(resc, resv, argc, argv);
+		_wrap_helicsInputSetDefaultComplexVector(resc, resv, argc, argv);
 		break;
 	case 330:
-		_wrap_helicsInputGetPublicationType(resc, resv, argc, argv);
+		_wrap_helicsInputSetDefaultNamedPoint(resc, resv, argc, argv);
 		break;
 	case 331:
-		_wrap_helicsInputGetPublicationDataType(resc, resv, argc, argv);
+		_wrap_helicsInputGetType(resc, resv, argc, argv);
 		break;
 	case 332:
-		_wrap_helicsPublicationGetType(resc, resv, argc, argv);
+		_wrap_helicsInputGetPublicationType(resc, resv, argc, argv);
 		break;
 	case 333:
-		_wrap_helicsInputGetName(resc, resv, argc, argv);
+		_wrap_helicsInputGetPublicationDataType(resc, resv, argc, argv);
 		break;
 	case 334:
-		_wrap_helicsSubscriptionGetTarget(resc, resv, argc, argv);
+		_wrap_helicsPublicationGetType(resc, resv, argc, argv);
 		break;
 	case 335:
-		_wrap_helicsInputGetTarget(resc, resv, argc, argv);
+		_wrap_helicsInputGetName(resc, resv, argc, argv);
 		break;
 	case 336:
-		_wrap_helicsPublicationGetName(resc, resv, argc, argv);
+		_wrap_helicsSubscriptionGetTarget(resc, resv, argc, argv);
 		break;
 	case 337:
-		_wrap_helicsInputGetUnits(resc, resv, argc, argv);
+		_wrap_helicsInputGetTarget(resc, resv, argc, argv);
 		break;
 	case 338:
-		_wrap_helicsInputGetInjectionUnits(resc, resv, argc, argv);
+		_wrap_helicsPublicationGetName(resc, resv, argc, argv);
 		break;
 	case 339:
-		_wrap_helicsInputGetExtractionUnits(resc, resv, argc, argv);
+		_wrap_helicsInputGetUnits(resc, resv, argc, argv);
 		break;
 	case 340:
-		_wrap_helicsPublicationGetUnits(resc, resv, argc, argv);
+		_wrap_helicsInputGetInjectionUnits(resc, resv, argc, argv);
 		break;
 	case 341:
-		_wrap_helicsInputGetInfo(resc, resv, argc, argv);
+		_wrap_helicsInputGetExtractionUnits(resc, resv, argc, argv);
 		break;
 	case 342:
-		_wrap_helicsInputSetInfo(resc, resv, argc, argv);
+		_wrap_helicsPublicationGetUnits(resc, resv, argc, argv);
 		break;
 	case 343:
-		_wrap_helicsInputGetTag(resc, resv, argc, argv);
+		_wrap_helicsInputGetInfo(resc, resv, argc, argv);
 		break;
 	case 344:
-		_wrap_helicsInputSetTag(resc, resv, argc, argv);
+		_wrap_helicsInputSetInfo(resc, resv, argc, argv);
 		break;
 	case 345:
-		_wrap_helicsPublicationGetInfo(resc, resv, argc, argv);
+		_wrap_helicsInputGetTag(resc, resv, argc, argv);
 		break;
 	case 346:
-		_wrap_helicsPublicationSetInfo(resc, resv, argc, argv);
+		_wrap_helicsInputSetTag(resc, resv, argc, argv);
 		break;
 	case 347:
-		_wrap_helicsPublicationGetTag(resc, resv, argc, argv);
+		_wrap_helicsPublicationGetInfo(resc, resv, argc, argv);
 		break;
 	case 348:
-		_wrap_helicsPublicationSetTag(resc, resv, argc, argv);
+		_wrap_helicsPublicationSetInfo(resc, resv, argc, argv);
 		break;
 	case 349:
-		_wrap_helicsInputGetOption(resc, resv, argc, argv);
+		_wrap_helicsPublicationGetTag(resc, resv, argc, argv);
 		break;
 	case 350:
-		_wrap_helicsInputSetOption(resc, resv, argc, argv);
+		_wrap_helicsPublicationSetTag(resc, resv, argc, argv);
 		break;
 	case 351:
-		_wrap_helicsPublicationGetOption(resc, resv, argc, argv);
+		_wrap_helicsInputGetOption(resc, resv, argc, argv);
 		break;
 	case 352:
-		_wrap_helicsPublicationSetOption(resc, resv, argc, argv);
+		_wrap_helicsInputSetOption(resc, resv, argc, argv);
 		break;
 	case 353:
-		_wrap_helicsPublicationSetMinimumChange(resc, resv, argc, argv);
+		_wrap_helicsPublicationGetOption(resc, resv, argc, argv);
 		break;
 	case 354:
-		_wrap_helicsInputSetMinimumChange(resc, resv, argc, argv);
+		_wrap_helicsPublicationSetOption(resc, resv, argc, argv);
 		break;
 	case 355:
-		_wrap_helicsInputIsUpdated(resc, resv, argc, argv);
+		_wrap_helicsPublicationSetMinimumChange(resc, resv, argc, argv);
 		break;
 	case 356:
-		_wrap_helicsInputLastUpdateTime(resc, resv, argc, argv);
+		_wrap_helicsInputSetMinimumChange(resc, resv, argc, argv);
 		break;
 	case 357:
-		_wrap_helicsInputClearUpdate(resc, resv, argc, argv);
+		_wrap_helicsInputIsUpdated(resc, resv, argc, argv);
 		break;
 	case 358:
-		_wrap_helicsFederateGetPublicationCount(resc, resv, argc, argv);
+		_wrap_helicsInputLastUpdateTime(resc, resv, argc, argv);
 		break;
 	case 359:
-		_wrap_helicsFederateGetInputCount(resc, resv, argc, argv);
+		_wrap_helicsInputClearUpdate(resc, resv, argc, argv);
 		break;
 	case 360:
-		_wrap_helicsFederateRegisterEndpoint(resc, resv, argc, argv);
+		_wrap_helicsFederateGetPublicationCount(resc, resv, argc, argv);
 		break;
 	case 361:
-		_wrap_helicsFederateRegisterGlobalEndpoint(resc, resv, argc, argv);
+		_wrap_helicsFederateGetInputCount(resc, resv, argc, argv);
 		break;
 	case 362:
-		_wrap_helicsFederateRegisterTargetedEndpoint(resc, resv, argc, argv);
+		_wrap_helicsFederateRegisterEndpoint(resc, resv, argc, argv);
 		break;
 	case 363:
-		_wrap_helicsFederateRegisterGlobalTargetedEndpoint(resc, resv, argc, argv);
+		_wrap_helicsFederateRegisterGlobalEndpoint(resc, resv, argc, argv);
 		break;
 	case 364:
-		_wrap_helicsFederateGetEndpoint(resc, resv, argc, argv);
+		_wrap_helicsFederateRegisterTargetedEndpoint(resc, resv, argc, argv);
 		break;
 	case 365:
-		_wrap_helicsFederateGetEndpointByIndex(resc, resv, argc, argv);
+		_wrap_helicsFederateRegisterGlobalTargetedEndpoint(resc, resv, argc, argv);
 		break;
 	case 366:
-		_wrap_helicsEndpointIsValid(resc, resv, argc, argv);
+		_wrap_helicsFederateGetEndpoint(resc, resv, argc, argv);
 		break;
 	case 367:
-		_wrap_helicsEndpointSetDefaultDestination(resc, resv, argc, argv);
+		_wrap_helicsFederateGetEndpointByIndex(resc, resv, argc, argv);
 		break;
 	case 368:
-		_wrap_helicsEndpointGetDefaultDestination(resc, resv, argc, argv);
+		_wrap_helicsEndpointIsValid(resc, resv, argc, argv);
 		break;
 	case 369:
-		_wrap_helicsEndpointSendBytes(resc, resv, argc, argv);
+		_wrap_helicsEndpointSetDefaultDestination(resc, resv, argc, argv);
 		break;
 	case 370:
-		_wrap_helicsEndpointSendBytesTo(resc, resv, argc, argv);
+		_wrap_helicsEndpointGetDefaultDestination(resc, resv, argc, argv);
 		break;
 	case 371:
-		_wrap_helicsEndpointSendBytesToAt(resc, resv, argc, argv);
+		_wrap_helicsEndpointSendBytes(resc, resv, argc, argv);
 		break;
 	case 372:
-		_wrap_helicsEndpointSendBytesAt(resc, resv, argc, argv);
+		_wrap_helicsEndpointSendBytesTo(resc, resv, argc, argv);
 		break;
 	case 373:
-		_wrap_helicsEndpointSendMessage(resc, resv, argc, argv);
+		_wrap_helicsEndpointSendBytesToAt(resc, resv, argc, argv);
 		break;
 	case 374:
-		_wrap_helicsEndpointSendMessageZeroCopy(resc, resv, argc, argv);
+		_wrap_helicsEndpointSendBytesAt(resc, resv, argc, argv);
 		break;
 	case 375:
-		_wrap_helicsEndpointSubscribe(resc, resv, argc, argv);
+		_wrap_helicsEndpointSendMessage(resc, resv, argc, argv);
 		break;
 	case 376:
-		_wrap_helicsFederateHasMessage(resc, resv, argc, argv);
+		_wrap_helicsEndpointSendMessageZeroCopy(resc, resv, argc, argv);
 		break;
 	case 377:
-		_wrap_helicsEndpointHasMessage(resc, resv, argc, argv);
+		_wrap_helicsEndpointSubscribe(resc, resv, argc, argv);
 		break;
 	case 378:
-		_wrap_helicsFederatePendingMessageCount(resc, resv, argc, argv);
+		_wrap_helicsFederateHasMessage(resc, resv, argc, argv);
 		break;
 	case 379:
-		_wrap_helicsEndpointPendingMessageCount(resc, resv, argc, argv);
+		_wrap_helicsEndpointHasMessage(resc, resv, argc, argv);
 		break;
 	case 380:
-		_wrap_helicsEndpointGetMessage(resc, resv, argc, argv);
+		_wrap_helicsFederatePendingMessageCount(resc, resv, argc, argv);
 		break;
 	case 381:
-		_wrap_helicsEndpointCreateMessage(resc, resv, argc, argv);
+		_wrap_helicsEndpointPendingMessageCount(resc, resv, argc, argv);
 		break;
 	case 382:
-		_wrap_helicsEndpointClearMessages(resc, resv, argc, argv);
+		_wrap_helicsEndpointGetMessage(resc, resv, argc, argv);
 		break;
 	case 383:
-		_wrap_helicsFederateGetMessage(resc, resv, argc, argv);
+		_wrap_helicsEndpointCreateMessage(resc, resv, argc, argv);
 		break;
 	case 384:
-		_wrap_helicsFederateCreateMessage(resc, resv, argc, argv);
+		_wrap_helicsEndpointClearMessages(resc, resv, argc, argv);
 		break;
 	case 385:
-		_wrap_helicsFederateClearMessages(resc, resv, argc, argv);
+		_wrap_helicsFederateGetMessage(resc, resv, argc, argv);
 		break;
 	case 386:
-		_wrap_helicsEndpointGetType(resc, resv, argc, argv);
+		_wrap_helicsFederateCreateMessage(resc, resv, argc, argv);
 		break;
 	case 387:
-		_wrap_helicsEndpointGetName(resc, resv, argc, argv);
+		_wrap_helicsFederateClearMessages(resc, resv, argc, argv);
 		break;
 	case 388:
-		_wrap_helicsFederateGetEndpointCount(resc, resv, argc, argv);
+		_wrap_helicsEndpointGetType(resc, resv, argc, argv);
 		break;
 	case 389:
-		_wrap_helicsEndpointGetInfo(resc, resv, argc, argv);
+		_wrap_helicsEndpointGetName(resc, resv, argc, argv);
 		break;
 	case 390:
-		_wrap_helicsEndpointSetInfo(resc, resv, argc, argv);
+		_wrap_helicsFederateGetEndpointCount(resc, resv, argc, argv);
 		break;
 	case 391:
-		_wrap_helicsEndpointGetTag(resc, resv, argc, argv);
+		_wrap_helicsEndpointGetInfo(resc, resv, argc, argv);
 		break;
 	case 392:
-		_wrap_helicsEndpointSetTag(resc, resv, argc, argv);
+		_wrap_helicsEndpointSetInfo(resc, resv, argc, argv);
 		break;
 	case 393:
-		_wrap_helicsEndpointSetOption(resc, resv, argc, argv);
+		_wrap_helicsEndpointGetTag(resc, resv, argc, argv);
 		break;
 	case 394:
-		_wrap_helicsEndpointGetOption(resc, resv, argc, argv);
+		_wrap_helicsEndpointSetTag(resc, resv, argc, argv);
 		break;
 	case 395:
-		_wrap_helicsEndpointAddSourceTarget(resc, resv, argc, argv);
+		_wrap_helicsEndpointSetOption(resc, resv, argc, argv);
 		break;
 	case 396:
-		_wrap_helicsEndpointAddDestinationTarget(resc, resv, argc, argv);
+		_wrap_helicsEndpointGetOption(resc, resv, argc, argv);
 		break;
 	case 397:
-		_wrap_helicsEndpointRemoveTarget(resc, resv, argc, argv);
+		_wrap_helicsEndpointAddSourceTarget(resc, resv, argc, argv);
 		break;
 	case 398:
-		_wrap_helicsEndpointAddSourceFilter(resc, resv, argc, argv);
+		_wrap_helicsEndpointAddDestinationTarget(resc, resv, argc, argv);
 		break;
 	case 399:
-		_wrap_helicsEndpointAddDestinationFilter(resc, resv, argc, argv);
+		_wrap_helicsEndpointRemoveTarget(resc, resv, argc, argv);
 		break;
 	case 400:
-		_wrap_helicsMessageGetSource(resc, resv, argc, argv);
+		_wrap_helicsEndpointAddSourceFilter(resc, resv, argc, argv);
 		break;
 	case 401:
-		_wrap_helicsMessageGetDestination(resc, resv, argc, argv);
+		_wrap_helicsEndpointAddDestinationFilter(resc, resv, argc, argv);
 		break;
 	case 402:
-		_wrap_helicsMessageGetOriginalSource(resc, resv, argc, argv);
+		_wrap_helicsMessageGetSource(resc, resv, argc, argv);
 		break;
 	case 403:
-		_wrap_helicsMessageGetOriginalDestination(resc, resv, argc, argv);
+		_wrap_helicsMessageGetDestination(resc, resv, argc, argv);
 		break;
 	case 404:
-		_wrap_helicsMessageGetTime(resc, resv, argc, argv);
+		_wrap_helicsMessageGetOriginalSource(resc, resv, argc, argv);
 		break;
 	case 405:
-		_wrap_helicsMessageGetString(resc, resv, argc, argv);
+		_wrap_helicsMessageGetOriginalDestination(resc, resv, argc, argv);
 		break;
 	case 406:
-		_wrap_helicsMessageGetMessageID(resc, resv, argc, argv);
+		_wrap_helicsMessageGetTime(resc, resv, argc, argv);
 		break;
 	case 407:
-		_wrap_helicsMessageGetFlagOption(resc, resv, argc, argv);
+		_wrap_helicsMessageGetString(resc, resv, argc, argv);
 		break;
 	case 408:
-		_wrap_helicsMessageGetByteCount(resc, resv, argc, argv);
+		_wrap_helicsMessageGetMessageID(resc, resv, argc, argv);
 		break;
 	case 409:
-		_wrap_helicsMessageGetBytes(resc, resv, argc, argv);
+		_wrap_helicsMessageGetFlagOption(resc, resv, argc, argv);
 		break;
 	case 410:
-		_wrap_helicsMessageGetBytesPointer(resc, resv, argc, argv);
+		_wrap_helicsMessageGetByteCount(resc, resv, argc, argv);
 		break;
 	case 411:
-		_wrap_helicsMessageIsValid(resc, resv, argc, argv);
+		_wrap_helicsMessageGetBytes(resc, resv, argc, argv);
 		break;
 	case 412:
-		_wrap_helicsMessageSetSource(resc, resv, argc, argv);
+		_wrap_helicsMessageGetBytesPointer(resc, resv, argc, argv);
 		break;
 	case 413:
-		_wrap_helicsMessageSetDestination(resc, resv, argc, argv);
+		_wrap_helicsMessageDataBuffer(resc, resv, argc, argv);
 		break;
 	case 414:
-		_wrap_helicsMessageSetOriginalSource(resc, resv, argc, argv);
+		_wrap_helicsMessageIsValid(resc, resv, argc, argv);
 		break;
 	case 415:
-		_wrap_helicsMessageSetOriginalDestination(resc, resv, argc, argv);
+		_wrap_helicsMessageSetSource(resc, resv, argc, argv);
 		break;
 	case 416:
-		_wrap_helicsMessageSetTime(resc, resv, argc, argv);
+		_wrap_helicsMessageSetDestination(resc, resv, argc, argv);
 		break;
 	case 417:
-		_wrap_helicsMessageResize(resc, resv, argc, argv);
+		_wrap_helicsMessageSetOriginalSource(resc, resv, argc, argv);
 		break;
 	case 418:
-		_wrap_helicsMessageReserve(resc, resv, argc, argv);
+		_wrap_helicsMessageSetOriginalDestination(resc, resv, argc, argv);
 		break;
 	case 419:
-		_wrap_helicsMessageSetMessageID(resc, resv, argc, argv);
+		_wrap_helicsMessageSetTime(resc, resv, argc, argv);
 		break;
 	case 420:
-		_wrap_helicsMessageClearFlags(resc, resv, argc, argv);
+		_wrap_helicsMessageResize(resc, resv, argc, argv);
 		break;
 	case 421:
-		_wrap_helicsMessageSetFlagOption(resc, resv, argc, argv);
+		_wrap_helicsMessageReserve(resc, resv, argc, argv);
 		break;
 	case 422:
-		_wrap_helicsMessageSetString(resc, resv, argc, argv);
+		_wrap_helicsMessageSetMessageID(resc, resv, argc, argv);
 		break;
 	case 423:
-		_wrap_helicsMessageSetData(resc, resv, argc, argv);
+		_wrap_helicsMessageClearFlags(resc, resv, argc, argv);
 		break;
 	case 424:
-		_wrap_helicsMessageAppendData(resc, resv, argc, argv);
+		_wrap_helicsMessageSetFlagOption(resc, resv, argc, argv);
 		break;
 	case 425:
-		_wrap_helicsMessageCopy(resc, resv, argc, argv);
+		_wrap_helicsMessageSetString(resc, resv, argc, argv);
 		break;
 	case 426:
-		_wrap_helicsMessageClone(resc, resv, argc, argv);
+		_wrap_helicsMessageSetData(resc, resv, argc, argv);
 		break;
 	case 427:
-		_wrap_helicsMessageFree(resc, resv, argc, argv);
+		_wrap_helicsMessageSetDataBuffer(resc, resv, argc, argv);
 		break;
 	case 428:
-		_wrap_helicsMessageClear(resc, resv, argc, argv);
+		_wrap_helicsMessageAppendData(resc, resv, argc, argv);
 		break;
 	case 429:
-		_wrap_helicsFederateRegisterFilter(resc, resv, argc, argv);
+		_wrap_helicsMessageCopy(resc, resv, argc, argv);
 		break;
 	case 430:
-		_wrap_helicsFederateRegisterGlobalFilter(resc, resv, argc, argv);
+		_wrap_helicsMessageClone(resc, resv, argc, argv);
 		break;
 	case 431:
-		_wrap_helicsFederateRegisterCloningFilter(resc, resv, argc, argv);
+		_wrap_helicsMessageFree(resc, resv, argc, argv);
 		break;
 	case 432:
-		_wrap_helicsFederateRegisterGlobalCloningFilter(resc, resv, argc, argv);
+		_wrap_helicsMessageClear(resc, resv, argc, argv);
 		break;
 	case 433:
-		_wrap_helicsCoreRegisterFilter(resc, resv, argc, argv);
+		_wrap_helicsFederateRegisterFilter(resc, resv, argc, argv);
 		break;
 	case 434:
-		_wrap_helicsCoreRegisterCloningFilter(resc, resv, argc, argv);
+		_wrap_helicsFederateRegisterGlobalFilter(resc, resv, argc, argv);
 		break;
 	case 435:
-		_wrap_helicsFederateGetFilterCount(resc, resv, argc, argv);
+		_wrap_helicsFederateRegisterCloningFilter(resc, resv, argc, argv);
 		break;
 	case 436:
-		_wrap_helicsFederateGetFilter(resc, resv, argc, argv);
+		_wrap_helicsFederateRegisterGlobalCloningFilter(resc, resv, argc, argv);
 		break;
 	case 437:
-		_wrap_helicsFederateGetFilterByIndex(resc, resv, argc, argv);
+		_wrap_helicsCoreRegisterFilter(resc, resv, argc, argv);
 		break;
 	case 438:
-		_wrap_helicsFilterIsValid(resc, resv, argc, argv);
+		_wrap_helicsCoreRegisterCloningFilter(resc, resv, argc, argv);
 		break;
 	case 439:
-		_wrap_helicsFilterGetName(resc, resv, argc, argv);
+		_wrap_helicsFederateGetFilterCount(resc, resv, argc, argv);
 		break;
 	case 440:
-		_wrap_helicsFilterSet(resc, resv, argc, argv);
+		_wrap_helicsFederateGetFilter(resc, resv, argc, argv);
 		break;
 	case 441:
-		_wrap_helicsFilterSetString(resc, resv, argc, argv);
+		_wrap_helicsFederateGetFilterByIndex(resc, resv, argc, argv);
 		break;
 	case 442:
-		_wrap_helicsFilterAddDestinationTarget(resc, resv, argc, argv);
+		_wrap_helicsFilterIsValid(resc, resv, argc, argv);
 		break;
 	case 443:
-		_wrap_helicsFilterAddSourceTarget(resc, resv, argc, argv);
+		_wrap_helicsFilterGetName(resc, resv, argc, argv);
 		break;
 	case 444:
-		_wrap_helicsFilterAddDeliveryEndpoint(resc, resv, argc, argv);
+		_wrap_helicsFilterSet(resc, resv, argc, argv);
 		break;
 	case 445:
-		_wrap_helicsFilterRemoveTarget(resc, resv, argc, argv);
+		_wrap_helicsFilterSetString(resc, resv, argc, argv);
 		break;
 	case 446:
-		_wrap_helicsFilterRemoveDeliveryEndpoint(resc, resv, argc, argv);
+		_wrap_helicsFilterAddDestinationTarget(resc, resv, argc, argv);
 		break;
 	case 447:
-		_wrap_helicsFilterGetInfo(resc, resv, argc, argv);
+		_wrap_helicsFilterAddSourceTarget(resc, resv, argc, argv);
 		break;
 	case 448:
-		_wrap_helicsFilterSetInfo(resc, resv, argc, argv);
+		_wrap_helicsFilterAddDeliveryEndpoint(resc, resv, argc, argv);
 		break;
 	case 449:
-		_wrap_helicsFilterGetTag(resc, resv, argc, argv);
+		_wrap_helicsFilterRemoveTarget(resc, resv, argc, argv);
 		break;
 	case 450:
-		_wrap_helicsFilterSetTag(resc, resv, argc, argv);
+		_wrap_helicsFilterRemoveDeliveryEndpoint(resc, resv, argc, argv);
 		break;
 	case 451:
-		_wrap_helicsFilterSetOption(resc, resv, argc, argv);
+		_wrap_helicsFilterGetInfo(resc, resv, argc, argv);
 		break;
 	case 452:
-		_wrap_helicsFilterGetOption(resc, resv, argc, argv);
+		_wrap_helicsFilterSetInfo(resc, resv, argc, argv);
 		break;
 	case 453:
-		_wrap_helicsFederateRegisterTranslator(resc, resv, argc, argv);
+		_wrap_helicsFilterGetTag(resc, resv, argc, argv);
 		break;
 	case 454:
-		_wrap_helicsFederateRegisterGlobalTranslator(resc, resv, argc, argv);
+		_wrap_helicsFilterSetTag(resc, resv, argc, argv);
 		break;
 	case 455:
-		_wrap_helicsCoreRegisterTranslator(resc, resv, argc, argv);
+		_wrap_helicsFilterSetOption(resc, resv, argc, argv);
 		break;
 	case 456:
-		_wrap_helicsFederateGetTranslatorCount(resc, resv, argc, argv);
+		_wrap_helicsFilterGetOption(resc, resv, argc, argv);
 		break;
 	case 457:
-		_wrap_helicsFederateGetTranslator(resc, resv, argc, argv);
+		_wrap_helicsFederateRegisterTranslator(resc, resv, argc, argv);
 		break;
 	case 458:
-		_wrap_helicsFederateGetTranslatorByIndex(resc, resv, argc, argv);
+		_wrap_helicsFederateRegisterGlobalTranslator(resc, resv, argc, argv);
 		break;
 	case 459:
-		_wrap_helicsTranslatorIsValid(resc, resv, argc, argv);
+		_wrap_helicsCoreRegisterTranslator(resc, resv, argc, argv);
 		break;
 	case 460:
-		_wrap_helicsTranslatorGetName(resc, resv, argc, argv);
+		_wrap_helicsFederateGetTranslatorCount(resc, resv, argc, argv);
 		break;
 	case 461:
-		_wrap_helicsTranslatorSet(resc, resv, argc, argv);
+		_wrap_helicsFederateGetTranslator(resc, resv, argc, argv);
 		break;
 	case 462:
-		_wrap_helicsTranslatorSetString(resc, resv, argc, argv);
+		_wrap_helicsFederateGetTranslatorByIndex(resc, resv, argc, argv);
 		break;
 	case 463:
-		_wrap_helicsTranslatorAddInputTarget(resc, resv, argc, argv);
+		_wrap_helicsTranslatorIsValid(resc, resv, argc, argv);
 		break;
 	case 464:
-		_wrap_helicsTranslatorAddPublicationTarget(resc, resv, argc, argv);
+		_wrap_helicsTranslatorGetName(resc, resv, argc, argv);
 		break;
 	case 465:
-		_wrap_helicsTranslatorAddSourceEndpoint(resc, resv, argc, argv);
+		_wrap_helicsTranslatorSet(resc, resv, argc, argv);
 		break;
 	case 466:
-		_wrap_helicsTranslatorAddDestinationEndpoint(resc, resv, argc, argv);
+		_wrap_helicsTranslatorSetString(resc, resv, argc, argv);
 		break;
 	case 467:
-		_wrap_helicsTranslatorRemoveTarget(resc, resv, argc, argv);
+		_wrap_helicsTranslatorAddInputTarget(resc, resv, argc, argv);
 		break;
 	case 468:
-		_wrap_helicsTranslatorGetInfo(resc, resv, argc, argv);
+		_wrap_helicsTranslatorAddPublicationTarget(resc, resv, argc, argv);
 		break;
 	case 469:
-		_wrap_helicsTranslatorSetInfo(resc, resv, argc, argv);
+		_wrap_helicsTranslatorAddSourceEndpoint(resc, resv, argc, argv);
 		break;
 	case 470:
-		_wrap_helicsTranslatorGetTag(resc, resv, argc, argv);
+		_wrap_helicsTranslatorAddDestinationEndpoint(resc, resv, argc, argv);
 		break;
 	case 471:
-		_wrap_helicsTranslatorSetTag(resc, resv, argc, argv);
+		_wrap_helicsTranslatorRemoveTarget(resc, resv, argc, argv);
 		break;
 	case 472:
-		_wrap_helicsTranslatorSetOption(resc, resv, argc, argv);
+		_wrap_helicsTranslatorGetInfo(resc, resv, argc, argv);
 		break;
 	case 473:
-		_wrap_helicsTranslatorGetOption(resc, resv, argc, argv);
+		_wrap_helicsTranslatorSetInfo(resc, resv, argc, argv);
 		break;
 	case 474:
-		_wrap_helicsBrokerSetLoggingCallback(resc, resv, argc, argv);
+		_wrap_helicsTranslatorGetTag(resc, resv, argc, argv);
 		break;
 	case 475:
-		_wrap_helicsCoreSetLoggingCallback(resc, resv, argc, argv);
+		_wrap_helicsTranslatorSetTag(resc, resv, argc, argv);
 		break;
 	case 476:
-		_wrap_helicsFederateSetLoggingCallback(resc, resv, argc, argv);
+		_wrap_helicsTranslatorSetOption(resc, resv, argc, argv);
 		break;
 	case 477:
-		_wrap_helicsFilterSetCustomCallback(resc, resv, argc, argv);
+		_wrap_helicsTranslatorGetOption(resc, resv, argc, argv);
 		break;
 	case 478:
-		_wrap_helicsTranslatorSetCustomCallback(resc, resv, argc, argv);
+		_wrap_helicsBrokerSetLoggingCallback(resc, resv, argc, argv);
 		break;
 	case 479:
-		_wrap_helicsFederateSetQueryCallback(resc, resv, argc, argv);
+		_wrap_helicsCoreSetLoggingCallback(resc, resv, argc, argv);
 		break;
 	case 480:
-		_wrap_helicsFederateSetTimeRequestEntryCallback(resc, resv, argc, argv);
+		_wrap_helicsFederateSetLoggingCallback(resc, resv, argc, argv);
 		break;
 	case 481:
-		_wrap_helicsFederateSetTimeUpdateCallback(resc, resv, argc, argv);
+		_wrap_helicsFilterSetCustomCallback(resc, resv, argc, argv);
 		break;
 	case 482:
-		_wrap_helicsFederateSetStateChangeCallback(resc, resv, argc, argv);
+		_wrap_helicsTranslatorSetCustomCallback(resc, resv, argc, argv);
 		break;
 	case 483:
-		_wrap_helicsFederateSetTimeRequestReturnCallback(resc, resv, argc, argv);
+		_wrap_helicsFederateSetQueryCallback(resc, resv, argc, argv);
 		break;
 	case 484:
-		_wrap_helicsFederateInitializingEntryCallback(resc, resv, argc, argv);
+		_wrap_helicsFederateSetTimeRequestEntryCallback(resc, resv, argc, argv);
 		break;
 	case 485:
-		_wrap_helicsFederateExecutingEntryCallback(resc, resv, argc, argv);
+		_wrap_helicsFederateSetTimeUpdateCallback(resc, resv, argc, argv);
 		break;
 	case 486:
-		_wrap_helicsFederateCosimulationTerminationCallback(resc, resv, argc, argv);
+		_wrap_helicsFederateSetStateChangeCallback(resc, resv, argc, argv);
 		break;
 	case 487:
-		_wrap_helicsFederateErrorHandlerCallback(resc, resv, argc, argv);
+		_wrap_helicsFederateSetTimeRequestReturnCallback(resc, resv, argc, argv);
 		break;
 	case 488:
-		_wrap_helicsCallbackFederateNextTimeCallback(resc, resv, argc, argv);
+		_wrap_helicsFederateInitializingEntryCallback(resc, resv, argc, argv);
 		break;
 	case 489:
-		_wrap_helicsCallbackFederateNextTimeIterativeCallback(resc, resv, argc, argv);
+		_wrap_helicsFederateExecutingEntryCallback(resc, resv, argc, argv);
 		break;
 	case 490:
-		_wrap_helicsCallbackFederateInitializeCallback(resc, resv, argc, argv);
+		_wrap_helicsFederateCosimulationTerminationCallback(resc, resv, argc, argv);
 		break;
 	case 491:
+		_wrap_helicsFederateErrorHandlerCallback(resc, resv, argc, argv);
+		break;
+	case 492:
+		_wrap_helicsCallbackFederateNextTimeCallback(resc, resv, argc, argv);
+		break;
+	case 493:
+		_wrap_helicsCallbackFederateNextTimeIterativeCallback(resc, resv, argc, argv);
+		break;
+	case 494:
+		_wrap_helicsCallbackFederateInitializeCallback(resc, resv, argc, argv);
+		break;
+	case 495:
 		_wrap_helicsQueryBufferFill(resc, resv, argc, argv);
 		break;
 	default:
