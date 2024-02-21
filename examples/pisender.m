@@ -1,17 +1,27 @@
 % PISENDER script demonstrating MATLAB-HELICS interface
 %
 % Usage:
-%  1. Start two separate MATLAB terminals 
-%  2. In the first: 
+%  1. Start two separate MATLAB terminals
+%  2. In the first:
 %     >> pisender
 %  3. In the second:
 %     >> pireciever
 
 
 %% Initialize HELICS library in MATLAB
-helicsStartup()
+%helicsStartup()
+%HELICS_PATH = 'C:\Users\mukh915\matHELICS\helics'; % matHELICS path
+HELICS_PATH = '/home/helics-user/Softwares_user/matHELICS/'; % matHELICS path
+addpath(HELICS_PATH)
+% Checking if Octave or Matlab
+isOctave = exist('OCTAVE_VERSION', 'builtin') ~= 0;
+if isOctave
+  % Using custom Import as the import function is not yet implemented in Octave
+  addpath(fullfile(HELICS_PATH, '+helics'))
+else
+  import helics.*
+end
 
-import helics.*;
 %% Configuration
 deltat = 1;  %Base time interval (seconds)
 numsteps = 20;
@@ -20,7 +30,7 @@ numsteps = 20;
 % Note: these configure this matlab process to host the main broker and 1
 % federate
 pisend_start_broker = true;
-helics_core_type = 'zmq'; 
+helics_core_type = 'zmq';
 broker_initstring = '--federates 2 --name=mainbroker';
 fed_initstring = '--broker=mainbroker --federates=1';
 
@@ -59,19 +69,19 @@ helicsFederateInfoSetCoreInitString(fedinfo, fed_initstring);
 % Note:
 % HELICS minimum message time interval is 1 ns and by default
 % it uses a time delta of 1 second. What is provided to the
-% setTimedelta routine is a multiplier for the default timedelta 
+% setTimedelta routine is a multiplier for the default timedelta
 % (default unit = seconds).
 
 % Set one message interval
-helicsFederateInfoSetTimeProperty(fedinfo,helics_property_time_delta,deltat);
-helicsFederateInfoSetIntegerProperty(fedinfo,helics_property_int_log_level,helics_log_level_warning);
+helicsFederateInfoSetTimeProperty(fedinfo, HelicsProperties.HELICS_PROPERTY_TIME_DELTA, deltat);
+helicsFederateInfoSetIntegerProperty(fedinfo, HelicsProperties.HELICS_PROPERTY_INT_LOG_LEVEL, HelicsLogLevels.HELICS_LOG_LEVEL_WARNING);
 
 %% Actually create value federate
 vfed = helicsCreateValueFederate('MATLAB Pi SENDER Federate',fedinfo);
 disp('PI SENDER: Value federate created');
 
 %% Register our value to publish
-pub = helicsFederateRegisterGlobalPublication(vfed, 'testA', helics_data_type_double, '');
+pub = helicsFederateRegisterGlobalPublication(vfed, 'testA', HelicsDataTypes.HELICS_DATA_TYPE_DOUBLE, '');
 disp('PI SENDER: Publication registered (testA)');
 
 %% Start execution
@@ -111,11 +121,11 @@ if pisend_start_broker
     helicsBrokerWaitForDisconnect(broker,-1);
     disp('PI SENDER: Broker disconnected');
 
-    helics.helicsFederateFree(vfed);
-    helics.helicsCloseLibrary();
+    helicsFederateFree(vfed);
+    helicsCloseLibrary();
 else
     %But if we just setup the federate, we can simply call endFederate
-    helicsFederateDestroy(vfed); %#ok<UNRCH>  
+    helicsFederateDestroy(vfed); %#ok<UNRCH>
     disp('PI SENDER: Federate finalized');
 end
 

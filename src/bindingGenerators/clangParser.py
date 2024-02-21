@@ -6,7 +6,6 @@ SPDX-License-Identifier: BSD-3-Clause
 '''
 import json
 import logging
-import os
 from typing import List
 
 import clang.cindex as cidx

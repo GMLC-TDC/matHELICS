@@ -11,15 +11,25 @@
 % if the condition is true and if so continues. If false, execution stops.
 
 %% Initialize HELICS library in MATLAB
-helicsStartup()
+%helicsStartup()
+%HELICS_PATH = 'C:\Users\mukh915\matHELICS\helics';
+HELICS_PATH = '/home/helics-user/Softwares_user/matHELICS/';
+addpath(HELICS_PATH)
+% Checking if Octave or Matlab
+isOctave = exist('OCTAVE_VERSION', 'builtin') ~= 0;
+if isOctave
+  % Using custom Import as the import function is not yet implemented in Octave
+  addpath(fullfile(HELICS_PATH, '+helics'))
+else
+  import helics.*
+end
 
-import helics.*;
 %% Configuration
 deltat = 0.01;  %Base time interval (seconds)
 sim_stop_time = 20;
 
 % HELICS options
-helics_core_type = 'zmq'; 
+helics_core_type = 'zmq';
 fedinitstring = '--federates=1';  % required with current C interface when using separate processes for each federate
 
 %% Provide summary information
@@ -39,16 +49,16 @@ helicsFederateInfoSetCoreTypeFromString(fedinfo, helics_core_type);
 helics.helicsFederateInfoSetCoreInitString(fedinfo, fedinitstring);
 
 
-%% Set the message interval (timedelta) for federate. 
+%% Set the message interval (timedelta) for federate.
 % Note:
 % HELICS minimum message time interval is 1 ns and by default
 % it uses a time delta of 1 second. What is provided to the
-% setTimedelta routine is a multiplier for the default timedelta 
+% setTimedelta routine is a multiplier for the default timedelta
 % (default unit = seconds).
 
 % Set one message interval
-helicsFederateInfoSetTimeProperty(fedinfo,helics_property_time_delta,deltat);
-helicsFederateInfoSetIntegerProperty(fedinfo,helics_property_int_log_level,helics_log_level_warning);
+helicsFederateInfoSetTimeProperty(fedinfo, HelicsProperties.HELICS_PROPERTY_TIME_DELTA, deltat);
+helicsFederateInfoSetIntegerProperty(fedinfo, HelicsProperties.HELICS_PROPERTY_INT_LOG_LEVEL, HelicsLogLevels.HELICS_LOG_LEVEL_WARNING);
 
 
 
