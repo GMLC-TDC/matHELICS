@@ -9,9 +9,7 @@ import logging
 import os
 import re
 import shutil
-from typing import List
-
-import clang.cindex as cidx
+from typing import Any, Dict, List, Tuple
 
 from . import clangParser
 
@@ -45,7 +43,9 @@ class MatlabBindingGenerator(object):
         '''
         self.__helicsParser = clangParser.HelicsHeaderParser(headerFiles)
         self.__rootDir = os.path.abspath(rootDir)
-        
+
+    def getParser(self):
+        return self.__helicsParser
         
     def generateSource(self):
         """
@@ -118,7 +118,7 @@ class MatlabBindingGenerator(object):
             return boilerPlateStr
         
         
-        def createEnum(enumDict: dict()) -> None:
+        def createEnum(enumDict: Dict[str,str]) -> None:
             """
                 Create Matlab Binding Enumerations for each C Enumeration
             """
@@ -144,7 +144,7 @@ class MatlabBindingGenerator(object):
                 
         
         
-        def createMacro(macroDict: dict(), cursorIdx: int):
+        def createMacro(macroDict: Dict[str,str], cursorIdx: int):
             matlabBindingGeneratorLogger.debug(f"creating MATLAB macro definition for:\n{json.dumps(macroDict,indent=4,sort_keys=True)}")
             macroSpelling = macroDict.get("spelling","")
             macroComment = macroDict.get("brief_comment","")
@@ -182,7 +182,7 @@ class MatlabBindingGenerator(object):
             return macroWrapperStr, macroMainFunctionElementStr, macroMapTuple
         
         
-        def createVar(varDict: dict(), cursorIdx: int):
+        def createVar(varDict: Dict[str,str], cursorIdx: int):
             varsToIgnore = ["cHelicsBigNumber"]
             varSpelling = varDict.get("spelling","")
             varComment = varDict.get("brief_comment","")
@@ -219,12 +219,11 @@ class MatlabBindingGenerator(object):
                         varFile.write("end\n")
         
         
-        def createFunction(functionDict: dict(), cursorIdx: int):
+        def createFunction(functionDict: Dict[str,str], cursorIdx: int):
             matlabBindingGeneratorLogger.debug(f"creating MATLAB function definition for:\n{json.dumps(functionDict,indent=4,sort_keys=True)}")
             modifiedMatlabFunctionList = [
                 "helicsCreateBrokerFromArgs",
                 "helicsCreateCoreFromArgs",
-                "helicsDoubleToBytes",
                 "helicsFederateInfoLoadFromArgs",
                 "helicsEndpointSendBytes",
                 "helicsEndpointSendBytesAt",
@@ -243,7 +242,6 @@ class MatlabBindingGenerator(object):
                 "helicsInputSetDefaultComplex",
                 "helicsInputSetDefaultVector",
                 "helicsInputSetDefaultComplexVector",
-                "helicsIntegerToBytes",
                 "helicsMessageAppendData",
                 "helicsMessageGetBytes",
                 "helicsMessageSetData",
@@ -264,16 +262,9 @@ class MatlabBindingGenerator(object):
                 "helicsFederateSetTimeRequestEntryCallback",
                 "helicsFederateSetTimeRequestReturnCallback",
                 "helicsTranslatorSetCustomCallback",
-                "helicsStringToBytes",
-                "helicsRawStringToBytes",
-                "helicsBooleanToBytes",
-                "helicsCharToBytes",
-                "helicsTimeToBytes",
-                "helicsComplexToBytes",
-                "helicsComplexObjectToBytes",
-                "helicsVectorToBytes",
-                "helicsNamedPointToBytes",
-                "helicsComplexVectorToBytes",
+                "helicsDataBufferFillFromComplex",
+                "helicsDataBufferFillFromVector",
+                "helicsDataBufferFillFromComplexVector",
                 "helicsDataBufferToString",
                 "helicsDataBufferToRawString",
                 "helicsDataBufferToComplex",
@@ -290,7 +281,7 @@ class MatlabBindingGenerator(object):
                 "helicsCallbackFederateNextTimeIterativeCallback",
                 "helicsCallbackFederateInitializeCallback"
             ]
-            functionsToIgnore = ["helicsErrorInitialize", "helicsErrorClear", "helicsComplexObjectToBytes"]
+            functionsToIgnore = ["helicsErrorInitialize", "helicsErrorClear", "helicsDataBufferFillFromComplexObject"]
             functionName = functionDict.get("spelling")
             if functionName in modifiedMatlabFunctionList:
                 return createModifiedMatlabFunction(functionDict, cursorIdx)
@@ -362,7 +353,7 @@ class MatlabBindingGenerator(object):
                 return "","", None
 
 
-        def isLastArgumentOptional(functionDict: dict()) -> tuple():
+        def isLastArgumentOptional(functionDict: Dict[str,str]) -> Tuple[Any]:
             lastArgPos = 0
             isLastArgOptional = False
             argCount = functionDict.get("argument_count", 0)
@@ -376,7 +367,7 @@ class MatlabBindingGenerator(object):
             return lastArgPos, isLastArgOptional
         
         
-        def getNumberOfArgumentsCheckStr(functionDict: dict(), lastArgOptional=False) -> str:
+        def getNumberOfArgumentsCheckStr(functionDict: Dict[str,str], lastArgOptional=False) -> str:
             argCheckStr = ""
             argCount = functionDict.get("argument_count", 0)
             for a in functionDict.get("arguments",{}).keys():
@@ -396,7 +387,7 @@ class MatlabBindingGenerator(object):
             return argCheckStr
         
         
-        def getArgInitializationStr(argDict: dict(), argPos: int, functionName: str, isArgOptional: bool = False) -> str:
+        def getArgInitializationStr(argDict: Dict[str,str], argPos: int, functionName: str, isArgOptional: bool = False) -> str:
             argInitTextMap = {
                 "Char_S": initializeArgChar(argDict.get("spelling",""), argPos, functionName),
                 "Char_S_*": initializeArgChar(argDict.get("spelling",""), argPos, functionName, isArgOptional),
@@ -438,7 +429,7 @@ class MatlabBindingGenerator(object):
             return argInitText
         
         
-        def getFunctionReturnInitializationStr(functionDict: dict()) -> str:
+        def getFunctionReturnInitializationStr(functionDict: Dict[str,str]) -> str:
             returnTextMap = {
                 "Char_S": "\tchar result",
                 "Char_S_*": "\tconst char *result",
@@ -476,7 +467,7 @@ class MatlabBindingGenerator(object):
             return retStr
         
         
-        def getArgFunctionCallStr(argDict: dict(), position: int) -> str:
+        def getArgFunctionCallStr(argDict: Dict[str,str], position: int) -> str:
             argFunctionCallTextMap = {
                 "Char_S": argCharFunctionCall(argDict.get("spelling",""), position),
                 "Char_S_*": argCharPtrFunctionCall(argDict.get("spelling",""), position),
@@ -518,7 +509,7 @@ class MatlabBindingGenerator(object):
             return argFunctionCallText
         
         
-        def getFunctionReturnConversionStr(functionDict: dict()) -> str:
+        def getFunctionReturnConversionStr(functionDict: Dict[str,str]) -> str:
             returnTextMap = {
                 "Char_S": returnCharTomxArray(),
                 "Char_S_*": returnCharPtrTomxArray(),
@@ -556,7 +547,7 @@ class MatlabBindingGenerator(object):
             return retStr
         
         
-        def getArgFunctionCleanUpStr(argDict: dict()) -> str:
+        def getArgFunctionCleanUpStr(argDict: Dict[str,str]) -> str:
             argCleanUpMap = {
                 "Char_S": argCharPostFunctionCall(argDict.get("spelling","")),
                 "Char_S_*": argCharPostFunctionCall(argDict.get("spelling","")),
@@ -836,7 +827,7 @@ class MatlabBindingGenerator(object):
             return retStr
         
         
-        def createModifiedMatlabFunction(functionDict: dict(), cursorIdx: int):
+        def createModifiedMatlabFunction(functionDict: Dict[str,str], cursorIdx: int):
             modifiedPythonFunctionList = {
                 "helicsCreateBrokerFromArgs": helicsCreateBrokerFromArgsMatlabWrapper,
                 "helicsCreateCoreFromArgs": helicsCreateCoreFromArgsMatlabWrapper,
@@ -877,18 +868,9 @@ class MatlabBindingGenerator(object):
                 "helicsFederateSetStateChangeCallback": helicsFederateSetStateChangeCallbackMatlabWrapper,
                 "helicsFederateSetTimeRequestEntryCallback": helicsFederateSetTimeRequestEntryCallbackMatlabWrapper,
                 "helicsFederateSetTimeRequestReturnCallback": helicsFederateSetTimeRequestReturnCallbackMatlabWrapper,
-                "helicsIntegerToBytes": helicsIntToBytesMatlabWrapper,
-                "helicsDoubleToBytes": helicsDoubleToBytesMatlabWrapper,
-                "helicsStringToBytes": helicsStringToBytesMatlabWrapper,
-                "helicsRawStringToBytes": helicsRawStringToBytesMatlabWrapper,
-                "helicsBooleanToBytes": helicsBoolToBytesMatlabWrapper,
-                "helicsCharToBytes": helicsCharToBytesMatlabWrapper,
-                "helicsTimeToBytes": helicsTimeToBytesMatlabWrapper,
-                "helicsComplexToBytes": helicsComplexToBytesMatlabWrapper,
-                "helicsComplexObjectToBytes": helicsComplexObjectToBytesMatlabWrapper,
-                "helicsVectorToBytes": helicsVectorToBytesMatlabWrapper,
-                "helicsNamedPointToBytes": helicsNamedPointToBytesMatlabWrapper,
-                "helicsComplexVectorToBytes": helicsComplexVectorToBytesMatlabWrapper,
+                "helicsDataBufferFillFromComplex": helicsDataBufferFillFromComplexMatlabWrapper,
+                "helicsDataBufferFillFromVector": helicsDataBufferFillFromVectorMatlabWrapper,
+                "helicsDataBufferFillFromComplexVector": helicsDataBufferFillFromComplexVectorMatlabWrapper,
                 "helicsDataBufferToString": helicsDataBufferToStringMatlabWrapper,
                 "helicsDataBufferToRawString": helicsDataBufferToRawStringMatlabWrapper,
                 "helicsDataBufferToComplex": helicsDataBufferToComplexMatlabWrapper,
@@ -916,7 +898,7 @@ class MatlabBindingGenerator(object):
             return functionWrapper, functionMainElement, (functionDict.get("spelling",""), cursorIdx)
         
         
-        def helicsCreateCoreFromArgsMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsCreateCoreFromArgsMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 5:
@@ -982,7 +964,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
             
             
-        def helicsCreateBrokerFromArgsMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsCreateBrokerFromArgsMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 5:
@@ -1048,13 +1030,13 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsFederateInfoLoadFromArgsMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsFederateInfoLoadFromArgsMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
                 raise RuntimeError("the function signature for helicsFederateInfoLoadFromArgs has changed!")
             arg0 = functionDict.get("arguments", {}).get(0, {})
-            if arg0.get("spelling","") != "fi" or arg0.get("type", "") != "HelicsFederateInfo":
+            if arg0.get("spelling","") != "fedInfo" or arg0.get("type", "") != "HelicsFederateInfo":
                 raise RuntimeError("the function signature for helicsFederateInfoLoadFromArgs has changed!")
             arg1 = functionDict.get("arguments", {}).get(1, {})
             if arg1.get("spelling","") != "argc" or arg1.get("type", "") != "Int":
@@ -1074,7 +1056,7 @@ class MatlabBindingGenerator(object):
             functionWrapper += "\t\tmexUnlock();\n"
             functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 2 arguments.\");\n"
             functionWrapper += "\t}\n\n"
-            functionWrapper += initializeArgHelicsClass("HelicsFederateInfo", "fi", 0, functionName)
+            functionWrapper += initializeArgHelicsClass("HelicsFederateInfo", "fedInfo", 0, functionName)
             functionWrapper += f"\tif(!mxIsCell(argv[1])){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
             functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument 2 must be of cell array of strings.\");\n"
@@ -1091,7 +1073,7 @@ class MatlabBindingGenerator(object):
             functionWrapper += "\t\tint flag = mxGetString(cellElement, arg2[ii], static_cast<int>(len));\n"
             functionWrapper += "\t}\n\n"
             functionWrapper += initializeArgHelicsErrorPtr("err")
-            functionWrapper += f"\t{functionName}(fi, arg1, arg2, &err);\n\n"
+            functionWrapper += f"\t{functionName}(fedInfo, arg1, arg2, &err);\n\n"
             functionWrapper += "\tmxArray *_out = nullptr;\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
@@ -1106,7 +1088,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsEndpointSendBytesMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsEndpointSendBytesMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
@@ -1151,7 +1133,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsEndpointSendBytesAtMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsEndpointSendBytesAtMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 5:
@@ -1201,7 +1183,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsEndpointSendBytesToMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsEndpointSendBytesToMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 5:
@@ -1252,7 +1234,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsEndpointSendBytesToAtMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsEndpointSendBytesToAtMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 6:
@@ -1308,7 +1290,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsFederateRequestTimeIterativeMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsFederateRequestTimeIterativeMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 5:
@@ -1366,7 +1348,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsFederateRequestTimeIterativeCompleteMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsFederateRequestTimeIterativeCompleteMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 3:
@@ -1412,7 +1394,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsInputGetBytesMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsInputGetBytesMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 5:
@@ -1467,7 +1449,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsInputGetComplexObjectMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsInputGetComplexObjectMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 2:
@@ -1507,7 +1489,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsInputGetComplexMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsInputGetComplexMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
@@ -1553,7 +1535,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsInputGetNamedPointMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsInputGetNamedPointMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 6:
@@ -1615,7 +1597,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsInputGetStringMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsInputGetStringMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 5:
@@ -1669,7 +1651,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsInputGetVectorMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsInputGetVectorMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 5:
@@ -1722,7 +1704,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsInputGetComplexVectorMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsInputGetComplexVectorMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 5:
@@ -1776,7 +1758,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsInputSetDefaultBytesMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsInputSetDefaultBytesMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
@@ -1821,7 +1803,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsInputSetDefaultComplexMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsInputSetDefaultComplexMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
@@ -1868,7 +1850,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsInputSetDefaultVectorMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsInputSetDefaultVectorMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
@@ -1916,7 +1898,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsInputSetDefaultComplexVectorMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsInputSetDefaultComplexVectorMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
@@ -1969,7 +1951,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsMessageAppendDataMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsMessageAppendDataMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
@@ -2013,7 +1995,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsMessageGetBytesMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsMessageGetBytesMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 5:
@@ -2067,7 +2049,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsMessageSetDataMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsMessageSetDataMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
@@ -2111,7 +2093,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsPublicationPublishBytesMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsPublicationPublishBytesMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
@@ -2155,7 +2137,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsPublicationPublishComplexMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsPublicationPublishComplexMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
@@ -2203,7 +2185,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsPublicationPublishVectorMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsPublicationPublishVectorMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
@@ -2251,7 +2233,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsPublicationPublishComplexVectorMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsPublicationPublishComplexVectorMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
@@ -2304,7 +2286,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsQueryBufferFillMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsQueryBufferFillMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
@@ -2349,15 +2331,15 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsLoadSignalHandlerCallbackMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsLoadSignalHandlerCallbackMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             return "","",""
         
         
-        def helicsLoadSignalHandlerCallbackNoExitMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsLoadSignalHandlerCallbackNoExitMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             return "","",""
         
         
-        def helicsBrokerSetLoggingCallbackMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsBrokerSetLoggingCallbackMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
@@ -2416,7 +2398,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsCoreSetLoggingCallbackMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsCoreSetLoggingCallbackMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
@@ -2475,7 +2457,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsFederateSetLoggingCallbackMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsFederateSetLoggingCallbackMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
@@ -2534,7 +2516,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsFilterSetCustomCallbackMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsFilterSetCustomCallbackMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
@@ -2590,7 +2572,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsFederateSetQueryCallbackMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsFederateSetQueryCallbackMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
@@ -2655,7 +2637,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsFederateSetTimeUpdateCallbackMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsFederateSetTimeUpdateCallbackMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
@@ -2715,7 +2697,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsFederateSetStateChangeCallbackMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsFederateSetStateChangeCallbackMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
@@ -2774,7 +2756,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsFederateSetTimeRequestEntryCallbackMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsFederateSetTimeRequestEntryCallbackMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
@@ -2837,7 +2819,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsFederateSetTimeRequestReturnCallbackMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsFederateSetTimeRequestReturnCallbackMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
@@ -2898,7 +2880,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsTranslatorSetCustomCallbackMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsTranslatorSetCustomCallbackMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 5:
@@ -2979,430 +2961,40 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsIntToBytesMatlabWrapper(functionDict: dict(), cursorIdx: int):
-            #check to see if function signiture changed
-            argNum = len(functionDict.get("arguments", {}).keys())
-            if argNum != 2:
-                raise RuntimeError("the function signature for helicsIntegerToBytes has changed!")
-            arg0 = functionDict.get("arguments", {}).get(0, {})
-            if arg0.get("spelling","") != "value" or arg0.get("type", "") != "int64_t":
-                raise RuntimeError("the function signature for helicsIntegerToBytes has changed!")
-            arg1 = functionDict.get("arguments", {}).get(1, {})
-            if arg1.get("spelling","") != "data" or arg1.get("type", "") != "HelicsDataBuffer":
-                raise RuntimeError("the function signature for helicsIntegerToBytes has changed!")
-            functionName = functionDict.get("spelling","")
-            functionComment = "%\tconvert an int to serialized bytes.\n\n"
-            functionComment += "%\t@param value The integer.\n"
-            functionComment += "%\t@return HelicsDataBuffer.\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += f"\tif(argc != 1){{\n"
-            functionWrapper += "\t\tmexUnlock();\n"
-            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
-            functionWrapper += "\t}\n\n"
-            functionWrapper += initializeArgInt64_t('value',0, functionName)
-            functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(sizeof(int));\n\n"
-            functionWrapper += f"\tint32_t result = {functionName}(value, data);\n\n"
-            functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\tmxUint64 *rv = mxGetUint64s(_out);\n"
-            functionWrapper += "\trv[0] = reinterpret_cast<mxUint64>(data);\n"
-            functionWrapper += "\tif(_out){\n"
-            functionWrapper += "\t\t--resc;\n"
-            functionWrapper += "\t\t*resv++ = _out;\n"
-            functionWrapper += "\t}\n"
-            functionWrapper += "}\n\n\n"
-            functionMainElements = f"\tcase {cursorIdx}:\n"
-            functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
-            functionMainElements += f"\t\tbreak;\n"
-            return functionComment, functionWrapper, functionMainElements
-        
-        
-        def helicsDoubleToBytesMatlabWrapper(functionDict: dict(), cursorIdx: int):
-            #check to see if function signiture changed
-            argNum = len(functionDict.get("arguments", {}).keys())
-            if argNum != 2:
-                raise RuntimeError("the function signature for helicsDoubleToBytes has changed!")
-            arg0 = functionDict.get("arguments", {}).get(0, {})
-            if arg0.get("spelling","") != "value" or arg0.get("type", "") != "Double":
-                raise RuntimeError("the function signature for helicsDoubleToBytes has changed!")
-            arg1 = functionDict.get("arguments", {}).get(1, {})
-            if arg1.get("spelling","") != "data" or arg1.get("type", "") != "HelicsDataBuffer":
-                raise RuntimeError("the function signature for helicsDoubleToBytes has changed!")
-            functionName = functionDict.get("spelling","")
-            functionComment = "%\tconvert a double to serialized bytes.\n\n"
-            functionComment += "%\t@param value The double.\n"
-            functionComment += "%\t@return HelicsDataBuffer.\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += f"\tif(argc != 1){{\n"
-            functionWrapper += "\t\tmexUnlock();\n"
-            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
-            functionWrapper += "\t}\n\n"
-            functionWrapper += initializeArgDouble('value',0, functionName)
-            functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(sizeof(double));\n\n"
-            functionWrapper += f"\tint32_t result = {functionName}(value, data);\n\n"
-            functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\tmxUint64 *rv = mxGetUint64s(_out);\n"
-            functionWrapper += "\trv[0] = reinterpret_cast<mxUint64>(data);\n"
-            functionWrapper += "\tif(_out){\n"
-            functionWrapper += "\t\t--resc;\n"
-            functionWrapper += "\t\t*resv++ = _out;\n"
-            functionWrapper += "\t}\n"
-            functionWrapper += "}\n\n\n"
-            functionMainElements = f"\tcase {cursorIdx}:\n"
-            functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
-            functionMainElements += f"\t\tbreak;\n"
-            return functionComment, functionWrapper, functionMainElements
-        
-        
-        def helicsStringToBytesMatlabWrapper(functionDict: dict(), cursorIdx: int):
-            #check to see if function signiture changed
-            argNum = len(functionDict.get("arguments", {}).keys())
-            if argNum != 2:
-                raise RuntimeError("the function signature for helicsStringToBytes has changed!")
-            arg0 = functionDict.get("arguments", {}).get(0, {})
-            if arg0.get("spelling","") != "value" or arg0.get("pointer_type", "") != "Char_S_*":
-                raise RuntimeError("the function signature for helicsStringToBytes has changed!")
-            arg1 = functionDict.get("arguments", {}).get(1, {})
-            if arg1.get("spelling","") != "data" or arg1.get("type", "") != "HelicsDataBuffer":
-                raise RuntimeError("the function signature for helicsStringToBytes has changed!")
-            functionName = functionDict.get("spelling","")
-            functionComment = "%\tconvert a string to serialized bytes.\n\n"
-            functionComment += "%\t@param str The string.\n"
-            functionComment += "%\t@return HelicsDataBuffer.\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += f"\tif(argc != 1){{\n"
-            functionWrapper += "\t\tmexUnlock();\n"
-            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
-            functionWrapper += "\t}\n\n"
-            functionWrapper += initializeArgChar('value',0, functionName)
-            functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(static_cast<int32_t>(valueLength));\n\n"
-            functionWrapper += f"\tint32_t result = {functionName}(value, data);\n\n"
-            functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\tmxUint64 *rv = mxGetUint64s(_out);\n"
-            functionWrapper += "\trv[0] = reinterpret_cast<mxUint64>(data);\n"
-            functionWrapper += "\tif(_out){\n"
-            functionWrapper += "\t\t--resc;\n"
-            functionWrapper += "\t\t*resv++ = _out;\n"
-            functionWrapper += "\t}\n"
-            functionWrapper += "}\n\n\n"
-            functionMainElements = f"\tcase {cursorIdx}:\n"
-            functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
-            functionMainElements += f"\t\tbreak;\n"
-            return functionComment, functionWrapper, functionMainElements
-        
-        
-        def helicsRawStringToBytesMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsDataBufferFillFromComplexMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 3:
-                raise RuntimeError("the function signature for helicsRawStringToBytes has changed!")
+                raise RuntimeError("the function signature for helicsDataBufferFillFromComplex has changed!")
             arg0 = functionDict.get("arguments", {}).get(0, {})
-            if arg0.get("spelling","") != "str" or arg0.get("pointer_type", "") != "Char_S_*":
-                raise RuntimeError("the function signature for helicsRawStringToBytes has changed!")
+            if arg0.get("spelling","") != "data" or arg0.get("type", "") != "HelicsDataBuffer":
+                raise RuntimeError("the function signature for helicsDataBufferFillFromComplex has changed!")
             arg1 = functionDict.get("arguments", {}).get(1, {})
-            if arg1.get("spelling","") != "stringSize" or arg1.get("type", "") != "Int":
-                raise RuntimeError("the function signature for helicsRawStringToBytes has changed!")
+            if arg1.get("spelling","") != "real" or arg1.get("type", "") != "Double":
+                raise RuntimeError("the function signature for helicsDataBufferFillFromComplex has changed!")
             arg2 = functionDict.get("arguments", {}).get(2, {})
-            if arg2.get("spelling","") != "data" or arg2.get("type", "") != "HelicsDataBuffer":
-                raise RuntimeError("the function signature for helicsRawStringToBytes has changed!")
-            functionName = functionDict.get("spelling","")
-            functionComment = "%\tconvert a raw string to serialized bytes.\n\n"
-            functionComment += "%\t@param str The string.\n"
-            functionComment += "%\t@return HelicsDataBuffer.\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += f"\tif(argc != 1){{\n"
-            functionWrapper += "\t\tmexUnlock();\n"
-            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
-            functionWrapper += "\t}\n\n"
-            functionWrapper += initializeArgChar('str',0, functionName)
-            functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(static_cast<int32_t>(strLength));\n\n"
-            functionWrapper += f"\tint32_t result = {functionName}(str, (int)strLength, data);\n\n"
-            functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\tmxUint64 *rv = mxGetUint64s(_out);\n"
-            functionWrapper += "\trv[0] = reinterpret_cast<mxUint64>(data);\n"
-            functionWrapper += "\tif(_out){\n"
-            functionWrapper += "\t\t--resc;\n"
-            functionWrapper += "\t\t*resv++ = _out;\n"
-            functionWrapper += "\t}\n"
-            functionWrapper += "}\n\n\n"
-            functionMainElements = f"\tcase {cursorIdx}:\n"
-            functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
-            functionMainElements += f"\t\tbreak;\n"
-            return functionComment, functionWrapper, functionMainElements
-        
-        
-        def helicsBoolToBytesMatlabWrapper(functionDict: dict(), cursorIdx: int):
-            #check to see if function signiture changed
-            argNum = len(functionDict.get("arguments", {}).keys())
-            if argNum != 2:
-                raise RuntimeError("the function signature for helicsBooleanToBytes has changed!")
-            arg0 = functionDict.get("arguments", {}).get(0, {})
-            if arg0.get("spelling","") != "value" or arg0.get("type", "") != "HelicsBool":
-                raise RuntimeError("the function signature for helicsBooleanToBytes has changed!")
-            arg1 = functionDict.get("arguments", {}).get(1, {})
-            if arg1.get("spelling","") != "data" or arg1.get("type", "") != "HelicsDataBuffer":
-                raise RuntimeError("the function signature for helicsBooleanToBytes has changed!")
-            functionName = functionDict.get("spelling","")
-            functionComment = "%\tconvert a HelicsBool to serialized bytes.\n\n"
-            functionComment += "%\t@param value The HelicsBool.\n"
-            functionComment += "%\t@return HelicsDataBuffer.\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += f"\tif(argc != 1){{\n"
-            functionWrapper += "\t\tmexUnlock();\n"
-            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
-            functionWrapper += "\t}\n\n"
-            functionWrapper += initializeArgHelicsBool('value',0, functionName)
-            functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(sizeof(HelicsBool));\n\n"
-            functionWrapper += f"\tint32_t result = {functionName}(value, data);\n\n"
-            functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\tmxUint64 *rv = mxGetUint64s(_out);\n"
-            functionWrapper += "\trv[0] = reinterpret_cast<mxUint64>(data);\n"
-            functionWrapper += "\tif(_out){\n"
-            functionWrapper += "\t\t--resc;\n"
-            functionWrapper += "\t\t*resv++ = _out;\n"
-            functionWrapper += "\t}\n"
-            functionWrapper += "}\n\n\n"
-            functionMainElements = f"\tcase {cursorIdx}:\n"
-            functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
-            functionMainElements += f"\t\tbreak;\n"
-            return functionComment, functionWrapper, functionMainElements
-        
-        
-        def helicsCharToBytesMatlabWrapper(functionDict: dict(), cursorIdx: int):
-            #check to see if function signiture changed
-            argNum = len(functionDict.get("arguments", {}).keys())
-            if argNum != 2:
-                raise RuntimeError("the function signature for helicsCharToBytes has changed!")
-            arg0 = functionDict.get("arguments", {}).get(0, {})
-            if arg0.get("spelling","") != "value" or arg0.get("type", "") != "Char_S":
-                raise RuntimeError("the function signature for helicsCharToBytes has changed!")
-            arg1 = functionDict.get("arguments", {}).get(1, {})
-            if arg1.get("spelling","") != "data" or arg1.get("type", "") != "HelicsDataBuffer":
-                raise RuntimeError("the function signature for helicsCharToBytes has changed!")
-            functionName = functionDict.get("spelling","")
-            functionComment = "%\tconvert a char to serialized bytes.\n\n"
-            functionComment += "%\t@param value The char.\n"
-            functionComment += "%\t@return HelicsDataBuffer.\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += f"\tif(argc != 1){{\n"
-            functionWrapper += "\t\tmexUnlock();\n"
-            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
-            functionWrapper += "\t}\n\n"
-            functionWrapper += initializeArgChar('value',0, functionName)
-            functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(sizeof(char));\n\n"
-            functionWrapper += f"\tint32_t result = {functionName}(*value, data);\n\n"
-            functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\tmxUint64 *rv = mxGetUint64s(_out);\n"
-            functionWrapper += "\trv[0] = reinterpret_cast<mxUint64>(data);\n"
-            functionWrapper += "\tif(_out){\n"
-            functionWrapper += "\t\t--resc;\n"
-            functionWrapper += "\t\t*resv++ = _out;\n"
-            functionWrapper += "\t}\n"
-            functionWrapper += "}\n\n\n"
-            functionMainElements = f"\tcase {cursorIdx}:\n"
-            functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
-            functionMainElements += f"\t\tbreak;\n"
-            return functionComment, functionWrapper, functionMainElements
-        
-        
-        def helicsTimeToBytesMatlabWrapper(functionDict: dict(), cursorIdx: int):
-            #check to see if function signiture changed
-            argNum = len(functionDict.get("arguments", {}).keys())
-            if argNum != 2:
-                raise RuntimeError("the function signature for helicsTimeToBytes has changed!")
-            arg0 = functionDict.get("arguments", {}).get(0, {})
-            if arg0.get("spelling","") != "value" or arg0.get("type", "") != "HelicsTime":
-                raise RuntimeError("the function signature for helicsTimeToBytes has changed!")
-            arg1 = functionDict.get("arguments", {}).get(1, {})
-            if arg1.get("spelling","") != "data" or arg1.get("type", "") != "HelicsDataBuffer":
-                raise RuntimeError("the function signature for helicsTimeToBytes has changed!")
-            functionName = functionDict.get("spelling","")
-            functionComment = "%\tconvert a HelicsTime to serialized bytes.\n\n"
-            functionComment += "%\t@param value The HelicsTime value.\n"
-            functionComment += "%\t@return HelicsDataBuffer.\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += f"\tif(argc != 1){{\n"
-            functionWrapper += "\t\tmexUnlock();\n"
-            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
-            functionWrapper += "\t}\n\n"
-            functionWrapper += initializeArgHelicsTime('value',0, functionName)
-            functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(sizeof(HelicsTime));\n\n"
-            functionWrapper += f"\tint32_t result = {functionName}(value, data);\n\n"
-            functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\tmxUint64 *rv = mxGetUint64s(_out);\n"
-            functionWrapper += "\trv[0] = reinterpret_cast<mxUint64>(data);\n"
-            functionWrapper += "\tif(_out){\n"
-            functionWrapper += "\t\t--resc;\n"
-            functionWrapper += "\t\t*resv++ = _out;\n"
-            functionWrapper += "\t}\n"
-            functionWrapper += "}\n\n\n"
-            functionMainElements = f"\tcase {cursorIdx}:\n"
-            functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
-            functionMainElements += f"\t\tbreak;\n"
-            return functionComment, functionWrapper, functionMainElements
-        
-        
-        def helicsComplexToBytesMatlabWrapper(functionDict: dict(), cursorIdx: int):
-            #check to see if function signiture changed
-            argNum = len(functionDict.get("arguments", {}).keys())
-            if argNum != 3:
-                raise RuntimeError("the function signature for helicsComplexToBytes has changed!")
-            arg0 = functionDict.get("arguments", {}).get(0, {})
-            if arg0.get("spelling","") != "real" or arg0.get("type", "") != "Double":
-                raise RuntimeError("the function signature for helicsComplexToBytes has changed!")
-            arg1 = functionDict.get("arguments", {}).get(1, {})
-            if arg1.get("spelling","") != "imag" or arg1.get("type", "") != "Double":
-                raise RuntimeError("the function signature for helicsComplexToBytes has changed!")
-            arg2 = functionDict.get("arguments", {}).get(2, {})
-            if arg2.get("spelling","") != "data" or arg2.get("type", "") != "HelicsDataBuffer":
-                raise RuntimeError("the function signature for helicsComplexToBytes has changed!")
+            if arg2.get("spelling","") != "imag" or arg2.get("type", "") != "Double":
+                raise RuntimeError("the function signature for helicsDataBufferFillFromComplex has changed!")
             functionName = functionDict.get("spelling","")
             functionComment = "%\tconvert a complex to serialized bytes.\n\n"
+            functionComment += "%\t@param data The helicsDataBuffer to fill.\n"
             functionComment += "%\t@param value The complex value.\n"
-            functionComment += "%\t@return HelicsDataBuffer.\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += f"\tif(argc != 1){{\n"
-            functionWrapper += "\t\tmexUnlock();\n"
-            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
-            functionWrapper += "\t}\n\n"
-            functionWrapper += f"\tif(!mxIsComplex(argv[0])){{\n"
-            functionWrapper += "\t\tmexUnlock();\n"
-            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument 1 must be of type complex.\");\n"
-            functionWrapper += "\t}\n\n"
-            functionWrapper += "\tmxComplexDouble *value = mxGetComplexDoubles(argv[0]);\n\n"
-            functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(2*sizeof(double));\n\n"
-            functionWrapper += f"\tint32_t result = {functionName}(value->real, value->imag, data);\n\n"
-            functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\tmxUint64 *rv = mxGetUint64s(_out);\n"
-            functionWrapper += "\trv[0] = reinterpret_cast<mxUint64>(data);\n"
-            functionWrapper += "\tif(_out){\n"
-            functionWrapper += "\t\t--resc;\n"
-            functionWrapper += "\t\t*resv++ = _out;\n"
-            functionWrapper += "\t}\n"
-            functionWrapper += "}\n\n\n"
-            functionMainElements = f"\tcase {cursorIdx}:\n"
-            functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
-            functionMainElements += f"\t\tbreak;\n"
-            return functionComment, functionWrapper, functionMainElements
-        
-        
-        def helicsComplexObjectToBytesMatlabWrapper(functionDict: dict(), cursorIdx: int):
-            #check to see if function signiture changed
-            argNum = len(functionDict.get("arguments", {}).keys())
-            if argNum != 2:
-                raise RuntimeError("the function signature for helicsComplexObjectToBytes has changed!")
-            arg0 = functionDict.get("arguments", {}).get(0, {})
-            if arg0.get("spelling","") != "value" or arg0.get("type", "") != "HelicsComplex":
-                raise RuntimeError("the function signature for helicsComplexObjectToBytes has changed!")
-            arg1 = functionDict.get("arguments", {}).get(1, {})
-            if arg1.get("spelling","") != "data" or arg1.get("type", "") != "HelicsDataBuffer":
-                raise RuntimeError("the function signature for helicsComplexObjectToBytes has changed!")
-            functionName = functionDict.get("spelling","")
-            functionComment = "%\tconvert a complex to serialized bytes.\n\n"
-            functionComment += "%\t@param value The complex value.\n"
-            functionComment += "%\t@return HelicsDataBuffer.\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += f"\tif(argc != 1){{\n"
-            functionWrapper += "\t\tmexUnlock();\n"
-            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
-            functionWrapper += "\t}\n\n"
-            functionWrapper += f"\tif(!mxIsComplex(argv[0])){{\n"
-            functionWrapper += "\t\tmexUnlock();\n"
-            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument 1 must be of type complex.\");\n"
-            functionWrapper += "\t}\n\n"
-            functionWrapper += "\tmxComplexDouble *value = mxGetComplexDoubles(argv[0]);\n\n"
-            functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(sizeof(HelicsComplex));\n\n"
-            functionWrapper += "\tHelicsComplex vObj = {value->real, value->imag};\n\n"
-            functionWrapper += f"\tint32_t result = {functionName}(vObj, data);\n\n"
-            functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\tmxUint64 *rv = mxGetUint64s(_out);\n"
-            functionWrapper += "\trv[0] = reinterpret_cast<mxUint64>(data);\n"
-            functionWrapper += "\tif(_out){\n"
-            functionWrapper += "\t\t--resc;\n"
-            functionWrapper += "\t\t*resv++ = _out;\n"
-            functionWrapper += "\t}\n"
-            functionWrapper += "}\n\n\n"
-            functionMainElements = f"\tcase {cursorIdx}:\n"
-            functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
-            functionMainElements += f"\t\tbreak;\n"
-            return functionComment, functionWrapper, functionMainElements
-        
-        
-        def helicsVectorToBytesMatlabWrapper(functionDict: dict(), cursorIdx: int):
-            #check to see if function signiture changed
-            argNum = len(functionDict.get("arguments", {}).keys())
-            if argNum != 3:
-                raise RuntimeError("the function signature for helicsVectorToBytes has changed!")
-            arg0 = functionDict.get("arguments", {}).get(0, {})
-            if arg0.get("spelling","") != "value" or arg0.get("pointer_type", "") != "Double_*":
-                raise RuntimeError("the function signature for helicsVectorToBytes has changed!")
-            arg1 = functionDict.get("arguments", {}).get(1, {})
-            if arg1.get("spelling","") != "dataSize" or arg1.get("type", "") != "Int":
-                raise RuntimeError("the function signature for helicsVectorToBytes has changed!")
-            arg2 = functionDict.get("arguments", {}).get(2, {})
-            if arg2.get("spelling","") != "data" or arg2.get("type", "") != "HelicsDataBuffer":
-                raise RuntimeError("the function signature for helicsVectorToBytes has changed!")
-            functionName = functionDict.get("spelling","")
-            functionComment = "%\tconvert a real vector to serialized bytes.\n\n"
-            functionComment += "%\t@param value The vector of doubles.\n"
-            functionComment += "%\t@return HelicsDataBuffer.\n"
-            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += f"\tif(argc != 1){{\n"
-            functionWrapper += "\t\tmexUnlock();\n"
-            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
-            functionWrapper += "\t}\n\n"
-            functionWrapper += f"\tif(!mxIsNumeric(argv[0])){{\n"
-            functionWrapper += "\t\tmexUnlock();\n"
-            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument 1 must be an array of doubles.\");\n"
-            functionWrapper += "\t}\n"
-            functionWrapper += "\tint dataSize =  static_cast<int>(mxGetNumberOfElements(argv[0]));\n\n"
-            functionWrapper += "\tdouble *value =  static_cast<double *>(mxGetDoubles(argv[0]));\n\n"
-            functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(dataSize*sizeof(double));\n\n"
-            functionWrapper += f"\tint32_t result = {functionName}(static_cast<const double *>(value), dataSize, data);\n\n"
-            functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\tmxUint64 *rv = mxGetUint64s(_out);\n"
-            functionWrapper += "\trv[0] = reinterpret_cast<mxUint64>(data);\n"
-            functionWrapper += "\tif(_out){\n"
-            functionWrapper += "\t\t--resc;\n"
-            functionWrapper += "\t\t*resv++ = _out;\n"
-            functionWrapper += "\t}\n"
-            functionWrapper += "}\n\n\n"
-            functionMainElements = f"\tcase {cursorIdx}:\n"
-            functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
-            functionMainElements += f"\t\tbreak;\n"
-            return functionComment, functionWrapper, functionMainElements
-        
-        
-        def helicsNamedPointToBytesMatlabWrapper(functionDict: dict(), cursorIdx: int):
-            #check to see if function signiture changed
-            argNum = len(functionDict.get("arguments", {}).keys())
-            if argNum != 3:
-                raise RuntimeError("the function signature for helicsNamedPointToBytes has changed!")
-            arg0 = functionDict.get("arguments", {}).get(0, {})
-            if arg0.get("spelling","") != "name" or arg0.get("pointer_type", "") != "Char_S_*":
-                raise RuntimeError("the function signature for helicsNamedPointToBytes has changed!")
-            arg1 = functionDict.get("arguments", {}).get(1, {})
-            if arg1.get("spelling","") != "value" or arg1.get("type", "") != "Double":
-                raise RuntimeError("the function signature for helicsNamedPointToBytes has changed!")
-            arg2 = functionDict.get("arguments", {}).get(2, {})
-            if arg2.get("spelling","") != "data" or arg2.get("type", "") != "HelicsDataBuffer":
-                raise RuntimeError("the function signature for helicsNamedPointToBytes has changed!")
-            functionName = functionDict.get("spelling","")
-            functionComment = "%\tconvert a named point to serialized bytes.\n\n"
-            functionComment += "%\t@param name The name of the named point.\n"
-            functionComment += "%\t@param value The double value of the named point.\n"
-            functionComment += "%\t@return HelicsDataBuffer.\n"
+            functionComment += "%\t@return int The buffer size.\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
             functionWrapper += f"\tif(argc != 2){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
             functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 2 arguments.\");\n"
             functionWrapper += "\t}\n\n"
-            functionWrapper += initializeArgChar('name',0, functionName)
-            functionWrapper += initializeArgDouble('value',1, functionName)
-            functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(sizeof(double));\n\n"
-            functionWrapper += f"\tint32_t result = {functionName}(name, value, data);\n\n"
-            functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\tmxUint64 *rv = mxGetUint64s(_out);\n"
-            functionWrapper += "\trv[0] = reinterpret_cast<mxUint64>(data);\n"
+            functionWrapper += initializeArgHelicsClass("HelicsDataBuffer", "data", 0, functionName)
+            functionWrapper += f"\tif(!mxIsComplex(argv[1])){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument 1 must be of type complex.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += "\tmxComplexDouble *value = mxGetComplexDoubles(argv[1]);\n\n"
+            functionWrapper += f"\tint32_t result = {functionName}(data, value->real, value->imag);\n\n"
+            functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);\n"
+            functionWrapper += "\tmxInt32 *rv = mxGetInt32s(_out);\n"
+            functionWrapper += "\trv[0] = static_cast<mxInt32>(result);\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -3414,45 +3006,92 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsComplexVectorToBytesMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsDataBufferFillFromVectorMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 3:
-                raise RuntimeError("the function signature for helicsComplexVectorToBytesMatlabWrapper has changed!")
+                raise RuntimeError("the function signature for helicsDataBufferFillFromVector has changed!")
             arg0 = functionDict.get("arguments", {}).get(0, {})
-            if arg0.get("spelling","") != "value" or arg0.get("pointer_type", "") != "Double_*":
-                raise RuntimeError("the function signature for helicsComplexVectorToBytesMatlabWrapper has changed!")
+            if arg0.get("spelling","") != "data" or arg0.get("type", "") != "HelicsDataBuffer":
+                raise RuntimeError("the function signature for helicsDataBufferFillFromVector has changed!")
             arg1 = functionDict.get("arguments", {}).get(1, {})
-            if arg1.get("spelling","") != "dataSize" or arg1.get("type", "") != "Int":
-                raise RuntimeError("the function signature for helicsComplexVectorToBytesMatlabWrapper has changed!")
+            if arg1.get("spelling","") != "value" or arg1.get("pointer_type", "") != "Double_*":
+                raise RuntimeError("the function signature for helicsDataBufferFillFromVector has changed!")
             arg2 = functionDict.get("arguments", {}).get(2, {})
-            if arg2.get("spelling","") != "data" or arg2.get("type", "") != "HelicsDataBuffer":
-                raise RuntimeError("the function signature for helicsComplexVectorToBytesMatlabWrapper has changed!")
+            if arg2.get("spelling","") != "dataSize" or arg2.get("type", "") != "Int":
+                raise RuntimeError("the function signature for helicsDataBufferFillFromVector has changed!")
+            functionName = functionDict.get("spelling","")
+            functionComment = "%\tconvert a real vector to serialized bytes.\n\n"
+            functionComment += "%\t@param data The helicsDataBuffer to fill.\n"
+            functionComment += "%\t@param value The vector of doubles.\n"
+            functionComment += "%\t@return int The buffer size.\n"
+            functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
+            functionWrapper += f"\tif(argc != 2){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 2 arguments.\");\n"
+            functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsDataBuffer", "data", 0, functionName)
+            functionWrapper += f"\tif(!mxIsNumeric(argv[1])){{\n"
+            functionWrapper += "\t\tmexUnlock();\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument 1 must be an array of doubles.\");\n"
+            functionWrapper += "\t}\n"
+            functionWrapper += "\tint dataSize =  static_cast<int>(mxGetNumberOfElements(argv[1]));\n\n"
+            functionWrapper += "\tdouble *value =  static_cast<double *>(mxGetDoubles(argv[1]));\n\n"
+            functionWrapper += f"\tint32_t result = {functionName}(data, static_cast<const double *>(value), dataSize);\n\n"
+            functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);\n"
+            functionWrapper += "\tmxInt32 *rv = mxGetInt32s(_out);\n"
+            functionWrapper += "\trv[0] = static_cast<mxInt32>(result);\n"
+            functionWrapper += "\tif(_out){\n"
+            functionWrapper += "\t\t--resc;\n"
+            functionWrapper += "\t\t*resv++ = _out;\n"
+            functionWrapper += "\t}\n"
+            functionWrapper += "}\n\n\n"
+            functionMainElements = f"\tcase {cursorIdx}:\n"
+            functionMainElements += f"\t\t_wrap_{functionName}(resc, resv, argc, argv);\n"
+            functionMainElements += f"\t\tbreak;\n"
+            return functionComment, functionWrapper, functionMainElements
+                
+        
+        def helicsDataBufferFillFromComplexVectorMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
+            #check to see if function signiture changed
+            argNum = len(functionDict.get("arguments", {}).keys())
+            if argNum != 3:
+                raise RuntimeError("the function signature for helicsDataBufferFillFromComplexVectorMatlabWrapper has changed!")
+            arg0 = functionDict.get("arguments", {}).get(0, {})
+            if arg0.get("spelling","") != "data" or arg0.get("type", "") != "HelicsDataBuffer":
+                raise RuntimeError("the function signature for helicsDataBufferFillFromComplexVectorMatlabWrapper has changed!")
+            arg1 = functionDict.get("arguments", {}).get(1, {})
+            if arg1.get("spelling","") != "value" or arg1.get("pointer_type", "") != "Double_*":
+                raise RuntimeError("the function signature for helicsDataBufferFillFromComplexVectorMatlabWrapper has changed!")
+            arg2 = functionDict.get("arguments", {}).get(2, {})
+            if arg2.get("spelling","") != "dataSize" or arg2.get("type", "") != "Int":
+                raise RuntimeError("the function signature for helicsDataBufferFillFromComplexVectorMatlabWrapper has changed!")
             functionName = functionDict.get("spelling","")
             functionComment = "%\tconvert a complex vector to serialized bytes.\n\n"
+            functionComment += "%\t@param data The helicsDataBuffer to fill.\n"
             functionComment += "%\t@param value The vector of complex values.\n"
-            functionComment += "%\t@return HelicsDataBuffer.\n"
+            functionComment += "%\t@return int The buffer size.\n"
             functionWrapper = f"void _wrap_{functionName}(int resc, mxArray *resv[], int argc, const mxArray *argv[])" + "{\n"
-            functionWrapper += f"\tif(argc != 1){{\n"
+            functionWrapper += f"\tif(argc != 2){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
-            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 1 arguments.\");\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:rhs\",\"This function requires 2 arguments.\");\n"
             functionWrapper += "\t}\n\n"
+            functionWrapper += initializeArgHelicsClass("HelicsDataBuffer", "data", 0, functionName)
             functionWrapper += f"\tif(!mxIsComplex(argv[1])){{\n"
             functionWrapper += "\t\tmexUnlock();\n"
-            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument 1 must be of an array of type complex.\");\n"
+            functionWrapper += f"\t\tmexErrMsgIdAndTxt(\"MATLAB:{functionName}:TypeError\",\"Argument 2 must be of an array of type complex.\");\n"
             functionWrapper += "\t}\n"
-            functionWrapper += "\tint dataSize =  static_cast<int>(mxGetN(argv[0])*2);\n\n"
+            functionWrapper += "\tint dataSize =  static_cast<int>(mxGetN(argv[1])*2);\n\n"
             functionWrapper += "\tdouble *value = static_cast<double *>(malloc(dataSize * sizeof(double)));\n"
-            functionWrapper += "\tmxComplexDouble *vals = mxGetComplexDoubles(argv[0]);\n"
+            functionWrapper += "\tmxComplexDouble *vals = mxGetComplexDoubles(argv[1]);\n"
             functionWrapper += "\tfor(int i=0; i<dataSize/2; ++i){\n"
             functionWrapper += "\t\tvalue[2*i] = vals[i].real;\n"
             functionWrapper += "\t\tvalue[2*i + 1] = vals[i].imag;\n"
             functionWrapper += "\t}\n\n"
-            functionWrapper += "\tHelicsDataBuffer data = helicsCreateDataBuffer(dataSize*sizeof(double));\n\n"
-            functionWrapper += f"\tint32_t result = {functionName}(static_cast<const double *>(value), dataSize, data);\n\n"
-            functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);\n"
-            functionWrapper += "\tmxUint64 *rv = mxGetUint64s(_out);\n"
-            functionWrapper += "\trv[0] = reinterpret_cast<mxUint64>(data);\n"
+            functionWrapper += f"\tint32_t result = {functionName}(data, static_cast<const double *>(value), dataSize);\n\n"
+            functionWrapper += "\tmxArray *_out = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);\n"
+            functionWrapper += "\tmxInt32 *rv = mxGetInt32s(_out);\n"
+            functionWrapper += "\trv[0] = static_cast<mxInt32>(result);\n"
             functionWrapper += "\tif(_out){\n"
             functionWrapper += "\t\t--resc;\n"
             functionWrapper += "\t\t*resv++ = _out;\n"
@@ -3464,7 +3103,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsDataBufferToStringMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsDataBufferToStringMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
@@ -3513,7 +3152,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsDataBufferToRawStringMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsDataBufferToRawStringMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
@@ -3562,7 +3201,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsDataBufferToComplexMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsDataBufferToComplexMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
              #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 3:
@@ -3603,7 +3242,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsDataBufferToComplexObjectMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsDataBufferToComplexObjectMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 1:
@@ -3638,7 +3277,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsDataBufferToVectorMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsDataBufferToVectorMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
@@ -3686,7 +3325,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsDataBufferToComplexVectorMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsDataBufferToComplexVectorMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
@@ -3735,7 +3374,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsDataBufferToNamedPointMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsDataBufferToNamedPointMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 5:
@@ -3792,7 +3431,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsCloseLibraryMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsCloseLibraryMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 0:
@@ -3820,7 +3459,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsFederateInitializingEntryCallbackMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsFederateInitializingEntryCallbackMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
@@ -3878,7 +3517,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsFederateExecutingEntryCallbackMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsFederateExecutingEntryCallbackMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
@@ -3929,7 +3568,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsFederateCosimulationTerminationCallbackMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsFederateCosimulationTerminationCallbackMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
@@ -3980,7 +3619,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsFederateErrorHandlerCallbackMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsFederateErrorHandlerCallbackMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
@@ -4037,7 +3676,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsCallbackFederateNextTimeCallbackMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsCallbackFederateNextTimeCallbackMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
@@ -4096,7 +3735,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsCallbackFederateNextTimeIterativeCallbackMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsCallbackFederateNextTimeIterativeCallbackMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
@@ -4170,7 +3809,7 @@ class MatlabBindingGenerator(object):
             return functionComment, functionWrapper, functionMainElements
         
         
-        def helicsCallbackFederateInitializeCallbackMatlabWrapper(functionDict: dict(), cursorIdx: int):
+        def helicsCallbackFederateInitializeCallbackMatlabWrapper(functionDict: Dict[str,str], cursorIdx: int):
             #check to see if function signiture changed
             argNum = len(functionDict.get("arguments", {}).keys())
             if argNum != 4:
@@ -4278,17 +3917,17 @@ class MatlabBindingGenerator(object):
         helicsMexMainFunctionElements = []
         helicsMapTuples = []
         for cu in self.__helicsParser.parsedInfo.keys():
-            if self.__helicsParser.parsedInfo[cu]["kind"] == cidx.CursorKind.ENUM_DECL.name:
+            if self.__helicsParser.parsedInfo[cu]["kind"] == "ENUM_DECL":
                 createEnum(self.__helicsParser.parsedInfo[cu])
-            if self.__helicsParser.parsedInfo[cu]["kind"] == cidx.CursorKind.MACRO_DEFINITION.name:
+            if self.__helicsParser.parsedInfo[cu]["kind"] == "MACRO_DEFINITION":
                 macroMexWrapperFunctionStr, macroMexMainFunctionElementStr, macroMapTuple= createMacro(self.__helicsParser.parsedInfo[cu],int(cu))
                 helicsMexWrapperFunctions.append(macroMexWrapperFunctionStr)
                 helicsMexMainFunctionElements.append(macroMexMainFunctionElementStr)
                 if macroMapTuple != None:
                     helicsMapTuples.append(macroMapTuple)
-            if self.__helicsParser.parsedInfo[cu]["kind"] == cidx.CursorKind.VAR_DECL.name:
+            if self.__helicsParser.parsedInfo[cu]["kind"] == "VAR_DECL":
                 createVar(self.__helicsParser.parsedInfo[cu],int(cu))
-            if self.__helicsParser.parsedInfo[cu]["kind"] == cidx.CursorKind.FUNCTION_DECL.name:
+            if self.__helicsParser.parsedInfo[cu]["kind"] == "FUNCTION_DECL":
                 functionMexWrapperFunctionStr, functionMexMainFunctionElementStr, functionMapTuple= createFunction(self.__helicsParser.parsedInfo[cu],int(cu))
                 helicsMexWrapperFunctions.append(functionMexWrapperFunctionStr)
                 helicsMexMainFunctionElements.append(functionMexMainFunctionElementStr)

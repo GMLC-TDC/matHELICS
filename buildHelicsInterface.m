@@ -38,7 +38,8 @@ if (makePackage)
 end
 inputPath=fileparts(mfilename('fullpath'));
 isOctave = (exist('OCTAVE_VERSION', 'builtin') ~= 0);
-HelicsVersion='3.4.0';
+HelicsVersion='3.5.0';
+
 % set up platform specific names and locations
 targetTarFile=fullfile(targetPath,['helicsTar',HelicsVersion,'.tar.gz']);
 if ismac

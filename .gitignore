@@ -1,5 +1,5 @@
 # matHELICS specific
-\+helics
+/+helics/
 helicsMex.*
 helicsStartup.m
 matHelics.*

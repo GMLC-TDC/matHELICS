@@ -84,7 +84,8 @@ end
 
 function testBasic(testCase)
 import matlab.unittest.constraints.IsGreaterThan
-ver=helics.helicsGetVersion();
+import helics.*
+ver=helicsGetVersion();
 verifyThat(testCase,length(ver),IsGreaterThan(10),'version length is not valid');
 end
 
