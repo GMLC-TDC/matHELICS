@@ -5,7 +5,7 @@ function varargout = helicsCreateMessageFederate(varargin)
 % argument.
 % 
 % @param fedName The name of the federate to create.
-% @param fi The federate info object that contains details on the federate.
+% @param fedInfo The federate info object that contains details on the federate.
 % 
 % 
 % 
