@@ -1,7 +1,7 @@
 function varargout = helicsFederateInfoClone(varargin)
 % Create a federate info object from an existing one and clone the information.
 % 
-% @param fi A federateInfo object to duplicate.
+% @param fedInfo A federateInfo object to duplicate.
 % 
 % 
 % 

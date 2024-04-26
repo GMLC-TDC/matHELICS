@@ -3,7 +3,7 @@ function varargout = helicsFederateInfoSetIntegerProperty(varargin)
 % 
 % @details Set known properties.
 % 
-% @param fi The federateInfo object to alter.
+% @param fedInfo The federateInfo object to alter.
 % @param intProperty An int identifying the property.
 % @param propertyValue The value to set the property to.
 % 
