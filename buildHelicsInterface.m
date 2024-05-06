@@ -115,16 +115,14 @@ elseif ispc
     %actually build the mex file
     fprintf('building helics mex target\n');
     if isOctave
-        mex("-lhelics","-DMX_HAS_INTERLEAVED_COMPLEX",["-I",basePath,"/include/"],["-L",basePath,"/lib"],["-Wl,-rpath,$ORIGIN/lib:",basePath,"/lib",":",basePath,"/lib64"],"-o helicsMex.mex",fullfile(inputPath,"helicsMex.cpp"));
+        mex("-lhelics","-DMX_HAS_INTERLEAVED_COMPLEX",["-I",basePath,"/include/"],["-L",basePath,"/lib"],["-Wl,-rpath,$ORIGIN/bin:",basePath,"/lib",":",basePath,"/lib64"],"-o helicsMex.mex",fullfile(inputPath,"helicsMex.cpp"));
     else
         mex('-lhelics','-R2018a',['-I',basePath,'/include/'],['-L',basePath,'/lib'],['-L',basePath,'/bin'],fullfile(inputPath,'helicsMex.cpp'),'-outdir',targetPath);
     end
     %copy the needed dll file if on windows
     if ispc
         if (~exist(fullfile(targetPath,targetFile),'file'))
-          if isOctave
-            copyfile(fullfile(basePath,'bin','*helics.*'),targetPath);
-          else
+          if ~isOctave
             copyfile(fullfile(basePath,'bin',targetFile),fullfile(targetPath,targetFile));
             copyfile(fullfile(basePath,'bin','*.dll'),targetPath);
           end
