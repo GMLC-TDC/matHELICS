@@ -90,7 +90,7 @@ elseif isunix
         mex('-lhelics','-R2018a',['-I',basePath,'/include/'],['-L',basePath,'/lib'],['-L',basePath,'/lib64'],['LDFLAGS=$LDFLAGS -Wl,-rpath,$ORIGIN/lib,-rpath,',basePath,'/lib',',-rpath,',basePath,'/lib64'],fullfile(inputPath,'helicsMex.cpp'),'-outdir',targetPath);
     end
 elseif ispc
-    if isequal(computer,'PCWIN64')
+    if isOctave || isequal(computer,'PCWIN64')
         basePath=fullfile(targetPath,['Helics-',HelicsVersion,'-win64']);
         baseFile=['Helics-shared-',HelicsVersion,'-win64.tar.gz'];
         targetFile='helics.dll';
@@ -122,8 +122,12 @@ elseif ispc
     %copy the needed dll file if on windows
     if ispc
         if (~exist(fullfile(targetPath,targetFile),'file'))
+          if isOctave
+            copyfile(fullfile(basePath,'bin','*helics.*'),targetPath);
+          else
             copyfile(fullfile(basePath,'bin',targetFile),fullfile(targetPath,targetFile));
             copyfile(fullfile(basePath,'bin','*.dll'),targetPath);
+          end
         end
     end
 else
