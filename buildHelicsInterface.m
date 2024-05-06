@@ -125,6 +125,15 @@ elseif ispc
           if ~isOctave
             copyfile(fullfile(basePath,'bin',targetFile),fullfile(targetPath,targetFile));
             copyfile(fullfile(basePath,'bin','*.dll'),targetPath);
+          else
+            success1=copyfile(fullfile(basePath,'bin',targetFile),fullfile(targetPath,targetFile));
+            if (success1)
+              [success2,msg,id]=copyfile(fullfile(basePath,'bin','*.dll'),targetPath);
+              if (~success2)
+                 printf('files not copied%s',msg);
+              endif
+            endif
+
           end
         end
     end
