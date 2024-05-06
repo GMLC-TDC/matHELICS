@@ -38,9 +38,13 @@ The `buildHelicsInterface` function also has an option to generate the package f
 
 This is a new process for building a Matlab interface, it is tested but not extensively and not on a large variety of platforms if you run into issues please let us know.
 
+#### Building with Octave
+
+The instructions for building with newer octave are identical.  This will work for octave 8.4 or newer.   Octave 9.1 on Windows does not work directly due to a bug with mingw 13.2 on windows.   This is not an issue with Octave, so if a helics version was build with mingw it could be made to work, but the scripts use the visual studio version, which works fine with older versions of the library and likely subsequent ones as well as the bug is reportedly fixed.   But this will likely require a new version of octave with a newer mingw release.  
+
 ### Requirements
 
-Matlab 2018a or greater.  
+Matlab 2018a or greater.  Octave 8.4 or greater.
 intalled compatible compiler to build the mex file
 
 ### building with custom HELICS version
@@ -64,6 +68,10 @@ On mac or linux it is necessary to run helicsStartup prior to use.  After that a
 If it is necessary to run on an older version of Matlab prior to 2018a, some minor modifications to the helicsMex.cpp may be possible to allow things to work fine, please contact the developers for specific instructions.
 
 Versions prior to Matlab 2015 will require more extensive modifications.  And may be better served by using the Swig based matlab build from Helics version 3.2 which should be compatible with other HELICS versions in the 3.X series.
+
+### Older versions of octave
+
+Older versions of octave can use the SWIG generate interface.  This version will be deprecated as of HELICS 3.6, but HELICS is generally backwards compatible for federates, that don't use the latest features.  
 
 ## Source Repo
 

@@ -491,7 +491,7 @@ void _wrap_helicsCreateDataBuffer(int resc, mxArray *resv[], int argc, const mxA
 		mexUnlock();
 		mexErrMsgIdAndTxt("MATLAB:helicsCreateDataBuffer:TypeError","Argument 1 must be of type int32.");
 	}
-mxInt32 *pinitialCapacity = mxGetInt32s(argv[0]);
+	mxInt32 *pinitialCapacity = mxGetInt32s(argv[0]);
 	int32_t initialCapacity = static_cast<int32_t>(pinitialCapacity[0]);
 
 	HelicsDataBuffer result = helicsCreateDataBuffer(initialCapacity);
@@ -687,7 +687,7 @@ void _wrap_helicsDataBufferReserve(int resc, mxArray *resv[], int argc, const mx
 		mexUnlock();
 		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferReserve:TypeError","Argument 2 must be of type int32.");
 	}
-mxInt32 *pnewCapacity = mxGetInt32s(argv[1]);
+	mxInt32 *pnewCapacity = mxGetInt32s(argv[1]);
 	int32_t newCapacity = static_cast<int32_t>(pnewCapacity[0]);
 
 	HelicsBool result = helicsDataBufferReserve(data, newCapacity);
@@ -748,7 +748,7 @@ void _wrap_helicsDataBufferFillFromInteger(int resc, mxArray *resv[], int argc, 
 		mexUnlock();
 		mexErrMsgIdAndTxt("MATLAB:helicsDataBufferFillFromInteger:TypeError","Argument 2 must be of type int64.");
 	}
-mxInt64 *pvalue = mxGetInt64s(argv[1]);
+	mxInt64 *pvalue = mxGetInt64s(argv[1]);
 	int64_t value = static_cast<int64_t>(pvalue[0]);
 
 	int32_t result = helicsDataBufferFillFromInteger(data, value);
@@ -7851,7 +7851,7 @@ void _wrap_helicsQuerySetOrdering(int resc, mxArray *resv[], int argc, const mxA
 		mexUnlock();
 		mexErrMsgIdAndTxt("MATLAB:helicsQuerySetOrdering:TypeError","Argument 2 must be of type int32.");
 	}
-mxInt32 *pmode = mxGetInt32s(argv[1]);
+	mxInt32 *pmode = mxGetInt32s(argv[1]);
 	int32_t mode = static_cast<int32_t>(pmode[0]);
 
 	HelicsError err = helicsErrorInitialize();
@@ -9050,7 +9050,7 @@ void _wrap_helicsPublicationPublishInteger(int resc, mxArray *resv[], int argc, 
 		mexUnlock();
 		mexErrMsgIdAndTxt("MATLAB:helicsPublicationPublishInteger:TypeError","Argument 2 must be of type int64.");
 	}
-mxInt64 *pval = mxGetInt64s(argv[1]);
+	mxInt64 *pval = mxGetInt64s(argv[1]);
 	int64_t val = static_cast<int64_t>(pval[0]);
 
 	HelicsError err = helicsErrorInitialize();
@@ -10196,7 +10196,7 @@ void _wrap_helicsInputSetDefaultInteger(int resc, mxArray *resv[], int argc, con
 		mexUnlock();
 		mexErrMsgIdAndTxt("MATLAB:helicsInputSetDefaultInteger:TypeError","Argument 2 must be of type int64.");
 	}
-mxInt64 *pval = mxGetInt64s(argv[1]);
+	mxInt64 *pval = mxGetInt64s(argv[1]);
 	int64_t val = static_cast<int64_t>(pval[0]);
 
 	HelicsError err = helicsErrorInitialize();
@@ -13693,7 +13693,7 @@ void _wrap_helicsMessageSetMessageID(int resc, mxArray *resv[], int argc, const 
 		mexUnlock();
 		mexErrMsgIdAndTxt("MATLAB:helicsMessageSetMessageID:TypeError","Argument 2 must be of type int32.");
 	}
-mxInt32 *pmessageID = mxGetInt32s(argv[1]);
+	mxInt32 *pmessageID = mxGetInt32s(argv[1]);
 	int32_t messageID = static_cast<int32_t>(pmessageID[0]);
 
 	HelicsError err = helicsErrorInitialize();

@@ -1,14 +1,25 @@
 %% a single federate example for HELICS in matlab
 
-helicsStartup
-import helics.*
+%helicsStartup
+%HELICS_PATH = 'C:\Users\mukh915\matHELICS\helics'; % matHELICS path
+HELICS_PATH = '/home/helics-user/Softwares_user/matHELICS/'; % matHELICS path
+addpath(HELICS_PATH)
+% Checking if Octave or Matlab
+isOctave = exist('OCTAVE_VERSION', 'builtin') ~= 0;
+if isOctave
+  % Using custom Import as the import function is not yet implemented in Octave
+  addpath(fullfile(HELICS_PATH, '+helics'))
+else
+  import helics.*
+end
+
 % create a broker so we don't have to do this separately
 brk=helicsCreateBroker('','B1','-f1');
 % create a combination federate so we add both endpoint and
 % publications/inputs
 fi=helicsCreateFederateInfo();
 fed1=helicsCreateCombinationFederate('fed1',fi);
-helicsFederateSetFlagOption(fed1,HelicsFederateFlags.HELICS_FLAG_UNINTERRUPTIBLE,HELICS_TRUE)
+helicsFederateSetFlagOption(fed1, HelicsFederateFlags.HELICS_FLAG_UNINTERRUPTIBLE, HELICS_TRUE)
 % register Endpoint1/2
 e1=helicsFederateRegisterGlobalEndpoint(fed1,'Endpoint1','');
 e2=helicsFederateRegisterGlobalEndpoint(fed1,'Endpoint2','');
@@ -58,5 +69,5 @@ helicsFederateDisconnect(fed1);
 %now the broker should terminate the cosimulation
 helicsBrokerWaitForDisconnect(brk,0);
 %close up the library and clean up any memory use that hasn't been cleaned
-%already.  
+%already.
 helicsCloseLibrary();
