@@ -8,7 +8,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [3.5.2][] ~ 2023-05-09
 
 - update to HELICS [3.5.2](https://github.com/GMLC-TDC/HELICS/releases/tag/v3.5.2) release
-- add some code for Octave support
+- add some code for Octave support, see [Readme](https://github.com/GMLC-TDC/matHELICS/blob/main/README.md#building-with-octave)
 
 ## [3.4.0][] ~ 2023-01-24
 
@@ -26,3 +26,4 @@ Initial version to match [HELICS](www.github.com/GMLC-TDC/HELICS) versioning.
 [3.2.1]: https://github.com/GMLC-TDC/matHELICS/releases/tag/v3.2.1
 [3.3.2]: https://github.com/GMLC-TDC/matHELICS/releases/tag/v3.3.2
 [3.4.0]: https://github.com/GMLC-TDC/matHELICS/releases/tag/v3.4.0
+[3.5.2]: https://github.com/GMLC-TDC/matHELICS/releases/tag/v3.5.2
