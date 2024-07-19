@@ -6,6 +6,7 @@
 %	HELICS_HANDLE_OPTION_SINGLE_CONNECTION_ONLY: value:407	specify that only a single connection is allowed for an interface
 %	HELICS_HANDLE_OPTION_MULTIPLE_CONNECTIONS_ALLOWED: value:409	specify that multiple connections are allowed for an interface
 %	HELICS_HANDLE_OPTION_BUFFER_DATA: value:411	specify that the last data should be buffered and sent on subscriptions after init
+%	HELICS_HANDLE_OPTION_RECONNECTABLE: value:412	specify that the handle can be reconnected for reentrant federates
 %	HELICS_HANDLE_OPTION_STRICT_TYPE_CHECKING: value:414	specify that the types should be checked strictly for pub/sub and filters
 %	HELICS_HANDLE_OPTION_RECEIVE_ONLY: value:422	specify that the handle is receive only
 %	HELICS_HANDLE_OPTION_SOURCE_ONLY: value:423	specify that the handle is source only

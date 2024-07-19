@@ -15,6 +15,7 @@
 %	HELICS_FLAG_SINGLE_THREAD_FEDERATE: value:27	flag indicating that the federate will only interact on a single thread
 %	HELICS_FLAG_MULTI_THREAD_CORE: value:28	flag indicating use of a thread safe core
 %	HELICS_FLAG_SINGLE_THREAD_CORE: value:29	flag indicating use of a single threaded core
+%	HELICS_FLAG_REENTRANT: value:38	flag indicating the federate can be reentrant
 %	HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS: value:67	used to not display warnings on mismatched requested times
 %	HELICS_FLAG_STRICT_CONFIG_CHECKING: value:75	specify that checking on configuration files should be strict and throw and error on any invalid values
 %	HELICS_FLAG_USE_JSON_SERIALIZATION: value:79	specify that the federate should use json serialization for all data types
