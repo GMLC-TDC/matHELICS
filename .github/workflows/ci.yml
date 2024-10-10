@@ -14,36 +14,36 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2019,macos-11,ubuntu-20.04]
+        os: [windows-2019,macos-13,ubuntu-20.04]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install latest HELICS release
         uses: gmlc-tdc/helics-action/install@main
       - name: Set up MATLAB
-        uses: matlab-actions/setup-matlab@v1.1.1
+        uses: matlab-actions/setup-matlab@v2.2.0
         with:
-          release: R2021a
+          release: R2023b
       - name: Set up MEX
-        uses: matlab-actions/run-command@v1
+        uses: matlab-actions/run-command@v2
         with:
           command: mex -setup
       - name: Build matHELICS
-        uses: matlab-actions/run-command@v1
+        uses: matlab-actions/run-command@v2
         with:
           command: buildHelicsInterface('helics',true)
       - name: store package
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.os }}-matHELICS
           path: matHELICS.*
       - name: run startup
-        uses: matlab-actions/run-command@v1
+        uses: matlab-actions/run-command@v2
         with:
           command: addpath('helics'), helicsStartup
       - name: run tests
-        uses: matlab-actions/run-command@v1
+        uses: matlab-actions/run-command@v2
         with:
           command: addpath('tests'),addpath('helics'),runAllTests
 

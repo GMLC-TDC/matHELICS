@@ -38,7 +38,7 @@ function buildHelicsInterface(targetPath,makePackage)
   end
   inputPath=fileparts(mfilename('fullpath'));
   isOctave = (exist('OCTAVE_VERSION', 'builtin') ~= 0);
-  HelicsVersion='3.5.2';
+  HelicsVersion='3.5.3';
   % set up platform specific names and locations
   targetTarFile=fullfile(targetPath,['helicsTar',HelicsVersion,'.tar.gz']);
   if ismac
