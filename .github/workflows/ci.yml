@@ -25,12 +25,12 @@ jobs:
         uses: gmlc-tdc/helics-action/install@main
       - name: Set up MATLAB (macOS)
         if: runner.os == 'macOS'
-        uses: matlab-actions/setup-matlab@v2.2.0
+        uses: matlab-actions/setup-matlab@v2.3.0
         with:
           release: R2022b
       - name: Set up MATLAB
         if: runner.os != 'macOS'
-        uses: matlab-actions/setup-matlab@v2.2.0
+        uses: matlab-actions/setup-matlab@v2.3.0
         with:
           release: R2021a
       - name: Set up MEX
