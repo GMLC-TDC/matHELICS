@@ -5,6 +5,7 @@ function varargout = helicsCreateBroker(varargin)
 % @param name The name of the broker. It can be a nullptr or empty string to have a name automatically assigned.
 % @param initString An initialization string to send to the core-the format is similar to command line arguments.
 %                   Typical options include a broker address such as --broker="XSSAF" if this is a subbroker, or the number of federates,
+%                    or it can also be a json or toml file with broker configuration.
 % or the address.
 % 
 % 
