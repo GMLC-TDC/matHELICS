@@ -993,12 +993,12 @@ class MatlabBindingGenerator(object):
             functionFilePath = self.__rootDir / "matlabBindings" / "+helics"
             if not functionFilePath.is_dir():
                 functionFilePath.mkdir(parents=True, exist_ok=True)
-            functionFile = functionFilePath / f"{functionDict.get("spelling","")}.m"
+            functionFile = functionFilePath / f'{functionDict.get("spelling","")}.m'
             with functionFile.open(mode="w", encoding="utf-8") as functionMFile:
                 functionMFile.write(f'function varargout = {functionDict.get("spelling","")}(varargin)\n')
                 functionMFile.write(functionComment)
                 functionMStr = "\t[varargout{1:nargout}] = helicsMex("
-                functionMStr += f"'{functionDict.get("spelling","")}', varargin"
+                functionMStr += f'\'{functionDict.get("spelling","")}\', varargin'
                 functionMStr += "{:});\n"
                 functionMFile.write(functionMStr)
                 functionMFile.write("end\n")
