@@ -53,7 +53,7 @@ jobs:
         if: runner.os != 'Windows'       
         run: mv matHELICS.tar.gz matHELICS-${{ matrix.os }}.tar.gz
       - name: store package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ matrix.os }}-matHELICS
           path: matHELICS-${{ matrix.os }}.*
