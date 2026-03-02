@@ -72,7 +72,7 @@ jobs:
     needs: ci-test
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with: # no name specified, so all artifacts will be downloaded
           path: ./artifacts
           merge-multiple: true
