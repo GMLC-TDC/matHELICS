@@ -39,11 +39,11 @@ jobs:
         with:
           release: R2024b
       - name: Set up MEX
-        uses: matlab-actions/run-command@v2
+        uses: matlab-actions/run-command@v3
         with:
           command: mex -setup
       - name: Build matHELICS
-        uses: matlab-actions/run-command@v2
+        uses: matlab-actions/run-command@v3
         with:
           command: buildHelicsInterface('helics',true)
       - name: Rename artifact (Windows)
@@ -58,11 +58,11 @@ jobs:
           name: ${{ matrix.os }}-matHELICS
           path: matHELICS-${{ matrix.os }}.*
       - name: run startup
-        uses: matlab-actions/run-command@v2
+        uses: matlab-actions/run-command@v3
         with:
           command: addpath('helics'), helicsStartup
       - name: run tests
-        uses: matlab-actions/run-command@v2
+        uses: matlab-actions/run-command@v3
         with:
           command: addpath('tests'),addpath('helics'),runAllTests
 
