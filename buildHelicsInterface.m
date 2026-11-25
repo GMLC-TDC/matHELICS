@@ -67,7 +67,7 @@ function buildHelicsInterface(targetPath,makePackage)
     if isOctave
       mex("-lhelics","-DMX_HAS_INTERLEAVED_COMPLEX",["-I",basePath,"/include/"],["-L",basePath,"/lib"],["-Wl,-rpath,$ORIGIN/lib:",basePath,"/lib",":",basePath,"/lib64"],"-o helicsMex.mex",fullfile(inputPath,"helicsMex.cpp"));
     else
-      mex('-lhelics','-R2018a',['-I',basePath,'/include/'],['-L',basePath,'/lib'],['LDFLAGS=$LDFLAGS -Wl,-rpath,$ORIGIN/lib,-rpath,',basePath,'/lib',',-rpath,',basePath,'/lib64'],fullfile(inputPath,'helicsMex.cpp'),'-outdir',targetPath);
+      mex('-lhelics','-R2018a',['-I',basePath,'/include/'],['-L',basePath,'/lib'],['LDFLAGS=$LDFLAGS -Wl,-rpath,@loader_path/lib,-rpath,',basePath,'/lib',',-rpath,',basePath,'/lib64'],fullfile(inputPath,'helicsMex.cpp'),'-outdir',targetPath);
     end
   elseif isunix
     basePath=fullfile(targetPath,['Helics-',HelicsVersion,'-Linux-x86_64']);
@@ -93,7 +93,7 @@ function buildHelicsInterface(targetPath,makePackage)
     if isOctave
       mex("-lhelics","-DMX_HAS_INTERLEAVED_COMPLEX",["-I",basePath,"/include/"],["-L",basePath,"/lib"],['-L',basePath,'/lib64'],["-Wl,-rpath,$ORIGIN/lib:",basePath,"/lib",":",basePath,"/lib64"],"-o helicsMex.mex",fullfile(inputPath,"helicsMex.cpp"));
     else
-      mex('-lhelics','-R2018a',['-I',basePath,'/include/'],['-L',basePath,'/lib'],['-L',basePath,'/lib64'],['LDFLAGS=$LDFLAGS -Wl,-rpath,$ORIGIN/lib,-rpath,',basePath,'/lib',',-rpath,',basePath,'/lib64'],fullfile(inputPath,'helicsMex.cpp'),'-outdir',targetPath);
+      mex('-lhelics','-R2018a',['-I',basePath,'/include/'],['-L',basePath,'/lib'],['-L',basePath,'/lib64'],['LDFLAGS=$LDFLAGS -Wl,-rpath,\$ORIGIN/lib,-rpath,',basePath,'/lib',',-rpath,',basePath,'/lib64'],fullfile(inputPath,'helicsMex.cpp'),'-outdir',targetPath);
     end
   elseif ispc
     if isOctave || isequal(computer,'PCWIN64')
