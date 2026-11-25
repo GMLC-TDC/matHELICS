@@ -4,7 +4,7 @@ function varargout = helicsGetOptionValue(varargin)
 % 
 % @param val A string representing the value.
 % 
-% @return An int with the option value or (-1) if not a valid value.
+% @return An int with the option value, (-1) if val is NULL, or HELICS_INVALID_OPTION_INDEX if not a valid value.
 
 	[varargout{1:nargout}] = helicsMex('helicsGetOptionValue', varargin{:});
 end

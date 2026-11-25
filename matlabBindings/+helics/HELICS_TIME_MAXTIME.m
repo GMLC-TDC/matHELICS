@@ -1,4 +1,4 @@
 function v = HELICS_TIME_MAXTIME()
-% definition of time signifying the federate has terminated or run until the end of the simulation
-	v = HELICS_BIG_NUMBER();
+% definition of the maximum allowed time value
+	v = HELICS_MAX_TIME_VALUE();
 end

@@ -1,0 +1,3 @@
+function v = HELICS_MAX_TIME_VALUE()
+	v = 9223372036.854774;
+end

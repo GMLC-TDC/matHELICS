@@ -49,3 +49,20 @@ Typically you would want to submit a pull request against the develop branch. Th
 ## Styleguides
 
 Code formatting is controlled via clang-format, a somewhat higher level style guide can be found [here](https://helics.readthedocs.io/en/latest/developer-guide/style.html). The code is not fully conformant to this yet but we are slowly working on it.
+
+## Releasing a new HELICS version
+
+Updating to a new HELICS release is manual. Each step below needs review, so it is not scripted.
+
+1. Set `HelicsVersion` in `buildHelicsInterface.m` to the new version.
+2. Regenerate the bindings from the new release's `include/helics/helics.h`:
+   - `pip install cheader2json`
+   - `python src/main.py <output-dir> <path-to-helics.h>`
+   - Copy `matlabBindings/+helics` and `helicsMex.cpp` from the output into the repo.
+   - Convert the copied files to LF line endings. The generator writes CRLF on Windows and the repo stores LF.
+   - Review the diff. Check added or removed functions, constants, and property enums against the HELICS CHANGELOG and `docs/Public_API.md`.
+3. Add a CHANGELOG entry and its link reference.
+4. Add or update tests in `tests/` for any new API.
+5. Build and test locally with `buildHelicsInterface('helics',true)` and `runAllTests`.
+6. Open a pull request. CI builds and tests on Windows, macOS, and Linux. It also checks that the built library reports the version in `buildHelicsInterface.m`.
+7. After merging, publish a GitHub release with a `v<version>` tag. The release job attaches the packages built by CI.

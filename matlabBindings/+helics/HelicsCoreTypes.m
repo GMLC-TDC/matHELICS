@@ -17,6 +17,7 @@
 %	HELICS_CORE_TYPE_INPROC: value:18	an in process core type for handling communications in shared memory it is pretty similar to the test core but stripped from the "test" components
 %	HELICS_CORE_TYPE_NULL: value:66	an explicit core type that is recognized but explicitly doesn't exist, for testing and a few other assorted reasons
 %	HELICS_CORE_TYPE_EMPTY: value:77	an explicit core type exists but does nothing but return empty values or sink calls
+%	HELICS_CORE_TYPE_EXTRACT: value:101	core type specification to allow extraction from later arguments or files
 classdef HelicsCoreTypes
 	properties (Constant)
 		HELICS_CORE_TYPE_DEFAULT = int32(0);
@@ -35,5 +36,6 @@ classdef HelicsCoreTypes
 		HELICS_CORE_TYPE_INPROC = int32(18);
 		HELICS_CORE_TYPE_NULL = int32(66);
 		HELICS_CORE_TYPE_EMPTY = int32(77);
+		HELICS_CORE_TYPE_EXTRACT = int32(101);
 	end
 end

@@ -7,8 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-cffi = "^1.15.1"
-clang = "14"
+cheader2json = "^0.0.0rc2"
 
 
 [build-system]
