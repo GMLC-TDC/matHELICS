@@ -38,7 +38,7 @@ function buildHelicsInterface(targetPath,makePackage)
   end
   inputPath=fileparts(mfilename('fullpath'));
   isOctave = (exist('OCTAVE_VERSION', 'builtin') ~= 0);
-  HelicsVersion='3.6.1';
+  HelicsVersion='3.7.1';
   % set up platform specific names and locations
   targetTarFile=fullfile(targetPath,['helicsTar',HelicsVersion,'.tar.gz']);
   if ismac
@@ -92,7 +92,9 @@ function buildHelicsInterface(targetPath,makePackage)
   elseif ispc
     if isOctave || isequal(computer,'PCWIN64')
       basePath=fullfile(targetPath,['Helics-',HelicsVersion,'-win64']);
-      baseFile=['Helics-shared-',HelicsVersion,'-win64.tar.gz'];
+      % the full win64 package is used because the shared-only archive is built
+      % without the app library and does not export helicsAppFree/helicsAppDestroy
+      baseFile=['Helics-',HelicsVersion,'-win64.zip'];
       targetFile='helics.dll';
     else
       basePath=fullfile(targetPath,['Helics-',HelicsVersion,'-win32']);
@@ -101,16 +103,22 @@ function buildHelicsInterface(targetPath,makePackage)
     end
     % download the helics library if needed
     if (~exist(fullfile(basePath,'include/helics/helics.h'),'file'))
-      if (~exist(targetTarFile,'file'))
+      winArchiveFile=fullfile(targetPath,baseFile);
+      if (~exist(winArchiveFile,'file'))
         fprintf('downloading helics binary package\n');
         if isOctave
-          urlwrite(["https://github.com/GMLC-TDC/HELICS/releases/download/v",HelicsVersion,"/",baseFile],targetTarFile);
+          urlwrite(["https://github.com/GMLC-TDC/HELICS/releases/download/v",HelicsVersion,"/",baseFile],winArchiveFile);
         else
-          websave(targetTarFile,['https://github.com/GMLC-TDC/HELICS/releases/download/v',HelicsVersion,'/',baseFile]);
+          websave(winArchiveFile,['https://github.com/GMLC-TDC/HELICS/releases/download/v',HelicsVersion,'/',baseFile]);
         end
       end
       fprintf('extracting helics binary package\n');
-      untar(targetTarFile,targetPath);
+      if endsWith(baseFile,'.zip')
+        unzip(winArchiveFile,targetPath);
+      else
+        untar(winArchiveFile,targetPath);
+      end
+      delete(winArchiveFile);
     end
     %actually build the mex file
     fprintf('building helics mex target\n');
