@@ -11,7 +11,7 @@ function varargout = helicsFederateRegisterTypeInput(varargin)
 % 
 % 
 % 
-% @return An object containing the publication.
+% @return An object containing the input.
 
 	[varargout{1:nargout}] = helicsMex('helicsFederateRegisterTypeInput', varargin{:});
 end

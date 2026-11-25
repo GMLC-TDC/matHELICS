@@ -18,6 +18,7 @@
 %	HELICS_PROPERTY_INT_CONSOLE_LOG_LEVEL: value:274	integer property controlling the log level for console logging in a federate see HelicsLogLevels
 %	HELICS_PROPERTY_INT_LOG_BUFFER: value:276	integer property controlling the size of the log buffer
 %	HELICS_PROPERTY_INT_INDEX_GROUP: value:282	integer property specifying an index group
+%	HELICS_PROPERTY_INT_VALUE_BUFFER_WARNING: value:283	integer property specifying queued value warning and backpressure threshold in MiB; default 50, 0 disables both
 classdef HelicsProperties
 	properties (Constant)
 		HELICS_PROPERTY_TIME_DELTA = int32(137);
@@ -37,5 +38,6 @@ classdef HelicsProperties
 		HELICS_PROPERTY_INT_CONSOLE_LOG_LEVEL = int32(274);
 		HELICS_PROPERTY_INT_LOG_BUFFER = int32(276);
 		HELICS_PROPERTY_INT_INDEX_GROUP = int32(282);
+		HELICS_PROPERTY_INT_VALUE_BUFFER_WARNING = int32(283);
 	end
 end
