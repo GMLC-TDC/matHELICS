@@ -43,20 +43,24 @@ function buildHelicsInterface(targetPath,makePackage)
   targetTarFile=fullfile(targetPath,['helicsTar',HelicsVersion,'.tar.gz']);
   if ismac
     basePath=fullfile(targetPath,['Helics-',HelicsVersion,'-macOS-universal2']);
-    baseFile=['Helics-shared-',HelicsVersion,'-macOS-universal2.tar.gz'];
+    % the full macOS package is used because the shared-only archive does not
+    % export helicsAppFree/helicsAppDestroy
+    baseFile=['Helics-',HelicsVersion,'-macOS-universal2.zip'];
     targetFile=fullfile(basePath,'lib','libhelics.dylib');
+    archiveFile=fullfile(targetPath,baseFile);
     % download the helics library if needed
     if (~exist(fullfile(basePath,'include/helics/helics.h'),'file'))
-      if (~exist(targetTarFile,'file'))
+      if (~exist(archiveFile,'file'))
         fprintf('downloading helics binary package\n');
         if isOctave
-          urlwrite(["https://github.com/GMLC-TDC/HELICS/releases/download/v",HelicsVersion,"/",baseFile],targetTarFile);
+          urlwrite(["https://github.com/GMLC-TDC/HELICS/releases/download/v",HelicsVersion,"/",baseFile],archiveFile);
         else
-          websave(targetTarFile,['https://github.com/GMLC-TDC/HELICS/releases/download/v',HelicsVersion,'/',baseFile]);
+          websave(archiveFile,['https://github.com/GMLC-TDC/HELICS/releases/download/v',HelicsVersion,'/',baseFile]);
         end
       end
       fprintf('extracting helics binary package\n');
-      system(['tar xf ',targetTarFile,' -C ',targetPath]);
+      unzip(archiveFile,targetPath);
+      delete(archiveFile);
     end
     %actually build the mex file
     fprintf('building helics mex target\n');
@@ -67,7 +71,9 @@ function buildHelicsInterface(targetPath,makePackage)
     end
   elseif isunix
     basePath=fullfile(targetPath,['Helics-',HelicsVersion,'-Linux-x86_64']);
-    baseFile=['Helics-shared-',HelicsVersion,'-Linux-x86_64.tar.gz'];
+    % the full Linux package is used because the shared-only archive does not
+    % export helicsAppFree/helicsAppDestroy
+    baseFile=['Helics-',HelicsVersion,'-Linux-x86_64.tar.gz'];
     targetFile=fullfile(basePath,'lib64','libhelics.so');
     % download the helics library if needed
     if (~exist(fullfile(basePath,'include/helics/helics.h'),'file'))
